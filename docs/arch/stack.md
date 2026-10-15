@@ -44,7 +44,8 @@ Why each part was chosen, with rejected options, is recorded in ADRs:
 - Language: [ADR-0002](../adr/0002_rust.md).
 - Popup without UI toolkit: [ADR-0007](../adr/0007_layer_shell.md).
 - KWin payload without JSON: [ADR-0011](../adr/0011_kwin_payload.md).
-- TOML config: [ADR-0013](../adr/0013_toml_config.md).
+- TOML config: [ADR-0013](../adr/0013_toml_config.md),
+  strict validation: [ADR-0031](../adr/0031_strict_config.md).
 - CLI parser: [ADR-0016](../adr/0016_lexopt.md).
 - Font lookup: [ADR-0017](../adr/0017_fc_match.md).
 - Tooling: [ADR-0018](../adr/0018_lint_tooling.md),
