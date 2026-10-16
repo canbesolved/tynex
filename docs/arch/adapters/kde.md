@@ -33,7 +33,9 @@ in ([ADR-0034](../../adr/0034_kwin_runner.md)):
 
 1. `KdeSource::start` checks that `/WindowsRunner` exists. If not, it
    fails with an error naming the missing KWin interface.
-2. It writes `tynex.js` to `$XDG_RUNTIME_DIR/tynex/`.
+2. It writes `tynex.js` to `$XDG_RUNTIME_DIR/tynex/`, following the
+   runtime directory rules in
+   [linux.md](../platforms/linux.md#paths).
 3. It calls `org.kde.kwin.Scripting.loadScript(path, "tynex")`, then
    `start`. A stale script with the same name is unloaded first.
 4. On daemon exit, `unloadScript("tynex")` is called.
