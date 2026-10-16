@@ -57,6 +57,14 @@ impl Text {
         self.fonts[0].metrics(size)
     }
 
+    /// Resolves the fonts for every character of `text` in advance, so
+    /// fallback lookups happen when a title arrives, not while drawing.
+    pub fn prepare(&mut self, text: &str) {
+        for c in text.chars() {
+            self.font_index(c);
+        }
+    }
+
     /// Returns the advance width of `text` at `size` pixels.
     pub fn width(&mut self, text: &str, size: f32) -> f32 {
         self.layout(text, size).1

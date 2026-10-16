@@ -39,5 +39,7 @@ project adheres to
   fractional scale, and a `popup_demo` example.
 - Keyboard: `xkbcommon` keymaps and compose, Latin fallback for any
   layout, key repeat for arrows and `Backspace`.
+- System fonts via `fc-match` with per-character fallback, so titles in
+  scripts like Chinese render; font files are memory-mapped.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main

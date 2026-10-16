@@ -39,8 +39,9 @@ ui/render/
 - **Fallback:** when the primary font has no glyph for a character,
   `fc-match -f '%{file}:%{index}' 'sans-serif:charset=<hex>'` finds a
   font that has it (for example Noto Sans CJK for Chinese). Results
-  are cached per character, so each lookup runs once. Lookups run when
-  a `Windows` event brings a new title, never when the popup opens.
+  are cached per character, so each lookup runs once. `Text::prepare`
+  resolves a title's fonts when a `Windows` event brings it, so lookups
+  never run when the popup opens.
 - **Memory:** font files are mapped read-only with `rustix` (`mmap`),
   not read into the heap. A CJK font of 20 MB costs RAM only for the
   pages actually used. `skrifa` loads font collections (`.ttc`) by
