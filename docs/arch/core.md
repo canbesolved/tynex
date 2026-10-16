@@ -10,8 +10,9 @@ core/
   window.rs     WindowId, WindowInfo
   event.rs      Event, Action, Key
   traits.rs     WindowSource, Presenter, Layout, Mode
-  switcher.rs   State machine
-  view.rs       View: what the presenter must draw
+  state.rs      State of an open popup, shared with the modes
+  switcher.rs   State machine (tests in switcher_tests.rs)
+  view.rs       View and Row: what the presenter must draw
   keys.rs       Letter assignment
   text.rs       Title sanitizing and safe cut points
 ```
@@ -83,6 +84,8 @@ pub trait Layout {
 /// Turns key presses into switcher actions.
 pub trait Mode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action;
+    /// Recomputes shown rows and highlights; default does nothing.
+    fn refresh(&mut self, s: &mut State) {}
 }
 ```
 
@@ -99,18 +102,30 @@ adapters never see the platform event loop directly.
                        └────┘
 ```
 
-- `Hidden`: only `Windows` updates the cached list.
-- `Show`: snapshot the cached list, assign keys, build `View`.
-- `Visible`: keys go to the active `Mode`. `Tab` swaps modes.
-- `Windows` while visible: refresh the list, keep the selection by id.
+- `Hidden`: only `Windows` updates the cached list; keys are ignored.
+- `Show`: snapshot the cached list, assign keys, build `State`.
+- `Visible`: keys go to the active `Mode`. `Tab` swaps modes. A mode
+  returning `Activate` or `Close` hides the popup.
+- `Windows` while visible: refresh the rows and keep the selection by
+  id. Keys stay with their windows. New windows get the next unused
+  letters after the last one assigned; letters of closed windows are
+  not reused while the popup is open.
+- `Hide` and `Quit` close an open popup. The daemon loop stops itself
+  on `Quit`.
 - The currently active window is moved to the end, so the previous
   window gets the first key (`a`), like Alt+Tab.
 
+`Switcher<H, S>` is generic over the hotkey and search modes, so calls
+are static. After `Show`, `Tab` and `Windows` it calls the mode's
+`refresh`, so search can refilter.
+
 ## View
 
-`View` is a plain struct: mode, query string, selected index, and rows
-of `(key, icon, title, highlight ranges)`. Layouts read it, never the
-switcher state. This keeps rendering replaceable.
+`View` borrows the open `State`: mode, query, selected index, and the
+shown rows in display order. Each `Row` has an id, key, icon, title
+and highlight byte ranges. Layouts read the `View`, never the switcher
+state, which keeps rendering replaceable. Building a `View` allocates
+nothing.
 
 ## Text and languages
 
@@ -142,4 +157,5 @@ Search ([search.md](modes/search.md)) and rendering
 `keys.rs` maps row index to a letter from the configured string
 (default `asdfhjklgqwertyuiop`). Rows beyond the string get no letter
 and are reachable with arrows or search. Assignment is stable for the
-lifetime of one popup.
+lifetime of one popup; windows that appear meanwhile continue the key
+string.

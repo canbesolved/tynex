@@ -5,5 +5,9 @@
 
 pub mod event;
 pub mod keys;
+pub mod state;
+pub mod switcher;
 pub mod text;
+pub mod traits;
+pub mod view;
 pub mod window;
