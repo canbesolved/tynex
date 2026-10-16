@@ -150,6 +150,12 @@ stable.
 - No other personal data either: home paths (`/home/<user>`), user and
   host names, IP addresses, tokens or keys. Examples and fixtures use
   made-up data, never real window titles from your desktop.
+- Check privacy before every commit:
+  - `git config user.email` prints the no-reply address;
+  - `git diff --cached` contains no email address (other than
+    `git@github.com`), home path, user or host name, IP address, token
+    or key;
+  - the commit message contains none of these either.
 - If personal data or a secret was pushed, deleting it in a new commit
   is not enough: tell the maintainer, revoke any secret, and remove it
   from history with `git filter-repo`.
