@@ -22,4 +22,9 @@ Source: `src/modes/hotkey.rs`. Default mode.
 - A key matches by the produced character first (`Key::Char.text`),
   then by the same physical key in the first Latin layout
   (`Key::Char.latin`). With a Russian layout active, the key that
-  gives `ф` still selects the window marked `a`.
+  gives `ф` still selects the window marked `a`. Shift does not matter:
+  `S` selects the window marked `s`.
+- `Up` and `Down` wrap around the list; `Enter` on an empty list does
+  nothing.
+- `/` sets the state to search mode; the switcher then refreshes
+  search so it can filter right away.

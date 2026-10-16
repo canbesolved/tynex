@@ -29,5 +29,7 @@ project adheres to
   default file written on first start (`serde`, `toml`).
 - Mock window source with sample windows, the `WindowSource` trait,
   an event queue, the adapter registry and an end-to-end test.
+- Hotkey mode: letters (with Latin layout fallback), arrows, `Enter`,
+  `/` to search and `Esc`.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main
