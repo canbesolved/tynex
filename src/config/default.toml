@@ -1,0 +1,10 @@
+desktop = "auto"         # auto | kde | mock
+mode = "hotkey"          # hotkey | search
+layout = "vertical_list"
+keys = "asdfhjklgqwertyuiop"
+
+[appearance]
+font = "auto"            # Font file path, or auto
+font_size = 14
+width = 480
+max_rows = 19

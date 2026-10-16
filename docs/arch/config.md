@@ -2,6 +2,17 @@
 
 Source: `src/config/`.
 
+```text
+config/
+  mod.rs         Config types, parse(text, font_exists)
+  raw.rs         serde layout with defaults and value spans
+  validate.rs    Value checks, all errors at once
+  error.rs       ConfigError with line and column
+  file.rs        load_or_create(path): read, or write the default
+  default.toml   Default file, embedded with include_str!
+  tests.rs       Unit tests
+```
+
 ## Location
 
 `<config dir>/tynex/tynex.toml`, TOML format. The config dir comes from
@@ -92,3 +103,10 @@ tynex: error: ~/.config/tynex/tynex.toml:9:13: `appearance.font_size`
 The config module returns a plain `Config` struct or a list of
 `ConfigError` values. Other modules get only the sub-struct they need
 (for example `AppearanceConfig`), never the whole file.
+
+- `parse` is pure: the font file check is passed in, so tests need no
+  disk.
+- `load_or_create` returns `Loaded::Existing` or `Loaded::Created`, so
+  the daemon can log a new default file.
+- `ConfigError` prints `line:col: message`; the daemon adds the file
+  path in front, as in the example above.
