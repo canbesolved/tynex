@@ -22,5 +22,7 @@ project adheres to
 - MIT license and GitHub Sponsors funding config.
 - CI on GitHub Actions running all Tooling checks on each pull request,
   and README badges.
+- Core types (`WindowId`, `WindowInfo`, `Event`, `Action`, `Key`),
+  title sanitizing, safe cut points and letter key assignment.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main

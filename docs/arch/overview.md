@@ -46,6 +46,7 @@ The reasons behind each choice are in the
 ```text
 src/
   main.rs              Entry, CLI parsing, wiring
+  lib.rs               Module tree, shared by the binary and tests
   core/                Pure logic, traits, state machine
   config/              tynex.toml: load, defaults, validation
   logger.rs            stderr logger, level from TYNEX_LOG

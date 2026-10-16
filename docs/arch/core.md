@@ -13,6 +13,7 @@ core/
   switcher.rs   State machine
   view.rs       View: what the presenter must draw
   keys.rs       Letter assignment
+  text.rs       Title sanitizing and safe cut points
 ```
 
 ## Types
