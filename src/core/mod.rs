@@ -1,0 +1,9 @@
+// SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
+// SPDX-License-Identifier: MIT
+
+//! Pure switcher logic: no I/O, no OS types, no threads.
+
+pub mod event;
+pub mod keys;
+pub mod text;
+pub mod window;
