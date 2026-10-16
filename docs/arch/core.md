@@ -97,8 +97,9 @@ switcher. Everything runs on one thread, so no locks are needed, and
 adapters never see the platform event loop. `SourceError` carries a
 message for the log.
 
-`WindowSource` and `Mode` exist; `Presenter` and `Layout` are added
-with their modules.
+`WindowSource` and `Mode` live in `core/traits.rs`. `Layout` lives in
+`ui/layouts/` because it draws on a `Canvas`, and the core depends on
+nothing else in the crate. `Presenter` is added with its module.
 
 ## Switcher state machine
 
