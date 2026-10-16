@@ -12,7 +12,9 @@ use viewporter::wp_viewporter::WpViewporter;
 use wayland_client::globals::GlobalListContents;
 use wayland_client::protocol::wl_buffer::{self, WlBuffer};
 use wayland_client::protocol::wl_compositor::WlCompositor;
+use wayland_client::protocol::wl_keyboard::WlKeyboard;
 use wayland_client::protocol::wl_registry::WlRegistry;
+use wayland_client::protocol::wl_seat::WlSeat;
 use wayland_client::protocol::wl_shm::{self, Format, WlShm};
 use wayland_client::protocol::wl_shm_pool::WlShmPool;
 use wayland_client::protocol::wl_surface::{self, WlSurface};
@@ -21,11 +23,14 @@ use wayland_protocols::wp::fractional_scale::v1::client as fractional;
 use wayland_protocols::wp::viewporter::client as viewporter;
 use wayland_protocols_wlr::layer_shell::v1::client as layer_shell;
 
+use crate::core::event::Key;
 use crate::platform::linux::wayland::buffer::Buffers;
+use crate::platform::linux::wayland::keyboard::Keyboard;
 
 /// Events for the caller, collected while dispatching.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PresenterEvent {
+    Key(Key),   // A key press, or a repeat of a held key
     Configured, // The popup can be drawn
     Scale(f32), // The output scale changed; redraw at the new size
     Closed,     // The compositor closed the popup
@@ -47,6 +52,9 @@ pub(super) struct Wl {
     pub layer_shell: ZwlrLayerShellV1,
     pub viewporter: Option<WpViewporter>,
     pub fractional: Option<WpFractionalScaleManagerV1>,
+    pub _seat: Option<WlSeat>, // Kept bound for keyboard events
+    pub keyboard_proxy: Option<WlKeyboard>,
+    pub keyboard: Keyboard,
     pub formats: Vec<Format>,
     pub scale: f32,
     pub popup: Option<Popup>,

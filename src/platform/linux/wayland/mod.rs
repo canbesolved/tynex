@@ -13,42 +13,27 @@
 )]
 
 mod buffer;
+mod error;
+mod input;
+mod keyboard;
 mod state;
 mod surface;
 
 use std::fmt;
 use std::os::fd::{AsFd, BorrowedFd};
 
-use wayland_client::globals::{BindError, registry_queue_init};
+use wayland_client::globals::registry_queue_init;
 use wayland_client::protocol::wl_shm::Format;
 use wayland_client::{Connection, EventQueue};
 
 use crate::platform::linux::wayland::buffer::Buffers;
+pub use crate::platform::linux::wayland::error::PresenterError;
+use crate::platform::linux::wayland::error::{error, missing};
+use crate::platform::linux::wayland::keyboard::Keyboard;
 pub use crate::platform::linux::wayland::state::PresenterEvent;
 use crate::platform::linux::wayland::state::Wl;
 use crate::ui::layouts::Size;
 use crate::ui::render::canvas::Canvas;
-
-/// Error from the Wayland connection or a missing protocol.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct PresenterError(pub String);
-
-impl fmt::Display for PresenterError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(&self.0)
-    }
-}
-
-impl std::error::Error for PresenterError {}
-
-fn error(what: &str, e: impl fmt::Display) -> PresenterError {
-    PresenterError(format!("{what}: {e}"))
-}
-
-/// Maps a failed bind of a required global to a clear error.
-fn missing(name: &'static str) -> impl Fn(BindError) -> PresenterError {
-    move |_| PresenterError(format!("the compositor lacks `{name}`"))
-}
 
 /// The popup on a Wayland compositor with `wlr-layer-shell`.
 pub struct WaylandPresenter {
@@ -80,6 +65,9 @@ impl WaylandPresenter {
                 .map_err(missing("zwlr_layer_shell_v1"))?,
             viewporter: globals.bind(&qh, 1..=1, ()).ok(),
             fractional: globals.bind(&qh, 1..=1, ()).ok(),
+            _seat: globals.bind(&qh, 4..=7, ()).ok(), // 4+ sends repeat info
+            keyboard_proxy: None,
+            keyboard: Keyboard::new(),
             formats: Vec::new(),
             scale: 1.0,
             popup: None,
@@ -189,8 +177,15 @@ impl WaylandPresenter {
         true
     }
 
+    /// Returns when a held key repeats next; use it as the poll timeout.
+    #[must_use]
+    pub fn next_deadline(&self) -> Option<std::time::Instant> {
+        self.wl.keyboard.next_repeat()
+    }
+
     /// Destroys the popup and frees its buffers. The connection stays.
     pub fn hide(&mut self) {
+        self.wl.keyboard.stop();
         if let Some(popup) = self.wl.popup.take() {
             surface::destroy(popup);
         }
@@ -208,7 +203,8 @@ impl WaylandPresenter {
             .map_err(|e| error("Wayland connection lost", e))
     }
 
-    /// Reads available events and returns what the caller must handle.
+    /// Reads available events, and key repeats that are due, and returns
+    /// what the caller must handle.
     ///
     /// # Errors
     ///
@@ -230,6 +226,9 @@ impl WaylandPresenter {
         self.queue
             .dispatch_pending(&mut self.wl)
             .map_err(|e| lost(&e))?;
+        if let Some(key) = self.wl.keyboard.tick(std::time::Instant::now()) {
+            self.wl.events.push(PresenterEvent::Key(key));
+        }
         Ok(std::mem::take(&mut self.wl.events))
     }
 }
