@@ -11,6 +11,10 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/canbesolved/tynex/actions/workflows/ci.yml"><img
+    alt="CI" src=
+    "https://github.com/canbesolved/tynex/actions/workflows/ci.yml/badge.svg"
+    ></a>
   <a href="LICENSE"><img alt="License: MIT"
     src="https://img.shields.io/github/license/canbesolved/tynex"></a>
   <a href="Cargo.toml"><img alt="Rust 1.89+"

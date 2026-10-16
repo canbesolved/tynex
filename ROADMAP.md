@@ -138,7 +138,7 @@ Platform services:
 
 Project:
 
-- [ ] CI with `cargo check` for Linux, macOS and Windows targets.
+- [ ] CI: `cargo check` for macOS and Windows targets.
 
 [layer-shell]: https://wayland.app/protocols/wlr-layer-shell-unstable-v1
 [wlr-toplevel]:
