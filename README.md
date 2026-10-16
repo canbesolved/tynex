@@ -52,8 +52,7 @@ Planned environments and features are listed in the
 
 ## Build from source
 
-There are no prebuilt packages yet, and the repository is private for
-now.
+There are no prebuilt packages yet.
 
 Requirements:
 

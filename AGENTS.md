@@ -176,7 +176,7 @@ stable.
 - Commits follow [Conventional Commits](https://www.conventionalcommits.org):
   `feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`, `chore:`.
 - One logical change per commit. Subject line under 72 characters.
-- Remote: `git@github.com:CanBeSolved/tynex.git` (private for now).
+- Remote: `git@github.com:CanBeSolved/tynex.git`.
 
 ## Commits and pull requests
 
