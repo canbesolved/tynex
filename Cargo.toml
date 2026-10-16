@@ -8,8 +8,8 @@ Thank You, NEXt: efficient task switcher for Linux, macOS and \
 Windows"""
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/CanBeSolved/tynex"
-homepage = "https://github.com/CanBeSolved/tynex"
+repository = "https://github.com/canbesolved/tynex"
+homepage = "https://github.com/canbesolved/tynex"
 keywords = ["task-switcher", "window-switcher", "wayland", "kde"]
 categories = ["gui"]
 
