@@ -12,9 +12,8 @@
     <rect x="50" y="91" width="36" height="8" rx="4"/>
   </g>
   <!-- Selected row: next window -->
-  <rect x="13" y="49" width="102" height="30" rx="4" fill="#3fb950"
-    fill-opacity="0.12"/>
-  <path d="M30 57l7 7-7 7" fill="none" stroke="#3fb950" stroke-width="5"
+  <rect x="13" y="49" width="102" height="30" rx="4" fill="#223133"/>
+  <path d="M30 57l7 7-7 7" fill="none" stroke="#4fa997" stroke-width="5"
     stroke-linecap="round" stroke-linejoin="round"/>
-  <rect x="50" y="60" width="46" height="8" rx="4" fill="#3fb950"/>
+  <rect x="50" y="60" width="46" height="8" rx="4" fill="#4fa997"/>
 </svg>
