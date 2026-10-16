@@ -17,6 +17,7 @@ runtime cost. Adding a crate needs a line in this file and an ADR.
 | ----------------------- | ---------------------- | ----- | ----------------- |
 | `wayland-client`        | Wayland client         | linux |                   |
 | `wayland-protocols-wlr` | Layer-shell protocol   | linux | `client`          |
+| `wayland-protocols`     | Viewport, frac. scale  | linux | `client staging`  |
 | `xkbcommon`             | Keymaps, keysyms, text | linux | defaults off      |
 | `rustix`                | poll, memfd, mmap      | linux | `event fs mm`     |
 | `dbus`                  | D-Bus via libdbus      | linux | defaults off      |
