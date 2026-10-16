@@ -24,5 +24,6 @@ project adheres to
   and README badges.
 - Core types (`WindowId`, `WindowInfo`, `Event`, `Action`, `Key`),
   title sanitizing, safe cut points and letter key assignment.
+- Switcher state machine with `State`, `View` and the `Mode` trait.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main
