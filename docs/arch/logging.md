@@ -33,8 +33,9 @@ tynex: warn: created default config ~/.config/tynex/tynex.toml
 tynex: debug: adapters::kde: window list updated, 7 windows
 ```
 
-The module path is added at `debug` and `trace`. Under a systemd user
-unit the journal adds time and priority.
+The module path is added at `debug` and `trace`, without the leading
+`tynex::`. Under a systemd user unit the journal adds time and
+priority.
 
 ## Setup
 

@@ -5,5 +5,7 @@
 
 /// Program entry point.
 fn main() {
+    tynex::logger::init();
+    tynex::logger::install_panic_hook();
     println!("tynex {}", env!("CARGO_PKG_VERSION"));
 }
