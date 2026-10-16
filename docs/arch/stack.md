@@ -20,9 +20,9 @@ runtime cost. Adding a crate needs a line in this file and an ADR.
 | `xkbcommon`             | Keymaps, keysyms, text | linux | defaults off      |
 | `rustix`                | poll, memfd, mmap      | linux | `event fs mm`     |
 | `dbus`                  | D-Bus via libdbus      | linux | defaults off      |
-| `tiny-skia`             | 2D drawing, PNG        | all   | `png-format`      |
+| `tiny-skia`             | 2D drawing, glyphs     | all   | `simd std`        |
 | `resvg`                 | SVG icons              | all   | defaults off      |
-| `ab_glyph`              | Glyph rasterizing      | all   |                   |
+| `skrifa`                | Font outlines, metrics | all   | `std`             |
 | `frizbee`               | Fuzzy matching         | all   |                   |
 | `serde`                 | Config structs         | all   | `derive`          |
 | `toml`                  | Config parser          | all   | `parse serde std` |
@@ -58,7 +58,8 @@ Why each part was chosen, with rejected options, is recorded in ADRs:
 - Fuzzy matching: [ADR-0014](../adr/0014_fuzzy_matcher.md),
   [ADR-0022](../adr/0022_frizbee.md).
 - Rendering, text and icons: [ADR-0008](../adr/0008_cpu_render.md),
-  [ADR-0025](../adr/0025_rendering.md).
+  [ADR-0025](../adr/0025_rendering.md),
+  [ADR-0040](../adr/0040_skrifa_glyphs.md).
 - Threads and event loop: [ADR-0009](../adr/0009_single_thread.md),
   [ADR-0026](../adr/0026_poll_loop.md).
 - D-Bus: [ADR-0012](../adr/0012_dbus_ipc.md),
