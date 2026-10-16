@@ -3,8 +3,41 @@
 
 //! Seams between the core and pluggable modules.
 
+use std::fmt;
+
 use crate::core::event::{Action, Key};
+use crate::core::queue::EventTx;
 use crate::core::state::State;
+use crate::core::window::WindowId;
+
+/// Error reported by a window source.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SourceError(pub String);
+
+impl fmt::Display for SourceError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl std::error::Error for SourceError {}
+
+/// Source of windows: a desktop environment or window manager.
+pub trait WindowSource {
+    /// Starts sending `Event::Windows` updates to `tx`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the desktop cannot be reached.
+    fn start(&mut self, tx: EventTx) -> Result<(), SourceError>;
+
+    /// Activates window `id`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error for an unknown window or a failed request.
+    fn activate(&mut self, id: &WindowId) -> Result<(), SourceError>;
+}
 
 /// Turns key presses into switcher actions.
 pub trait Mode {

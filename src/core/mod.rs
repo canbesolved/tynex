@@ -5,6 +5,7 @@
 
 pub mod event;
 pub mod keys;
+pub mod queue;
 pub mod state;
 pub mod switcher;
 pub mod text;

@@ -25,8 +25,8 @@ adapters/mock/
 
 ## Fixtures
 
-Built-in list of about ten windows with realistic app ids and titles,
-including edge cases:
+Built-in list of ten windows (ids `mock-01` to `mock-10`) with
+realistic app ids and made-up titles, including edge cases:
 
 - a title longer than the row width;
 - two windows of the same app;
@@ -41,6 +41,10 @@ Text cases for the rules in
 - a combining accent (`e` + `U+0301`) near the truncation point;
 - control characters and a right-to-left override (`U+202E`), for
   sanitizing.
+
+The registry in `src/adapters/mod.rs` builds it only for
+`desktop = "mock"`. With `auto` or `kde`, `select` reports that no
+source exists yet, until the KDE adapter lands.
 
 ## Use
 
