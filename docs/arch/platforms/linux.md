@@ -10,9 +10,9 @@ platform/linux/
   event_loop.rs   Single poll loop over Wayland and D-Bus fds
   paths.rs        XDG config and runtime paths
   wayland/
-    mod.rs        WaylandPresenter: impl Presenter
-    globals.rs    Registry: compositor, shm, seat, layer-shell
-    surface.rs    Layer-shell surface setup and teardown
+    mod.rs        WaylandPresenter: connect, show, draw, hide, dispatch
+    state.rs      Dispatch state: globals, popup, events
+    surface.rs    Layer-shell surface setup, commit and teardown
     buffer.rs     wl_shm double buffer on a memfd
     keyboard.rs   xkb keymap, native key -> core Key
   dbus.rs         Shared D-Bus connection, dispatch, calls
@@ -22,29 +22,44 @@ platform/linux/
 
 ## Wayland presenter
 
-Built directly on `wayland-client` with `wayland-protocols-wlr` for the
-layer-shell protocol. No client toolkit.
+Built directly on `wayland-client` (pure Rust backend, no
+`libwayland` linked) with `wayland-protocols-wlr` for the layer-shell
+protocol. No client toolkit.
 
 - Protocol: `wlr-layer-shell-unstable-v1` (supported by KWin, wlroots
   compositors, Hyprland, niri).
-- Globals bound once at start: `wl_compositor`, `wl_shm`, `wl_seat`,
-  `zwlr_layer_shell_v1`.
+- Globals bound once at start: `wl_compositor`, `wl_shm`,
+  `zwlr_layer_shell_v1` (required), `wp_viewporter` and
+  `wp_fractional_scale_manager_v1` (optional). `wl_seat` comes with the
+  keyboard.
 - Layer `overlay`, no anchors, so the compositor centers the surface.
 - Keyboard interactivity `exclusive`: all keys go to the popup while it
   is shown. No global key grabbing.
-- Size comes from `Layout::size`; resized only when the row count
-  changes.
+- Size comes from `Layout::size` in physical pixels; the surface size
+  is that divided by the scale, rounded up.
 - `show`: create the surface, wait for `configure`, draw, commit.
-- `hide`: destroy the surface. The connection, keymap and caches stay.
-- Fractional scale: buffers are drawn at the output scale.
+- `draw`: returns false until the surface is configured or while both
+  buffers are held by the compositor; the caller draws again on the
+  next event.
+- `hide`: destroy the surface and free the buffers, so an idle daemon
+  holds no pixel memory. The connection, keymap and caches stay.
+- Fractional scale: with `wp_fractional_scale_v1` the buffer is drawn
+  at the preferred scale (for example 1.25) and `wp_viewport` sets the
+  surface size. Without it, the integer `preferred_buffer_scale` and
+  `set_buffer_scale` are used. A `Scale` event asks for a redraw.
+
+Try it in a Wayland session: `cargo run --example popup_demo` shows the
+mock windows for four seconds.
 
 ## Buffers
 
 - One `memfd` (via `rustix`), mapped once, split into two `wl_shm`
-  buffers.
-- Draw into the free buffer, attach, damage only changed rows, commit.
-- The renderer writes ARGB8888 directly into the mapping. No copies.
-- The pool grows only when the popup grows.
+  buffers. A buffer is free again after the compositor's `release`.
+- Draw into the free buffer, attach, damage, commit.
+- The renderer writes straight into the mapping. With `ABGR8888`
+  (same byte order as the renderer) there is no copy; with the
+  mandatory `ARGB8888` red and blue are swapped in place.
+- Buffers are recreated when the popup size changes.
 
 ## Keyboard
 

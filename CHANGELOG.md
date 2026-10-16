@@ -35,5 +35,7 @@ project adheres to
   points and highlights, and a dark theme (`tiny-skia`, `skrifa`).
 - Vertical list layout: key badges, selection, scrolling and a search
   bar.
+- Wayland presenter: layer-shell popup, shared memory double buffer,
+  fractional scale, and a `popup_demo` example.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main
