@@ -1,0 +1,6 @@
+# Default markdownlint rules (CommonMark style), lines up to 80 columns.
+default: true
+MD013:
+  line_length: 80
+  code_blocks: true
+  tables: true
