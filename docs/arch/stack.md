@@ -51,7 +51,8 @@ Why each part was chosen, with rejected options, is recorded in ADRs:
 - Tooling: [ADR-0018](../adr/0018_lint_tooling.md),
   [ADR-0019](../adr/0019_rust_style.md),
   [ADR-0020](../adr/0020_markdown_style.md),
-  [ADR-0024](../adr/0024_dependency_checks.md).
+  [ADR-0024](../adr/0024_dependency_checks.md),
+  [ADR-0037](../adr/0037_reuse_headers.md).
 - Fuzzy matching: [ADR-0014](../adr/0014_fuzzy_matcher.md),
   [ADR-0022](../adr/0022_frizbee.md).
 - Rendering, text and icons: [ADR-0008](../adr/0008_cpu_render.md),
@@ -88,5 +89,6 @@ strip = "debuginfo"     # Keep symbol names for backtraces
 | `cargo-deny`        | Advisories, maintenance, licenses       |
 | `markdownlint-cli2` | Markdown lint, 80 columns               |
 | `shellcheck`        | Lint shell scripts in `scripts/`        |
+| `reuse`             | SPDX license headers (`reuse lint`)     |
 | `adr-log`           | ADR index (`docs/adr/index.md`)         |
 | `.editorconfig`     | Editor defaults                         |
