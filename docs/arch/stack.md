@@ -59,7 +59,8 @@ Why each part was chosen, with rejected options, is recorded in ADRs:
 - Threads and event loop: [ADR-0009](../adr/0009_single_thread.md),
   [ADR-0026](../adr/0026_poll_loop.md).
 - D-Bus: [ADR-0012](../adr/0012_dbus_ipc.md),
-  [ADR-0027](../adr/0027_dbus_crate.md).
+  [ADR-0027](../adr/0027_dbus_crate.md),
+  [ADR-0035](../adr/0035_shared_dbus.md).
 - Wayland and keyboard: [ADR-0028](../adr/0028_wayland_client.md),
   [ADR-0023](../adr/0023_xkbcommon.md).
 - Paths without `dirs`: [ADR-0029](../adr/0029_std_paths.md).

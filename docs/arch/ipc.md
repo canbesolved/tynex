@@ -40,7 +40,8 @@ pub trait IpcClient {
 | Windows  | Named pipe (later)                                     |
 
 On Linux D-Bus is used because the KDE adapter needs it anyway, so it
-adds no extra dependency. The `dbus` crate wraps the system `libdbus`;
-its connection is non-blocking and its fd joins the main poll loop. A
+adds no extra dependency. The server registers its object on the
+daemon's shared connection (see
+[linux.md](platforms/linux.md#d-bus)), next to the KDE adapter. A
 second `tynex daemon` exits early when the bus name is already owned.
 The CLI sends one method call and exits.
