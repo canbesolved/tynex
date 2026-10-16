@@ -204,3 +204,26 @@ fn empty_list_shows_empty_view() {
     assert!(sw.view().unwrap().is_empty());
     assert_eq!(sw.handle(Event::Key(Key::Down)), Action::Redraw);
 }
+
+/// Switches to search mode on `/`, like the hotkey mode.
+struct Slash;
+
+impl Mode for Slash {
+    fn on_key(&mut self, _key: Key, s: &mut State) -> Action {
+        s.mode = ModeKind::Search;
+        Action::Redraw
+    }
+}
+
+#[test]
+fn mode_switch_from_a_mode_refreshes_the_new_mode() {
+    let mut sw = Switcher::new("asd", Slash, Filter);
+    let list = ["x", "firefox", "kate"].iter().map(|id| window(id, id));
+
+    sw.handle(Event::Windows(list.collect()));
+    sw.handle(Event::Show(ModeKind::Hotkey));
+    sw.state.as_mut().unwrap().query = "fire".into();
+    assert_eq!(sw.handle(letter('/')), Action::Redraw);
+    assert_eq!(sw.view().unwrap().mode, ModeKind::Search);
+    assert_eq!(sw.view().unwrap().len(), 1); // Filter refreshed
+}

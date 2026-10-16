@@ -7,26 +7,12 @@ use tynex::adapters::{self, Source};
 use tynex::config;
 use tynex::core::event::{Action, Event, Key, ModeKind};
 use tynex::core::queue::{EventRx, channel};
-use tynex::core::state::State;
 use tynex::core::switcher::Switcher;
-use tynex::core::traits::{Mode, WindowSource};
+use tynex::core::traits::WindowSource;
 use tynex::core::window::WindowId;
+use tynex::modes::hotkey::HotkeyMode;
 
-/// Minimal hotkey mode: a row letter activates its window.
-struct Letters;
-
-impl Mode for Letters {
-    fn on_key(&mut self, key: Key, s: &mut State) -> Action {
-        match key {
-            Key::Char { text, .. } => s
-                .id_for_key(text)
-                .map_or(Action::None, |id| Action::Activate(id.clone())),
-            _ => Action::Close,
-        }
-    }
-}
-
-type App = Switcher<Letters, Letters>;
+type App = Switcher<HotkeyMode, HotkeyMode>;
 
 /// Feeds all queued events to the switcher.
 fn pump(rx: &EventRx, sw: &mut App) {
@@ -67,7 +53,7 @@ fn mock_source_drives_the_switcher() {
     let config = config::parse(text, &|_| false).expect("valid config");
     let mut source = adapters::select(config.desktop, None).expect("mock");
     let (tx, rx) = channel();
-    let mut sw = Switcher::new(config.keys, Letters, Letters);
+    let mut sw = Switcher::new(config.keys, HotkeyMode, HotkeyMode);
 
     source.start(tx).expect("mock starts");
     pump(&rx, &mut sw);
@@ -98,7 +84,7 @@ fn titles_from_the_source_are_sanitized() {
     let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
     let mut source = adapters::select(config.desktop, None).unwrap();
     let (tx, rx) = channel();
-    let mut sw = Switcher::new(config.keys, Letters, Letters);
+    let mut sw = Switcher::new(config.keys, HotkeyMode, HotkeyMode);
 
     source.start(tx).unwrap();
     pump(&rx, &mut sw);

@@ -112,8 +112,10 @@ with their modules.
 
 - `Hidden`: only `Windows` updates the cached list; keys are ignored.
 - `Show`: snapshot the cached list, assign keys, build `State`.
-- `Visible`: keys go to the active `Mode`. `Tab` swaps modes. A mode
-  returning `Activate` or `Close` hides the popup.
+- `Visible`: keys go to the active `Mode`. `Tab` swaps modes; a mode
+  may also switch by setting `state.mode`, and the switcher then calls
+  the new mode's `refresh`. A mode returning `Activate` or `Close`
+  hides the popup.
 - `Windows` while visible: refresh the rows and keep the selection by
   id. Keys stay with their windows. New windows get the next unused
   letters after the last one assigned; letters of closed windows are

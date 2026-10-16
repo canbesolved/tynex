@@ -130,10 +130,17 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
             self.refresh(&mut state);
             Action::Redraw
         } else {
-            match state.mode {
+            let before = state.mode;
+            let action = match state.mode {
                 ModeKind::Hotkey => self.hotkey.on_key(key, &mut state),
                 ModeKind::Search => self.search.on_key(key, &mut state),
+            };
+
+            // A mode may switch to the other one, for example with `/`.
+            if state.mode != before {
+                self.refresh(&mut state);
             }
+            action
         };
 
         if !matches!(action, Action::Activate(_) | Action::Close) {
