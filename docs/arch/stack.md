@@ -28,14 +28,14 @@ runtime cost. Adding a crate needs a line in this file and an ADR.
 | `toml`                  | Config parser          | all   | `parse serde std` |
 | `lexopt`                | CLI arguments          | all   |                   |
 | `log`                   | Logging facade         | all   |                   |
-| `env_logger`            | `RUST_LOG` logger      | all   | defaults off      |
 
 The full tree is about 70 crates, including build-time proc macros
 (`serde_derive`, `wayland-scanner`). A clean release build of the
 dependencies takes about 15 s.
 
 The standard library covers paths (`std::env::home_dir`, XDG
-variables). No extra threads and no async runtime are used.
+variables), and the logger for `log` is written in the project. No
+extra threads and no async runtime are used.
 
 ## Decisions
 
@@ -45,20 +45,26 @@ Why each part was chosen, with rejected options, is recorded in ADRs:
 - Popup without UI toolkit: [ADR-0007](../adr/0007_layer_shell.md).
 - KWin payload without JSON: [ADR-0011](../adr/0011_kwin_payload.md).
 - TOML config: [ADR-0013](../adr/0013_toml_config.md),
-  strict validation: [ADR-0031](../adr/0031_strict_config.md).
+  defaults and validation: [ADR-0031](../adr/0031_strict_config.md).
 - CLI parser: [ADR-0016](../adr/0016_lexopt.md).
 - Font lookup: [ADR-0017](../adr/0017_fc_match.md).
 - Tooling: [ADR-0018](../adr/0018_lint_tooling.md),
   [ADR-0019](../adr/0019_rust_style.md),
   [ADR-0020](../adr/0020_markdown_style.md),
   [ADR-0024](../adr/0024_dependency_checks.md).
-- Fuzzy matcher: [ADR-0022](../adr/0022_frizbee.md).
-- Rendering, text and icons: [ADR-0025](../adr/0025_rendering.md).
-- Event loop: [ADR-0026](../adr/0026_poll_loop.md).
-- D-Bus library: [ADR-0027](../adr/0027_dbus_crate.md).
-- Wayland and keyboard: [ADR-0028](../adr/0028_wayland_client.md).
+- Fuzzy matching: [ADR-0014](../adr/0014_fuzzy_matcher.md),
+  [ADR-0022](../adr/0022_frizbee.md).
+- Rendering, text and icons: [ADR-0008](../adr/0008_cpu_render.md),
+  [ADR-0025](../adr/0025_rendering.md).
+- Threads and event loop: [ADR-0009](../adr/0009_single_thread.md),
+  [ADR-0026](../adr/0026_poll_loop.md).
+- D-Bus: [ADR-0012](../adr/0012_dbus_ipc.md),
+  [ADR-0027](../adr/0027_dbus_crate.md).
+- Wayland and keyboard: [ADR-0028](../adr/0028_wayland_client.md),
+  [ADR-0023](../adr/0023_xkbcommon.md).
 - Paths without `dirs`: [ADR-0029](../adr/0029_std_paths.md).
-- Logging: [ADR-0030](../adr/0030_logging.md).
+- Logging: [ADR-0030](../adr/0030_logging.md),
+  crash output: [ADR-0032](../adr/0032_crash_output.md).
 
 ## Build profile
 
@@ -68,7 +74,7 @@ opt-level = 3
 lto = "fat"
 codegen-units = 1
 panic = "abort"
-strip = true
+strip = "debuginfo"     # Keep symbol names for backtraces
 ```
 
 ## Tooling
