@@ -3,4 +3,5 @@
 
 //! tynex library: the module tree shared by the binary and the tests.
 
+pub mod config;
 pub mod core;

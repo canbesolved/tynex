@@ -25,5 +25,7 @@ project adheres to
 - Core types (`WindowId`, `WindowInfo`, `Event`, `Action`, `Key`),
   title sanitizing, safe cut points and letter key assignment.
 - Switcher state machine with `State`, `View` and the `Mode` trait.
+- Config parsing, defaults and validation for `tynex.toml`, and the
+  default file written on first start (`serde`, `toml`).
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main
