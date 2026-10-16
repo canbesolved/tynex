@@ -101,6 +101,13 @@ and exits.
 
 - Config: `$XDG_CONFIG_HOME/tynex/`, else `~/.config/tynex/`.
 - Runtime: `$XDG_RUNTIME_DIR/tynex/` for the KWin script file.
+  - `$XDG_RUNTIME_DIR` is required. If it is unset, not a directory,
+    not owned by the user or open to other users, the daemon exits
+    with an error. There is no fallback to `/tmp`.
+  - `tynex/` is created with mode `0700`. An existing `tynex/` that is
+    a symlink, not owned by the user or open to others is rejected.
+  - Files are written atomically: a temporary file is created with
+    `O_EXCL` and mode `0600`, then renamed over the target.
 - Home comes from `std::env::home_dir`; no extra crate.
 
 ## Fonts
