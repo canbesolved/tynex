@@ -31,5 +31,7 @@ project adheres to
   an event queue, the adapter registry and an end-to-end test.
 - Hotkey mode: letters (with Latin layout fallback), arrows, `Enter`,
   `/` to search and `Esc`.
+- Renderer: canvas, text with font fallback, truncation at safe cut
+  points and highlights, and a dark theme (`tiny-skia`, `skrifa`).
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main

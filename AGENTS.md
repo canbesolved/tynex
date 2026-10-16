@@ -64,7 +64,7 @@ module you touch before changing code.
   underscores are not allowed. File names are lowercase, except
   conventional ones (`README.md`, `AGENTS.md`, `CLAUDE.md`,
   `CONTRIBUTING.md`, `ROADMAP.md`, `CHANGELOG.md`, `LICENSE`,
-  `LICENSES/MIT.txt`, `REUSE.toml`).
+  `LICENSES/*.txt`, `REUSE.toml`).
 - A source file must not exceed 250 lines. Split it into modules first.
 - Every source file (Rust, shell, JavaScript) starts with SPDX / REUSE
   identifiers, after the shebang if any. Other files (docs, config,

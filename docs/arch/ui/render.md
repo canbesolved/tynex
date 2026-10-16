@@ -7,7 +7,8 @@ Source: `src/ui/render/`. Portable: draws into a plain pixel buffer.
 ```text
 ui/render/
   canvas.rs     Canvas over a borrowed &mut [u8] pixel buffer
-  text.rs       Glyph rasterizing and cache (ab_glyph)
+  glyphs.rs     Font faces and glyph rasterizing (skrifa)
+  text.rs       Measuring, truncation, highlights, glyph cache
   icons.rs      Icon lookup, decoding and cache
   theme.rs      Colors, paddings, radii
 ```
@@ -21,8 +22,10 @@ ui/render/
 
 ## Text
 
-- `ab_glyph` rasterizes glyphs once per (glyph, size) and caches the
-  coverage masks; `tiny-skia` blends them.
+- `skrifa` reads glyph outlines and metrics; each outline becomes a
+  `tiny-skia` path and is rasterized into a coverage mask once per
+  (face, glyph, size). The canvas blends cached masks.
+- No kerning and no shaping: glyphs follow their advances.
 - Titles are truncated with an ellipsis to fit the row width,
   measured by glyph advances, following the truncation rules in
   [core.md](../core.md#text-and-languages).
@@ -40,15 +43,15 @@ ui/render/
   a `Windows` event brings a new title, never when the popup opens.
 - **Memory:** font files are mapped read-only with `rustix` (`mmap`),
   not read into the heap. A CJK font of 20 MB costs RAM only for the
-  pages actually used. `ab_glyph` loads font collections (`.ttc`) by
-  index.
+  pages actually used. `skrifa` loads font collections (`.ttc`) by
+  index. A `Face` needs its data for the whole run (`&'static [u8]`).
 - **No font at all:** the primary font's missing-glyph box is drawn.
 - **Scripts:** Latin, Cyrillic, Greek, Chinese, Japanese and Korean
   render correctly without shaping. Arabic, Hebrew and Indic scripts
   need shaping and right-to-left layout; until then they render
   imperfectly (see [ROADMAP.md](../../../ROADMAP.md)).
-- **Emoji:** `ab_glyph` draws outlines only, so color emoji show in
-  one color or as a box.
+- **Emoji:** only outlines are drawn, so color emoji show in one color
+  or as a box.
 
 ## Icons
 

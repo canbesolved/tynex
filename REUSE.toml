@@ -7,3 +7,15 @@ path = "**"
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 CanBeSolved (@canbesolved)"
 SPDX-License-Identifier = "MIT"
+
+# Test-only font, from Fedora's dejavu-sans-fonts 2.37 package
+# (DejaVuSans.ttf, unmodified). Not built into the binary.
+[[annotations]]
+path = "tests/fonts/dejavu_sans.ttf"
+precedence = "override"
+SPDX-FileCopyrightText = [
+  "2003 Bitstream, Inc.",
+  "2006 Tavmjong Bah",
+  "DejaVu changes are in the public domain",
+]
+SPDX-License-Identifier = "LicenseRef-DejaVu"
