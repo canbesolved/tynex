@@ -1,0 +1,7 @@
+# Rust Style Guide defaults, plus 80 columns and comment wrapping.
+# Requires nightly rustfmt for unstable options: cargo +nightly fmt.
+edition = "2024"
+max_width = 80
+comment_width = 80
+wrap_comments = true
+group_imports = "StdExternalCrate"
