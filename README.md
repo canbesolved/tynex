@@ -1,9 +1,15 @@
-# tynex
+<!-- markdownlint-disable MD033 MD041 -->
+<p align="center">
+  <img src="assets/icon.svg" alt="tynex icon" width="128">
+</p>
 
-![tynex icon](assets/icon.svg)
+<h1 align="center">tynex</h1>
 
-**T**hank **Y**ou, **NEX**t: efficient task switcher for Linux, macOS and
-Windows.
+<p align="center">
+  <b>T</b>hank <b>Y</b>ou, <b>NEX</b>t: efficient task switcher for
+  Linux, macOS and Windows.
+</p>
+<!-- markdownlint-enable MD033 MD041 -->
 
 Press a hotkey, see your windows in a centered list, press one letter,
 and you are there. No mouse, no scrolling, no waiting.
