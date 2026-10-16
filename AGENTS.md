@@ -120,7 +120,8 @@ fn sorted(windows: &[WindowInfo]) -> Vec<&WindowInfo> {
 
 ## Tooling
 
-Run before every commit. All must pass.
+Run before every commit. All must pass. CI
+(`.github/workflows/ci.yml`) runs the same checks on every pull request.
 
 ```bash
 cargo +nightly fmt --check

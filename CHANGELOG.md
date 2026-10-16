@@ -20,5 +20,7 @@ project adheres to
 - `README.md`, `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`,
   `ROADMAP.md` and this changelog.
 - MIT license and GitHub Sponsors funding config.
+- CI on GitHub Actions running all Tooling checks on each pull request,
+  and README badges.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main
