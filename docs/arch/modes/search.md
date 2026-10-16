@@ -52,7 +52,7 @@ Titles and queries can use any script. Rules from
   is needed.
 - **Input:** characters come from the active layout, including dead
   keys and compose. Chinese, Japanese and Korean need an input method;
-  see [ROADMAP.md](../../ROADMAP.md).
+  see [ROADMAP.md](../../../ROADMAP.md).
 
 ## Cost
 
