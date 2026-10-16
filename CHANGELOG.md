@@ -27,5 +27,7 @@ project adheres to
 - Switcher state machine with `State`, `View` and the `Mode` trait.
 - Config parsing, defaults and validation for `tynex.toml`, and the
   default file written on first start (`serde`, `toml`).
+- Mock window source with sample windows, the `WindowSource` trait,
+  an event queue, the adapter registry and an end-to-end test.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main

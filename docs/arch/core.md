@@ -14,6 +14,7 @@ core/
   switcher.rs   State machine (tests in switcher_tests.rs)
   view.rs       View and Row: what the presenter must draw
   keys.rs       Letter assignment
+  queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
 ```
 
@@ -64,8 +65,8 @@ events to it:
 ```rust
 /// Source of windows: a desktop environment or window manager.
 pub trait WindowSource {
-    fn start(&mut self, tx: EventTx) -> Result<()>;
-    fn activate(&self, id: &WindowId) -> Result<()>;
+    fn start(&mut self, tx: EventTx) -> Result<(), SourceError>;
+    fn activate(&mut self, id: &WindowId) -> Result<(), SourceError>;
 }
 
 /// Puts a rendered view on screen.
@@ -89,8 +90,15 @@ pub trait Mode {
 }
 ```
 
-`EventTx` is a thin wrapper over the event queue of the loop, so
-adapters never see the platform event loop directly.
+`EventTx` and `EventRx` (`queue::channel`) share one queue
+(`Rc<RefCell<VecDeque<Event>>>`). Adapters and IPC push events with
+`EventTx::send`; the event loop drains `EventRx::recv` into the
+switcher. Everything runs on one thread, so no locks are needed, and
+adapters never see the platform event loop. `SourceError` carries a
+message for the log.
+
+`WindowSource` and `Mode` exist; `Presenter` and `Layout` are added
+with their modules.
 
 ## Switcher state machine
 
