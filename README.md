@@ -9,6 +9,18 @@
   <code><b>T</b>hank <b>Y</b>ou, <b>NEX</b>t: efficient task switcher
   for Linux, macOS and Windows.</code>
 </p>
+
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT"
+    src="https://img.shields.io/github/license/canbesolved/tynex"></a>
+  <a href="Cargo.toml"><img alt="Rust 1.89+"
+    src="https://img.shields.io/badge/rust-1.89+-orange?logo=rust"></a>
+  <a href="https://api.reuse.software/info/github.com/canbesolved/tynex"><img
+    alt="REUSE compliant"
+    src="https://api.reuse.software/badge/github.com/canbesolved/tynex"></a>
+  <a href="https://github.com/sponsors/canbesolved"><img alt="Sponsor"
+    src="https://img.shields.io/badge/sponsor-❤-ea4aaa?logo=githubsponsors"></a>
+</p>
 <!-- markdownlint-enable MD033 MD041 -->
 
 Press a hotkey, see your windows in a centered list, press one letter,
