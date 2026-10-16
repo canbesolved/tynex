@@ -110,3 +110,14 @@ fn drawing_uses_text_and_highlight_colors() {
     assert!(all(split..w).any(|p| p == (true, true)));
     assert!(all(split..w).all(|p| p != (true, false)));
 }
+
+#[test]
+fn prepare_looks_fonts_up_before_drawing() {
+    let calls = Rc::new(Cell::new(0));
+    let mut t = Text::new(font(), Box::new(Counting(Rc::clone(&calls))));
+
+    t.prepare("微信");
+    assert_eq!(calls.get(), 2);
+    t.width("微信", SIZE); // Already resolved
+    assert_eq!(calls.get(), 2);
+}

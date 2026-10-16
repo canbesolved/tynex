@@ -5,26 +5,27 @@
 //!
 //! Run in a Wayland session: `cargo run --example popup_demo`. Press a
 //! letter or `Enter` to pick a window, arrows to move, `Esc` to close.
-//! Without input the popup closes after a few seconds.
+//! Without input the popup closes after a few seconds. Fonts come from
+//! fontconfig, with fallback for scripts the default font lacks.
 
 use std::time::{Duration, Instant};
 
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use tynex::adapters::mock::MockSource;
+use tynex::config::Font;
 use tynex::core::event::{Action, Event, ModeKind};
 use tynex::core::keys::DEFAULT_KEYS;
 use tynex::core::queue::channel;
 use tynex::core::switcher::Switcher;
 use tynex::core::traits::WindowSource;
 use tynex::modes::hotkey::HotkeyMode;
+use tynex::platform::linux::fonts::{FcFallback, default_face};
 use tynex::platform::linux::wayland::{PresenterEvent, WaylandPresenter};
 use tynex::ui::layouts::vertical_list::VerticalList;
 use tynex::ui::layouts::{Layout, Metrics, Paint};
-use tynex::ui::render::glyphs::{Face, NoFallback};
 use tynex::ui::render::text::Text;
 use tynex::ui::render::theme::Theme;
 
-static FONT: &[u8] = include_bytes!("../tests/fonts/dejavu_sans.ttf");
 const SHOW_FOR: Duration = Duration::from_secs(10);
 
 type App = Switcher<HotkeyMode, HotkeyMode>;
@@ -59,7 +60,7 @@ fn redraw(
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut presenter = WaylandPresenter::connect()?;
     let mut text =
-        Text::new(Face::new(FONT, 0).ok_or("bad font")?, Box::new(NoFallback));
+        Text::new(default_face(&Font::Auto)?, Box::new(FcFallback::default()));
     let theme = Theme::default();
     let (tx, rx) = channel();
     let mut source = MockSource::new();
@@ -70,6 +71,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         app.handle(event);
     }
     app.handle(Event::Show(ModeKind::Hotkey));
+    for row in app.view().ok_or("popup is not open")?.rows() {
+        text.prepare(&row.title); // Font fallback before the first frame
+    }
     redraw(&mut presenter, &app, &mut text, &theme);
 
     let end = Instant::now() + SHOW_FOR;

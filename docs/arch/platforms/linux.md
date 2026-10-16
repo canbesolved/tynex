@@ -140,10 +140,18 @@ and exits.
 
 ## Fonts
 
-`font = "auto"` runs `fc-match -f '%{file}' sans-serif` once at start.
-The result is cached. No fontconfig library is linked.
+`fonts.rs` loads the default face with `default_face`: the path from
+`font`, or `fc-match -f '%{file}:%{index}' sans-serif` for `auto`. No
+fontconfig library is linked; `fc-match` runs without a shell.
 
-Fallback fonts for characters missing from the default font are also
-found with `fc-match` (see
-[render.md](../ui/render.md#fonts-and-scripts)). Font files are
-memory-mapped with `rustix`.
+`FcFallback` implements `FontLookup`: for a character the loaded fonts
+lack it runs `fc-match` with `sans-serif:charset=<hex>` (see
+[render.md](../ui/render.md#fonts-and-scripts)). Files are cached by
+path and face index, so each is mapped once.
+
+- fontconfig keeps the named instance of a variable font in the upper
+  16 bits of the index (`262144` is instance 4 of face 0); only the
+  lower 16 bits are the face index.
+- Font files are mapped read-only and private with `rustix` and never
+  unmapped, because `Face` needs `&'static` data. Only used pages count
+  towards RAM.
