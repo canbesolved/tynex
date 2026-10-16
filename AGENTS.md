@@ -180,6 +180,10 @@ stable.
 
 ## Commits and pull requests
 
+- A pull request description has two sections:
+  - `## Summary`: what changes and why, as a short list;
+  - `## Checks`: each Tooling command run and its result, for example
+    `reuse lint`: compliant. Name checks that were skipped and why.
 - Do not add a `Co-Authored-By` trailer to commit messages.
 - Do not add a "Generated with Claude Code" footer (or any similar
   agent attribution) to pull request descriptions.
