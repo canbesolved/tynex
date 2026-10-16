@@ -53,7 +53,8 @@ Why each part was chosen, with rejected options, is recorded in ADRs:
   [ADR-0020](../adr/0020_markdown_style.md),
   [ADR-0024](../adr/0024_dependency_checks.md),
   [ADR-0037](../adr/0037_reuse_headers.md),
-  [ADR-0038](../adr/0038_ci_actions.md).
+  [ADR-0038](../adr/0038_ci_actions.md),
+  [ADR-0039](../adr/0039_prebuilt_deny.md).
 - Fuzzy matching: [ADR-0014](../adr/0014_fuzzy_matcher.md),
   [ADR-0022](../adr/0022_frizbee.md).
 - Rendering, text and icons: [ADR-0008](../adr/0008_cpu_render.md),
