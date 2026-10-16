@@ -116,6 +116,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "lexopt"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "803ec87c9cfb29b9d2633f20cba1f488db3fd53f2158b1024cbefb47ba05d413"
+
+[[package]]
 name = "libc"
 version = "0.2.190"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -367,6 +373,7 @@ checksum = "06bdbd8cfc056b8d2e2e85f29b56a3bdbecb527cef81eb39e3e7b98af4652770"
 name = "tynex"
 version = "0.1.0"
 dependencies = [
+ "lexopt",
  "log",
  "rustix",
  "serde",

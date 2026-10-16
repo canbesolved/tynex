@@ -4,8 +4,10 @@
 //! tynex library: the module tree shared by the binary and the tests.
 
 pub mod adapters;
+pub mod cli;
 pub mod config;
 pub mod core;
+pub mod daemon;
 pub mod logger;
 pub mod modes;
 pub mod platform;

@@ -45,8 +45,10 @@ The reasons behind each choice are in the
 
 ```text
 src/
-  main.rs              Entry, CLI parsing, wiring
+  main.rs              Entry: logger, command dispatch
   lib.rs               Module tree, shared by the binary and tests
+  cli.rs               Command line parsing with lexopt
+  daemon.rs            tynex daemon: config loading, wiring
   core/                Pure logic, traits, state machine
   config/              tynex.toml: load, defaults, validation
   logger.rs            stderr logger, level from TYNEX_LOG
