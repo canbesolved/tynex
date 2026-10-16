@@ -6,8 +6,8 @@
 <h1 align="center">tynex</h1>
 
 <p align="center">
-  <b>T</b>hank <b>Y</b>ou, <b>NEX</b>t: efficient task switcher for
-  Linux, macOS and Windows.
+  <code><b>T</b>hank <b>Y</b>ou, <b>NEX</b>t: efficient task switcher
+  for Linux, macOS and Windows.</code>
 </p>
 <!-- markdownlint-enable MD033 MD041 -->
 
