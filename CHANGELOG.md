@@ -41,5 +41,7 @@ project adheres to
   layout, key repeat for arrows and `Backspace`.
 - System fonts via `fc-match` with per-character fallback, so titles in
   scripts like Chinese render; font files are memory-mapped.
+- Logger: `TYNEX_LOG` levels, one line per record on stderr, and crash
+  output with a backtrace.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main
