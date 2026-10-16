@@ -14,7 +14,9 @@ platform/linux/
     state.rs      Dispatch state: globals, popup, events
     surface.rs    Layer-shell surface setup, commit and teardown
     buffer.rs     wl_shm double buffer on a memfd
-    keyboard.rs   xkb keymap, native key -> core Key
+    input.rs      wl_seat and wl_keyboard events
+    keyboard.rs   xkb keymap, compose, repeat, native key -> core Key
+    error.rs      PresenterError
   dbus.rs         Shared D-Bus connection, dispatch, calls
   dbus_ipc.rs     DbusIpc: impl IpcServer, IpcClient
   fonts.rs        fc-match lookup: default and per-character fallback
@@ -49,7 +51,8 @@ protocol. No client toolkit.
   `set_buffer_scale` are used. A `Scale` event asks for a redraw.
 
 Try it in a Wayland session: `cargo run --example popup_demo` shows the
-mock windows for four seconds.
+mock windows; a letter or `Enter` prints the chosen window, `Esc`
+closes, and without input it closes after ten seconds.
 
 ## Buffers
 
@@ -63,18 +66,28 @@ mock windows for four seconds.
 
 ## Keyboard
 
-- The compositor sends the keymap as a file descriptor. It is mapped
-  with `rustix` and loaded with `xkbcommon`
+- `wl_seat` (version 4 or later, for repeat info) is bound at start;
+  its keyboard is taken when the seat has one. Without a seat the
+  popup still shows but ignores keys.
+- The compositor sends the keymap as a file descriptor. It is read
+  with `pread` (no mapping, no `unsafe`) and loaded with `xkbcommon`
   (`Keymap::new_from_string`, default features off).
 - Key events become keysyms and UTF-8 text with the current layout, so
-  non-QWERTY layouts work, then `core::Key`.
+  non-QWERTY layouts work, then `core::Key`: `Enter` (also keypad),
+  `Esc`, `Tab`, arrows, `Backspace`, or `Char` when the text is one
+  printable character. Ctrl combinations produce no `Char`.
 - Dead keys and compose sequences (`´` then `e` gives `é`) use the
-  `xkbcommon` compose table for the user's locale.
-- For `Key::Char.latin`, the keysym of the same keycode is read from
-  the first layout group that produces Latin letters
+  `xkbcommon` compose table for the locale in `LC_ALL`, `LC_CTYPE` or
+  `LANG`.
+- For `Key::Char.latin`, the level-1 keysym of the same keycode is read
+  from the first layout where it is an ASCII letter
   (`key_get_syms_by_level`).
 - Key repeat, for arrows and `Backspace` only, uses the rate and delay
-  sent by the compositor and the poll timeout.
+  sent by the compositor. `next_deadline` gives the poll timeout and
+  `dispatch` reports due repeats; leaving focus or hiding stops it.
+
+Tests use real keymaps from the system's XKB data (`us,ru`), so CI
+installs `libxkbcommon-dev`.
 
 ## Event loop
 

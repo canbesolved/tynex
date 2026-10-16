@@ -37,5 +37,7 @@ project adheres to
   bar.
 - Wayland presenter: layer-shell popup, shared memory double buffer,
   fractional scale, and a `popup_demo` example.
+- Keyboard: `xkbcommon` keymaps and compose, Latin fallback for any
+  layout, key repeat for arrows and `Backspace`.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main
