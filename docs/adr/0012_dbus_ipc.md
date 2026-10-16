@@ -1,7 +1,7 @@
 ---
 status: "accepted"
 date: "2026-10-15"
-decision-makers: "CanBesolved"
+decision-makers: "CanBeSolved"
 ---
 # D-Bus for IPC on Linux
 

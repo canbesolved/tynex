@@ -1,7 +1,7 @@
 ---
 status: "accepted, amended by ADR-0036"
 date: "2026-10-15"
-decision-makers: "CanBesolved"
+decision-makers: "CanBeSolved"
 ---
 # Event loop with rustix poll
 

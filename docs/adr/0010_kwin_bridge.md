@@ -1,7 +1,7 @@
 ---
 status: "superseded by ADR-0034"
 date: "2026-10-15"
-decision-makers: "CanBesolved"
+decision-makers: "CanBeSolved"
 ---
 # KWin script bridge for KDE
 

@@ -1,7 +1,7 @@
 ---
 status: "accepted"
 date: "2026-10-16"
-decision-makers: "CanBesolved"
+decision-makers: "CanBeSolved"
 ---
 # No idle wakeups
 
