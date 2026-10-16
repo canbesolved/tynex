@@ -21,6 +21,13 @@ pub struct Area {
     pub h: f32,
 }
 
+impl Area {
+    #[must_use]
+    pub const fn new(x: f32, y: f32, w: f32, h: f32) -> Self {
+        Self { x, y, w, h }
+    }
+}
+
 /// Drawing surface over a presenter's buffer, row by row, 4 bytes each.
 pub struct Canvas<'a> {
     pixmap: PixmapMut<'a>,

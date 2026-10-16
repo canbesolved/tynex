@@ -33,5 +33,7 @@ project adheres to
   `/` to search and `Esc`.
 - Renderer: canvas, text with font fallback, truncation at safe cut
   points and highlights, and a dark theme (`tiny-skia`, `skrifa`).
+- Vertical list layout: key badges, selection, scrolling and a search
+  bar.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main

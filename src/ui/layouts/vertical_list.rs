@@ -1,0 +1,222 @@
+// SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
+// SPDX-License-Identifier: MIT
+
+//! Vertical list: one row per window, key badge, icon slot and title.
+
+use crate::core::event::ModeKind;
+use crate::core::view::{Row, View};
+use crate::ui::layouts::{Layout, Metrics, Paint, Size};
+use crate::ui::render::canvas::{Area, Rgba};
+use crate::ui::render::text::Style;
+use crate::ui::render::theme::Theme;
+
+/// The default layout.
+#[derive(Debug, Default)]
+pub struct VerticalList;
+
+/// Geometry derived from the metrics, in physical pixels.
+struct Grid {
+    pad: f32,   // Outer padding
+    row_h: f32, // Row height
+    badge: f32, // Key badge side
+    icon: f32,  // Icon slot side
+    gap: f32,   // Space between parts of a row
+    font: f32,  // Text size
+}
+
+impl Grid {
+    fn new(metrics: &Metrics, theme: &Theme) -> Self {
+        let font = metrics.font_size * metrics.scale;
+
+        Self {
+            pad: theme.padding * metrics.scale,
+            row_h: (font * 2.0).round(),
+            badge: (font * 1.4).round(),
+            icon: (font * 1.5).round(),
+            gap: (font * 0.6).round(),
+            font,
+        }
+    }
+
+    /// Height of the search bar and its separator line.
+    fn search_bar(&self, mode: ModeKind) -> f32 {
+        if mode == ModeKind::Search {
+            self.row_h + 1.0
+        } else {
+            0.0
+        }
+    }
+}
+
+impl Layout for VerticalList {
+    fn size(&self, view: &View<'_>, metrics: &Metrics, theme: &Theme) -> Size {
+        let grid = Grid::new(metrics, theme);
+        let rows = view.len().clamp(1, metrics.max_rows.max(1)) as f32;
+        let height =
+            2.0 * grid.pad + grid.search_bar(view.mode) + rows * grid.row_h;
+
+        Size {
+            width: (metrics.width * metrics.scale).round() as u32,
+            height: height.round() as u32,
+        }
+    }
+
+    fn draw(
+        &self,
+        view: &View<'_>,
+        metrics: &Metrics,
+        paint: &mut Paint<'_, '_>,
+    ) {
+        let grid = Grid::new(metrics, paint.theme);
+        let width = paint.canvas.width() as f32;
+        let height = paint.canvas.height() as f32;
+        let radius = paint.theme.radius * metrics.scale;
+        let inner = width - 2.0 * grid.pad;
+
+        paint.canvas.clear(Rgba(0, 0, 0, 0));
+        paint.canvas.fill_rounded_rect(
+            Area::new(0.0, 0.0, width, height),
+            radius,
+            paint.theme.border,
+        );
+        paint.canvas.fill_rounded_rect(
+            Area::new(1.0, 1.0, width - 2.0, height - 2.0),
+            radius - 1.0,
+            paint.theme.background,
+        );
+
+        let mut top = grid.pad;
+
+        if view.mode == ModeKind::Search {
+            let bar = Area::new(
+                grid.pad + grid.gap,
+                top,
+                inner - 2.0 * grid.gap,
+                grid.row_h,
+            );
+            let query = format!("/ {}", view.query);
+
+            text_line(paint, &grid, &query, bar, &[]);
+            top += grid.row_h;
+            paint.canvas.fill_rect(
+                Area::new(grid.pad, top, inner, 1.0),
+                paint.theme.border,
+            );
+            top += 1.0;
+        }
+
+        // Scroll so the selected row is always visible.
+        let max = metrics.max_rows.max(1);
+        let first = (view.selected + 1).saturating_sub(max);
+        let badges = view.mode == ModeKind::Hotkey;
+
+        for (index, row) in view.rows().enumerate().skip(first).take(max) {
+            let area = Area::new(grid.pad, top, inner, grid.row_h);
+
+            if index == view.selected {
+                paint.canvas.fill_rounded_rect(
+                    area,
+                    radius / 2.0,
+                    paint.theme.selected,
+                );
+            }
+            draw_row(paint, &grid, row, area, badges);
+            top += grid.row_h;
+        }
+    }
+}
+
+/// Draws one row: key badge (hotkey mode), icon slot, title.
+fn draw_row(
+    paint: &mut Paint<'_, '_>,
+    grid: &Grid,
+    row: &Row,
+    area: Area,
+    badge: bool,
+) {
+    let mut left = area.x + grid.gap;
+
+    if badge {
+        let side = grid.badge;
+        let rect = Area::new(left, area.y + (area.h - side) / 2.0, side, side);
+
+        paint
+            .canvas
+            .fill_rounded_rect(rect, side / 4.0, paint.theme.badge);
+        if let Some(key) = row.key {
+            let label = key.to_string();
+            let label_w = paint.text.width(&label, grid.font);
+            let centered = Area::new(
+                rect.x + (side - label_w) / 2.0,
+                rect.y,
+                label_w,
+                side,
+            );
+            let color = paint.theme.badge_text;
+
+            text_colored(paint, grid, &label, centered, color);
+        }
+        left += side + grid.gap;
+    }
+
+    left += grid.icon + grid.gap; // Icon slot; icons are drawn from step 5 on
+
+    let title =
+        Area::new(left, area.y, area.x + area.w - grid.gap - left, area.h);
+
+    text_line(paint, grid, &row.title, title, &row.highlights);
+}
+
+/// Draws `s` in the text color, vertically centered in `area`.
+fn text_line(
+    paint: &mut Paint<'_, '_>,
+    grid: &Grid,
+    s: &str,
+    area: Area,
+    highlights: &[std::ops::Range<usize>],
+) {
+    let style = Style {
+        size: grid.font,
+        color: paint.theme.text,
+        highlight: paint.theme.highlight,
+        highlights,
+    };
+    let base = baseline(paint, grid.font, area);
+
+    paint
+        .text
+        .draw(paint.canvas, s, (area.x, base), area.w, &style);
+}
+
+/// Draws `s` in `color`, vertically centered in `area`.
+fn text_colored(
+    paint: &mut Paint<'_, '_>,
+    grid: &Grid,
+    s: &str,
+    area: Area,
+    color: Rgba,
+) {
+    let style = Style {
+        size: grid.font,
+        color,
+        highlight: color,
+        highlights: &[],
+    };
+    let base = baseline(paint, grid.font, area);
+
+    paint
+        .text
+        .draw(paint.canvas, s, (area.x, base), area.w, &style);
+}
+
+/// Returns the baseline that centers text of `size` in `area`.
+fn baseline(paint: &Paint<'_, '_>, size: f32, area: Area) -> f32 {
+    let (ascent, descent) = paint.text.metrics(size);
+    let center = area.y + area.h / 2.0;
+
+    (center + f32::midpoint(ascent, descent)).round()
+}
+
+#[cfg(test)]
+#[path = "vertical_list_tests.rs"]
+mod tests;
