@@ -43,5 +43,8 @@ project adheres to
   scripts like Chinese render; font files are memory-mapped.
 - Logger: `TYNEX_LOG` levels, one line per record on stderr, and crash
   output with a backtrace.
+- Command line (`daemon`, `show`, `hide`, `quit`, `--help`,
+  `--version`); `tynex daemon` loads the config and exits with code 78
+  on errors.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main

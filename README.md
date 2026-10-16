@@ -89,6 +89,7 @@ Packages for Debian, Ubuntu and Arch are listed in
 tynex daemon             # Start the background service
 tynex show               # Open the switcher (hotkey mode)
 tynex show --mode search # Open the switcher in search mode
+tynex hide               # Close the switcher
 tynex quit               # Stop the background service
 ```
 
