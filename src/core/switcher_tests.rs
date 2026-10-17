@@ -7,7 +7,7 @@ use super::*;
 use crate::core::window::WindowId;
 
 /// Letter keys activate; `Esc` closes; arrows move.
-struct Letters;
+pub(super) struct Letters;
 
 impl Mode for Letters {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
@@ -26,7 +26,7 @@ impl Mode for Letters {
 }
 
 /// Typing filters titles by substring.
-struct Filter;
+pub(super) struct Filter;
 
 impl Mode for Filter {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
@@ -56,12 +56,12 @@ fn window(id: &str, title: &str) -> WindowInfo {
 }
 
 /// Windows whose ids are also their titles, most recent first.
-fn list(ids: &[&str]) -> Vec<WindowInfo> {
+pub(super) fn list(ids: &[&str]) -> Vec<WindowInfo> {
     ids.iter().map(|id| window(id, id)).collect()
 }
 
 fn switcher(ids: &[&str]) -> Switcher<Letters, Filter> {
-    let mut sw = Switcher::new("asd", Letters, Filter);
+    let mut sw = Switcher::new("asd", HotkeyAction::Hide, Letters, Filter);
 
     assert_eq!(sw.handle(Event::Windows(list(ids))), Action::None);
     sw
@@ -119,7 +119,7 @@ fn letter_activates_and_closes() {
 
 #[test]
 fn titles_are_sanitized_on_arrival() {
-    let mut sw = Switcher::new("a", Letters, Filter);
+    let mut sw = Switcher::new("a", HotkeyAction::Hide, Letters, Filter);
 
     sw.handle(Event::Windows(vec![window("x", " a\u{202E}\tb ")]));
     sw.handle(Event::Show(ModeKind::Hotkey));
@@ -161,7 +161,7 @@ fn update_while_open_keeps_keys_and_selection() {
 
 #[test]
 fn letters_freed_while_open_are_reused_after_close() {
-    let mut sw = Switcher::new("asdfh", Letters, Filter);
+    let mut sw = Switcher::new("asdfh", HotkeyAction::Hide, Letters, Filter);
 
     sw.handle(Event::Windows(list(&["x", "a", "b"])));
     sw.handle(Event::Show(ModeKind::Hotkey)); // a, b, x get a, s, d
@@ -227,7 +227,7 @@ impl Mode for Slash {
 
 #[test]
 fn mode_switch_from_a_mode_refreshes_the_new_mode() {
-    let mut sw = Switcher::new("asd", Slash, Filter);
+    let mut sw = Switcher::new("asd", HotkeyAction::Hide, Slash, Filter);
     let list = ["x", "firefox", "kate"].iter().map(|id| window(id, id));
 
     sw.handle(Event::Windows(list.collect()));

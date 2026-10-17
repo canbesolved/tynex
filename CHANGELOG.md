@@ -52,6 +52,10 @@ project adheres to
   most recently used order and registers `Meta+Tab`, and windows are
   activated through KWin's window search. `desktop = "auto"` picks it
   on KDE. Only KWin may call the adapter's D-Bus object.
+- `hotkey_action`: pressing the hotkey again while the popup is open
+  switches to the previous window (`"last"`, default) or hides it
+  (`"hide"`).
+- The popup closes when it loses keyboard focus.
 
 ### Changed
 

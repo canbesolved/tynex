@@ -72,7 +72,12 @@ fn start(config: Config) -> Result<(), String> {
     log::info!("daemon started, desktop {:?}", config.desktop);
 
     let mut parts = Parts {
-        app: Switcher::new(&config.keys, HotkeyMode, HotkeyMode),
+        app: Switcher::new(
+            &config.keys,
+            config.hotkey_action,
+            HotkeyMode,
+            HotkeyMode,
+        ),
         source,
         presenter,
         bus,

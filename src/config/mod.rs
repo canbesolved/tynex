@@ -16,6 +16,7 @@ pub use crate::config::error::ConfigError;
 pub use crate::config::file::{Loaded, load_or_create};
 use crate::core::event::ModeKind;
 use crate::core::keys::DEFAULT_KEYS;
+use crate::core::switcher::HotkeyAction;
 
 /// The default config file, written on first start.
 pub const DEFAULT_TOML: &str = include_str!("default.toml");
@@ -57,6 +58,7 @@ pub struct AppearanceConfig {
 pub struct Config {
     pub desktop: Desktop,
     pub mode: ModeKind,
+    pub hotkey_action: HotkeyAction,
     pub layout: Layout,
     pub keys: String,
     pub appearance: AppearanceConfig,
@@ -67,6 +69,7 @@ impl Default for Config {
         Self {
             desktop: Desktop::Auto,
             mode: ModeKind::Hotkey,
+            hotkey_action: HotkeyAction::Last,
             layout: Layout::VerticalList,
             keys: DEFAULT_KEYS.into(),
             appearance: AppearanceConfig {

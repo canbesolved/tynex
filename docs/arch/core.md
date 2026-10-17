@@ -116,7 +116,9 @@ nothing else in the crate. `Presenter` is added with its module.
 - `Hidden`: only `Windows` updates the cached list and the pinned
   letters; keys are ignored.
 - `Show`: snapshot the cached list with its pinned letters, build
-  `State`.
+  `State`. A `Show` while visible is a second hotkey press: it closes
+  the popup, or with `HotkeyAction::Last` returns `Activate` for
+  the previous window.
 - `Visible`: keys go to the active `Mode`. `Tab` swaps modes; a mode
   may also switch by setting `state.mode`, and the switcher then calls
   the new mode's `refresh`. A mode returning `Activate` or `Close`

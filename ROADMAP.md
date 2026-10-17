@@ -33,8 +33,8 @@ Target: KDE Plasma 6 on Wayland.
   `strip_app_name = true` (default) in `[appearance]` turns
   `Café — Firefox` into `Café` (separators ` — `, ` – `, ` - `).
 - [ ] Hotkey pressed again while the popup is open:
-  `hotkey_action = "close"` (default) closes it, `"last_app"` switches
-  to the previous window.
+  `hotkey_action = "last"` (default) switches to the previous window,
+  `"hide"` closes it.
 - [ ] Pinned keys: a window keeps its letter until it closes, so
   letters no longer move when windows are switched. Rows stay in MRU
   order; a freed letter goes to the most recent window without one

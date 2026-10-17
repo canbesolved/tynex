@@ -38,6 +38,16 @@ fn missing_keys_use_defaults() {
 }
 
 #[test]
+fn hotkey_action_values() {
+    let action = |text| parse(text, &no_font).map(|c| c.hotkey_action);
+
+    assert_eq!(action("hotkey_action = \"last\"\n"), Ok(HotkeyAction::Last));
+    assert!(
+        errors("hotkey_action = \"toggle\"\n")[0].contains("unknown variant")
+    );
+}
+
+#[test]
 fn unknown_key_is_reported_with_position_and_hint() {
     let msg = &errors("mode = \"hotkey\"\nadaptr = \"kde\"\n")[0];
 

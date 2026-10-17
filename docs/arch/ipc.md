@@ -17,6 +17,9 @@ hotkey.
 | `tynex hide`               | `Hide()`         | Close the popup           |
 | `tynex quit`               | `Quit()`         | Stop the daemon           |
 
+While the popup is open, both `show` forms act as a second hotkey
+press and follow `hotkey_action` ([config.md](config.md)).
+
 ## Interface
 
 `src/ipc/` is portable: `Request` (`Show(Option<ModeKind>)`, `Hide`,

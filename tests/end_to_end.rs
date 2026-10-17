@@ -60,7 +60,12 @@ fn mock_source_drives_the_switcher() {
     let config = config::parse(text, &|_| false).expect("valid config");
     let mut source = mock(config.desktop);
     let (tx, rx) = channel();
-    let mut sw = Switcher::new(&config.keys, HotkeyMode, HotkeyMode);
+    let mut sw = Switcher::new(
+        &config.keys,
+        config.hotkey_action,
+        HotkeyMode,
+        HotkeyMode,
+    );
 
     source.start(tx).expect("mock starts");
     pump(&rx, &mut sw);
@@ -100,7 +105,12 @@ fn titles_from_the_source_are_sanitized() {
     let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
     let mut source = mock(config.desktop);
     let (tx, rx) = channel();
-    let mut sw = Switcher::new(&config.keys, HotkeyMode, HotkeyMode);
+    let mut sw = Switcher::new(
+        &config.keys,
+        config.hotkey_action,
+        HotkeyMode,
+        HotkeyMode,
+    );
 
     source.start(tx).unwrap();
     pump(&rx, &mut sw);
