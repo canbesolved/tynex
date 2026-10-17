@@ -47,6 +47,15 @@ Target: KDE Plasma 6 on Wayland.
 - [ ] Performance: holding `Up` or `Down` moves the selection one row
   per key repeat, without skipping rows, and each frame is drawn
   before the next repeat.
+- [ ] Faster, more responsive and smoother UI overall: the popup opens,
+  redraws and reacts to every key without visible delay.
+
+### 0.1.7
+
+- [ ] Default key order `keys = "asdfjkl;qweruipghty"`: the home row
+  (`asdfjkl;`) first, then `qweruip`, then the index finger reaches
+  `ghty`. `keys` then accepts `;` besides lowercase letters, and `;`
+  also works when a non-Latin layout is active.
 
 ## Next: 0.2.0
 
