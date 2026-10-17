@@ -59,7 +59,9 @@ Planned environments and features are listed in the
 
 ## Build from source
 
-There are no prebuilt packages yet.
+There are no prebuilt packages yet. Binaries for Linux (x86_64,
+arm64) are planned for 0.1.1, and for macOS (Apple silicon) and
+Windows (x64, arm64) with their ports (see the [roadmap](ROADMAP.md)).
 
 Requirements:
 

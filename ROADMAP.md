@@ -24,6 +24,8 @@ Target: KDE Plasma 6 on Wayland.
 ### 0.1.1
 
 - [ ] Search mode: fuzzy filtering while typing.
+- [ ] Prebuilt binaries on each GitHub release for Linux x86_64 and
+  arm64 ([ADR-0042](docs/adr/0042_release_binaries.md)).
 
 ### 0.1.2
 
@@ -147,6 +149,8 @@ Platform services:
 Project:
 
 - [ ] CI: `cargo check` for macOS and Windows targets.
+- [ ] Prebuilt binaries for macOS on Apple silicon and Windows x64 and
+  arm64, added with each port (ADR-0042).
 
 [layer-shell]: https://wayland.app/protocols/wlr-layer-shell-unstable-v1
 [wlr-toplevel]:
