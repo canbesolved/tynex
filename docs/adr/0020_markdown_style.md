@@ -1,5 +1,5 @@
 ---
-status: "accepted"
+status: "accepted, amended by ADR-0043"
 date: "2026-10-15"
 decision-makers: "CanBeSolved"
 ---
