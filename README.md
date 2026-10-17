@@ -30,8 +30,8 @@
 Press a hotkey, see your windows in a centered list, press one letter,
 and you are there. No mouse, no scrolling, no waiting.
 
-> Status: 0.1.2, for KDE Plasma 6 on Wayland. App icons and packages
-> follow in 0.1.x (see the [roadmap](ROADMAP.md)).
+> Status: 0.1.2, for KDE Plasma 6 on Wayland. App icons follow in
+> 0.1.3 (see the [roadmap](ROADMAP.md)).
 
 ## Features
 
