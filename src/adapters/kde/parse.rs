@@ -3,6 +3,8 @@
 
 //! Decodes the window list sent by the `KWin` script.
 
+use std::collections::HashSet;
+
 use crate::core::window::{WindowId, WindowInfo};
 
 /// Separates windows.
@@ -12,9 +14,16 @@ const RECORD: char = '\x1e';
 const FIELD: char = '\x1f';
 
 /// Turns `<uuid> US <desktop file> US <class> US <caption> RS ...` into
-/// windows, in the order sent. Malformed records are skipped.
+/// windows, in the order sent. Malformed records and repeats of an id
+/// are skipped.
 pub fn parse(payload: &str) -> Vec<WindowInfo> {
-    payload.split(RECORD).filter_map(record).collect()
+    let mut seen = HashSet::new();
+
+    payload
+        .split(RECORD)
+        .filter_map(record)
+        .filter(|w| seen.insert(w.id.clone()))
+        .collect()
 }
 
 /// Decodes one record: exactly four fields and a non-empty id.
@@ -103,5 +112,19 @@ mod tests {
         );
 
         assert_eq!(parse(&payload), [window(UUID_B, "a", "A")]);
+    }
+
+    #[test]
+    fn repeated_ids_keep_the_first_record() {
+        let payload = format!(
+            "{UUID_A}\x1fa\x1fa\x1fNew\x1e\
+             {UUID_B}\x1fb\x1fb\x1fOld\x1e\
+             {{{UUID_A}}}\x1fa\x1fa\x1fNew"
+        );
+
+        assert_eq!(
+            parse(&payload),
+            [window(UUID_A, "a", "New"), window(UUID_B, "b", "Old")]
+        );
     }
 }
