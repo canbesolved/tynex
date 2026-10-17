@@ -29,28 +29,31 @@ Target: KDE Plasma 6 on Wayland.
 
 ### 0.1.4
 
-- [ ] Packaging: systemd user unit and autostart entry.
+- [ ] Row order: `sort_by = "key"` (default), `"app"` or `"recently"`.
+  - `key`: rows in the order of their letters in `keys`, so a row
+    never moves. A new window takes the first free letter and shows at
+    that letter's place, also in the middle of the list; windows
+    without a letter come last.
+  - `app`: rows grouped by app name.
+  - `recently`: most recently used first, the order before 0.1.4.
+
+### 0.1.5
+
+- [ ] Popup rows in columns:
+  - Hotkey mode: key, icon, app name, title.
+  - Search mode: icon, app name, title.
+  - `show_app = false` (default) in `[appearance]` hides the app name
+    column. It replaces `title_format`, which is removed: a breaking
+    config change.
+  - Titles are stripped of the app name (`strip_app_name`).
+  - Column widths follow `width` in proportion; no new keys. Longer
+    text is cut to fit.
 
 ## Next: 0.2.0
 
-- [ ] Hide app icons: `show_icons = false` in `[appearance]`.
 - [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
   with a custom title, for example `[apps.firefox]` with
   `title = "Web"`.
-- [ ] `tynex reload`: re-read the config without restarting. An invalid
-  file is reported and the running config stays in use.
-
-## Later
-
-Layouts and modes:
-
-- [ ] More layouts: grid, horizontal strip.
-- [ ] More switching modes.
-- [ ] Per-app keys: `key = "w"` in `[apps.<app_id>]` reserves a letter
-  for the app's window; automatic pinning skips reserved letters.
-
-Launcher:
-
 - [ ] `launcher` module: find installed GUI apps and show them in the
   list with icon and name, filtered with fuzzy search, to start an app
   from the same popup.
@@ -62,9 +65,43 @@ Launcher:
     window" entry. An app that is not running has one launch entry.
   - Later sources: macOS app bundles, Windows Start menu shortcuts.
 
+## Later
+
+Layouts and modes:
+
+- [ ] More layouts: grid, horizontal strip.
+- [ ] More switching modes.
+- [ ] Per-app keys: `key = "w"` in `[apps.<app_id>]` reserves a letter
+  for the app's window; automatic pinning skips reserved letters.
+- [ ] Close windows from the popup, like `Alt+F4`: the `x` key or a
+  mouse click closes the selected window.
+
+Panel:
+
+- [ ] Dock or panel with useful information, to replace the system
+  panel: time and date, battery percentage.
+
+Configuration:
+
+- [ ] `tynex reload`: re-read the config without restarting. An invalid
+  file is reported and the running config stays in use.
+
+Themes:
+
+- [ ] Theme options: opacity, background, selection, search highlight
+  and text colors, border width and color, key badge background and
+  text colors, font size and style.
+- [ ] Light theme next to the default dark one.
+- [ ] Custom themes in `~/.config/tynex/tynex.theme`, chosen with
+  `dark_theme = "tynex.theme"` and `light_theme = "tynex.theme"`; one
+  file may hold both a dark and a light variant.
+- [ ] Follow the system: switch between the dark and light theme when
+  the desktop color scheme changes.
+- [ ] Import colors from the desktop color scheme.
+
 Look:
 
-- [ ] Theme options in the config and import of desktop colors.
+- [ ] Hide app icons: `show_icons = false` in `[appearance]`.
 - [ ] Text shaping and right-to-left layout for Arabic, Hebrew and
   Indic scripts (`rustybuzz`).
 - [ ] Color emoji in titles.
@@ -133,6 +170,7 @@ Platform services:
 
 Project:
 
+- [ ] Packaging: systemd user unit and autostart entry.
 - [ ] CI: `cargo check` for macOS and Windows targets.
 - [ ] Own fuzzy matcher in place of `frizbee`, to shrink the binary by
   about 3.7 MB, if it can match its ranking and typo tolerance
