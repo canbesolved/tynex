@@ -53,4 +53,9 @@ project adheres to
   activated through KWin's window search. `desktop = "auto"` picks it
   on KDE. Only KWin may call the adapter's D-Bus object.
 
+### Changed
+
+- Letter keys are pinned: a window keeps its letter until it closes,
+  instead of letters following most recently used order (ADR-0041).
+
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main

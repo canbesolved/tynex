@@ -16,9 +16,9 @@ Source: `src/modes/hotkey.rs`. Default mode.
 ## Notes
 
 - Keys come from `keys.rs` in the core, default order
-  `asdfhjklgqwertyuiop`: home row first.
-- The first key (`a`) points to the previously used window, so
-  hotkey then `a` acts like a quick Alt+Tab.
+  `asdfhjklgqwertyuiop`: home row first. A window keeps its key until
+  it closes, so a known window can be switched to without looking
+  (see [core.md](../core.md#key-assignment)).
 - A key matches by the produced character first (`Key::Char.text`),
   then by the same physical key in the first Latin layout
   (`Key::Char.latin`). With a Russian layout active, the key that

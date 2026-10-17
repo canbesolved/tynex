@@ -3,34 +3,28 @@
 
 //! Switcher state machine: open, refresh, route keys, close.
 
-use std::collections::HashMap;
-
 use crate::core::event::{Action, Event, Key, ModeKind};
-use crate::core::keys;
+use crate::core::keys::Pins;
 use crate::core::state::State;
 use crate::core::text::sanitize_title;
 use crate::core::traits::Mode;
 use crate::core::view::{Row, View};
-use crate::core::window::{WindowId, WindowInfo};
+use crate::core::window::WindowInfo;
 
 /// The switcher, generic over its two modes for static dispatch.
 pub struct Switcher<H, S> {
-    keys: String,
-    next_key: usize, // Next unused letter in `keys` while open
+    pins: Pins,               // Letter of each window until it closes
     windows: Vec<WindowInfo>, // Cached list, most recently used first
-    state: Option<State>, // Some while the popup is open
+    state: Option<State>,     // Some while the popup is open
     hotkey: H,
     search: S,
 }
 
 impl<H: Mode, S: Mode> Switcher<H, S> {
     /// Creates a hidden switcher with the key string from the config.
-    pub fn new(keys: impl Into<String>, hotkey: H, search: S) -> Self {
-        let keys = keys.into();
-
+    pub fn new(keys: &str, hotkey: H, search: S) -> Self {
         Self {
-            keys,
-            next_key: 0,
+            pins: Pins::new(keys),
             windows: Vec::new(),
             state: None,
             hotkey,
@@ -62,31 +56,13 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
                 ..w
             })
             .collect();
+        self.pins.update(&self.windows, self.state.is_some());
 
         let Some(old) = self.state.take() else {
             return Action::None;
         };
-
-        // Keys stay with their windows while open. New windows get the
-        // letters after the last one used.
-        let kept: HashMap<&WindowId, Option<char>> =
-            old.rows.iter().map(|r| (&r.id, r.key)).collect();
-        let mut letters = self.keys.chars().skip(self.next_key);
-        let mut rows = Vec::with_capacity(self.windows.len());
-
-        for w in active_last(&self.windows) {
-            let key = kept.get(&w.id).copied().unwrap_or_else(|| {
-                let next = letters.next();
-
-                self.next_key += usize::from(next.is_some());
-                next
-            });
-
-            rows.push(row(w, key));
-        }
-
         let selected = old.selected_id().cloned();
-        let mut state = State::new(old.mode, rows);
+        let mut state = State::new(old.mode, self.rows());
 
         state.query = old.query;
         self.refresh(&mut state);
@@ -100,16 +76,7 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
             open.mode = mode;
             open
         } else {
-            let letters = keys::assign(self.windows.len(), &self.keys);
-
-            self.next_key = self.windows.len().min(self.keys.chars().count());
-
-            let rows = active_last(&self.windows)
-                .zip(letters)
-                .map(|(w, key)| row(w, key))
-                .collect();
-
-            State::new(mode, rows)
+            State::new(mode, self.rows())
         };
 
         self.refresh(&mut state);
@@ -143,7 +110,9 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
             action
         };
 
-        if !matches!(action, Action::Activate(_) | Action::Close) {
+        if matches!(action, Action::Activate(_) | Action::Close) {
+            self.closed();
+        } else {
             self.state = Some(state);
         }
         action
@@ -151,9 +120,24 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
 
     fn close(&mut self) -> Action {
         match self.state.take() {
-            Some(_) => Action::Close,
+            Some(_) => {
+                self.closed();
+                Action::Close
+            }
             None => Action::None,
         }
+    }
+
+    /// Hands out the letters held while the popup was open.
+    fn closed(&mut self) {
+        self.pins.update(&self.windows, false);
+    }
+
+    /// Builds the rows, active window last, each with its pinned letter.
+    fn rows(&self) -> Vec<Row> {
+        active_last(&self.windows)
+            .map(|w| row(w, self.pins.get(&w.id)))
+            .collect()
     }
 
     fn refresh(&mut self, state: &mut State) {
