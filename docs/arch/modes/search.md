@@ -15,7 +15,9 @@ Source: `src/modes/search.rs`, `src/search/fuzzy.rs` and
 | `Esc`          | Clear query; close if already empty |
 
 Opening with `tynex show --mode search` (or `mode = "search"` in config)
-lets the user type immediately after the hotkey.
+lets the user type immediately after the hotkey. The best match is
+selected after every change of the query. Switching back to hotkey
+mode shows all windows again; the query stays for the next switch.
 
 ## Matching
 
@@ -24,13 +26,16 @@ lets the user type immediately after the hotkey.
 - Smart case: case-insensitive unless the query has an uppercase
   letter.
 - Typo tolerance: up to one typo per four query characters
-  (`max_typos`).
-- Results are sorted by score; ties keep most recently used (MRU)
-  order.
-- Match indices go into `View` so the layout can highlight them.
-  `frizbee` returns byte offsets of matched characters; they are
-  merged into byte ranges.
-- Single-threaded matching (`match_list`); the window list is small.
+  (`max_typos`), so looser matches can follow the best ones. Queries
+  under four characters allow no typo.
+- Results are sorted by the better score of title and app id; ties
+  keep the row order (previous window first, active window last).
+- Match indices go into `View` so the layout can highlight them, for
+  the title only. `frizbee` returns byte offsets of matched
+  characters; they are merged into byte ranges.
+- One entry point, `match_list_indices`, single-threaded: the window
+  list is small, and each extra entry point adds about 1 MB to the
+  binary ([ADR-0044](../../adr/0044_binary_budget.md)).
 
 ## Languages
 
@@ -47,9 +52,10 @@ Titles and queries can use any script. Rules from
   (`cafe` matches `Café`, `zurich` matches `Zürich`). `fold.rs` keeps
   a folded copy of each title with a byte offset map back to the
   original, so highlights land on the real letters. A query with
-  accents matches only the same accents. The fold table covers Latin-1
-  Supplement, Latin Extended-A and Latin Extended Additional; no crate
-  is needed.
+  accents is not folded: another accent counts as a typo. The fold
+  tables cover Latin-1 Supplement, Latin Extended-A and Latin Extended
+  Additional, plus letters with a stroke (`Ø`, `Đ`, `Ł`); no crate is
+  needed.
 - **Input:** characters come from the active layout, including dead
   keys and compose. Chinese, Japanese and Korean need an input method;
   see [ROADMAP.md](../../../ROADMAP.md).

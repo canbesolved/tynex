@@ -13,6 +13,7 @@ use crate::core::window::WindowId;
 pub struct Row {
     pub id: WindowId,
     pub key: Option<char>,
+    pub app_id: String, // Matched by search, not drawn
     pub icon: Option<String>,
     pub title: String,
     pub highlights: Vec<Range<usize>>, // Byte ranges in `title`

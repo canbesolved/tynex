@@ -149,6 +149,9 @@ Platform services:
 Project:
 
 - [ ] CI: `cargo check` for macOS and Windows targets.
+- [ ] Own fuzzy matcher in place of `frizbee`, to shrink the binary by
+  about 3.7 MB, if it can match its ranking and typo tolerance
+  ([ADR-0044](docs/adr/0044_binary_budget.md)).
 - [ ] Prebuilt binaries for macOS on Apple silicon and Windows x64 and
   arm64, added with each port (ADR-0042).
 

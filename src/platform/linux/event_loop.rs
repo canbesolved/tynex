@@ -15,12 +15,13 @@ use crate::core::queue::EventRx;
 use crate::core::switcher::Switcher;
 use crate::core::traits::WindowSource;
 use crate::modes::hotkey::HotkeyMode;
+use crate::modes::search::SearchMode;
 use crate::platform::linux::dbus::Bus;
 use crate::platform::linux::wayland::{PresenterEvent, WaylandPresenter};
 use crate::ui::painter::Painter;
 
-/// The switcher with its modes. Search mode is a stand-in for now.
-pub type App = Switcher<HotkeyMode, HotkeyMode>;
+/// The switcher with its modes.
+pub type App = Switcher<HotkeyMode, SearchMode>;
 
 /// Everything the loop drives.
 pub struct Parts {

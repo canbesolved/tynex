@@ -24,7 +24,8 @@ The reasons behind each choice are in the
 ## Goals
 
 - Show the switcher in under one frame (16 ms) after the hotkey.
-- Zero CPU use while idle, RSS under 10 MB, release binary under 3 MB.
+- Zero CPU use while idle, RSS under 10 MB, release binary under 10 MB
+  ([ADR-0044](../adr/0044_binary_budget.md)).
 - Every part (window source, UI, layout, mode, IPC) is a replaceable
   module behind a small trait.
 - Linux first (KDE Plasma 6, Wayland), portable to macOS and Windows.

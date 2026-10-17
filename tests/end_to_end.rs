@@ -12,8 +12,9 @@ use tynex::core::switcher::Switcher;
 use tynex::core::traits::WindowSource;
 use tynex::core::window::WindowId;
 use tynex::modes::hotkey::HotkeyMode;
+use tynex::modes::search::SearchMode;
 
-type App = Switcher<HotkeyMode, HotkeyMode>;
+type App = Switcher<HotkeyMode, SearchMode>;
 
 /// The registry's pick for `desktop`, built without a session bus.
 fn mock(desktop: config::Desktop) -> Source {
@@ -64,7 +65,7 @@ fn mock_source_drives_the_switcher() {
         &config.keys,
         config.hotkey_action,
         HotkeyMode,
-        HotkeyMode,
+        SearchMode,
     );
 
     source.start(tx).expect("mock starts");
@@ -109,7 +110,7 @@ fn titles_from_the_source_are_sanitized() {
         &config.keys,
         config.hotkey_action,
         HotkeyMode,
-        HotkeyMode,
+        SearchMode,
     );
 
     source.start(tx).unwrap();

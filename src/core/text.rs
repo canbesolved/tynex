@@ -49,7 +49,8 @@ fn is_bidi_control(c: char) -> bool {
 }
 
 /// Returns true for combining diacritical marks.
-fn is_combining_mark(c: char) -> bool {
+#[must_use]
+pub fn is_combining_mark(c: char) -> bool {
     matches!(
         c,
         '\u{0300}'..='\u{036F}'

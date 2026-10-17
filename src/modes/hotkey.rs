@@ -42,6 +42,15 @@ impl Mode for HotkeyMode {
             Key::Tab | Key::Backspace => Action::None,
         }
     }
+
+    /// Shows every row without highlights; the query stays for search.
+    fn refresh(&mut self, s: &mut State) {
+        for row in &mut s.rows {
+            row.highlights.clear();
+        }
+        s.shown = (0..s.rows.len()).collect();
+        s.selected = s.selected.min(s.shown.len().saturating_sub(1));
+    }
 }
 
 #[cfg(test)]
@@ -56,6 +65,7 @@ mod tests {
             .map(|(id, key)| Row {
                 id: WindowId(id.into()),
                 key: Some(key),
+                app_id: String::new(),
                 icon: None,
                 title: id.into(),
                 highlights: Vec::new(),
