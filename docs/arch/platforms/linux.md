@@ -8,7 +8,7 @@ Source: `src/platform/linux/`. Session: Wayland.
 platform/linux/
   mod.rs          Backend wiring
   event_loop.rs   Single poll loop over Wayland and D-Bus fds
-  paths.rs        XDG config and runtime paths
+  paths.rs        XDG config and runtime paths, atomic writes
   wayland/
     mod.rs        WaylandPresenter: connect, show, draw, hide, dispatch
     state.rs      Dispatch state: globals, popup, events
@@ -107,7 +107,7 @@ presenter, bus, painter, event queue). Each turn it:
    resolve their fonts (`Painter::prepare`);
 2. applies the action: `Redraw` sizes and draws the popup, `Activate`
    hides it and calls the window source, `Close` hides it;
-3. flushes Wayland requests and polls;
+3. flushes Wayland requests and D-Bus calls, then polls;
 4. dispatches Wayland events (keys, configure, scale, closed) and
    D-Bus calls, which push new events into the queue.
 
@@ -125,11 +125,16 @@ through it; none opens its own connection.
 - Owns the bus name `io.github.canbesolved.Tynex` (`RequestName` with
   `DO_NOT_QUEUE`); a second daemon finds it taken and exits with
   "tynex daemon is already running".
+- `Bus` is a cheap handle (`Rc`); clones share the connection, so the
+  IPC server and the adapter each keep one.
 - Users register an object path with a handler; incoming method calls
   are read with `read_write` and dispatched by path, interface and
   member.
-- `call` sends a method call without blocking; an optional callback
-  receives the reply or error in the main loop.
+- `call` sends a method call without blocking; its callback receives
+  the reply or error in a later `dispatch`. The loop flushes these
+  calls before it polls.
+- `call_blocking` waits up to 2 s for the reply. It is used only at
+  startup and exit (`RequestName`, `GetNameOwner`, KWin scripting).
 
 | User                  | Registers           | Calls                 |
 | --------------------- | ------------------- | --------------------- |
@@ -150,7 +155,10 @@ and exits.
   - `tynex/` is created with mode `0700`. An existing `tynex/` that is
     a symlink, not owned by the user or open to others is rejected.
   - Files are written atomically: a temporary file is created with
-    `O_EXCL` and mode `0600`, then renamed over the target.
+    `O_EXCL` and mode `0600`, then renamed over the target
+    (`write_atomic`).
+  - The user's id for the owner checks comes from
+    `rustix::process::getuid`.
 - Home comes from `std::env::home_dir`; no extra crate.
 
 ## Fonts

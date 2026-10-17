@@ -13,22 +13,22 @@ runtime cost. Adding a crate needs a line in this file and an ADR.
 
 ## Runtime crates
 
-| Crate                   | Purpose                | OS    | Notes             |
-| ----------------------- | ---------------------- | ----- | ----------------- |
-| `wayland-client`        | Wayland client         | linux |                   |
-| `wayland-protocols-wlr` | Layer-shell protocol   | linux | `client`          |
-| `wayland-protocols`     | Viewport, frac. scale  | linux | `client staging`  |
-| `xkbcommon`             | Keymaps, keysyms, text | linux | defaults off      |
-| `rustix`                | poll, memfd, mmap      | linux | `event fs mm`     |
-| `dbus`                  | D-Bus via libdbus      | linux | defaults off      |
-| `tiny-skia`             | 2D drawing, glyphs     | all   | `simd std`        |
-| `resvg`                 | SVG icons              | all   | defaults off      |
-| `skrifa`                | Font outlines, metrics | all   | `std`             |
-| `frizbee`               | Fuzzy matching         | all   |                   |
-| `serde`                 | Config structs         | all   | `derive`          |
-| `toml`                  | Config parser          | all   | `parse serde std` |
-| `lexopt`                | CLI arguments          | all   |                   |
-| `log`                   | Logging facade         | all   |                   |
+| Crate                   | Purpose            | OS    | Notes                 |
+| ----------------------- | ------------------ | ----- | --------------------- |
+| `wayland-client`        | Wayland client     | linux |                       |
+| `wayland-protocols-wlr` | Layer shell        | linux | `client`              |
+| `wayland-protocols`     | Viewport, scaling  | linux | `client staging`      |
+| `xkbcommon`             | Keymaps, key text  | linux | defaults off          |
+| `rustix`                | poll, mmap, uid    | linux | `event fs mm process` |
+| `dbus`                  | D-Bus via libdbus  | linux | defaults off          |
+| `tiny-skia`             | 2D drawing, glyphs | all   | `simd std`            |
+| `resvg`                 | SVG icons          | all   | defaults off          |
+| `skrifa`                | Outlines, metrics  | all   | `std`                 |
+| `frizbee`               | Fuzzy matching     | all   |                       |
+| `serde`                 | Config structs     | all   | `derive`              |
+| `toml`                  | Config parser      | all   | `parse serde std`     |
+| `lexopt`                | CLI arguments      | all   |                       |
+| `log`                   | Logging facade     | all   |                       |
 
 The full tree is about 70 crates, including build-time proc macros
 (`serde_derive`, `wayland-scanner`). A clean release build of the

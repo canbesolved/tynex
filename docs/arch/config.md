@@ -44,8 +44,9 @@ width = 480
 max_rows = 19
 ```
 
-`desktop` selects the window source adapter. `auto` detects it from
-`XDG_CURRENT_DESKTOP`; it never selects `mock`.
+`desktop` selects the window source adapter. `auto` picks `kde` when
+the colon-separated `XDG_CURRENT_DESKTOP` list contains `KDE`, and fails
+otherwise; it never selects `mock`.
 
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
 

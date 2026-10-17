@@ -48,5 +48,9 @@ project adheres to
   on errors.
 - Daemon over D-Bus: single instance, `tynex show`, `hide` and `quit`,
   and one poll loop for Wayland and D-Bus with no idle wakeups.
+- KDE adapter for Plasma 6: a KWin script pushes the window list in
+  most recently used order and registers `Meta+Tab`, and windows are
+  activated through KWin's window search. `desktop = "auto"` picks it
+  on KDE. Only KWin may call the adapter's D-Bus object.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main

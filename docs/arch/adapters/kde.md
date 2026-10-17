@@ -31,18 +31,29 @@ in ([ADR-0034](../../adr/0034_kwin_runner.md)):
 
 ## Lifecycle
 
+The registry builds `KdeSource` for `desktop = "kde"`, or for `auto`
+when `XDG_CURRENT_DESKTOP` contains `KDE`.
+
 1. `KdeSource::start` checks that `/WindowsRunner` exists. If not, it
    fails with an error naming the missing KWin interface.
-2. It writes `tynex.js` to `$XDG_RUNTIME_DIR/tynex/`, following the
+2. It asks the bus for KWin's unique name (`GetNameOwner`), used by
+   the sender check below.
+3. It writes `tynex.js` to `$XDG_RUNTIME_DIR/tynex/`, following the
    runtime directory rules in
    [linux.md](../platforms/linux.md#paths).
-3. It calls `org.kde.kwin.Scripting.loadScript(path, "tynex")`, then
-   `start`. A stale script with the same name is unloaded first.
-4. On daemon exit, `unloadScript("tynex")` is called.
+4. It registers the bridge object, then calls
+   `org.kde.kwin.Scripting.loadScript(path, "tynex")` and `start`. A
+   stale script with the same name is unloaded first.
+5. On daemon exit, `WindowSource::stop` calls `unloadScript("tynex")`
+   and deletes the file.
+
+Startup and exit calls block for up to 2 s each; activation never
+blocks.
 
 ## Script responsibilities
 
-- Track MRU order with `workspace.windowActivated`.
+- Track MRU order with `workspace.windowActivated`, starting from the
+  stacking order, topmost first.
 - Push the list with `callDBus(..., "Update", payload)` on
   `windowAdded`, `windowRemoved`, `windowActivated` and
   `captionChanged`. Only normal, switchable windows are sent (skip
@@ -60,9 +71,10 @@ org.kde.KWin /WindowsRunner org.kde.krunner1.Run("0_{<uuid>}", "")
 ```
 
 `<uuid>` is the window's `internalId`, the same id the script sends in
-the list. `0_{...}` is the id format of KWin's window search results
-(checked on Plasma 6.7). A failed call is logged at `warn` level when
-its error reply arrives in the main loop.
+the list; `parse.rs` strips its braces, `activate` adds them back.
+`0_{...}` is the id format of KWin's window search results (checked on
+Plasma 6.7). A failed call is logged at `warn` level when its error
+reply arrives in the main loop.
 
 ## Payload format
 
@@ -74,7 +86,14 @@ by `\x1e`, fields by `\x1f`.
 ```
 
 Control characters `\x1e` and `\x1f` are stripped from captions in the
-script. `parse.rs` turns the string into `Vec<WindowInfo>`.
+script. `parse.rs` turns the string into `Vec<WindowInfo>`, in the
+order sent:
+
+- `app_id` is `desktopFileName`, or `resourceClass` when it is empty;
+- `title` is the caption, sanitized later by the core;
+- `icon` is not set;
+- records without exactly four fields or with an empty id are
+  skipped.
 
 ## D-Bus interface
 
@@ -85,6 +104,14 @@ Object `/io/github/canbesolved/Tynex/Kde`, interface
 | -------- | -------- | -------- | ----------- |
 | `Update` | `s` list | none     | KWin script |
 | `Show`   | none     | none     | KWin script |
+
+`Show` opens the popup in the config's `mode`.
+
+Only KWin may call the object: a call whose sender is not KWin's
+unique name gets an error reply and is logged at `warn` level, so
+other programs in the session cannot inject a fake window list or open
+the popup. If KWin restarts, its unique name changes and the daemon
+must be restarted.
 
 ## Costs
 

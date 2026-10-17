@@ -47,6 +47,7 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
         }
 
         p.presenter.flush().map_err(|e| e.to_string())?;
+        p.bus.flush(); // Calls such as an activation
         wait(p)?;
 
         for event in p.presenter.dispatch().map_err(|e| e.to_string())? {

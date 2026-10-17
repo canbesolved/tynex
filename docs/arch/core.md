@@ -67,6 +67,8 @@ events to it:
 pub trait WindowSource {
     fn start(&mut self, tx: EventTx) -> Result<(), SourceError>;
     fn activate(&mut self, id: &WindowId) -> Result<(), SourceError>;
+    /// Undoes what `start` set up; called once on exit.
+    fn stop(&mut self) {}
 }
 
 /// Puts a rendered view on screen.

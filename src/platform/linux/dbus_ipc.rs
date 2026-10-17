@@ -20,7 +20,7 @@ pub const NAME: &str = "io.github.canbesolved.Tynex";
 pub const PATH: &str = "/io/github/canbesolved/Tynex";
 
 /// Registers the IPC object; requests become events on `tx`.
-pub fn serve(bus: &mut Bus, tx: EventTx, default_mode: ModeKind) {
+pub fn serve(bus: &Bus, tx: EventTx, default_mode: ModeKind) {
     bus.register(PATH, move |msg| {
         let event = request(msg, default_mode)?;
 
