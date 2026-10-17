@@ -53,20 +53,21 @@ fn start(config: Config) -> Result<(), String> {
     use crate::ui::painter::Painter;
     use crate::ui::render::text::Text;
 
-    let mut bus = Bus::session().map_err(|e| e.to_string())?;
+    let bus = Bus::session().map_err(|e| e.to_string())?;
 
     bus.own_name(dbus_ipc::NAME).map_err(|e| e.to_string())?;
 
     let (tx, rx) = channel();
     let current = std::env::var("XDG_CURRENT_DESKTOP").ok();
-    let mut source = adapters::select(config.desktop, current.as_deref())
-        .map_err(|e| e.to_string())?;
+    let mut source =
+        adapters::select(config.desktop, current.as_deref(), &bus, config.mode)
+            .map_err(|e| e.to_string())?;
     let presenter = WaylandPresenter::connect().map_err(|e| e.to_string())?;
     let face = fonts::default_face(&config.appearance.font)
         .map_err(|e| format!("cannot load the font: {e}"))?;
     let text = Text::new(face, Box::new(fonts::FcFallback::default()));
 
-    dbus_ipc::serve(&mut bus, tx.clone(), config.mode);
+    dbus_ipc::serve(&bus, tx.clone(), config.mode);
     source.start(tx).map_err(|e| e.to_string())?;
     log::info!("daemon started, desktop {:?}", config.desktop);
 
@@ -79,9 +80,11 @@ fn start(config: Config) -> Result<(), String> {
         rx,
     };
 
-    event_loop::run(&mut parts)?;
+    let result = event_loop::run(&mut parts);
+
+    parts.source.stop();
     log::info!("daemon stopped");
-    Ok(())
+    result
 }
 
 /// Loads the config at `path`, writing the default file if missing.

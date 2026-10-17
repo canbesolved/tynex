@@ -43,8 +43,8 @@ Text cases for the rules in
   sanitizing.
 
 The registry in `src/adapters/mod.rs` builds it only for
-`desktop = "mock"`. With `auto` or `kde`, `select` reports that no
-source exists yet, until the KDE adapter lands.
+`desktop = "mock"`. Tests use `pick`, which chooses the adapter without
+building it, so they need no session bus.
 
 ## Use
 

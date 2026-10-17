@@ -3,7 +3,8 @@
 
 //! Config, mock source, event queue and switcher working together.
 
-use tynex::adapters::{self, Source};
+use tynex::adapters::mock::MockSource;
+use tynex::adapters::{self, Kind, Source};
 use tynex::config;
 use tynex::core::event::{Action, Event, Key, ModeKind};
 use tynex::core::queue::{EventRx, channel};
@@ -13,6 +14,12 @@ use tynex::core::window::WindowId;
 use tynex::modes::hotkey::HotkeyMode;
 
 type App = Switcher<HotkeyMode, HotkeyMode>;
+
+/// The registry's pick for `desktop`, built without a session bus.
+fn mock(desktop: config::Desktop) -> Source {
+    assert_eq!(adapters::pick(desktop, None), Ok(Kind::Mock));
+    Source::Mock(MockSource::new())
+}
 
 /// Feeds all queued events to the switcher.
 fn pump(rx: &EventRx, sw: &mut App) {
@@ -51,7 +58,7 @@ fn first_rows(sw: &mut App, n: usize) -> Vec<(String, Option<char>)> {
 fn mock_source_drives_the_switcher() {
     let text = "desktop = \"mock\"\nkeys = \"asdf\"\n";
     let config = config::parse(text, &|_| false).expect("valid config");
-    let mut source = adapters::select(config.desktop, None).expect("mock");
+    let mut source = mock(config.desktop);
     let (tx, rx) = channel();
     let mut sw = Switcher::new(config.keys, HotkeyMode, HotkeyMode);
 
@@ -71,7 +78,9 @@ fn mock_source_drives_the_switcher() {
     switch(&mut sw, &mut source, &rx, 'a');
     switch(&mut sw, &mut source, &rx, 'a');
 
-    let Source::Mock(mock) = &source;
+    let Source::Mock(mock) = &source else {
+        unreachable!("mock source")
+    };
 
     assert_eq!(
         mock.activations(),
@@ -82,7 +91,7 @@ fn mock_source_drives_the_switcher() {
 #[test]
 fn titles_from_the_source_are_sanitized() {
     let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
-    let mut source = adapters::select(config.desktop, None).unwrap();
+    let mut source = mock(config.desktop);
     let (tx, rx) = channel();
     let mut sw = Switcher::new(config.keys, HotkeyMode, HotkeyMode);
 

@@ -37,6 +37,9 @@ pub trait WindowSource {
     ///
     /// Returns an error for an unknown window or a failed request.
     fn activate(&mut self, id: &WindowId) -> Result<(), SourceError>;
+
+    /// Undoes what `start` set up in the desktop. Called once on exit.
+    fn stop(&mut self) {}
 }
 
 /// Turns key presses into switcher actions.
