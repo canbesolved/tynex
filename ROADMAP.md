@@ -35,6 +35,10 @@ Target: KDE Plasma 6 on Wayland.
 - [ ] Hotkey pressed again while the popup is open:
   `hotkey_action = "close"` (default) closes it, `"last_app"` switches
   to the previous window.
+- [ ] Pinned keys: a window keeps its letter until it closes, so
+  letters no longer move when windows are switched. Rows stay in MRU
+  order; a freed letter goes to the most recent window without one
+  ([ADR-0041](docs/adr/0041_pinned_keys.md)).
 - [ ] The popup hides when it loses keyboard focus.
 - [ ] Hotkey mode: home row letters switch windows.
 - [ ] Search mode: fuzzy filtering while typing.
