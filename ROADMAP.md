@@ -20,18 +20,6 @@ Rules:
 
 Target: KDE Plasma 6 on Wayland.
 
-### 0.1.5
-
-- [ ] Popup rows in columns:
-  - Hotkey mode: key, icon, app name, title.
-  - Search mode: icon, app name, title.
-  - `show_app = false` (default) in `[appearance]` hides the app name
-    column. It replaces `title_format`, which is removed: a breaking
-    config change.
-  - Titles are stripped of the app name (`strip_app_name`).
-  - Column widths follow `width` in proportion; no new keys. Longer
-    text is cut to fit.
-
 ### 0.1.6
 
 - [ ] Performance: holding `Up` or `Down` moves the selection one row
