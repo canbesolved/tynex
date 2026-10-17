@@ -19,13 +19,14 @@ use crate::ui::render::icons::Icons;
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
 
-/// Sizes from the config and the output, in physical pixels.
+/// Sizes and options from the config and the output, in physical pixels.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Metrics {
     pub font_size: f32, // Title size
     pub width: f32,     // Popup width
     pub max_rows: usize,
-    pub scale: f32, // Output scale factor, 1.0 or more
+    pub scale: f32,     // Output scale factor, 1.0 or more
+    pub show_app: bool, // App name column
 }
 
 /// Surface size in pixels.

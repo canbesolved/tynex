@@ -8,11 +8,10 @@ use super::*;
 
 #[test]
 fn key_order_keeps_rows_and_selects_the_previous_window() {
-    let format = TitleFormat::default();
     let mut sw = Switcher::new(
         "asd",
         HotkeyAction::Hide,
-        format,
+        true,
         SortBy::Key,
         Letters,
         Filter,

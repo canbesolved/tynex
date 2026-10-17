@@ -21,7 +21,7 @@ mode shows all windows again; the query stays for the next switch.
 
 ## Matching
 
-- `frizbee` scores the query against the row text (`title`) and
+- `frizbee` scores the query against the row title (`title`) and
   against the app name and id, joined by a space (Smith-Waterman,
   like `fzf`). So `firefox` finds Firefox windows even when
   `strip_app_name` removed the name from their titles.

@@ -14,8 +14,7 @@ font = "auto"            # Font file path, or auto
 font_size = 14
 width = 480
 max_rows = 19
-# Row text: {app} is the app name, {title} the window title, for
-# example "{app} : {title}".
-title_format = "{title}"
+# Show the app name in its own column before the title.
+show_app = false
 # Drop " — <app name>" from the end of window titles.
 strip_app_name = true

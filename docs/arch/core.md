@@ -17,7 +17,7 @@ core/
   order.rs      SortBy: row order (key, app, recently)
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
-  title.rs      TitleFormat: row text and app name stripping
+  title.rs      Row titles: sanitizing and app name stripping
 ```
 
 ## Types
@@ -118,7 +118,7 @@ nothing else in the crate. `Presenter` is added with its module.
 
 - `Hidden`: only `Windows` updates the cached list and the pinned
   letters; keys are ignored. Each title in the cache is replaced by
-  its row text (see [Row text](#row-text)).
+  its row title (see [Row title](#row-title)).
 - `Show`: snapshot the cached list with its pinned letters, build
   `State` with the rows in `sort_by` order (see
   [Row order](#row-order)), and select the previous window. A `Show`
@@ -146,22 +146,19 @@ search. Layouts read the `View`, never the switcher
 state, which keeps rendering replaceable. Building a `View` allocates
 nothing.
 
-## Row text
+## Row title
 
-`TitleFormat` in `title.rs` turns a window into the text of its row,
-from `title_format` and `strip_app_name` in the config
-([config.md](config.md#format)):
+`row_title` in `title.rs` gives each window the title its row shows,
+with `strip_app_name` from the config ([config.md](config.md#format)):
 
 1. Sanitize the title and the app name (see below).
 2. With `strip_app_name`, drop `<app>` after ` — `, ` – ` or ` - `
    from the end of the title when `<app>` is the app name or the last
    part of the app id, ignoring case; never down to an empty title.
-3. Fill `{app}` and `{title}` in the format, then sanitize the result
-   once more, so an empty app name leaves no stray spaces.
 
-The format is parsed once, when the config is read. The switcher
-applies it on each `Windows` event, so the presenter can resolve
-fonts for the final text before the popup opens.
+The switcher applies it on each `Windows` event. The app name stays a
+separate field of `Row`; the layout draws it in its own column with
+`show_app`.
 
 ## Text and languages
 

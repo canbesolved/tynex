@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Title format and app name stripping tests.
+//! Row title and app name stripping tests.
 
 use super::*;
 use crate::core::window::WindowId;
@@ -16,46 +16,18 @@ fn window(app_id: &str, app_name: &str, title: &str) -> WindowInfo {
     }
 }
 
-fn format(text: &str) -> TitleFormat {
-    TitleFormat::parse(text, true).expect("valid format")
-}
-
 #[test]
-fn default_is_the_stripped_title() {
+fn stripped_by_default_rule() {
     let firefox = window("firefox", "Firefox", "Café — Firefox");
 
-    assert_eq!(TitleFormat::default(), format("{title}"));
-    assert_eq!(TitleFormat::default().apply(&firefox), "Café");
-}
-
-#[test]
-fn placeholders_and_text() {
-    let cursor = window("cursor", "Cursor", "My homelab project - Cursor");
-
-    assert_eq!(
-        format("{app} : {title}").apply(&cursor),
-        "Cursor : My homelab project"
-    );
-    assert_eq!(format("[{app}]").apply(&cursor), "[Cursor]");
-}
-
-#[test]
-fn invalid_formats() {
-    let error = |text| TitleFormat::parse(text, true).unwrap_err();
-
-    assert_eq!(error("{name}"), "unknown placeholder `{name}`");
-    assert_eq!(error("{title"), "a brace outside a placeholder");
-    assert_eq!(error("} {title}"), "a brace outside a placeholder");
-    assert_eq!(error("tynex"), "no placeholder");
-    assert_eq!(error(""), "no placeholder");
+    assert_eq!(row_title(&firefox, true), "Café");
 }
 
 #[test]
 fn strip_can_be_turned_off() {
     let kate = window("org.kde.kate", "Kate", "notes.md — Kate");
-    let keep = TitleFormat::parse("{title}", false).unwrap();
 
-    assert_eq!(keep.apply(&kate), "notes.md — Kate");
+    assert_eq!(row_title(&kate, false), "notes.md — Kate");
 }
 
 #[test]
@@ -80,7 +52,7 @@ fn strip_matches_app_name_or_short_app_id() {
     for (app_id, app_name, title, stripped) in cases {
         let w = window(app_id, app_name, title);
 
-        assert_eq!(format("{title}").apply(&w), stripped, "{title}");
+        assert_eq!(row_title(&w, true), stripped, "{title}");
     }
 }
 
@@ -97,16 +69,14 @@ fn strip_keeps_other_suffixes_and_whole_names() {
     for (app_id, app_name, title) in cases {
         let w = window(app_id, app_name, title);
 
-        assert_eq!(format("{title}").apply(&w), title);
+        assert_eq!(row_title(&w, true), title);
     }
 }
 
 #[test]
 fn text_is_sanitized() {
     let w = window("okular", "Okular", "a\t\u{202E}b — Okular");
-    let no_name = window("x", "", "Title");
 
-    assert_eq!(format("{title}").apply(&w), "a b");
-    assert_eq!(format("{app} {title}").apply(&no_name), "Title");
-    assert_eq!(format("\t{title}\n").apply(&no_name), "Title");
+    assert_eq!(row_title(&w, true), "a b");
+    assert_eq!(row_title(&w, false), "a b — Okular");
 }

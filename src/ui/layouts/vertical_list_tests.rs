@@ -17,6 +17,7 @@ const M: Metrics = Metrics {
     width: 300.0,
     max_rows: 3,
     scale: 1.0,
+    show_app: false,
 };
 
 fn state(mode: ModeKind, n: usize) -> State {
@@ -37,8 +38,13 @@ fn state(mode: ModeKind, n: usize) -> State {
 
 /// Draws `state` and returns the RGBA buffer and its size.
 fn render(state: &State) -> (Vec<u8>, Size) {
+    render_with(state, &M)
+}
+
+/// Draws `state` with metrics `m`.
+fn render_with(state: &State, m: &Metrics) -> (Vec<u8>, Size) {
     let theme = Theme::default();
-    let size = VerticalList.size(&state.view(), &M, &theme);
+    let size = VerticalList.size(&state.view(), m, &theme);
     let mut data = vec![0; (size.width * size.height * 4) as usize];
     let mut canvas = Canvas::new(&mut data, size.width, size.height).unwrap();
     let mut text = Text::new(Face::new(FONT, 0).unwrap());
@@ -50,7 +56,7 @@ fn render(state: &State) -> (Vec<u8>, Size) {
         theme: &theme,
     };
 
-    VerticalList.draw(&state.view(), &M, &mut paint);
+    VerticalList.draw(&state.view(), m, &mut paint);
     (data, size)
 }
 
@@ -150,4 +156,27 @@ fn list_scrolls_to_keep_selection_visible() {
         pixel(&data, size, x, row_center(2)),
         pixel(&data, size, x, row_center(0))
     );
+}
+
+#[test]
+fn app_column_only_with_show_app() {
+    let mut s = state(ModeKind::Hotkey, 1);
+
+    s.rows[0].app_name = "WWWW".into();
+
+    let app = Theme::default().app_text;
+    let app_pixels = |m: &Metrics| {
+        let (data, _) = render_with(&s, m);
+
+        data.chunks(4)
+            .filter(|px| px[..3] == [app.0, app.1, app.2])
+            .count()
+    };
+    let shown = Metrics {
+        show_app: true,
+        ..M
+    };
+
+    assert!(app_pixels(&shown) > 0);
+    assert_eq!(app_pixels(&M), 0);
 }
