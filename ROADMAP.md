@@ -20,16 +20,6 @@ Rules:
 
 Target: KDE Plasma 6 on Wayland.
 
-### 0.1.4
-
-- [ ] Row order: `sort_by = "key"` (default), `"app"` or `"recently"`.
-  - `key`: rows in the order of their letters in `keys`, so a row
-    never moves. A new window takes the first free letter and shows at
-    that letter's place, also in the middle of the list; windows
-    without a letter come last.
-  - `app`: rows grouped by app name.
-  - `recently`: most recently used first, the order before 0.1.4.
-
 ### 0.1.5
 
 - [ ] Popup rows in columns:
