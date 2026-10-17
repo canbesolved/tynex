@@ -21,10 +21,18 @@ pub(super) enum RawMode {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub(super) enum RawHotkeyAction {
+    Hide,
+    Last,
+}
+
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawConfig {
     pub desktop: Desktop,
     pub mode: RawMode,
+    pub hotkey_action: RawHotkeyAction,
     pub layout: Layout,
     pub keys: Spanned<String>,
     pub appearance: RawAppearance,
@@ -35,6 +43,7 @@ impl Default for RawConfig {
         Self {
             desktop: Desktop::Auto,
             mode: RawMode::Hotkey,
+            hotkey_action: RawHotkeyAction::Last,
             layout: Layout::VerticalList,
             keys: unspanned(crate::core::keys::DEFAULT_KEYS.into()),
             appearance: RawAppearance::default(),

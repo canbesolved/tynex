@@ -34,6 +34,7 @@ pub enum PresenterEvent {
     Configured, // The popup can be drawn
     Scale(f32), // The output scale changed; redraw at the new size
     Closed,     // The compositor closed the popup
+    FocusLost,  // Keyboard focus left the open popup
 }
 
 /// The open popup surface.

@@ -78,7 +78,12 @@ impl Dispatch<WlKeyboard, ()> for Wl {
             wl_keyboard::Event::RepeatInfo { rate, delay } => {
                 s.keyboard.repeat_info(rate, delay);
             }
-            wl_keyboard::Event::Leave { .. } => s.keyboard.stop(),
+            wl_keyboard::Event::Leave { .. } => {
+                s.keyboard.stop();
+                if s.popup.is_some() {
+                    s.events.push(PresenterEvent::FocusLost);
+                }
+            }
             _ => {}
         }
     }

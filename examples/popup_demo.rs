@@ -16,7 +16,7 @@ use tynex::config::Font;
 use tynex::core::event::{Action, Event, ModeKind};
 use tynex::core::keys::DEFAULT_KEYS;
 use tynex::core::queue::channel;
-use tynex::core::switcher::Switcher;
+use tynex::core::switcher::{HotkeyAction, Switcher};
 use tynex::core::traits::WindowSource;
 use tynex::modes::hotkey::HotkeyMode;
 use tynex::platform::linux::fonts::{FcFallback, default_face};
@@ -64,7 +64,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let theme = Theme::default();
     let (tx, rx) = channel();
     let mut source = MockSource::new();
-    let mut app = Switcher::new(DEFAULT_KEYS, HotkeyMode, HotkeyMode);
+    let mut app =
+        Switcher::new(DEFAULT_KEYS, HotkeyAction::Hide, HotkeyMode, HotkeyMode);
 
     source.start(tx)?;
     while let Some(event) = rx.recv() {
@@ -94,7 +95,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         for event in presenter.dispatch()? {
             let action = match event {
-                PresenterEvent::Closed => Action::Close,
+                PresenterEvent::Closed | PresenterEvent::FocusLost => {
+                    Action::Close
+                }
                 PresenterEvent::Key(key) => app.handle(Event::Key(key)),
                 PresenterEvent::Scale(_) | PresenterEvent::Configured => {
                     Action::Redraw

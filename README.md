@@ -95,6 +95,9 @@ tynex quit               # Stop the background service
 
 On KDE the default hotkey is `Meta+Tab`. Change it in System Settings,
 Shortcuts, `tynex`. On other desktops bind `tynex show` to any key.
+Pressing the hotkey again switches to the previous window, or closes
+the popup with `hotkey_action = "hide"`. The popup also
+closes when it loses keyboard focus.
 
 In the popup:
 
@@ -107,8 +110,9 @@ In the popup:
 The config file is `~/.config/tynex/tynex.toml`:
 
 ```toml
-desktop = "auto"       # auto | kde | mock
-mode = "hotkey"        # hotkey | search
+desktop = "auto"        # auto | kde | mock
+mode = "hotkey"         # hotkey | search
+hotkey_action = "last"  # hide | last
 layout = "vertical_list"
 keys = "asdfhjklgqwertyuiop"
 

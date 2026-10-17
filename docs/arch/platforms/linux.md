@@ -69,6 +69,9 @@ closes, and without input it closes after ten seconds.
 - `wl_seat` (version 4 or later, for repeat info) is bound at start;
   its keyboard is taken when the seat has one. Without a seat the
   popup still shows but ignores keys.
+- When keyboard focus leaves the open popup (`wl_keyboard.leave`),
+  the presenter reports `FocusLost` and the event loop hides the
+  popup.
 - The compositor sends the keymap as a file descriptor. It is read
   with `pread` (no mapping, no `unsafe`) and loaded with `xkbcommon`
   (`Keymap::new_from_string`, default features off).

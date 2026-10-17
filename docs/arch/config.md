@@ -34,6 +34,9 @@ this). Every key is optional: a missing key takes the value shown here.
 ```toml
 desktop = "auto"         # auto | kde | mock
 mode = "hotkey"          # hotkey | search
+# Hotkey pressed again while the popup is open: "hide" closes the
+# popup, "last" switches to the previously used window.
+hotkey_action = "last"   # hide | last
 layout = "vertical_list"
 keys = "asdfhjklgqwertyuiop"
 
@@ -47,6 +50,11 @@ max_rows = 19
 `desktop` selects the window source adapter. `auto` picks `kde` when
 the colon-separated `XDG_CURRENT_DESKTOP` list contains `KDE`, and fails
 otherwise; it never selects `mock`.
+
+`hotkey_action` sets what pressing the hotkey (or `tynex show`) does
+while the popup is open, in either mode: `hide` closes it, `last`
+switches to the previously used window, or closes it when there is
+none.
 
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
 
@@ -73,6 +81,7 @@ The config is read once, when `tynex daemon` starts
 | ---------------------- | ------------------------------------------- |
 | `desktop`              | `auto`, `kde` or `mock`                     |
 | `mode`                 | `hotkey` or `search`                        |
+| `hotkey_action`        | `hide` or `last`                            |
 | `layout`               | `vertical_list`                             |
 | `keys`                 | 1 to 26 unique ASCII lowercase letters      |
 | `appearance.font`      | `auto` or a path to an existing font file   |

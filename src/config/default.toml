@@ -1,5 +1,8 @@
 desktop = "auto"         # auto | kde | mock
 mode = "hotkey"          # hotkey | search
+# Hotkey pressed again while the popup is open: "hide" closes the
+# popup, "last" switches to the previously used window.
+hotkey_action = "last"   # hide | last
 layout = "vertical_list"
 keys = "asdfhjklgqwertyuiop"
 

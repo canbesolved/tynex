@@ -9,9 +9,10 @@ use std::path::{Path, PathBuf};
 use toml::Spanned;
 
 use crate::config::error::ConfigError;
-use crate::config::raw::{RawConfig, RawMode};
+use crate::config::raw::{RawConfig, RawHotkeyAction, RawMode};
 use crate::config::{AppearanceConfig, Config, Font};
 use crate::core::event::ModeKind;
+use crate::core::switcher::HotkeyAction;
 
 /// Checks `raw` from `text`; `font_exists` tells if a font path exists.
 pub(super) fn validate(
@@ -68,6 +69,10 @@ pub(super) fn validate(
         mode: match raw.mode {
             RawMode::Hotkey => ModeKind::Hotkey,
             RawMode::Search => ModeKind::Search,
+        },
+        hotkey_action: match raw.hotkey_action {
+            RawHotkeyAction::Hide => HotkeyAction::Hide,
+            RawHotkeyAction::Last => HotkeyAction::Last,
         },
         layout: raw.layout,
         keys: raw.keys.into_inner(),
