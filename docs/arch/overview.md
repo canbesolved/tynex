@@ -52,18 +52,19 @@ src/
   core/                Pure logic, traits, state machine
   config/              tynex.toml: load, defaults, validation
   logger.rs            stderr logger, level from TYNEX_LOG
-  ipc/                 IpcServer / IpcClient traits, commands
+  ipc/                 Request and IpcError; transport per platform
   adapters/
     mod.rs             Registry, auto-detect by XDG_CURRENT_DESKTOP
     mock/              In-memory windows for tests and manual runs
     kde/               KWin script, runner activation
   platform/            Per-OS backends, gated by cfg(target_os)
-    linux/             Wayland presenter, shared D-Bus
+    linux/             Wayland, D-Bus, event loop, fonts, paths
     macos/             Later
     windows/           Later
   ui/                  Portable: no OS types
     render/            Canvas, text, icons
     layouts/           vertical_list (default)
+    painter.rs         Text, theme and layout: size and draw the popup
   modes/               hotkey, search
   search/              Fuzzy matcher, accent folding
 ```

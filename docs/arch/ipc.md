@@ -10,26 +10,28 @@ hotkey.
 
 ## Commands
 
-| CLI                        | Command        | Effect              |
-| -------------------------- | -------------- | ------------------- |
-| `tynex show`               | `Show(hotkey)` | Open in hotkey mode |
-| `tynex show --mode search` | `Show(search)` | Open in search mode |
-| `tynex hide`               | `Hide`         | Close the popup     |
-| `tynex quit`               | `Quit`         | Stop the daemon     |
+| CLI                        | D-Bus call       | Effect                    |
+| -------------------------- | ---------------- | ------------------------- |
+| `tynex show`               | `Show("")`       | Open in the config's mode |
+| `tynex show --mode search` | `Show("search")` | Open in search mode       |
+| `tynex hide`               | `Hide()`         | Close the popup           |
+| `tynex quit`               | `Quit()`         | Stop the daemon           |
 
-## Traits
+## Interface
 
-```rust
-/// Daemon side: receives commands and forwards them as events.
-pub trait IpcServer {
-    fn start(&mut self, tx: EventTx) -> Result<()>;
-}
+`src/ipc/` is portable: `Request` (`Show(Option<ModeKind>)`, `Hide`,
+`Quit`) and `IpcError` (`NotRunning` or `Failed`). Each platform
+module provides two functions:
 
-/// CLI side: sends one command and exits.
-pub trait IpcClient {
-    fn send(&self, cmd: Command) -> Result<()>;
-}
-```
+- `serve(bus, tx, default_mode)`: registers the daemon's object; each
+  call becomes an `Event` on `tx`. Unknown methods or modes get a
+  D-Bus error reply.
+- `send(request)`: used by the CLI; opens a short-lived connection,
+  sends one call and waits up to 2 s for the reply. A missing daemon
+  (`ServiceUnknown`, `NameHasNoOwner`) is reported as `NotRunning`.
+
+Object `/io/github/canbesolved/Tynex`, interface
+`io.github.canbesolved.Tynex`.
 
 ## Transports
 

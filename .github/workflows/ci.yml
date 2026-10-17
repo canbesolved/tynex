@@ -29,7 +29,8 @@ jobs:
       - name: Install system libraries
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq --no-install-recommends libxkbcommon-dev
+          sudo apt-get install -y -qq --no-install-recommends \
+            libxkbcommon-dev libdbus-1-dev
       # dtolnay/rust-toolchain master (2026-10-16)
       - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8
         with:
@@ -55,7 +56,8 @@ jobs:
       - name: Install system libraries
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq --no-install-recommends libxkbcommon-dev
+          sudo apt-get install -y -qq --no-install-recommends \
+            libxkbcommon-dev libdbus-1-dev
       # Keep in sync with rust-version in Cargo.toml.
       - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8
         with:

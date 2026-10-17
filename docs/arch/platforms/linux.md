@@ -100,6 +100,20 @@ The poll timeout is the nearest deadline: key repeat while the popup is
 shown, otherwise none, so an idle daemon never wakes up. Events from both
 sources go to the core in order, so no locks or channels are needed.
 
+`event_loop.rs` owns the parts (`Parts`: switcher, window source,
+presenter, bus, painter, event queue). Each turn it:
+
+1. drains the event queue into the switcher; new window lists first
+   resolve their fonts (`Painter::prepare`);
+2. applies the action: `Redraw` sizes and draws the popup, `Activate`
+   hides it and calls the window source, `Close` hides it;
+3. flushes Wayland requests and polls;
+4. dispatches Wayland events (keys, configure, scale, closed) and
+   D-Bus calls, which push new events into the queue.
+
+A `Quit` request hides the popup and ends the loop. Measured with the
+mock source: about 6 MB RSS and no context switches while idle.
+
 ## D-Bus
 
 `dbus.rs` owns the daemon's single session bus connection
@@ -108,8 +122,9 @@ through it; none opens its own connection.
 
 - `dbus` crate over the system `libdbus`, non-blocking, no async
   runtime. Its fd is the only D-Bus fd in the poll loop.
-- Owns the bus name `io.github.canbesolved.Tynex`; a second daemon
-  finds it taken and exits.
+- Owns the bus name `io.github.canbesolved.Tynex` (`RequestName` with
+  `DO_NOT_QUEUE`); a second daemon finds it taken and exits with
+  "tynex daemon is already running".
 - Users register an object path with a handler; incoming method calls
   are read with `read_write` and dispatched by path, interface and
   member.
