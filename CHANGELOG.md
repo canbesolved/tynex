@@ -9,6 +9,18 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Popup rows in columns: key, icon, app name and title.
+  `show_app = true` in `[appearance]` shows the app name column
+  (default `false`); its width follows `width` (ADR-0049).
+
+### Removed
+
+- **Breaking:** `title_format` in `[appearance]`, replaced by
+  `show_app`. A config file with `title_format` stops the daemon
+  until the key is removed.
+
 ## [0.1.4] - 2026-10-18
 
 Rows that stay in place: `sort_by`.

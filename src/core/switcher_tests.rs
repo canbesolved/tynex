@@ -67,9 +67,7 @@ pub(super) fn build<H: Mode>(
     action: HotkeyAction,
     hotkey: H,
 ) -> Switcher<H, Filter> {
-    let format = TitleFormat::default();
-
-    Switcher::new(keys, action, format, SortBy::Recently, hotkey, Filter)
+    Switcher::new(keys, action, true, SortBy::Recently, hotkey, Filter)
 }
 
 pub(super) fn switcher(ids: &[&str]) -> Switcher<Letters, Filter> {

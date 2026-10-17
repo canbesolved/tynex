@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Vertical list: one row per window, key badge, icon and title.
+//! Vertical list: one row per window in columns: key badge, icon, app
+//! name and title.
+
+use std::ops::Range;
 
 use crate::core::event::ModeKind;
 use crate::core::view::{Row, View};
@@ -9,6 +12,9 @@ use crate::ui::layouts::{Layout, Metrics, Paint, Size};
 use crate::ui::render::canvas::{Area, Rgba};
 use crate::ui::render::text::Style;
 use crate::ui::render::theme::Theme;
+
+/// Share of the text width that the app name column takes.
+const APP_SHARE: f32 = 0.3;
 
 /// The default layout.
 #[derive(Debug, Default)]
@@ -22,6 +28,7 @@ struct Grid {
     icon: f32,  // Icon slot side
     gap: f32,   // Space between parts of a row
     font: f32,  // Text size
+    app: f32,   // Share of the text width for app names, 0 when hidden
 }
 
 impl Grid {
@@ -35,6 +42,7 @@ impl Grid {
             icon: (font * 1.5).round(),
             gap: (font * 0.6).round(),
             font,
+            app: if metrics.show_app { APP_SHARE } else { 0.0 },
         }
     }
 
@@ -99,8 +107,9 @@ impl Layout for VerticalList {
                 grid.row_h,
             );
             let query = format!("/ {}", view.query);
+            let color = paint.theme.text;
 
-            text_line(paint, &grid, &query, bar, &[]);
+            draw_text(paint, &grid, (&query, &[]), bar, color);
             top += grid.row_h;
             paint.canvas.fill_rect(
                 Area::new(grid.pad, top, inner, 1.0),
@@ -130,7 +139,8 @@ impl Layout for VerticalList {
     }
 }
 
-/// Draws one row: key badge (hotkey mode), icon, title.
+/// Draws one row: key badge (hotkey mode), icon, app name (`show_app`),
+/// title.
 fn draw_row(
     paint: &mut Paint<'_, '_>,
     grid: &Grid,
@@ -158,7 +168,7 @@ fn draw_row(
             );
             let color = paint.theme.badge_text;
 
-            text_colored(paint, grid, &label, centered, color);
+            draw_text(paint, grid, (&label, &[]), centered, color);
         }
         left += side + grid.gap;
     }
@@ -175,23 +185,34 @@ fn draw_row(
     }
     left += grid.icon + grid.gap;
 
+    if grid.app > 0.0 {
+        let width = ((area.x + area.w - grid.gap - left) * grid.app).round();
+        let app = Area::new(left, area.y, width, area.h);
+        let color = paint.theme.app_text;
+
+        draw_text(paint, grid, (&row.app_name, &[]), app, color);
+        left += width + grid.gap;
+    }
+
     let title =
         Area::new(left, area.y, area.x + area.w - grid.gap - left, area.h);
+    let color = paint.theme.text;
 
-    text_line(paint, grid, &row.title, title, &row.highlights);
+    draw_text(paint, grid, (&row.title, &row.highlights), title, color);
 }
 
-/// Draws `s` in the text color, vertically centered in `area`.
-fn text_line(
+/// Draws `text` in `color`, vertically centered in `area`, with the
+/// `highlights` byte ranges in the highlight color.
+fn draw_text(
     paint: &mut Paint<'_, '_>,
     grid: &Grid,
-    s: &str,
+    (text, highlights): (&str, &[Range<usize>]),
     area: Area,
-    highlights: &[std::ops::Range<usize>],
+    color: Rgba,
 ) {
     let style = Style {
         size: grid.font,
-        color: paint.theme.text,
+        color,
         highlight: paint.theme.highlight,
         highlights,
     };
@@ -199,28 +220,7 @@ fn text_line(
 
     paint
         .text
-        .draw(paint.canvas, s, (area.x, base), area.w, &style);
-}
-
-/// Draws `s` in `color`, vertically centered in `area`.
-fn text_colored(
-    paint: &mut Paint<'_, '_>,
-    grid: &Grid,
-    s: &str,
-    area: Area,
-    color: Rgba,
-) {
-    let style = Style {
-        size: grid.font,
-        color,
-        highlight: color,
-        highlights: &[],
-    };
-    let base = baseline(paint, grid.font, area);
-
-    paint
-        .text
-        .draw(paint.canvas, s, (area.x, base), area.w, &style);
+        .draw(paint.canvas, text, (area.x, base), area.w, &style);
 }
 
 /// Returns the baseline that centers text of `size` in `area`.

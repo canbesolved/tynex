@@ -64,7 +64,7 @@ fn mock_source_drives_the_switcher() {
     let mut sw = Switcher::new(
         &config.keys,
         config.hotkey_action,
-        config.appearance.title.clone(),
+        config.appearance.strip_app_name,
         config.sort_by,
         HotkeyMode,
         SearchMode,
@@ -94,16 +94,14 @@ fn mock_source_drives_the_switcher() {
 }
 
 #[test]
-fn titles_from_the_source_are_formatted() {
-    let text = "desktop = \"mock\"\n[appearance]\n\
-                title_format = \"{app} : {title}\"\n";
-    let config = config::parse(text, &|_| false).unwrap();
+fn titles_from_the_source_are_stripped() {
+    let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
     let mut source = mock(config.desktop);
     let (tx, rx) = channel();
     let mut sw = Switcher::new(
         &config.keys,
         config.hotkey_action,
-        config.appearance.title.clone(),
+        config.appearance.strip_app_name,
         config.sort_by,
         HotkeyMode,
         SearchMode,
@@ -113,10 +111,14 @@ fn titles_from_the_source_are_formatted() {
     pump(&rx, &mut sw);
     sw.handle(Event::Show(config.mode));
 
-    let titles: Vec<_> =
-        sw.view().unwrap().rows().map(|r| r.title.clone()).collect();
+    let rows: Vec<_> = sw
+        .view()
+        .unwrap()
+        .rows()
+        .map(|r| (r.app_name.clone(), r.title.clone()))
+        .collect();
 
-    // Sanitized, then " — Okular" is stripped.
-    assert!(titles.contains(&"Okular : manual.pdf fdp.exe".to_owned()));
-    assert!(titles.contains(&"Firefox : Café".to_owned()));
+    // Sanitized, then " — Okular" is stripped; the name stays apart.
+    assert!(rows.contains(&("Okular".into(), "manual.pdf fdp.exe".into())));
+    assert!(rows.contains(&("Firefox".into(), "Café".into())));
 }

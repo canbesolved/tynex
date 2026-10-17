@@ -58,23 +58,20 @@ fn sort_by_values() {
 }
 
 #[test]
-fn title_format_values() {
-    let text = "[appearance]\ntitle_format = \"{app} : {title}\"\n\
-                strip_app_name = false\n";
-    let expected = TitleFormat::parse("{app} : {title}", false).unwrap();
-    let msg = &errors("[appearance]\ntitle_format = \"{name}\"\n")[0];
+fn columns_and_strip_values() {
+    let text = "[appearance]\nshow_app = true\nstrip_app_name = false\n";
+    let config = parse(text, &no_font).expect("valid config");
 
-    assert_eq!(
-        parse(text, &no_font).map(|c| c.appearance.title),
-        Ok(expected)
-    );
-    assert!(
-        msg.starts_with(
-            "2:16: `appearance.title_format` = \"{name}\" is invalid: \
-             unknown placeholder `{name}`"
-        ),
-        "{msg}"
-    );
+    assert!(config.appearance.show_app);
+    assert!(!config.appearance.strip_app_name);
+}
+
+#[test]
+fn removed_title_format_is_an_unknown_key() {
+    let msg = &errors("[appearance]\ntitle_format = \"{title}\"\n")[0];
+
+    assert!(msg.starts_with("2:1: unknown key `title_format`"), "{msg}");
+    assert!(msg.contains("release notes"), "{msg}");
 }
 
 #[test]

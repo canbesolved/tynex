@@ -18,7 +18,6 @@ use tynex::core::keys::DEFAULT_KEYS;
 use tynex::core::order::SortBy;
 use tynex::core::queue::channel;
 use tynex::core::switcher::{HotkeyAction, Switcher};
-use tynex::core::title::TitleFormat;
 use tynex::core::traits::WindowSource;
 use tynex::modes::hotkey::HotkeyMode;
 use tynex::modes::search::SearchMode;
@@ -48,6 +47,7 @@ fn redraw(
         width: 480.0,
         max_rows: 19,
         scale: presenter.scale(),
+        show_app: true,
     };
 
     presenter.show(VerticalList.size(&view, &m, theme));
@@ -73,7 +73,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut app = Switcher::new(
         DEFAULT_KEYS,
         HotkeyAction::Hide,
-        TitleFormat::default(),
+        true,
         SortBy::Key,
         HotkeyMode,
         SearchMode,

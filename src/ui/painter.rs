@@ -75,6 +75,7 @@ impl Painter {
             width: f32::from(self.appearance.width),
             max_rows: usize::from(self.appearance.max_rows),
             scale,
+            show_app: self.appearance.show_app,
         }
     }
 }

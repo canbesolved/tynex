@@ -48,9 +48,8 @@ font = "auto"            # Font file path, or auto
 font_size = 14
 width = 480
 max_rows = 19
-# Row text: {app} is the app name, {title} the window title, for
-# example "{app} : {title}".
-title_format = "{title}"
+# Show the app name in its own column before the title.
+show_app = false
 # Drop " — <app name>" from the end of window titles.
 strip_app_name = true
 ```
@@ -64,12 +63,11 @@ while the popup is open, in either mode: `hide` closes it, `last`
 switches to the previously used window, or closes it when there is
 none.
 
-`appearance.title_format` sets the text of each row. `{app}` is the
-app name (see [ADR-0045](../adr/0045_app_names.md)), `{title}` the
-window title; other text is kept as is, for example
-`"{app} : {title}"` gives `Cursor : My homelab project`. The result
-is sanitized like a title, so an empty app name leaves no leading
-space.
+`appearance.show_app` adds an app name column before the title (see
+[ADR-0045](../adr/0045_app_names.md) for where names come from and
+[vertical_list.md](ui/layouts/vertical_list.md) for the columns). It
+replaces `title_format`, which 0.1.5 removed; a config that still has
+it stops the daemon with an unknown key error.
 
 `appearance.strip_app_name` drops the app name from the end of a
 title, after ` — `, ` – ` or ` - `: `Café — Firefox` becomes `Café`.
@@ -114,7 +112,7 @@ The config is read once, when `tynex daemon` starts
 | `appearance.font_size`      | 8 to 72                                   |
 | `appearance.width`          | 200 to 2000                               |
 | `appearance.max_rows`       | 1 to 50                                   |
-| `appearance.title_format`   | `{app}` or `{title}`, no other braces     |
+| `appearance.show_app`       | `true` or `false`                         |
 | `appearance.strip_app_name` | `true` or `false`                         |
 
 Syntax and type errors stop at the first error, as reported by `toml`.
