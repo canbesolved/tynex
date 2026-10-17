@@ -48,6 +48,16 @@ fn hotkey_action_values() {
 }
 
 #[test]
+fn sort_by_values() {
+    let sort = |text| parse(text, &no_font).map(|c| c.sort_by);
+
+    assert_eq!(sort(""), Ok(SortBy::Key));
+    assert_eq!(sort("sort_by = \"app\"\n"), Ok(SortBy::App));
+    assert_eq!(sort("sort_by = \"recently\"\n"), Ok(SortBy::Recently));
+    assert!(errors("sort_by = \"name\"\n")[0].contains("unknown variant"));
+}
+
+#[test]
 fn title_format_values() {
     let text = "[appearance]\ntitle_format = \"{app} : {title}\"\n\
                 strip_app_name = false\n";

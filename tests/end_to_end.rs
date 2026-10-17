@@ -65,6 +65,7 @@ fn mock_source_drives_the_switcher() {
         &config.keys,
         config.hotkey_action,
         config.appearance.title.clone(),
+        config.sort_by,
         HotkeyMode,
         SearchMode,
     );
@@ -72,22 +73,15 @@ fn mock_source_drives_the_switcher() {
     source.start(tx).expect("mock starts");
     pump(&rx, &mut sw);
 
-    // The active window (mock-01) is last; the previous one gets `a`.
-    assert_eq!(
-        first_rows(&mut sw, 2),
-        [("Café".into(), Some('a')), ("Música".into(), Some('s')),]
-    );
+    // The previous window gets `a`; rows follow their letters.
+    let start = [("Café".into(), Some('a')), ("Música".into(), Some('s'))];
 
-    // Letters stay with their windows while switching.
+    assert_eq!(first_rows(&mut sw, 2), start);
+
+    // Letters and rows stay in place while switching (`sort_by = "key"`).
     switch(&mut sw, &mut source, &rx, 'a');
     switch(&mut sw, &mut source, &rx, 's');
-    assert_eq!(
-        first_rows(&mut sw, 2),
-        [
-            ("Café".into(), Some('a')),
-            ("~/projects/demo : bash".into(), None),
-        ]
-    );
+    assert_eq!(first_rows(&mut sw, 2), start);
 
     let Source::Mock(mock) = &source else {
         unreachable!("mock source")
@@ -110,6 +104,7 @@ fn titles_from_the_source_are_formatted() {
         &config.keys,
         config.hotkey_action,
         config.appearance.title.clone(),
+        config.sort_by,
         HotkeyMode,
         SearchMode,
     );

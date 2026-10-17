@@ -5,6 +5,7 @@
 
 use crate::core::event::{Action, Event, Key, ModeKind};
 use crate::core::keys::Pins;
+use crate::core::order::{SortBy, order};
 use crate::core::state::State;
 use crate::core::text::sanitize_title;
 use crate::core::title::TitleFormat;
@@ -23,6 +24,7 @@ pub enum HotkeyAction {
 pub struct Switcher<H, S> {
     on_hotkey: HotkeyAction,  // For `Show` while open
     format: TitleFormat,      // Row text of each window
+    sort: SortBy,             // Row order
     pins: Pins,               // Letter of each window until it closes
     windows: Vec<WindowInfo>, // Cached list, MRU first, titles formatted
     state: Option<State>,     // Some while the popup is open
@@ -31,18 +33,20 @@ pub struct Switcher<H, S> {
 }
 
 impl<H: Mode, S: Mode> Switcher<H, S> {
-    /// Creates a hidden switcher with the key string, hotkey action and
-    /// title format from the config.
+    /// Creates a hidden switcher with the key string, hotkey action,
+    /// title format and row order from the config.
     pub fn new(
         keys: &str,
         on_hotkey: HotkeyAction,
         format: TitleFormat,
+        sort: SortBy,
         hotkey: H,
         search: S,
     ) -> Self {
         Self {
             on_hotkey,
             format,
+            sort,
             pins: Pins::new(keys),
             windows: Vec::new(),
             state: None,
@@ -106,6 +110,8 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
         let mut state = State::new(mode, self.rows());
 
         self.refresh(&mut state);
+        // The previous window is selected in any order, like Alt+Tab.
+        state.select_id(self.windows.get(1).map(|w| &w.id));
         self.state = Some(state);
         Action::Redraw
     }
@@ -171,9 +177,10 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
         self.pins.update(&self.windows, false);
     }
 
-    /// Builds the rows, active window last, each with its pinned letter.
+    /// Builds the rows in `sort` order, each with its pinned letter.
     fn rows(&self) -> Vec<Row> {
-        active_last(&self.windows)
+        order(&self.windows, &self.pins, self.sort)
+            .into_iter()
             .map(|w| row(w, self.pins.get(&w.id)))
             .collect()
     }
@@ -184,11 +191,6 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
             ModeKind::Search => self.search.refresh(state),
         }
     }
-}
-
-/// Yields windows with the active one (first in the list) moved last.
-fn active_last(windows: &[WindowInfo]) -> impl Iterator<Item = &WindowInfo> {
-    windows.iter().skip(1).chain(windows.first())
 }
 
 /// Builds a row for `window` with letter `key`.
@@ -211,3 +213,7 @@ mod tests;
 #[cfg(test)]
 #[path = "hotkey_action_tests.rs"]
 mod hotkey_action_tests;
+
+#[cfg(test)]
+#[path = "letter_order_tests.rs"]
+mod letter_order_tests;

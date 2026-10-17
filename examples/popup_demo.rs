@@ -15,6 +15,7 @@ use tynex::adapters::mock::MockSource;
 use tynex::config::Font;
 use tynex::core::event::{Action, Event, ModeKind};
 use tynex::core::keys::DEFAULT_KEYS;
+use tynex::core::order::SortBy;
 use tynex::core::queue::channel;
 use tynex::core::switcher::{HotkeyAction, Switcher};
 use tynex::core::title::TitleFormat;
@@ -73,6 +74,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         DEFAULT_KEYS,
         HotkeyAction::Hide,
         TitleFormat::default(),
+        SortBy::Key,
         HotkeyMode,
         SearchMode,
     );

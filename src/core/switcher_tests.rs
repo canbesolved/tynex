@@ -61,20 +61,27 @@ pub(super) fn list(ids: &[&str]) -> Vec<WindowInfo> {
     ids.iter().map(|id| window(id, id)).collect()
 }
 
-fn switcher(ids: &[&str]) -> Switcher<Letters, Filter> {
-    let mut sw = Switcher::new(
-        "asd",
-        HotkeyAction::Hide,
-        TitleFormat::default(),
-        Letters,
-        Filter,
-    );
+/// A hidden switcher in most recently used order, with `hotkey` mode.
+pub(super) fn build<H: Mode>(
+    keys: &str,
+    action: HotkeyAction,
+    hotkey: H,
+) -> Switcher<H, Filter> {
+    let format = TitleFormat::default();
+
+    Switcher::new(keys, action, format, SortBy::Recently, hotkey, Filter)
+}
+
+pub(super) fn switcher(ids: &[&str]) -> Switcher<Letters, Filter> {
+    let mut sw = build("asd", HotkeyAction::Hide, Letters);
 
     assert_eq!(sw.handle(Event::Windows(list(ids))), Action::None);
     sw
 }
 
-fn shown(sw: &Switcher<Letters, Filter>) -> Vec<(String, Option<char>)> {
+pub(super) fn shown(
+    sw: &Switcher<Letters, Filter>,
+) -> Vec<(String, Option<char>)> {
     sw.view()
         .expect("popup is open")
         .rows()
@@ -126,13 +133,7 @@ fn letter_activates_and_closes() {
 
 #[test]
 fn titles_are_sanitized_on_arrival() {
-    let mut sw = Switcher::new(
-        "a",
-        HotkeyAction::Hide,
-        TitleFormat::default(),
-        Letters,
-        Filter,
-    );
+    let mut sw = build("a", HotkeyAction::Hide, Letters);
 
     sw.handle(Event::Windows(vec![window("x", " a\u{202E}\tb ")]));
     sw.handle(Event::Show(ModeKind::Hotkey));
@@ -173,49 +174,6 @@ fn update_while_open_keeps_keys_and_selection() {
 }
 
 #[test]
-fn letters_freed_while_open_are_reused_after_close() {
-    let mut sw = Switcher::new(
-        "asdfh",
-        HotkeyAction::Hide,
-        TitleFormat::default(),
-        Letters,
-        Filter,
-    );
-
-    sw.handle(Event::Windows(list(&["x", "a", "b"])));
-    sw.handle(Event::Show(ModeKind::Hotkey)); // a, b, x get a, s, d
-
-    // "b" closes, "n1" opens: it gets "f", not the freed "s".
-    sw.handle(Event::Windows(list(&["n1", "a", "x"])));
-    assert_eq!(
-        shown(&sw),
-        [
-            ("a".into(), Some('a')),
-            ("x".into(), Some('d')),
-            ("n1".into(), Some('f')),
-        ]
-    );
-
-    // Two more windows: the most recent gets "h", then none are left.
-    sw.handle(Event::Windows(list(&["n3", "n2", "n1", "a", "x"])));
-    assert_eq!(
-        shown(&sw),
-        [
-            ("n2".into(), None),
-            ("n1".into(), Some('f')),
-            ("a".into(), Some('a')),
-            ("x".into(), Some('d')),
-            ("n3".into(), Some('h')),
-        ]
-    );
-
-    // After closing, the held "s" goes to "n2".
-    sw.handle(Event::Hide);
-    sw.handle(Event::Show(ModeKind::Hotkey));
-    assert_eq!(shown(&sw)[0], ("n2".into(), Some('s')));
-}
-
-#[test]
 fn hide_and_quit_close_only_when_open() {
     let mut sw = switcher(&["a"]);
 
@@ -246,13 +204,7 @@ impl Mode for Slash {
 
 #[test]
 fn mode_switch_from_a_mode_refreshes_the_new_mode() {
-    let mut sw = Switcher::new(
-        "asd",
-        HotkeyAction::Hide,
-        TitleFormat::default(),
-        Slash,
-        Filter,
-    );
+    let mut sw = build("asd", HotkeyAction::Hide, Slash);
     let list = ["x", "firefox", "kate"].iter().map(|id| window(id, id));
 
     sw.handle(Event::Windows(list.collect()));

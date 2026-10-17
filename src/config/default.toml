@@ -3,6 +3,9 @@ mode = "hotkey"          # hotkey | search
 # Hotkey pressed again while the popup is open: "hide" closes the
 # popup, "last" switches to the previously used window.
 hotkey_action = "last"   # hide | last
+# Row order: "key" keeps rows in letter order so they never move, "app"
+# groups them by app name, "recently" puts the last used window first.
+sort_by = "key"          # key | app | recently
 layout = "vertical_list"
 keys = "asdfhjklgqwertyuiop"
 

@@ -28,11 +28,20 @@ pub(super) enum RawHotkeyAction {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub(super) enum RawSortBy {
+    Key,
+    App,
+    Recently,
+}
+
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawConfig {
     pub desktop: Desktop,
     pub mode: RawMode,
     pub hotkey_action: RawHotkeyAction,
+    pub sort_by: RawSortBy,
     pub layout: Layout,
     pub keys: Spanned<String>,
     pub appearance: RawAppearance,
@@ -44,6 +53,7 @@ impl Default for RawConfig {
             desktop: Desktop::Auto,
             mode: RawMode::Hotkey,
             hotkey_action: RawHotkeyAction::Last,
+            sort_by: RawSortBy::Key,
             layout: Layout::VerticalList,
             keys: unspanned(crate::core::keys::DEFAULT_KEYS.into()),
             appearance: RawAppearance::default(),

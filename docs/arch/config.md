@@ -37,6 +37,9 @@ mode = "hotkey"          # hotkey | search
 # Hotkey pressed again while the popup is open: "hide" closes the
 # popup, "last" switches to the previously used window.
 hotkey_action = "last"   # hide | last
+# Row order: "key" keeps rows in letter order so they never move, "app"
+# groups them by app name, "recently" puts the last used window first.
+sort_by = "key"          # key | app | recently
 layout = "vertical_list"
 keys = "asdfhjklgqwertyuiop"
 
@@ -74,6 +77,10 @@ The end must equal the app name or the last part of the app id
 (`konsole` for `org.kde.konsole`), ignoring case. A title that would
 become empty stays as it is.
 
+`sort_by` sets the order of the rows: `key` by letter, `app` by app
+name, `recently` by last use. The popup always opens with the previous
+window selected (see [core.md](core.md#row-order)).
+
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
 
 ## Loading rules
@@ -100,6 +107,7 @@ The config is read once, when `tynex daemon` starts
 | `desktop`                   | `auto`, `kde` or `mock`                   |
 | `mode`                      | `hotkey` or `search`                      |
 | `hotkey_action`             | `hide` or `last`                          |
+| `sort_by`                   | `key`, `app` or `recently`                |
 | `layout`                    | `vertical_list`                           |
 | `keys`                      | 1 to 26 unique ASCII lowercase letters    |
 | `appearance.font`           | `auto` or a path to an existing font file |
