@@ -132,3 +132,27 @@ sudo powertop                         # Idle wakeups, target ~0
 ```
 
 Mention the numbers in the pull request when they change.
+
+## Releases
+
+1. Open a release pull request: set `version` in `Cargo.toml`, rename
+   `## [Unreleased]` in `CHANGELOG.md` to `## [x.y.z] - YYYY-MM-DD`
+   with a new empty `## [Unreleased]` above it, update the links at the
+   end, and remove released items from `ROADMAP.md`.
+2. After the merge, tag the merge commit on `main` and push the tag:
+
+   ```bash
+   git tag -a vx.y.z -m "tynex x.y.z"
+   git push origin vx.y.z
+   ```
+
+3. The tag starts `.github/workflows/release.yml`
+   ([ADR-0042](docs/adr/0042_release_binaries.md)). It checks that the
+   tag matches `Cargo.toml`, builds Linux x86_64 and arm64 on Ubuntu
+   22.04, creates the GitHub release with the changelog section as
+   notes (unless it exists), and attaches
+   `tynex-<version>-<target>.tar.gz` and `SHA256SUMS`.
+
+To try the build without publishing, run the Release workflow by hand
+(Actions, Release, Run workflow, on `main`): it builds and keeps the
+archives as workflow artifacts only.

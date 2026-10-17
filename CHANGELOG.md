@@ -16,6 +16,9 @@ project adheres to
   accent folding (`cafe` finds `Café`) and highlighted matches. The
   release binary grows to about 5.4 MB; the budget is now 10 MB
   (ADR-0044).
+- Prebuilt binaries for Linux x86_64 and arm64 on each GitHub release,
+  with a `SHA256SUMS` file, built by `.github/workflows/release.yml`
+  (ADR-0042).
 
 ## [0.1.0] - 2026-10-17
 
