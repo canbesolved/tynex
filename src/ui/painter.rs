@@ -35,16 +35,13 @@ impl Painter {
         }
     }
 
-    /// Resolves fonts for new row texts and loads icons at output
-    /// `scale`, so lookups never run at show time.
+    /// Loads the icons of new windows at output `scale`, so files are
+    /// never read at show time.
     pub fn prepare(&mut self, windows: &[WindowInfo], scale: f32) {
         let size = self.layout.icon_size(&self.metrics(scale), &self.theme);
 
-        for window in windows {
-            self.text.prepare(&window.title);
-            if let Some(icon) = &window.icon {
-                self.icons.prepare(icon, size);
-            }
+        for icon in windows.iter().filter_map(|w| w.icon.as_deref()) {
+            self.icons.prepare(icon, size);
         }
     }
 

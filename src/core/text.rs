@@ -5,16 +5,16 @@
 
 /// Cleans a title once, when it arrives from an adapter.
 ///
-/// Control characters become spaces, bidi override and isolate controls
-/// are removed, whitespace runs collapse to one space and the ends are
-/// trimmed. Letters, case and accents are never changed.
+/// Control characters become spaces, bidi controls and invisible
+/// characters are removed, whitespace runs collapse to one space and the
+/// ends are trimmed. Letters, case and accents are never changed.
 #[must_use]
 pub fn sanitize_title(raw: &str) -> String {
     let mut out = String::with_capacity(raw.len());
     let mut space = false;
 
     for c in raw.chars() {
-        if is_bidi_control(c) {
+        if is_invisible(c) {
             continue;
         }
 
@@ -43,9 +43,19 @@ pub fn cut_points(text: &str) -> impl Iterator<Item = usize> + '_ {
         .chain(std::iter::once(text.len()))
 }
 
-/// Returns true for bidi override and isolate controls.
-fn is_bidi_control(c: char) -> bool {
-    matches!(c, '\u{202A}'..='\u{202E}' | '\u{2066}'..='\u{2069}')
+/// Returns true for bidi controls and marks, and for invisible
+/// characters fonts often draw as boxes.
+fn is_invisible(c: char) -> bool {
+    matches!(
+        c,
+        '\u{061C}' // Arabic letter mark
+            | '\u{200B}' // Zero width space
+            | '\u{200E}'..='\u{200F}' // Left-to-right and right-to-left marks
+            | '\u{202A}'..='\u{202E}' // Embeddings and overrides
+            | '\u{2060}'..='\u{2064}' // Word joiner, invisible operators
+            | '\u{2066}'..='\u{2069}' // Isolates
+            | '\u{FEFF}' // Byte order mark
+    )
 }
 
 /// Returns true for combining diacritical marks.
@@ -73,6 +83,14 @@ mod tests {
     #[test]
     fn bidi_controls_are_removed() {
         assert_eq!(sanitize_title("abc\u{202E}def\u{2066}g"), "abcdefg");
+    }
+
+    #[test]
+    fn invisible_characters_are_removed() {
+        let title = "\u{200E}\u{2068}Notas\u{2069} \u{200B}a\u{FEFF}b\u{2060}c";
+
+        assert_eq!(sanitize_title(title), "Notas abc");
+        assert_eq!(sanitize_title("\u{061C}\u{200F}x\u{2064}"), "x");
     }
 
     #[test]

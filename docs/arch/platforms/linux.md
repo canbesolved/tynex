@@ -19,7 +19,7 @@ platform/linux/
     error.rs      PresenterError
   dbus.rs         Shared D-Bus connection, dispatch, calls
   dbus_ipc.rs     DbusIpc: impl IpcServer, IpcClient
-  fonts.rs        fc-match lookup: default and per-character fallback
+  fonts.rs        The font: configured path or fc-match, mapped once
   key_file.rs     Reader for desktop entries, theme indexes, kdeglobals
   desktop_files.rs  App names and icons from desktop files
   icon_theme.rs   IconTheme: icon files from freedesktop icon themes
@@ -109,8 +109,8 @@ sources go to the core in order, so no locks or channels are needed.
 `event_loop.rs` owns the parts (`Parts`: switcher, window source,
 presenter, bus, painter, event queue). Each turn it:
 
-1. drains the event queue into the switcher; new window lists first
-   resolve their fonts (`Painter::prepare`);
+1. drains the event queue into the switcher; new window lists then
+   load their icons (`Painter::prepare`);
 2. applies the action: `Redraw` sizes and draws the popup, `Activate`
    hides it and calls the window source, `Close` hides it;
 3. flushes Wayland requests and D-Bus calls, then polls;
@@ -226,14 +226,13 @@ spec ([ADR-0046](../../adr/0046_icon_lookup.md)).
 `font`, or `fc-match -f '%{file}:%{index}' sans-serif` for `auto`. No
 fontconfig library is linked; `fc-match` runs without a shell.
 
-`FcFallback` implements `FontLookup`: for a character the loaded fonts
-lack it runs `fc-match` with `sans-serif:charset=<hex>` (see
-[render.md](../ui/render.md#fonts-and-scripts)). Files are cached by
-path and face index, so each is mapped once.
+`fc-match` runs only here, once at start; characters the font lacks
+are drawn as boxes, with no fallback lookup (see
+[render.md](../ui/render.md#fonts-and-scripts)).
 
 - fontconfig keeps the named instance of a variable font in the upper
   16 bits of the index (`262144` is instance 4 of face 0); only the
   lower 16 bits are the face index.
-- Font files are mapped read-only and private with `rustix` and never
+- The font file is mapped read-only and private with `rustix` and never
   unmapped, because `Face` needs `&'static` data. Only used pages count
   towards RAM.

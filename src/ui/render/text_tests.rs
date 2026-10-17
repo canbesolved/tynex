@@ -1,13 +1,9 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Tests for text measuring, fallback, truncation and drawing.
-
-use std::cell::Cell;
-use std::rc::Rc;
+//! Tests for text measuring, missing glyphs, truncation and drawing.
 
 use super::*;
-use crate::ui::render::glyphs::NoFallback;
 
 const FONT: &[u8] = include_bytes!("../../../tests/fonts/dejavu_sans.ttf");
 const SIZE: f32 = 16.0;
@@ -17,17 +13,7 @@ fn font() -> Face {
 }
 
 fn text() -> Text {
-    Text::new(font(), Box::new(NoFallback))
-}
-
-/// Counts lookups and offers the test font for every character.
-struct Counting(Rc<Cell<u32>>);
-
-impl FontLookup for Counting {
-    fn font_for(&mut self, _c: char) -> Option<Face> {
-        self.0.set(self.0.get() + 1);
-        Some(font())
-    }
+    Text::new(font())
 }
 
 fn style(highlights: &[Range<usize>]) -> Style<'_> {
@@ -41,7 +27,7 @@ fn style(highlights: &[Range<usize>]) -> Style<'_> {
 
 #[test]
 fn widths_add_up() {
-    let mut t = text();
+    let t = text();
     let one = t.width("o", SIZE);
 
     assert!(one > 0.0);
@@ -51,14 +37,17 @@ fn widths_add_up() {
 }
 
 #[test]
-fn fallback_is_looked_up_once_per_char() {
-    let calls = Rc::new(Cell::new(0));
-    let mut t = Text::new(font(), Box::new(Counting(Rc::clone(&calls))));
+fn missing_characters_are_boxes() {
+    let mut t = text();
+    let (w, h) = (40, 24);
+    let mut data = vec![0; w * h * 4];
+    let mut canvas = Canvas::new(&mut data, w as u32, h as u32).unwrap();
+    let box_w = t.width("微", SIZE); // Not in DejaVu Sans
 
-    t.width("微微微", SIZE); // Not in DejaVu: looked up, still missing
-    t.width("微", SIZE);
-    t.width("abc", SIZE); // In the primary font: no lookup
-    assert_eq!(calls.get(), 1);
+    assert!(box_w > 0.0);
+    assert!((t.width("信", SIZE) - box_w).abs() < f32::EPSILON);
+    t.draw(&mut canvas, "微", (2.0, 18.0), 40.0, &style(&[]));
+    assert!(data.chunks(4).any(|px| px[3] > 0)); // The box is drawn
 }
 
 #[test]
@@ -68,7 +57,7 @@ fn short_text_is_not_cut() {
 
 #[test]
 fn long_text_is_cut_at_safe_points() {
-    let mut t = text();
+    let t = text();
     let title = "cafe\u{301} cafe\u{301} cafe\u{301} cafe\u{301}";
     let full = t.width(title, SIZE);
     let ellipsis = t.width(ELLIPSIS, SIZE).ceil() as u32;
@@ -109,15 +98,4 @@ fn drawing_uses_text_and_highlight_colors() {
     assert!(all(0..split).all(|p| p != (true, true)));
     assert!(all(split..w).any(|p| p == (true, true)));
     assert!(all(split..w).all(|p| p != (true, false)));
-}
-
-#[test]
-fn prepare_looks_fonts_up_before_drawing() {
-    let calls = Rc::new(Cell::new(0));
-    let mut t = Text::new(font(), Box::new(Counting(Rc::clone(&calls))));
-
-    t.prepare("微信");
-    assert_eq!(calls.get(), 2);
-    t.width("微信", SIZE); // Already resolved
-    assert_eq!(calls.get(), 2);
 }
