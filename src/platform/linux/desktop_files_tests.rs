@@ -13,6 +13,7 @@ const VIEWER: &str = "\
 [Desktop Entry]
 Type=Application
 GenericName=Image Viewer
+Icon=org.example.Pixel
 Name[de]=Bildbetrachter
 Name = Pixel\\sViewer
 Name[de_CH]=Bildli
@@ -50,9 +51,13 @@ fn locale_keys_follow_the_spec_order() {
     assert_eq!(locale_keys(""), keys(&[]));
 }
 
+fn name(text: &str, locale: &str) -> Option<String> {
+    parse_entry(text, &locale_keys(locale)).name
+}
+
 #[test]
 fn name_takes_the_best_locale() {
-    let name = |locale| entry_name(VIEWER, &locale_keys(locale));
+    let name = |locale| name(VIEWER, locale);
 
     assert_eq!(name("de_CH.UTF-8").as_deref(), Some("Bildli"));
     assert_eq!(name("de_AT.UTF-8").as_deref(), Some("Bildbetrachter"));
@@ -62,17 +67,18 @@ fn name_takes_the_best_locale() {
 
 #[test]
 fn only_the_desktop_entry_group_counts() {
-    let fr = locale_keys("fr_FR.UTF-8");
-    let action_only = "[Desktop Action new]\nName=New Window\n";
+    let action_only = "[Desktop Action new]\nName=New\nIcon=new\n";
 
-    assert_eq!(entry_name(VIEWER, &fr).as_deref(), Some("Pixel Viewer"));
-    assert_eq!(entry_name(action_only, &[]), None);
-    assert_eq!(entry_name("[Desktop Entry]\nName=\n", &[]), None);
+    assert_eq!(name(VIEWER, "fr_FR.UTF-8").as_deref(), Some("Pixel Viewer"));
+    assert_eq!(parse_entry(action_only, &[]), Entry::default());
+    assert_eq!(name("[Desktop Entry]\nName=\n", "C"), None);
 }
 
 #[test]
-fn escapes_are_decoded() {
-    assert_eq!(unescape(r"a\sb\tc\\d\"), "a b\tc\\d\\");
+fn icon_is_read() {
+    let entry = parse_entry(VIEWER, &[]);
+
+    assert_eq!(entry.icon.as_deref(), Some("org.example.Pixel"));
 }
 
 #[test]
@@ -85,7 +91,7 @@ fn files_are_found_by_app_id_and_cached() {
         fs::create_dir_all(dir.join("applications")).unwrap();
         fs::write(
             dir.join("applications/org.example.Pixel.desktop"),
-            format!("[Desktop Entry]\nName={name}\n"),
+            format!("[Desktop Entry]\nName={name}\nIcon=/i/{name}.png\n"),
         )
         .unwrap();
     }
@@ -97,15 +103,17 @@ fn files_are_found_by_app_id_and_cached() {
         window("../applications/org.example.Pixel", "class"),
     ];
 
-    files.name(&mut list);
+    files.fill(&mut list);
     assert_eq!(list[0].app_name, "Mine"); // First data dir wins
+    assert_eq!(list[0].icon.as_deref(), Some("/i/Mine.png"));
     assert_eq!(list[1].app_name, "unknown"); // Class stays
+    assert_eq!(list[1].icon.as_deref(), Some("unknown")); // App id
     assert_eq!(list[2].app_name, "class"); // Refused id
 
     // Cached: a removed file is not read again.
     fs::remove_dir_all(&home).unwrap();
     list[0].app_name.clear();
-    files.name(&mut list);
+    files.fill(&mut list);
     assert_eq!(list[0].app_name, "Mine");
     fs::remove_dir_all(base).unwrap();
 }

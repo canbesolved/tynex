@@ -41,19 +41,47 @@ pub fn data_dirs() -> Vec<PathBuf> {
     )
 }
 
-/// Skips relative paths, as the XDG spec says.
+/// Returns the XDG config dirs, most important first:
+/// `$XDG_CONFIG_HOME` or `~/.config`, then `$XDG_CONFIG_DIRS` or
+/// `/etc/xdg`.
+#[must_use]
+pub fn config_dirs() -> Vec<PathBuf> {
+    let home = std::env::home_dir().map(|h| h.join(".config"));
+
+    search_dirs(
+        std::env::var_os("XDG_CONFIG_HOME"),
+        home,
+        std::env::var_os("XDG_CONFIG_DIRS"),
+        "/etc/xdg",
+    )
+}
+
 fn data_dirs_from(
     xdg_home: Option<OsString>,
     xdg_dirs: Option<OsString>,
     home: Option<PathBuf>,
 ) -> Vec<PathBuf> {
+    let home = home.map(|h| h.join(".local/share"));
+
+    search_dirs(xdg_home, home, xdg_dirs, "/usr/local/share:/usr/share")
+}
+
+/// Joins a user dir (`xdg_home`, else `fallback`) and a system list
+/// (`xdg_dirs`, else `default`). Relative paths are skipped, as the
+/// XDG spec says.
+fn search_dirs(
+    xdg_home: Option<OsString>,
+    fallback: Option<PathBuf>,
+    xdg_dirs: Option<OsString>,
+    default: &str,
+) -> Vec<PathBuf> {
     let first = xdg_home
         .map(PathBuf::from)
         .filter(|p| p.is_absolute())
-        .or_else(|| home.map(|h| h.join(".local/share")));
+        .or(fallback);
     let dirs = xdg_dirs
         .filter(|d| !d.is_empty())
-        .unwrap_or_else(|| "/usr/local/share:/usr/share".into());
+        .unwrap_or_else(|| default.into());
 
     first
         .into_iter()

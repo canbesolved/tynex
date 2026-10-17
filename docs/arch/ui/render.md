@@ -17,7 +17,7 @@ ui/render/
 
 - Wraps `tiny_skia::PixmapMut` over the presenter's buffer, so drawing
   goes straight into shared memory.
-- Primitives: rounded rect, filled rect, glyph run, image.
+- Primitives: rounded rect, filled rect, glyph coverage, image.
 - CPU only. A full redraw of a 480 x 600 popup takes well under 1 ms.
 
 ## Text
@@ -56,18 +56,30 @@ ui/render/
 
 ## Icons
 
-1. Take `app_id` (desktop file name) from `WindowInfo`.
-2. Read `Icon=` from the matching `.desktop` file in
-   `$XDG_DATA_DIRS/applications/`.
-3. Look the name up in the current icon theme, then `hicolor`, at the
-   row icon size.
-4. Decode PNG with `tiny-skia` (`png-format` feature); render SVG
-   with `resvg` (default features off: no text, no system fonts, no
-   embedded raster images). SVG is required: Breeze ships its icons
-   only as SVG.
-5. Cache the scaled RGBA image per `app_id`. Misses are cached too.
+`icons.rs` turns an icon name into an image of the row icon size
+([ADR-0046](../../adr/0046_icon_lookup.md)):
 
-Icon lookup runs on first sight of a new app, not on every show.
+1. The adapter sets `icon` on each window: `Icon=` from the app's
+   desktop file, else the app id (see
+   [linux.md](../platforms/linux.md#desktop-files)).
+2. An absolute path is used as is. Other names go to the platform's
+   `IconLookup` (`IconTheme` on Linux, see
+   [linux.md](../platforms/linux.md#icon-themes)), which returns the
+   file closest to the size.
+3. PNG is decoded with `tiny-skia` (`png-format`) and scaled with a
+   bicubic filter; SVG is rendered with `resvg` (default features
+   off: no text, no system fonts, no embedded raster images). SVG is
+   required: Breeze ships its icons only as SVG. Other formats (XPM)
+   are skipped.
+4. The image is fitted into a square of the icon size, centered, with
+   its aspect kept, and cached per (name, size). Misses are cached
+   too.
+
+The icon size is the layout's icon slot at the output scale
+(`Layout::icon_size`). `Painter::prepare` loads the icons of a new
+window list, so files are read when windows change, not when the
+popup opens; a scale change loads the new size on the next draw. A
+missing icon leaves its slot empty.
 
 ## Theme
 

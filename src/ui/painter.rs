@@ -9,6 +9,7 @@ use crate::core::window::WindowInfo;
 use crate::ui::layouts::vertical_list::VerticalList;
 use crate::ui::layouts::{Layout, Metrics, Paint, Size};
 use crate::ui::render::canvas::Canvas;
+use crate::ui::render::icons::Icons;
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
 
@@ -16,6 +17,7 @@ use crate::ui::render::theme::Theme;
 /// fonts and glyph caches stay warm between shows.
 pub struct Painter {
     text: Text,
+    icons: Icons,
     theme: Theme,
     layout: VerticalList,
     appearance: AppearanceConfig,
@@ -23,20 +25,26 @@ pub struct Painter {
 
 impl Painter {
     #[must_use]
-    pub fn new(text: Text, appearance: AppearanceConfig) -> Self {
+    pub fn new(text: Text, icons: Icons, appearance: AppearanceConfig) -> Self {
         Self {
             text,
+            icons,
             theme: Theme::default(),
             layout: VerticalList,
             appearance,
         }
     }
 
-    /// Resolves fonts for new row texts, so lookups never run at show
-    /// time.
-    pub fn prepare(&mut self, windows: &[WindowInfo]) {
+    /// Resolves fonts for new row texts and loads icons at output
+    /// `scale`, so lookups never run at show time.
+    pub fn prepare(&mut self, windows: &[WindowInfo], scale: f32) {
+        let size = self.layout.icon_size(&self.metrics(scale), &self.theme);
+
         for window in windows {
             self.text.prepare(&window.title);
+            if let Some(icon) = &window.icon {
+                self.icons.prepare(icon, size);
+            }
         }
     }
 
@@ -57,6 +65,7 @@ impl Painter {
         let mut paint = Paint {
             canvas,
             text: &mut self.text,
+            icons: &mut self.icons,
             theme: &self.theme,
         };
 

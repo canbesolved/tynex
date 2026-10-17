@@ -15,6 +15,7 @@ pub mod vertical_list;
 
 use crate::core::view::View;
 use crate::ui::render::canvas::Canvas;
+use crate::ui::render::icons::Icons;
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
 
@@ -38,6 +39,7 @@ pub struct Size {
 pub struct Paint<'a, 'c> {
     pub canvas: &'a mut Canvas<'c>,
     pub text: &'a mut Text,
+    pub icons: &'a mut Icons,
     pub theme: &'a Theme,
 }
 
@@ -45,6 +47,9 @@ pub struct Paint<'a, 'c> {
 pub trait Layout {
     /// Returns the surface size for `view`; pure.
     fn size(&self, view: &View<'_>, m: &Metrics, theme: &Theme) -> Size;
+
+    /// Returns the icon side in pixels; pure.
+    fn icon_size(&self, m: &Metrics, theme: &Theme) -> u32;
 
     /// Draws the whole popup.
     fn draw(&self, view: &View<'_>, m: &Metrics, p: &mut Paint<'_, '_>);

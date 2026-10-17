@@ -13,7 +13,7 @@ adapters/kde/
   tynex.js      KWin script, embedded with include_str!
 ```
 
-App names come from desktop files through
+App names and icons come from desktop files through
 `platform/linux/desktop_files.rs`
 ([linux.md](../platforms/linux.md#desktop-files)).
 
@@ -98,7 +98,7 @@ order sent:
   desktop file when there is one
   ([ADR-0045](../../adr/0045_app_names.md));
 - `title` is the caption, sanitized later by the core;
-- `icon` is not set;
+- `icon` is `Icon=` of the desktop file, else the app id;
 - records without exactly four fields or with an empty id are
   skipped, and a repeated id keeps only its first record.
 
@@ -124,6 +124,6 @@ must be restarted.
 
 - Idle: no wakeups; the script sends updates only when windows change.
 - Show: no round trip, the list is cached.
-- App names: one desktop file read per app id, on its first window;
-  later updates use the cache.
+- App names and icons: one desktop file read per app id, on its first
+  window; later updates use the cache.
 - Activate: one `Run` call to KWin, about 1 ms.

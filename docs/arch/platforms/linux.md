@@ -20,7 +20,9 @@ platform/linux/
   dbus.rs         Shared D-Bus connection, dispatch, calls
   dbus_ipc.rs     DbusIpc: impl IpcServer, IpcClient
   fonts.rs        fc-match lookup: default and per-character fallback
-  desktop_files.rs  App names from desktop files
+  key_file.rs     Reader for desktop entries, theme indexes, kdeglobals
+  desktop_files.rs  App names and icons from desktop files
+  icon_theme.rs   IconTheme: icon files from freedesktop icon themes
 ```
 
 ## Wayland presenter
@@ -163,6 +165,8 @@ and exits.
     (`write_atomic`).
   - The user's id for the owner checks comes from
     `rustix::process::getuid`.
+- Config search: `$XDG_CONFIG_HOME`, else `~/.config`, then each
+  entry of `$XDG_CONFIG_DIRS`, else `/etc/xdg` (`config_dirs`).
 - Data: `$XDG_DATA_HOME`, else `~/.local/share`, then each entry of
   `$XDG_DATA_DIRS`, else `/usr/local/share:/usr/share`. Relative
   entries are skipped (`data_dirs`).
@@ -170,27 +174,51 @@ and exits.
 
 ## Desktop files
 
-`DesktopFiles` gives each window the `Name` of its app's desktop file
-([ADR-0045](../../adr/0045_app_names.md)). Adapters call it before
-sending a window list; the KDE adapter does.
+`DesktopFiles` gives each window the `Name` and `Icon` of its app's
+desktop file ([ADR-0045](../../adr/0045_app_names.md)). Adapters call
+it before sending a window list; the KDE adapter does.
 
 - File: `<app id>.desktop` in `applications/` under each data dir, in
   the order above; the first file found wins. Ids that are empty,
   start with `.` or contain `/` are not looked up.
-- Key: `Name` in the `[Desktop Entry]` group; other groups such as
-  actions are skipped. Escapes `\s`, `\n`, `\t`, `\r`, `\\` are
+- Keys: `Name` and `Icon` in the `[Desktop Entry]` group; other
+  groups such as actions are skipped. Escapes `\s`, `\n`, `\t`, `\r`, `\\` are
   decoded. At most 1 MiB of a file is read.
 - Locale: the first non-empty of `LC_ALL`, `LC_MESSAGES` and `LANG`.
   `sr_RS.UTF-8@latin` tries `Name[sr_RS@latin]`, `Name[sr_RS]`,
   `Name[sr@latin]`, `Name[sr]`, then `Name`, as the Desktop Entry
   spec says. `C` and `POSIX` use `Name`.
-- Fallback: without a file or a `Name`, the adapter's value stays
-  (the WM class for KDE).
+- Fallback: without a file or a `Name`, the adapter's name stays (the
+  WM class for KDE). Without a file, the app id is the icon name;
+  with a file but no `Icon`, the window has no icon.
 - Cache: each app id is looked up once, hits and misses alike, and
   kept until the daemon exits. A renamed app shows its new name after
   a restart.
 - Not supported: the subdirectory rule for ids (`kde-foo` in
   `applications/kde/foo.desktop`).
+
+## Icon themes
+
+`IconTheme` implements `IconLookup` from
+[render.md](../ui/render.md#icons) with the freedesktop Icon Theme
+spec ([ADR-0046](../../adr/0046_icon_lookup.md)).
+
+- Theme: `[Icons] Theme` from `kdeglobals` in the config dirs above,
+  else `breeze`.
+- Roots: `~/.icons`, then `icons/` under each data dir. A theme's
+  `index.theme` is read from the first root that has it; its
+  directories are looked up in every root that has the theme.
+- Chain: the theme, its `Inherits` depth first, then `hicolor`, then
+  `pixmaps/` under each data dir. A theme listed twice loads once.
+  Themes load on the first lookup and stay in memory.
+- Directories come from `Directories` and `ScaledDirectories`. Each
+  accepts a size range by `Type`: `Fixed` (`Size`), `Scalable`
+  (`MinSize` to `MaxSize`) or `Threshold` (`Size` plus or minus
+  `Threshold`, default 2), all times `Scale`. Within a theme the
+  directory closest to the requested size wins, index order on ties.
+- Files: `<name>.png`, then `<name>.svg`, checked with `stat`; no
+  directory listing is kept. Names that are empty or contain `/` are
+  refused.
 
 ## Fonts
 

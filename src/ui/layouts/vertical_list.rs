@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Vertical list: one row per window, key badge, icon slot and title.
+//! Vertical list: one row per window, key badge, icon and title.
 
 use crate::core::event::ModeKind;
 use crate::core::view::{Row, View};
@@ -59,6 +59,10 @@ impl Layout for VerticalList {
             width: (metrics.width * metrics.scale).round() as u32,
             height: height.round() as u32,
         }
+    }
+
+    fn icon_size(&self, metrics: &Metrics, theme: &Theme) -> u32 {
+        Grid::new(metrics, theme).icon as u32
     }
 
     fn draw(
@@ -126,7 +130,7 @@ impl Layout for VerticalList {
     }
 }
 
-/// Draws one row: key badge (hotkey mode), icon slot, title.
+/// Draws one row: key badge (hotkey mode), icon, title.
 fn draw_row(
     paint: &mut Paint<'_, '_>,
     grid: &Grid,
@@ -159,7 +163,17 @@ fn draw_row(
         left += side + grid.gap;
     }
 
-    left += grid.icon + grid.gap; // Icon slot; icons are drawn from step 5 on
+    if let Some(icon) = &row.icon {
+        let top = area.y + (area.h - grid.icon) / 2.0;
+
+        paint.icons.draw(
+            paint.canvas,
+            icon,
+            grid.icon as u32,
+            (left as i32, top.round() as i32),
+        );
+    }
+    left += grid.icon + grid.gap;
 
     let title =
         Area::new(left, area.y, area.x + area.w - grid.gap - left, area.h);

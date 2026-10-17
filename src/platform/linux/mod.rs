@@ -9,5 +9,7 @@ pub mod dbus_ipc;
 pub mod desktop_files;
 pub mod event_loop;
 pub mod fonts;
+pub mod icon_theme;
+pub mod key_file;
 pub mod paths;
 pub mod wayland;

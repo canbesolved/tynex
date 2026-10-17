@@ -49,9 +49,11 @@ fn start(config: Config) -> Result<(), String> {
     use crate::modes::search::SearchMode;
     use crate::platform::linux::dbus::Bus;
     use crate::platform::linux::event_loop::{self, Parts};
+    use crate::platform::linux::icon_theme::IconTheme;
     use crate::platform::linux::wayland::WaylandPresenter;
     use crate::platform::linux::{dbus_ipc, fonts};
     use crate::ui::painter::Painter;
+    use crate::ui::render::icons::Icons;
     use crate::ui::render::text::Text;
 
     let bus = Bus::session().map_err(|e| e.to_string())?;
@@ -83,7 +85,11 @@ fn start(config: Config) -> Result<(), String> {
         source,
         presenter,
         bus,
-        painter: Painter::new(text, config.appearance),
+        painter: Painter::new(
+            text,
+            Icons::new(Box::new(IconTheme::default())),
+            config.appearance,
+        ),
         rx,
     };
 

@@ -1,24 +1,28 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! App names from desktop files (freedesktop Desktop Entry spec).
+//! App names and icons from desktop files (freedesktop Desktop Entry
+//! spec).
 
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::Read;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use crate::core::window::WindowInfo;
+use crate::platform::linux::key_file::{self, entries, unescape};
 use crate::platform::linux::paths;
 
-/// Largest desktop file read; real ones are well under this.
-const MAX_SIZE: u64 = 1 << 20;
+/// What a desktop file says about an app.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+struct Entry {
+    name: Option<String>, // Localized `Name`
+    icon: Option<String>, // `Icon`: theme name or absolute path
+}
 
-/// Looks up app names by desktop file id, cached for the daemon's life.
+/// Looks up apps by desktop file id, cached for the daemon's life.
 pub struct DesktopFiles {
     dirs: Vec<PathBuf>,   // `applications/`, best first
     locales: Vec<String>, // `Name[...]` keys, best first
-    names: HashMap<String, Option<String>>, // By app id, misses too
+    entries: HashMap<String, Option<Entry>>, // By app id, misses too
 }
 
 impl Default for DesktopFiles {
@@ -42,31 +46,41 @@ impl DesktopFiles {
                 .map(|dir| dir.join("applications"))
                 .collect(),
             locales: locale_keys(locale),
-            names: HashMap::new(),
+            entries: HashMap::new(),
         }
     }
 
-    /// Sets the app name of each window whose app id has a desktop file
-    /// with a `Name`; other windows keep theirs.
-    pub fn name(&mut self, windows: &mut [WindowInfo]) {
+    /// Sets the app name and icon of each window from its desktop file.
+    /// Without a `Name`, the window keeps its app name; without a
+    /// desktop file, the app id is tried as icon name.
+    pub fn fill(&mut self, windows: &mut [WindowInfo]) {
         for window in windows {
-            if let Some(name) = self.lookup(&window.app_id) {
-                window.app_name = name;
+            match self.lookup(&window.app_id) {
+                Some(entry) => {
+                    if let Some(name) = entry.name {
+                        window.app_name = name;
+                    }
+                    window.icon = entry.icon;
+                }
+                None if !window.app_id.is_empty() => {
+                    window.icon = Some(window.app_id.clone());
+                }
+                None => {}
             }
         }
     }
 
-    fn lookup(&mut self, app_id: &str) -> Option<String> {
-        if let Some(name) = self.names.get(app_id) {
-            return name.clone();
+    fn lookup(&mut self, app_id: &str) -> Option<Entry> {
+        if let Some(entry) = self.entries.get(app_id) {
+            return entry.clone();
         }
 
-        let name = find(&self.dirs, app_id)
-            .and_then(|text| entry_name(&text, &self.locales));
+        let entry = find(&self.dirs, app_id)
+            .map(|text| parse_entry(&text, &self.locales));
 
-        log::debug!("app name of {app_id:?}: {name:?}");
-        self.names.insert(app_id.to_owned(), name.clone());
-        name
+        log::debug!("desktop entry of {app_id:?}: {entry:?}");
+        self.entries.insert(app_id.to_owned(), entry.clone());
+        entry
     }
 }
 
@@ -79,39 +93,24 @@ fn find(dirs: &[PathBuf], app_id: &str) -> Option<String> {
 
     let file = format!("{app_id}.desktop");
 
-    dirs.iter().find_map(|dir| read(&dir.join(&file)))
+    dirs.iter().find_map(|dir| key_file::read(&dir.join(&file)))
 }
 
-fn read(path: &Path) -> Option<String> {
-    let mut bytes = Vec::new();
+/// Reads `Name`, in the first of `locales` it has, else untranslated,
+/// and `Icon` from the `[Desktop Entry]` group of `text`.
+fn parse_entry(text: &str, locales: &[String]) -> Entry {
+    let mut name: Option<(usize, &str)> = None; // Locale rank, value
+    let mut icon = None;
 
-    File::open(path)
-        .ok()?
-        .take(MAX_SIZE)
-        .read_to_end(&mut bytes)
-        .ok()?;
-    Some(String::from_utf8_lossy(&bytes).into_owned())
-}
-
-/// Returns `Name` from the `[Desktop Entry]` group of `text`, in the
-/// first of `locales` it has, else untranslated.
-fn entry_name(text: &str, locales: &[String]) -> Option<String> {
-    let mut in_entry = false;
-    let mut best: Option<(usize, &str)> = None; // Locale rank, value
-
-    for line in text.lines().map(str::trim) {
-        if line.starts_with('[') {
-            in_entry = line == "[Desktop Entry]";
-            continue;
-        }
-        if !in_entry {
+    for (_, key, value) in
+        entries(text).filter(|&(group, ..)| group == "Desktop Entry")
+    {
+        if key == "Icon" {
+            icon = icon.or(Some(value));
             continue;
         }
 
-        let Some((key, value)) = line.split_once('=') else {
-            continue;
-        };
-        let rank = match key.trim_end().strip_prefix("Name") {
+        let rank = match key.strip_prefix("Name") {
             Some("") => Some(locales.len()), // Untranslated, last
             Some(tag) => tag
                 .strip_prefix('[')
@@ -121,35 +120,20 @@ fn entry_name(text: &str, locales: &[String]) -> Option<String> {
         };
 
         if let Some(rank) = rank
-            && best.is_none_or(|(old, _)| rank < old)
+            && name.is_none_or(|(old, _)| rank < old)
         {
-            best = Some((rank, value.trim_start()));
+            name = Some((rank, value));
         }
     }
-    best.map(|(_, value)| unescape(value))
-        .filter(|name| !name.is_empty())
-}
 
-/// Decodes `\s`, `\n`, `\t`, `\r` and `\\`.
-fn unescape(value: &str) -> String {
-    let mut out = String::with_capacity(value.len());
-    let mut chars = value.chars();
+    let text = |value: Option<&str>| {
+        value.map(unescape).filter(|value| !value.is_empty())
+    };
 
-    while let Some(c) = chars.next() {
-        if c != '\\' {
-            out.push(c);
-            continue;
-        }
-        match chars.next() {
-            Some('s') => out.push(' '),
-            Some('n') => out.push('\n'),
-            Some('t') => out.push('\t'),
-            Some('r') => out.push('\r'),
-            Some(other) => out.push(other),
-            None => out.push('\\'),
-        }
+    Entry {
+        name: text(name.map(|(_, value)| value)),
+        icon: text(icon),
     }
-    out
 }
 
 /// Returns the `Name[...]` tags to try for a POSIX locale such as
