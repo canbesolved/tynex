@@ -35,6 +35,14 @@ impl Pins {
         self.pinned.get(id).copied()
     }
 
+    /// Returns the position of window `id`'s letter in `keys`.
+    #[must_use]
+    pub fn rank(&self, id: &WindowId) -> Option<usize> {
+        let key = self.get(id)?;
+
+        self.keys.iter().position(|&k| k == key)
+    }
+
     /// Follows a new window list, most recently used first.
     ///
     /// Closed windows free their letters. While `open`, freed letters are

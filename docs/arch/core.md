@@ -14,6 +14,7 @@ core/
   switcher.rs   State machine (tests in switcher_tests.rs)
   view.rs       View and Row: what the presenter must draw
   keys.rs       Letters pinned to windows
+  order.rs      SortBy: row order (key, app, recently)
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
   title.rs      TitleFormat: row text and app name stripping
@@ -119,9 +120,10 @@ nothing else in the crate. `Presenter` is added with its module.
   letters; keys are ignored. Each title in the cache is replaced by
   its row text (see [Row text](#row-text)).
 - `Show`: snapshot the cached list with its pinned letters, build
-  `State`. A `Show` while visible is a second hotkey press: it closes
-  the popup, or with `HotkeyAction::Last` returns `Activate` for
-  the previous window.
+  `State` with the rows in `sort_by` order (see
+  [Row order](#row-order)), and select the previous window. A `Show`
+  while visible is a second hotkey press: it closes the popup, or with
+  `HotkeyAction::Last` returns `Activate` for the previous window.
 - `Visible`: keys go to the active `Mode`. `Tab` swaps modes; a mode
   may also switch by setting `state.mode`, and the switcher then calls
   the new mode's `refresh`. A mode returning `Activate` or `Close`
@@ -130,7 +132,6 @@ nothing else in the crate. `Presenter` is added with its module.
   id. Letters of closed windows are not reused until the popup closes.
 - `Hide` and `Quit` close an open popup. The daemon loop stops itself
   on `Quit`.
-- The currently active window is moved to the end of the rows.
 
 `Switcher<H, S>` is generic over the hotkey and search modes, so calls
 are static. After `Show`, `Tab` and `Windows` it calls the mode's
@@ -194,11 +195,10 @@ Search ([search.md](modes/search.md)) and rendering
 
 `Pins` in `keys.rs` gives each window a letter from the configured
 string (default `asdfhjklgqwertyuiop`) and keeps it until the window
-closes ([ADR-0041](../adr/0041_pinned_keys.md)). Rows stay in most
-recently used order, so letters are not in row order.
+closes ([ADR-0041](../adr/0041_pinned_keys.md)).
 
-- The first window list gets letters in row order: the previous window
-  gets `a`, the active window comes last.
+- The first window list gets letters in most recently used order: the
+  previous window gets `a`, the active window comes last.
 - Later, windows without a letter take free letters in key string
   order, most recent window first. A new window gets the first free
   letter.
@@ -208,3 +208,21 @@ recently used order, so letters are not in row order.
 - Windows beyond the key string get no letter until one is freed;
   they are reachable with arrows or search.
 - Pins live in memory; a daemon restart assigns them again.
+
+## Row order
+
+`order` in `order.rs` arranges the rows by `sort_by` from the config
+([ADR-0048](../adr/0048_row_order.md)). Every order starts from the
+most recently used order with the active window last, and sorts
+stably from there:
+
+- `key` (default): by the position of each letter in `keys`. Rows
+  never move; a new window shows at the place of the letter it takes,
+  also in the middle of the list.
+- `app`: by app name, ignoring case, then by letter.
+- `recently`: no sorting; the previous window comes first and the
+  active window last.
+
+Windows without a letter come after those with one. The popup opens
+with the previous window selected in every order, so `Enter` switches
+back like Alt+Tab.

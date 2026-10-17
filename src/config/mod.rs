@@ -16,6 +16,7 @@ pub use crate::config::error::ConfigError;
 pub use crate::config::file::{Loaded, load_or_create};
 use crate::core::event::ModeKind;
 use crate::core::keys::DEFAULT_KEYS;
+use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
 use crate::core::title::TitleFormat;
 
@@ -61,6 +62,7 @@ pub struct Config {
     pub desktop: Desktop,
     pub mode: ModeKind,
     pub hotkey_action: HotkeyAction,
+    pub sort_by: SortBy,
     pub layout: Layout,
     pub keys: String,
     pub appearance: AppearanceConfig,
@@ -72,6 +74,7 @@ impl Default for Config {
             desktop: Desktop::Auto,
             mode: ModeKind::Hotkey,
             hotkey_action: HotkeyAction::Last,
+            sort_by: SortBy::Key,
             layout: Layout::VerticalList,
             keys: DEFAULT_KEYS.into(),
             appearance: AppearanceConfig {

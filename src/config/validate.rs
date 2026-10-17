@@ -9,9 +9,10 @@ use std::path::{Path, PathBuf};
 use toml::Spanned;
 
 use crate::config::error::ConfigError;
-use crate::config::raw::{RawConfig, RawHotkeyAction, RawMode};
+use crate::config::raw::{RawConfig, RawHotkeyAction, RawMode, RawSortBy};
 use crate::config::{AppearanceConfig, Config, Font};
 use crate::core::event::ModeKind;
+use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
 use crate::core::title::TitleFormat;
 
@@ -87,6 +88,11 @@ pub(super) fn validate(
         hotkey_action: match raw.hotkey_action {
             RawHotkeyAction::Hide => HotkeyAction::Hide,
             RawHotkeyAction::Last => HotkeyAction::Last,
+        },
+        sort_by: match raw.sort_by {
+            RawSortBy::Key => SortBy::Key,
+            RawSortBy::App => SortBy::App,
+            RawSortBy::Recently => SortBy::Recently,
         },
         layout: raw.layout,
         keys: raw.keys.into_inner(),

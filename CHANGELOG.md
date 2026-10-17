@@ -9,6 +9,19 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `sort_by` sets the row order: `"key"` (default) keeps rows in the
+  order of their letters, so they never move while switching; `"app"`
+  groups them by app name; `"recently"` is the order before this
+  release. The popup opens with the previous window selected in every
+  order (ADR-0048).
+
+### Changed
+
+- Rows follow their letters by default instead of most recently used
+  order; set `sort_by = "recently"` for the old order.
+
 ## [0.1.3] - 2026-10-17
 
 App icons and one font for all text.

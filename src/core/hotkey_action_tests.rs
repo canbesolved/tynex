@@ -3,14 +3,13 @@
 
 //! Tests for a hotkey press while the popup is open.
 
-use super::tests::{Filter, Letters, list};
+use super::tests::{Filter, Letters, build, list};
 use super::*;
 use crate::core::window::WindowId;
 
 /// A switcher with `ids` open in hotkey mode.
 fn open(action: HotkeyAction, ids: &[&str]) -> Switcher<Letters, Filter> {
-    let mut sw =
-        Switcher::new("asd", action, TitleFormat::default(), Letters, Filter);
+    let mut sw = build("asd", action, Letters);
 
     sw.handle(Event::Windows(list(ids)));
     sw.handle(Event::Show(ModeKind::Hotkey));

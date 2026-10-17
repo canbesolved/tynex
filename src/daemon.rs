@@ -79,6 +79,7 @@ fn start(config: Config) -> Result<(), String> {
             &config.keys,
             config.hotkey_action,
             config.appearance.title.clone(),
+            config.sort_by,
             HotkeyMode,
             SearchMode,
         ),
