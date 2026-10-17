@@ -14,7 +14,6 @@ released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md).
 Rules:
 
 - Items are user-facing features, not internal tasks.
-- Scheduling an item in Now or Next opens a GitHub issue and milestone.
 - A design-changing item gets an ADR before work starts.
 
 ## Now: 0.1.x
