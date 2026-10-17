@@ -30,14 +30,14 @@
 Press a hotkey, see your windows in a centered list, press one letter,
 and you are there. No mouse, no scrolling, no waiting.
 
-> Status: 0.1.2, for KDE Plasma 6 on Wayland. App icons follow in
-> 0.1.3 (see the [roadmap](ROADMAP.md)).
+> Status: 0.1.3, for KDE Plasma 6 on Wayland. Row sorting and columns
+> follow in 0.1.x (see the [roadmap](ROADMAP.md)).
 
 ## Features
 
 - Centered popup with a vertical list of open windows.
-- Each entry shows the window title, optionally with the app name
-  (`"{app} : {title}"`); app icons come in 0.1.3.
+- Each entry shows the app icon and the window title, optionally with
+  the app name (`"{app} : {title}"`).
 - Home row keys (`a s d f h j k l`) jump straight to a window, and a
   window keeps its key until it closes.
 - Fuzzy search mode: open the switcher and start typing; accents and
@@ -50,7 +50,7 @@ and you are there. No mouse, no scrolling, no waiting.
 
 | Environment      | Session | Status  |
 | ---------------- | ------- | ------- |
-| KDE Plasma 6     | Wayland | 0.1.2   |
+| KDE Plasma 6     | Wayland | 0.1.3   |
 | Other DEs / WMs  | Any     | Planned |
 | macOS, Windows   | -       | Planned |
 
@@ -64,7 +64,7 @@ prebuilt binaries for Linux x86_64 and arm64 (glibc 2.35 or newer),
 for example:
 
 ```bash
-v=0.1.2 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
+v=0.1.3 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
 url=https://github.com/canbesolved/tynex/releases/download/v$v
 curl -LO "$url/tynex-$v-$t.tar.gz" -LO "$url/SHA256SUMS"
 sha256sum -c --ignore-missing SHA256SUMS
@@ -137,7 +137,7 @@ layout = "vertical_list"
 keys = "asdfhjklgqwertyuiop"
 
 [appearance]
-font = "auto"
+font = "auto"            # Or a font file with your scripts (CJK)
 font_size = 14
 width = 480
 title_format = "{title}" # Row text, for example "{app} : {title}"
