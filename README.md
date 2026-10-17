@@ -30,15 +30,18 @@
 Press a hotkey, see your windows in a centered list, press one letter,
 and you are there. No mouse, no scrolling, no waiting.
 
-> Status: early development toward 0.1.0 (see the [roadmap](ROADMAP.md)).
-> Not ready for daily use yet.
+> Status: 0.1.0, the first release, for KDE Plasma 6 on Wayland. Search
+> mode, app icons and packages follow in 0.1.x (see the
+> [roadmap](ROADMAP.md)).
 
 ## Features
 
 - Centered popup with a vertical list of open windows.
-- Each entry shows the app icon and the window title.
-- Home row keys (`a s d f h j k l`) jump straight to a window.
-- Fuzzy search mode: open the switcher and start typing.
+- Each entry shows the window title; app icons come in 0.1.3.
+- Home row keys (`a s d f h j k l`) jump straight to a window, and a
+  window keeps its key until it closes.
+- Fuzzy search mode, coming in 0.1.1: open the switcher and start
+  typing.
 - Low footprint: idle at 0 % CPU, under 10 MB of RAM, no GPU usage.
 - Modular core: window sources, layouts and modes are plug-in modules.
 - Configuration in a single TOML file.
@@ -96,13 +99,13 @@ tynex quit               # Stop the background service
 On KDE the default hotkey is `Meta+Tab`. Change it in System Settings,
 Shortcuts, `tynex`. On other desktops bind `tynex show` to any key.
 Pressing the hotkey again switches to the previous window, or closes
-the popup with `hotkey_action = "hide"`. The popup also
-closes when it loses keyboard focus.
+the popup with `hotkey_action = "hide"`. The popup also closes when it
+loses keyboard focus.
 
 In the popup:
 
 - hotkey mode: press the letter next to a window;
-- search mode: type to filter, `Enter` to switch;
+- search mode (from 0.1.1): type to filter, `Enter` to switch;
 - `Tab` toggles the modes, arrows move, `Esc` closes.
 
 ## Configuration
