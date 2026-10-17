@@ -60,7 +60,7 @@ fn mock_source_drives_the_switcher() {
     let config = config::parse(text, &|_| false).expect("valid config");
     let mut source = mock(config.desktop);
     let (tx, rx) = channel();
-    let mut sw = Switcher::new(config.keys, HotkeyMode, HotkeyMode);
+    let mut sw = Switcher::new(&config.keys, HotkeyMode, HotkeyMode);
 
     source.start(tx).expect("mock starts");
     pump(&rx, &mut sw);
@@ -74,9 +74,16 @@ fn mock_source_drives_the_switcher() {
         ]
     );
 
-    // Pressing `a` twice toggles between the two most recent windows.
+    // Letters stay with their windows while switching.
     switch(&mut sw, &mut source, &rx, 'a');
-    switch(&mut sw, &mut source, &rx, 'a');
+    switch(&mut sw, &mut source, &rx, 's');
+    assert_eq!(
+        first_rows(&mut sw, 2),
+        [
+            ("Café — Firefox".into(), Some('a')),
+            ("~/projects/demo : bash".into(), None),
+        ]
+    );
 
     let Source::Mock(mock) = &source else {
         unreachable!("mock source")
@@ -84,7 +91,7 @@ fn mock_source_drives_the_switcher() {
 
     assert_eq!(
         mock.activations(),
-        [WindowId("mock-02".into()), WindowId("mock-01".into())]
+        [WindowId("mock-02".into()), WindowId("mock-03".into())]
     );
 }
 
@@ -93,7 +100,7 @@ fn titles_from_the_source_are_sanitized() {
     let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
     let mut source = mock(config.desktop);
     let (tx, rx) = channel();
-    let mut sw = Switcher::new(config.keys, HotkeyMode, HotkeyMode);
+    let mut sw = Switcher::new(&config.keys, HotkeyMode, HotkeyMode);
 
     source.start(tx).unwrap();
     pump(&rx, &mut sw);

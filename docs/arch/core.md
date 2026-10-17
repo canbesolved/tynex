@@ -13,7 +13,7 @@ core/
   state.rs      State of an open popup, shared with the modes
   switcher.rs   State machine (tests in switcher_tests.rs)
   view.rs       View and Row: what the presenter must draw
-  keys.rs       Letter assignment
+  keys.rs       Letters pinned to windows
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
 ```
@@ -113,20 +113,19 @@ nothing else in the crate. `Presenter` is added with its module.
                        └────┘
 ```
 
-- `Hidden`: only `Windows` updates the cached list; keys are ignored.
-- `Show`: snapshot the cached list, assign keys, build `State`.
+- `Hidden`: only `Windows` updates the cached list and the pinned
+  letters; keys are ignored.
+- `Show`: snapshot the cached list with its pinned letters, build
+  `State`.
 - `Visible`: keys go to the active `Mode`. `Tab` swaps modes; a mode
   may also switch by setting `state.mode`, and the switcher then calls
   the new mode's `refresh`. A mode returning `Activate` or `Close`
   hides the popup.
 - `Windows` while visible: refresh the rows and keep the selection by
-  id. Keys stay with their windows. New windows get the next unused
-  letters after the last one assigned; letters of closed windows are
-  not reused while the popup is open.
+  id. Letters of closed windows are not reused until the popup closes.
 - `Hide` and `Quit` close an open popup. The daemon loop stops itself
   on `Quit`.
-- The currently active window is moved to the end, so the previous
-  window gets the first key (`a`), like Alt+Tab.
+- The currently active window is moved to the end of the rows.
 
 `Switcher<H, S>` is generic over the hotkey and search modes, so calls
 are static. After `Show`, `Tab` and `Windows` it calls the mode's
@@ -167,8 +166,19 @@ Search ([search.md](modes/search.md)) and rendering
 
 ## Key assignment
 
-`keys.rs` maps row index to a letter from the configured string
-(default `asdfhjklgqwertyuiop`). Rows beyond the string get no letter
-and are reachable with arrows or search. Assignment is stable for the
-lifetime of one popup; windows that appear meanwhile continue the key
-string.
+`Pins` in `keys.rs` gives each window a letter from the configured
+string (default `asdfhjklgqwertyuiop`) and keeps it until the window
+closes ([ADR-0041](../adr/0041_pinned_keys.md)). Rows stay in most
+recently used order, so letters are not in row order.
+
+- The first window list gets letters in row order: the previous window
+  gets `a`, the active window comes last.
+- Later, windows without a letter take free letters in key string
+  order, most recent window first. A new window gets the first free
+  letter.
+- A closed window frees its letter. While the popup is open, freed
+  letters are held back until it closes, so a letter on screen never
+  moves to another window.
+- Windows beyond the key string get no letter until one is freed;
+  they are reachable with arrows or search.
+- Pins live in memory; a daemon restart assigns them again.

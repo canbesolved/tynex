@@ -4,6 +4,7 @@
 //! Tests for the switcher, with minimal stand-in modes.
 
 use super::*;
+use crate::core::window::WindowId;
 
 /// Letter keys activate; `Esc` closes; arrows move.
 struct Letters;
@@ -54,11 +55,15 @@ fn window(id: &str, title: &str) -> WindowInfo {
     }
 }
 
+/// Windows whose ids are also their titles, most recent first.
+fn list(ids: &[&str]) -> Vec<WindowInfo> {
+    ids.iter().map(|id| window(id, id)).collect()
+}
+
 fn switcher(ids: &[&str]) -> Switcher<Letters, Filter> {
     let mut sw = Switcher::new("asd", Letters, Filter);
-    let list = ids.iter().map(|id| window(id, id)).collect();
 
-    assert_eq!(sw.handle(Event::Windows(list)), Action::None);
+    assert_eq!(sw.handle(Event::Windows(list(ids))), Action::None);
     sw
 }
 
@@ -139,9 +144,10 @@ fn update_while_open_keeps_keys_and_selection() {
     sw.handle(Event::Show(ModeKind::Hotkey));
     sw.handle(Event::Key(Key::Down)); // Select "b"
 
-    let list = ["b", "x", "a"].iter().map(|id| window(id, id)).collect();
-
-    assert_eq!(sw.handle(Event::Windows(list)), Action::Redraw);
+    assert_eq!(
+        sw.handle(Event::Windows(list(&["b", "x", "a"]))),
+        Action::Redraw
+    );
     assert_eq!(
         shown(&sw),
         [
@@ -154,15 +160,14 @@ fn update_while_open_keeps_keys_and_selection() {
 }
 
 #[test]
-fn new_windows_get_next_unused_letters() {
-    let ids = |ids: &[&str]| ids.iter().map(|id| window(id, id)).collect();
+fn letters_freed_while_open_are_reused_after_close() {
     let mut sw = Switcher::new("asdfh", Letters, Filter);
 
-    sw.handle(Event::Windows(ids(&["x", "a", "b"])));
+    sw.handle(Event::Windows(list(&["x", "a", "b"])));
     sw.handle(Event::Show(ModeKind::Hotkey)); // a, b, x get a, s, d
 
     // "b" closes, "n1" opens: it gets "f", not the freed "s".
-    sw.handle(Event::Windows(ids(&["n1", "a", "x"])));
+    sw.handle(Event::Windows(list(&["n1", "a", "x"])));
     assert_eq!(
         shown(&sw),
         [
@@ -172,18 +177,23 @@ fn new_windows_get_next_unused_letters() {
         ]
     );
 
-    // Two more windows: "h", then no letters are left.
-    sw.handle(Event::Windows(ids(&["n3", "n2", "n1", "a", "x"])));
+    // Two more windows: the most recent gets "h", then none are left.
+    sw.handle(Event::Windows(list(&["n3", "n2", "n1", "a", "x"])));
     assert_eq!(
         shown(&sw),
         [
-            ("n2".into(), Some('h')),
+            ("n2".into(), None),
             ("n1".into(), Some('f')),
             ("a".into(), Some('a')),
             ("x".into(), Some('d')),
-            ("n3".into(), None),
+            ("n3".into(), Some('h')),
         ]
     );
+
+    // After closing, the held "s" goes to "n2".
+    sw.handle(Event::Hide);
+    sw.handle(Event::Show(ModeKind::Hotkey));
+    assert_eq!(shown(&sw)[0], ("n2".into(), Some('s')));
 }
 
 #[test]
