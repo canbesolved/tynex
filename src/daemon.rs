@@ -46,6 +46,7 @@ fn start(config: Config) -> Result<(), String> {
     use crate::core::switcher::Switcher;
     use crate::core::traits::WindowSource;
     use crate::modes::hotkey::HotkeyMode;
+    use crate::modes::search::SearchMode;
     use crate::platform::linux::dbus::Bus;
     use crate::platform::linux::event_loop::{self, Parts};
     use crate::platform::linux::wayland::WaylandPresenter;
@@ -76,7 +77,7 @@ fn start(config: Config) -> Result<(), String> {
             &config.keys,
             config.hotkey_action,
             HotkeyMode,
-            HotkeyMode,
+            SearchMode,
         ),
         source,
         presenter,

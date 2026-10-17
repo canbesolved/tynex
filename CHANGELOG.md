@@ -9,6 +9,14 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Search mode: typing filters windows by title and app id with fuzzy
+  matching (`frizbee`): smart case, one typo per four characters,
+  accent folding (`cafe` finds `Café`) and highlighted matches. The
+  release binary grows to about 5.4 MB; the budget is now 10 MB
+  (ADR-0044).
+
 ## [0.1.0] - 2026-10-17
 
 First release, for KDE Plasma 6 on Wayland.

@@ -126,7 +126,7 @@ for changes on the hot path, measure a release build:
 
 ```bash
 cargo build --release
-ls -lh target/release/tynex           # Binary size, target < 3 MB
+ls -lh target/release/tynex           # Binary size, target < 10 MB
 ps -o rss=,cmd= -C tynex              # Resident memory, target < 10 MB
 sudo powertop                         # Idle wakeups, target ~0
 ```

@@ -12,4 +12,5 @@ pub mod ipc;
 pub mod logger;
 pub mod modes;
 pub mod platform;
+pub mod search;
 pub mod ui;

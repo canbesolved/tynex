@@ -4,3 +4,4 @@
 //! Switching modes: how key presses pick a window.
 
 pub mod hotkey;
+pub mod search;

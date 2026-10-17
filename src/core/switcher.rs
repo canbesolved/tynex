@@ -184,6 +184,7 @@ fn row(window: &WindowInfo, key: Option<char>) -> Row {
     Row {
         id: window.id.clone(),
         key,
+        app_id: window.app_id.clone(),
         icon: window.icon.clone(),
         title: window.title.clone(),
         highlights: Vec::new(),
