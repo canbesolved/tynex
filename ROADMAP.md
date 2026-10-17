@@ -7,7 +7,7 @@ released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md).
 
 | Horizon | Release   | Meaning                             |
 | ------- | --------- | ----------------------------------- |
-| Now     | 0.1.0     | First release, in development       |
+| Now     | 0.1.x     | Patch releases, in the order below  |
 | Next    | 0.2.0     | Committed for the following release |
 | Later   | Unplanned | Accepted ideas, not scheduled yet   |
 
@@ -17,13 +17,16 @@ Rules:
 - Scheduling an item in Now or Next opens a GitHub issue and milestone.
 - A design-changing item gets an ADR before work starts.
 
-## Now: 0.1.0
+## Now: 0.1.x
 
 Target: KDE Plasma 6 on Wayland.
 
-- [ ] Resident daemon and CLI (`daemon`, `show`, `hide`, `quit`).
-- [ ] KDE adapter: KWin script bridge, `Meta+Tab` shortcut.
-- [ ] Centered popup with a vertical list: icon and title per window.
+### 0.1.1
+
+- [ ] Search mode: fuzzy filtering while typing.
+
+### 0.1.2
+
 - [ ] App names from desktop files (`Name=`, localized), with
   `resourceClass` as fallback.
 - [ ] Row text format: `title_format = "{app} : {title}"` in
@@ -32,26 +35,14 @@ Target: KDE Plasma 6 on Wayland.
 - [ ] Drop the app name from the end of titles:
   `strip_app_name = true` (default) in `[appearance]` turns
   `Café — Firefox` into `Café` (separators ` — `, ` – `, ` - `).
-- [ ] Hotkey pressed again while the popup is open:
-  `hotkey_action = "last"` (default) switches to the previous window,
-  `"hide"` closes it.
-- [ ] Pinned keys: a window keeps its letter until it closes, so
-  letters no longer move when windows are switched. Rows stay in MRU
-  order; a freed letter goes to the most recent window without one
-  ([ADR-0041](docs/adr/0041_pinned_keys.md)).
-- [ ] The popup hides when it loses keyboard focus.
-- [ ] Hotkey mode: home row letters switch windows.
-- [ ] Search mode: fuzzy filtering while typing.
-- [ ] Configuration in `tynex.toml`.
+
+### 0.1.3
+
+- [ ] App icons in the list, from desktop files and the icon theme.
+
+### 0.1.4
+
 - [ ] Packaging: systemd user unit and autostart entry.
-
-Build order:
-
-1. Core and config with unit tests, no I/O.
-2. Mock window source to test core and config end to end.
-3. Wayland popup and hotkey mode, driven by the mock window source.
-4. KDE adapter with the KWin script, daemon and CLI over D-Bus.
-5. Search mode, icons and app names from desktop files, packaging.
 
 ## Next: 0.2.0
 

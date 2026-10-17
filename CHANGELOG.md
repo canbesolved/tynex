@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-17
+
+First release, for KDE Plasma 6 on Wayland.
+
 ### Added
 
 - Project scaffold: Cargo package, release profile tuned for size,
@@ -23,7 +27,7 @@ project adheres to
 - CI on GitHub Actions running all Tooling checks on each pull request,
   and README badges.
 - Core types (`WindowId`, `WindowInfo`, `Event`, `Action`, `Key`),
-  title sanitizing, safe cut points and letter key assignment.
+  title sanitizing and safe cut points.
 - Switcher state machine with `State`, `View` and the `Mode` trait.
 - Config parsing, defaults and validation for `tynex.toml`, and the
   default file written on first start (`serde`, `toml`).
@@ -56,10 +60,8 @@ project adheres to
   switches to the previous window (`"last"`, default) or hides it
   (`"hide"`).
 - The popup closes when it loses keyboard focus.
+- Pinned letter keys: a window keeps its letter until it closes
+  (ADR-0041).
 
-### Changed
-
-- Letter keys are pinned: a window keeps its letter until it closes,
-  instead of letters following most recently used order (ADR-0041).
-
-[Unreleased]: https://github.com/canbesolved/tynex/commits/main
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/canbesolved/tynex/releases/tag/v0.1.0
