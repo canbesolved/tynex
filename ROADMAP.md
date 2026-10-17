@@ -21,12 +21,6 @@ Rules:
 
 Target: KDE Plasma 6 on Wayland.
 
-### 0.1.1
-
-- [ ] Search mode: fuzzy filtering while typing.
-- [ ] Prebuilt binaries on each GitHub release for Linux x86_64 and
-  arm64 ([ADR-0042](docs/adr/0042_release_binaries.md)).
-
 ### 0.1.2
 
 - [ ] App names from desktop files (`Name=`, localized), with
