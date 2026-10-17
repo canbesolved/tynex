@@ -24,6 +24,18 @@ Target: KDE Plasma 6 on Wayland.
 - [ ] Resident daemon and CLI (`daemon`, `show`, `hide`, `quit`).
 - [ ] KDE adapter: KWin script bridge, `Meta+Tab` shortcut.
 - [ ] Centered popup with a vertical list: icon and title per window.
+- [ ] App names from desktop files (`Name=`, localized), with
+  `resourceClass` as fallback.
+- [ ] Row text format: `title_format = "{app} : {title}"` in
+  `[appearance]`, for example `Cursor : My homelab project`. Default
+  `"{title}"`.
+- [ ] Drop the app name from the end of titles:
+  `strip_app_name = true` (default) in `[appearance]` turns
+  `Café — Firefox` into `Café` (separators ` — `, ` – `, ` - `).
+- [ ] Hotkey pressed again while the popup is open:
+  `hotkey_action = "close"` (default) closes it, `"last_app"` switches
+  to the previous window.
+- [ ] The popup hides when it loses keyboard focus.
 - [ ] Hotkey mode: home row letters switch windows.
 - [ ] Search mode: fuzzy filtering while typing.
 - [ ] Configuration in `tynex.toml`.
@@ -35,13 +47,14 @@ Build order:
 2. Mock window source to test core and config end to end.
 3. Wayland popup and hotkey mode, driven by the mock window source.
 4. KDE adapter with the KWin script, daemon and CLI over D-Bus.
-5. Search mode, icons, packaging.
+5. Search mode, icons and app names from desktop files, packaging.
 
 ## Next: 0.2.0
 
 - [ ] Hide app icons: `show_icons = false` in `[appearance]`.
-- [ ] Per-app titles: rename or predefine a title per app, for example
-  `[apps.firefox]` with `title = "Web"`.
+- [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
+  with a custom title, for example `[apps.firefox]` with
+  `title = "Web"`.
 - [ ] `tynex reload`: re-read the config without restarting. An invalid
   file is reported and the running config stays in use.
 
@@ -51,8 +64,8 @@ Layouts and modes:
 
 - [ ] More layouts: grid, horizontal strip.
 - [ ] More switching modes.
-- [ ] Per-app pinned keys that do not move with most recently used
-  (MRU) order.
+- [ ] Per-app keys: `key = "w"` in `[apps.<app_id>]` reserves a letter
+  for the app's window; automatic pinning skips reserved letters.
 
 Launcher:
 
