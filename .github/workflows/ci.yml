@@ -1,5 +1,6 @@
 # Runs the Tooling checks from AGENTS.md on every pull request and on
-# every push to main. Actions are pinned to full commit hashes.
+# every push to main. Actions are pinned to full commit hashes, runners
+# to an Ubuntu release.
 name: CI
 
 on:
@@ -20,7 +21,7 @@ env:
 jobs:
   rust:
     name: Format, lint and test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       # actions/checkout v7.0.1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -48,7 +49,7 @@ jobs:
 
   msrv:
     name: Minimum Rust version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -67,7 +68,7 @@ jobs:
 
   deny:
     name: Dependencies
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       DENY_VERSION: "0.20.2"
       # SHA-256 of the x86_64 musl release archive, checked locally.
@@ -92,7 +93,7 @@ jobs:
 
   docs:
     name: Docs, scripts and licenses
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
