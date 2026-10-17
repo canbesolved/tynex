@@ -17,6 +17,7 @@ pub use crate::config::file::{Loaded, load_or_create};
 use crate::core::event::ModeKind;
 use crate::core::keys::DEFAULT_KEYS;
 use crate::core::switcher::HotkeyAction;
+use crate::core::title::TitleFormat;
 
 /// The default config file, written on first start.
 pub const DEFAULT_TOML: &str = include_str!("default.toml");
@@ -51,6 +52,7 @@ pub struct AppearanceConfig {
     pub font_size: u16,
     pub width: u16,
     pub max_rows: u16,
+    pub title: TitleFormat, // `title_format` and `strip_app_name`
 }
 
 /// The whole config file, validated.
@@ -77,6 +79,7 @@ impl Default for Config {
                 font_size: 14,
                 width: 480,
                 max_rows: 19,
+                title: TitleFormat::default(),
             },
         }
     }

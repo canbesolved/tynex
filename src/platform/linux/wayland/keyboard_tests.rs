@@ -9,7 +9,7 @@ const KEY_A: u32 = 30; // evdev codes
 const KEY_DOWN: u32 = 108;
 const KEY_ENTER: u32 = 28;
 
-/// A keyboard with `layouts` (for example "us,ru") and no compose.
+/// A keyboard with `layouts` (for example "us,gr") and no compose.
 fn keyboard(layouts: &str) -> Keyboard {
     let mut kb = Keyboard::new();
     let keymap = xkb::Keymap::new_from_names(
@@ -21,7 +21,7 @@ fn keyboard(layouts: &str) -> Keyboard {
         None,
         xkb::KEYMAP_COMPILE_NO_FLAGS,
     )
-    .expect("XKB data for us and ru");
+    .expect("XKB data for us and gr");
     let state = xkb::State::new(&keymap);
 
     kb.state = Some((keymap, state));
@@ -63,15 +63,15 @@ fn text_must_be_one_printable_char() {
 }
 
 #[test]
-fn latin_key_with_russian_layout_active() {
-    let mut kb = keyboard("us,ru");
+fn latin_key_with_greek_layout_active() {
+    let mut kb = keyboard("us,gr");
     let now = Instant::now();
 
-    kb.modifiers(0, 0, 0, 1); // Second layout: Russian
+    kb.modifiers(0, 0, 0, 1); // Second layout: Greek
     assert_eq!(
         kb.press(KEY_A, now),
         Some(Key::Char {
-            text: 'ф',
+            text: 'α',
             latin: Some('a')
         })
     );

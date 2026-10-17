@@ -83,8 +83,7 @@ mod tests {
 
     #[test]
     fn letters_stay_unchanged() {
-        for title in ["Документы — Dolphin", "微信", "Café — Firefox"]
-        {
+        for title in ["Música — Dolphin", "微信", "Café — Firefox"] {
             assert_eq!(sanitize_title(title), title);
         }
         assert_eq!(sanitize_title("e\u{301}"), "e\u{301}");

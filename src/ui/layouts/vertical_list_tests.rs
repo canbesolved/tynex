@@ -24,6 +24,7 @@ fn state(mode: ModeKind, n: usize) -> State {
             id: WindowId(format!("w{i}")),
             key: char::from_digit(10 + i as u32, 36), // a, b, c, …
             app_id: String::new(),
+            app_name: String::new(),
             icon: None,
             title: format!("Window {i}"),
             highlights: Vec::new(),

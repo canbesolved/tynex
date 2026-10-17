@@ -94,13 +94,17 @@ fn wait(p: &Parts) -> Result<(), String> {
 /// on `Quit`.
 fn handle(p: &mut Parts, event: Event) -> bool {
     let quit = event == Event::Quit;
+    let windows = matches!(event, Event::Windows(_));
+    let action = p.app.handle(event);
 
-    if let Event::Windows(list) = &event {
+    if windows {
+        let list = p.app.windows(); // Titles are row texts now
+
         p.painter.prepare(list);
         log::debug!("window list updated, {} windows", list.len());
     }
 
-    match p.app.handle(event) {
+    match action {
         Action::Redraw => redraw(p),
         Action::Activate(id) => {
             p.presenter.hide();

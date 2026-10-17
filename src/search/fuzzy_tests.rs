@@ -10,8 +10,8 @@ const WINDOWS: [(&str, &str); 5] = [
     ("Release notes — Firefox", "firefox"),
     ("~/projects/demo : bash", "org.kde.konsole"),
     ("Café — Firefox", "firefox"),
-    ("Документы — Dolphin", "org.kde.dolphin"),
-    ("Привет", "org.telegram.desktop"),
+    ("Música — Dolphin", "org.kde.dolphin"),
+    ("Ñandú", "org.telegram.desktop"),
 ];
 
 /// Indices of the hits for `query`, best first.
@@ -72,10 +72,10 @@ fn accents_fold_and_highlight_the_real_letters() {
 }
 
 #[test]
-fn cyrillic_matches_with_unicode_case() {
-    assert_eq!(order("привет"), [4]);
-    assert_eq!(order("докум"), [3]);
-    assert_eq!(highlights("докум", 3), [(0, 10)]);
+fn non_ascii_matches_with_unicode_case() {
+    assert_eq!(order("ñandú"), [4]);
+    assert_eq!(order("músi"), [3]);
+    assert_eq!(highlights("músi", 3), [(0, 5)]);
 }
 
 #[test]

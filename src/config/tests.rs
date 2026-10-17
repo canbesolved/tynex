@@ -48,6 +48,26 @@ fn hotkey_action_values() {
 }
 
 #[test]
+fn title_format_values() {
+    let text = "[appearance]\ntitle_format = \"{app} : {title}\"\n\
+                strip_app_name = false\n";
+    let expected = TitleFormat::parse("{app} : {title}", false).unwrap();
+    let msg = &errors("[appearance]\ntitle_format = \"{name}\"\n")[0];
+
+    assert_eq!(
+        parse(text, &no_font).map(|c| c.appearance.title),
+        Ok(expected)
+    );
+    assert!(
+        msg.starts_with(
+            "2:16: `appearance.title_format` = \"{name}\" is invalid: \
+             unknown placeholder `{name}`"
+        ),
+        "{msg}"
+    );
+}
+
+#[test]
 fn unknown_key_is_reported_with_position_and_hint() {
     let msg = &errors("mode = \"hotkey\"\nadaptr = \"kde\"\n")[0];
 

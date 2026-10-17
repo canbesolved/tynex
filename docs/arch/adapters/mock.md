@@ -26,16 +26,17 @@ adapters/mock/
 ## Fixtures
 
 Built-in list of ten windows (ids `mock-01` to `mock-10`) with
-realistic app ids and made-up titles, including edge cases:
+realistic app ids and names and made-up titles, including edge cases:
 
 - a title longer than the row width;
 - two windows of the same app;
-- a window without an icon.
+- a window without an icon;
+- titles ending in the app name after ` — `, for `strip_app_name`.
 
 Text cases for the rules in
 [core.md](../core.md#text-and-languages):
 
-- Russian (`Документы — Dolphin`), for Unicode smart case;
+- Spanish (`Música — Dolphin`), for Unicode smart case;
 - Chinese (`微信`), for font fallback;
 - accented French (`Café — Firefox`), for accent folding;
 - a combining accent (`e` + `U+0301`) near the truncation point;

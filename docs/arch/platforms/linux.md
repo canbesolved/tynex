@@ -8,7 +8,7 @@ Source: `src/platform/linux/`. Session: Wayland.
 platform/linux/
   mod.rs          Backend wiring
   event_loop.rs   Single poll loop over Wayland and D-Bus fds
-  paths.rs        XDG config and runtime paths, atomic writes
+  paths.rs        XDG config, data and runtime paths, atomic writes
   wayland/
     mod.rs        WaylandPresenter: connect, show, draw, hide, dispatch
     state.rs      Dispatch state: globals, popup, events
@@ -20,6 +20,7 @@ platform/linux/
   dbus.rs         Shared D-Bus connection, dispatch, calls
   dbus_ipc.rs     DbusIpc: impl IpcServer, IpcClient
   fonts.rs        fc-match lookup: default and per-character fallback
+  desktop_files.rs  App names from desktop files
 ```
 
 ## Wayland presenter
@@ -89,7 +90,7 @@ closes, and without input it closes after ten seconds.
   sent by the compositor. `next_deadline` gives the poll timeout and
   `dispatch` reports due repeats; leaving focus or hiding stops it.
 
-Tests use real keymaps from the system's XKB data (`us,ru`), so CI
+Tests use real keymaps from the system's XKB data (`us,gr`), so CI
 installs `libxkbcommon-dev`.
 
 ## Event loop
@@ -162,7 +163,34 @@ and exits.
     (`write_atomic`).
   - The user's id for the owner checks comes from
     `rustix::process::getuid`.
+- Data: `$XDG_DATA_HOME`, else `~/.local/share`, then each entry of
+  `$XDG_DATA_DIRS`, else `/usr/local/share:/usr/share`. Relative
+  entries are skipped (`data_dirs`).
 - Home comes from `std::env::home_dir`; no extra crate.
+
+## Desktop files
+
+`DesktopFiles` gives each window the `Name` of its app's desktop file
+([ADR-0045](../../adr/0045_app_names.md)). Adapters call it before
+sending a window list; the KDE adapter does.
+
+- File: `<app id>.desktop` in `applications/` under each data dir, in
+  the order above; the first file found wins. Ids that are empty,
+  start with `.` or contain `/` are not looked up.
+- Key: `Name` in the `[Desktop Entry]` group; other groups such as
+  actions are skipped. Escapes `\s`, `\n`, `\t`, `\r`, `\\` are
+  decoded. At most 1 MiB of a file is read.
+- Locale: the first non-empty of `LC_ALL`, `LC_MESSAGES` and `LANG`.
+  `sr_RS.UTF-8@latin` tries `Name[sr_RS@latin]`, `Name[sr_RS]`,
+  `Name[sr@latin]`, `Name[sr]`, then `Name`, as the Desktop Entry
+  spec says. `C` and `POSIX` use `Name`.
+- Fallback: without a file or a `Name`, the adapter's value stays
+  (the WM class for KDE).
+- Cache: each app id is looked up once, hits and misses alike, and
+  kept until the daemon exits. A renamed app shows its new name after
+  a restart.
+- Not supported: the subdirectory rule for ids (`kde-foo` in
+  `applications/kde/foo.desktop`).
 
 ## Fonts
 

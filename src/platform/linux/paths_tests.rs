@@ -41,6 +41,27 @@ fn xdg_config_home_wins_when_absolute() {
 }
 
 #[test]
+fn data_dirs_follow_xdg_rules() {
+    let home = Some(PathBuf::from("/u")); // Made-up home
+    let paths = |list: &[&str]| -> Vec<PathBuf> {
+        list.iter().map(PathBuf::from).collect()
+    };
+
+    assert_eq!(
+        data_dirs_from(None, None, home.clone()),
+        paths(&["/u/.local/share", "/usr/local/share", "/usr/share"])
+    );
+    assert_eq!(
+        data_dirs_from(Some("/d".into()), Some("/a:rel:/b".into()), home),
+        paths(&["/d", "/a", "/b"])
+    );
+    assert_eq!(
+        data_dirs_from(Some("rel".into()), Some("".into()), None),
+        paths(&["/usr/local/share", "/usr/share"])
+    );
+}
+
+#[test]
 fn runtime_dir_is_created_private() {
     let base = scratch("create");
     let dir = runtime_dir_from(Some(base.clone().into()), uid()).unwrap();

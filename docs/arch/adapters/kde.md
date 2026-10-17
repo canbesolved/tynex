@@ -13,6 +13,10 @@ adapters/kde/
   tynex.js      KWin script, embedded with include_str!
 ```
 
+App names come from desktop files through
+`platform/linux/desktop_files.rs`
+([linux.md](../platforms/linux.md#desktop-files)).
+
 D-Bus access goes through the shared connection in
 `platform/linux/dbus.rs` ([linux.md](../platforms/linux.md#d-bus)).
 The adapter only registers its object and makes its calls.
@@ -90,6 +94,9 @@ script. `parse.rs` turns the string into `Vec<WindowInfo>`, in the
 order sent:
 
 - `app_id` is `desktopFileName`, or `resourceClass` when it is empty;
+- `app_name` is `resourceClass`, replaced by the `Name` of the app's
+  desktop file when there is one
+  ([ADR-0045](../../adr/0045_app_names.md));
 - `title` is the caption, sanitized later by the core;
 - `icon` is not set;
 - records without exactly four fields or with an empty id are
@@ -117,4 +124,6 @@ must be restarted.
 
 - Idle: no wakeups; the script sends updates only when windows change.
 - Show: no round trip, the list is cached.
+- App names: one desktop file read per app id, on its first window;
+  later updates use the cache.
 - Activate: one `Run` call to KWin, about 1 ms.

@@ -9,6 +9,7 @@ pub mod queue;
 pub mod state;
 pub mod switcher;
 pub mod text;
+pub mod title;
 pub mod traits;
 pub mod view;
 pub mod window;

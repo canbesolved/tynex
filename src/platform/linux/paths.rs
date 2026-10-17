@@ -29,6 +29,38 @@ fn config_file_from(
     Some(dir.join("tynex").join("tynex.toml"))
 }
 
+/// Returns the XDG data dirs, most important first: `$XDG_DATA_HOME`
+/// or `~/.local/share`, then `$XDG_DATA_DIRS` or
+/// `/usr/local/share:/usr/share`.
+#[must_use]
+pub fn data_dirs() -> Vec<PathBuf> {
+    data_dirs_from(
+        std::env::var_os("XDG_DATA_HOME"),
+        std::env::var_os("XDG_DATA_DIRS"),
+        std::env::home_dir(),
+    )
+}
+
+/// Skips relative paths, as the XDG spec says.
+fn data_dirs_from(
+    xdg_home: Option<OsString>,
+    xdg_dirs: Option<OsString>,
+    home: Option<PathBuf>,
+) -> Vec<PathBuf> {
+    let first = xdg_home
+        .map(PathBuf::from)
+        .filter(|p| p.is_absolute())
+        .or_else(|| home.map(|h| h.join(".local/share")));
+    let dirs = xdg_dirs
+        .filter(|d| !d.is_empty())
+        .unwrap_or_else(|| "/usr/local/share:/usr/share".into());
+
+    first
+        .into_iter()
+        .chain(std::env::split_paths(&dirs).filter(|p| p.is_absolute()))
+        .collect()
+}
+
 /// Returns `$XDG_RUNTIME_DIR/tynex/`, created with mode `0700` if
 /// missing. There is no fallback to `/tmp`.
 ///

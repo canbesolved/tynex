@@ -64,6 +64,7 @@ fn mock_source_drives_the_switcher() {
     let mut sw = Switcher::new(
         &config.keys,
         config.hotkey_action,
+        config.appearance.title.clone(),
         HotkeyMode,
         SearchMode,
     );
@@ -74,10 +75,7 @@ fn mock_source_drives_the_switcher() {
     // The active window (mock-01) is last; the previous one gets `a`.
     assert_eq!(
         first_rows(&mut sw, 2),
-        [
-            ("Café — Firefox".into(), Some('a')),
-            ("Документы — Dolphin".into(), Some('s')),
-        ]
+        [("Café".into(), Some('a')), ("Música".into(), Some('s')),]
     );
 
     // Letters stay with their windows while switching.
@@ -86,7 +84,7 @@ fn mock_source_drives_the_switcher() {
     assert_eq!(
         first_rows(&mut sw, 2),
         [
-            ("Café — Firefox".into(), Some('a')),
+            ("Café".into(), Some('a')),
             ("~/projects/demo : bash".into(), None),
         ]
     );
@@ -102,13 +100,16 @@ fn mock_source_drives_the_switcher() {
 }
 
 #[test]
-fn titles_from_the_source_are_sanitized() {
-    let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
+fn titles_from_the_source_are_formatted() {
+    let text = "desktop = \"mock\"\n[appearance]\n\
+                title_format = \"{app} : {title}\"\n";
+    let config = config::parse(text, &|_| false).unwrap();
     let mut source = mock(config.desktop);
     let (tx, rx) = channel();
     let mut sw = Switcher::new(
         &config.keys,
         config.hotkey_action,
+        config.appearance.title.clone(),
         HotkeyMode,
         SearchMode,
     );
@@ -120,5 +121,7 @@ fn titles_from_the_source_are_sanitized() {
     let titles: Vec<_> =
         sw.view().unwrap().rows().map(|r| r.title.clone()).collect();
 
-    assert!(titles.contains(&"manual.pdf fdp.exe — Okular".to_owned()));
+    // Sanitized, then " — Okular" is stripped.
+    assert!(titles.contains(&"Okular : manual.pdf fdp.exe".to_owned()));
+    assert!(titles.contains(&"Firefox : Café".to_owned()));
 }

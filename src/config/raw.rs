@@ -58,6 +58,8 @@ pub(super) struct RawAppearance {
     pub font_size: Spanned<u16>,
     pub width: Spanned<u16>,
     pub max_rows: Spanned<u16>,
+    pub title_format: Spanned<String>,
+    pub strip_app_name: bool,
 }
 
 impl Default for RawAppearance {
@@ -67,6 +69,8 @@ impl Default for RawAppearance {
             font_size: unspanned(14),
             width: unspanned(480),
             max_rows: unspanned(19),
+            title_format: unspanned("{title}".into()),
+            strip_app_name: true,
         }
     }
 }

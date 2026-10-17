@@ -21,14 +21,16 @@ mode shows all windows again; the query stays for the next switch.
 
 ## Matching
 
-- `frizbee` scores the query against `title` and `app_id`
-  (Smith-Waterman, like `fzf`).
+- `frizbee` scores the query against the row text (`title`) and
+  against the app name and id, joined by a space (Smith-Waterman,
+  like `fzf`). So `firefox` finds Firefox windows even when
+  `strip_app_name` removed the name from their titles.
 - Smart case: case-insensitive unless the query has an uppercase
   letter.
 - Typo tolerance: up to one typo per four query characters
   (`max_typos`), so looser matches can follow the best ones. Queries
   under four characters allow no typo.
-- Results are sorted by the better score of title and app id; ties
+- Results are sorted by the better score of title and app; ties
   keep the row order (previous window first, active window last).
 - Match indices go into `View` so the layout can highlight them, for
   the title only. `frizbee` returns byte offsets of matched
@@ -45,8 +47,8 @@ Titles and queries can use any script. Rules from
 - **Unicode:** `frizbee` matches UTF-8 directly. A non-ASCII query
   switches it to its Unicode path, so Cyrillic, Greek, CJK and other
   scripts match character by character.
-- **Case:** smart case uses Unicode case mapping (`привет` matches
-  `Привет`). Letters whose other case differs in length or count
+- **Case:** smart case uses Unicode case mapping (`ñandú` matches
+  `Ñandú`). Letters whose other case differs in length or count
   (Turkish `İ`, German `ß`) match only in the typed case.
 - **Accents:** an ASCII query also matches accented Latin letters
   (`cafe` matches `Café`, `zurich` matches `Zürich`). `fold.rs` keeps

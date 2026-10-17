@@ -88,6 +88,7 @@ mod tests {
             .map(|id| WindowInfo {
                 id: WindowId((*id).into()),
                 app_id: String::new(),
+                app_name: String::new(),
                 title: String::new(),
                 icon: None,
             })

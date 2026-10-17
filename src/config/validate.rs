@@ -13,6 +13,7 @@ use crate::config::raw::{RawConfig, RawHotkeyAction, RawMode};
 use crate::config::{AppearanceConfig, Config, Font};
 use crate::core::event::ModeKind;
 use crate::core::switcher::HotkeyAction;
+use crate::core::title::TitleFormat;
 
 /// Checks `raw` from `text`; `font_exists` tells if a font path exists.
 pub(super) fn validate(
@@ -52,6 +53,19 @@ pub(super) fn validate(
         }
     };
 
+    let title = TitleFormat::parse(a.title_format.get_ref(), a.strip_app_name)
+        .unwrap_or_else(|e| {
+            err(
+                a.title_format.span(),
+                format!(
+                    "`appearance.title_format` = {:?} is invalid: {e}, \
+                     expected text with `{{app}}` or `{{title}}`",
+                    a.title_format.get_ref()
+                ),
+            );
+            TitleFormat::default()
+        });
+
     for (name, value, range) in [
         ("font_size", &a.font_size, 8..=72),
         ("width", &a.width, 200..=2000),
@@ -81,6 +95,7 @@ pub(super) fn validate(
             font_size: a.font_size.into_inner(),
             width: a.width.into_inner(),
             max_rows: a.max_rows.into_inner(),
+            title,
         },
     })
 }
@@ -135,6 +150,6 @@ mod tests {
         assert!(!valid_keys("aa"));
         assert!(!valid_keys("aS"));
         assert!(!valid_keys("a1"));
-        assert!(!valid_keys("фыва"));
+        assert!(!valid_keys("año"));
     }
 }

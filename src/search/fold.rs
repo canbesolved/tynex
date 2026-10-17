@@ -146,7 +146,7 @@ mod tests {
 
     #[test]
     fn other_scripts_stay_unchanged() {
-        assert_eq!(Folded::new("Документы 微信").text, "Документы 微信");
+        assert_eq!(Folded::new("微信 Ω").text, "微信 Ω");
         assert_eq!(Folded::plain("Café").text, "Café");
     }
 

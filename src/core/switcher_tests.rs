@@ -50,6 +50,7 @@ fn window(id: &str, title: &str) -> WindowInfo {
     WindowInfo {
         id: WindowId(id.into()),
         app_id: id.into(),
+        app_name: String::new(),
         title: title.into(),
         icon: None,
     }
@@ -61,7 +62,13 @@ pub(super) fn list(ids: &[&str]) -> Vec<WindowInfo> {
 }
 
 fn switcher(ids: &[&str]) -> Switcher<Letters, Filter> {
-    let mut sw = Switcher::new("asd", HotkeyAction::Hide, Letters, Filter);
+    let mut sw = Switcher::new(
+        "asd",
+        HotkeyAction::Hide,
+        TitleFormat::default(),
+        Letters,
+        Filter,
+    );
 
     assert_eq!(sw.handle(Event::Windows(list(ids))), Action::None);
     sw
@@ -119,7 +126,13 @@ fn letter_activates_and_closes() {
 
 #[test]
 fn titles_are_sanitized_on_arrival() {
-    let mut sw = Switcher::new("a", HotkeyAction::Hide, Letters, Filter);
+    let mut sw = Switcher::new(
+        "a",
+        HotkeyAction::Hide,
+        TitleFormat::default(),
+        Letters,
+        Filter,
+    );
 
     sw.handle(Event::Windows(vec![window("x", " a\u{202E}\tb ")]));
     sw.handle(Event::Show(ModeKind::Hotkey));
@@ -161,7 +174,13 @@ fn update_while_open_keeps_keys_and_selection() {
 
 #[test]
 fn letters_freed_while_open_are_reused_after_close() {
-    let mut sw = Switcher::new("asdfh", HotkeyAction::Hide, Letters, Filter);
+    let mut sw = Switcher::new(
+        "asdfh",
+        HotkeyAction::Hide,
+        TitleFormat::default(),
+        Letters,
+        Filter,
+    );
 
     sw.handle(Event::Windows(list(&["x", "a", "b"])));
     sw.handle(Event::Show(ModeKind::Hotkey)); // a, b, x get a, s, d
@@ -227,7 +246,13 @@ impl Mode for Slash {
 
 #[test]
 fn mode_switch_from_a_mode_refreshes_the_new_mode() {
-    let mut sw = Switcher::new("asd", HotkeyAction::Hide, Slash, Filter);
+    let mut sw = Switcher::new(
+        "asd",
+        HotkeyAction::Hide,
+        TitleFormat::default(),
+        Slash,
+        Filter,
+    );
     let list = ["x", "firefox", "kate"].iter().map(|id| window(id, id));
 
     sw.handle(Event::Windows(list.collect()));

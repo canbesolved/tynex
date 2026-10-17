@@ -46,7 +46,7 @@ fn widths_add_up() {
 
     assert!(one > 0.0);
     assert!((t.width("oo", SIZE) - 2.0 * one).abs() < 0.01);
-    assert!(t.width("Документы", SIZE) > 0.0); // DejaVu has Cyrillic
+    assert!(t.width("Canción", SIZE) > 0.0); // DejaVu has accents
     assert!(t.width("", SIZE).abs() < f32::EPSILON);
 }
 

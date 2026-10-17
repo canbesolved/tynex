@@ -45,6 +45,11 @@ font = "auto"            # Font file path, or auto
 font_size = 14
 width = 480
 max_rows = 19
+# Row text: {app} is the app name, {title} the window title, for
+# example "{app} : {title}".
+title_format = "{title}"
+# Drop " — <app name>" from the end of window titles.
+strip_app_name = true
 ```
 
 `desktop` selects the window source adapter. `auto` picks `kde` when
@@ -55,6 +60,19 @@ otherwise; it never selects `mock`.
 while the popup is open, in either mode: `hide` closes it, `last`
 switches to the previously used window, or closes it when there is
 none.
+
+`appearance.title_format` sets the text of each row. `{app}` is the
+app name (see [ADR-0045](../adr/0045_app_names.md)), `{title}` the
+window title; other text is kept as is, for example
+`"{app} : {title}"` gives `Cursor : My homelab project`. The result
+is sanitized like a title, so an empty app name leaves no leading
+space.
+
+`appearance.strip_app_name` drops the app name from the end of a
+title, after ` — `, ` – ` or ` - `: `Café — Firefox` becomes `Café`.
+The end must equal the app name or the last part of the app id
+(`konsole` for `org.kde.konsole`), ignoring case. A title that would
+become empty stays as it is.
 
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
 
@@ -77,17 +95,19 @@ The config is read once, when `tynex daemon` starts
 
 ## Validation
 
-| Key                    | Rule                                        |
-| ---------------------- | ------------------------------------------- |
-| `desktop`              | `auto`, `kde` or `mock`                     |
-| `mode`                 | `hotkey` or `search`                        |
-| `hotkey_action`        | `hide` or `last`                            |
-| `layout`               | `vertical_list`                             |
-| `keys`                 | 1 to 26 unique ASCII lowercase letters      |
-| `appearance.font`      | `auto` or a path to an existing font file   |
-| `appearance.font_size` | 8 to 72                                     |
-| `appearance.width`     | 200 to 2000                                 |
-| `appearance.max_rows`  | 1 to 50                                     |
+| Key                         | Rule                                      |
+| --------------------------- | ----------------------------------------- |
+| `desktop`                   | `auto`, `kde` or `mock`                   |
+| `mode`                      | `hotkey` or `search`                      |
+| `hotkey_action`             | `hide` or `last`                          |
+| `layout`                    | `vertical_list`                           |
+| `keys`                      | 1 to 26 unique ASCII lowercase letters    |
+| `appearance.font`           | `auto` or a path to an existing font file |
+| `appearance.font_size`      | 8 to 72                                   |
+| `appearance.width`          | 200 to 2000                               |
+| `appearance.max_rows`       | 1 to 50                                   |
+| `appearance.title_format`   | `{app}` or `{title}`, no other braces     |
+| `appearance.strip_app_name` | `true` or `false`                         |
 
 Syntax and type errors stop at the first error, as reported by `toml`.
 Value checks run on the parsed file and report every invalid key at

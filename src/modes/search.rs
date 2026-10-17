@@ -48,10 +48,16 @@ impl Mode for SearchMode {
     }
 
     fn refresh(&mut self, s: &mut State) {
+        let apps: Vec<String> = s
+            .rows
+            .iter()
+            .map(|r| format!("{} {}", r.app_name, r.app_id))
+            .collect();
         let items: Vec<(&str, &str)> = s
             .rows
             .iter()
-            .map(|r| (r.title.as_str(), r.app_id.as_str()))
+            .zip(&apps)
+            .map(|(r, app)| (r.title.as_str(), app.as_str()))
             .collect();
         let hits = rank(&s.query, &items);
 
