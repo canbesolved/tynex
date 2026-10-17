@@ -20,13 +20,6 @@ Rules:
 
 Target: KDE Plasma 6 on Wayland.
 
-### 0.1.3
-
-- [ ] App icons in the list, from desktop files and the icon theme.
-- [ ] One font for all text (refactor): the system font
-  (`fc-match sans-serif`) or `font` in `[appearance]`, with no
-  per-character fallback lookup.
-
 ### 0.1.4
 
 - [ ] Row order: `sort_by = "key"` (default), `"app"` or `"recently"`.
