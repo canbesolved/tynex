@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-17
+
+App names and title format.
+
 ### Added
 
 - App names from desktop files: the localized `Name` of the app's
@@ -92,6 +96,7 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/canbesolved/tynex/releases/tag/v0.1.2
 [0.1.1]: https://github.com/canbesolved/tynex/releases/tag/v0.1.1
 [0.1.0]: https://github.com/canbesolved/tynex/releases/tag/v0.1.0

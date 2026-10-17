@@ -20,17 +20,6 @@ Rules:
 
 Target: KDE Plasma 6 on Wayland.
 
-### 0.1.2
-
-- [ ] App names from desktop files (`Name=`, localized), with
-  `resourceClass` as fallback.
-- [ ] Row text format: `title_format = "{app} : {title}"` in
-  `[appearance]`, for example `Cursor : My homelab project`. Default
-  `"{title}"`.
-- [ ] Drop the app name from the end of titles:
-  `strip_app_name = true` (default) in `[appearance]` turns
-  `Café — Firefox` into `Café` (separators ` — `, ` – `, ` - `).
-
 ### 0.1.3
 
 - [ ] App icons in the list, from desktop files and the icon theme.
