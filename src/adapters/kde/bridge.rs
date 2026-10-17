@@ -19,8 +19,8 @@ pub const INTERFACE: &str = "io.github.canbesolved.Tynex.Kde";
 
 /// Registers the object; calls become events on `tx`, `Show` opens in
 /// `mode`. Only `kwin`, `KWin`'s unique bus name, may call it, so other
-/// programs cannot inject a fake window list. Windows get app names from
-/// desktop files.
+/// programs cannot inject a fake window list. Windows get app names and
+/// icons from desktop files.
 pub fn serve(bus: &Bus, tx: EventTx, kwin: String, mode: ModeKind) {
     let mut apps = DesktopFiles::default();
 
@@ -29,7 +29,7 @@ pub fn serve(bus: &Bus, tx: EventTx, kwin: String, mode: ModeKind) {
             .inspect_err(|e| log::warn!("refused a call to {PATH}: {e}"))?;
 
         if let Event::Windows(list) = &mut event {
-            apps.name(list);
+            apps.fill(list);
         }
         tx.send(event);
         Ok(())

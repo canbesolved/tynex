@@ -8,6 +8,7 @@ use crate::core::state::State;
 use crate::core::window::WindowId;
 use crate::ui::render::canvas::Canvas;
 use crate::ui::render::glyphs::{Face, NoFallback};
+use crate::ui::render::icons::{Icons, NoIcons};
 use crate::ui::render::text::Text;
 
 const FONT: &[u8] = include_bytes!("../../../tests/fonts/dejavu_sans.ttf");
@@ -41,9 +42,11 @@ fn render(state: &State) -> (Vec<u8>, Size) {
     let mut data = vec![0; (size.width * size.height * 4) as usize];
     let mut canvas = Canvas::new(&mut data, size.width, size.height).unwrap();
     let mut text = Text::new(Face::new(FONT, 0).unwrap(), Box::new(NoFallback));
+    let mut icons = Icons::new(Box::new(NoIcons));
     let mut paint = Paint {
         canvas: &mut canvas,
         text: &mut text,
+        icons: &mut icons,
         theme: &theme,
     };
 

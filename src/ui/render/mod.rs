@@ -14,5 +14,6 @@
 
 pub mod canvas;
 pub mod glyphs;
+pub mod icons;
 pub mod text;
 pub mod theme;

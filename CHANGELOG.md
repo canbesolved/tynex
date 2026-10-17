@@ -9,6 +9,12 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- App icons in the list: `Icon=` from the app's desktop file, found
+  in the Plasma icon theme, its parents and `hicolor`; PNG and SVG
+  (`resvg`). The release binary grows to about 6.6 MB (ADR-0046).
+
 ## [0.1.2] - 2026-10-17
 
 App names and title format.

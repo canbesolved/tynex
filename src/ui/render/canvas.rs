@@ -4,8 +4,8 @@
 //! Canvas over a borrowed RGBA pixel buffer (premultiplied alpha).
 
 use tiny_skia::{
-    Color, FillRule, Paint, Path, PathBuilder, PixmapMut, PremultipliedColorU8,
-    Rect, Transform,
+    Color, FillRule, Paint, Path, PathBuilder, Pixmap, PixmapMut, PixmapPaint,
+    PremultipliedColorU8, Rect, Transform,
 };
 
 /// Color with straight (not premultiplied) alpha.
@@ -78,6 +78,18 @@ impl<'a> Canvas<'a> {
                 None,
             );
         }
+    }
+
+    /// Draws `image` with its top-left at `(x, y)`, over the canvas.
+    pub fn draw_image(&mut self, image: &Pixmap, (x, y): (i32, i32)) {
+        self.pixmap.draw_pixmap(
+            x,
+            y,
+            image.as_ref(),
+            &PixmapPaint::default(),
+            Transform::identity(),
+            None,
+        );
     }
 
     /// Blends `color` through a coverage mask whose top-left is `(x, y)`.

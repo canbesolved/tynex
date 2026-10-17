@@ -60,7 +60,7 @@ src/
     kde/               KWin script, runner activation
   platform/            Per-OS backends, gated by cfg(target_os)
     linux/             Wayland, D-Bus, event loop, fonts, paths,
-                       desktop files
+                       desktop files, icon themes
     macos/             Later
     windows/           Later
   ui/                  Portable: no OS types
@@ -102,7 +102,7 @@ KdeSource   --Run(id)-----> KWin /WindowsRunner --> window activated
 ## Footprint budget
 
 - Idle: 0 % CPU, no wakeups, RSS under 10 MB.
-- Small dependency tree: about 70 crates in total (see
+- Small dependency tree: about 80 crates in total (see
   [stack.md](stack.md)).
 - Show to first frame under 16 ms, key to activation under 5 ms.
 - No GPU context, no UI toolkit, no async runtime, no extra threads.

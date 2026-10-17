@@ -100,7 +100,7 @@ fn handle(p: &mut Parts, event: Event) -> bool {
     if windows {
         let list = p.app.windows(); // Titles are row texts now
 
-        p.painter.prepare(list);
+        p.painter.prepare(list, p.presenter.scale());
         log::debug!("window list updated, {} windows", list.len());
     }
 
