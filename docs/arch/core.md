@@ -16,6 +16,7 @@ core/
   keys.rs       Letters pinned to windows
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
+  title.rs      TitleFormat: row text and app name stripping
 ```
 
 ## Types
@@ -28,6 +29,7 @@ pub struct WindowId(pub String);
 pub struct WindowInfo {
     pub id: WindowId,
     pub app_id: String,  // Desktop file name or WM class
+    pub app_name: String, // Shown name, from a desktop file or WM class
     pub title: String,
     pub icon: Option<String>, // Icon name or path
 }
@@ -55,9 +57,9 @@ pub enum Action {
 events to it:
 
 - `text`: the character the active layout produces, after dead keys
-  and compose (`ф` on a Russian layout, `é` with a French one).
+  and compose (`α` on a Greek layout, `é` with a French one).
 - `latin`: the character of the same physical key in the first Latin
-  layout of the keymap, if any (`a` for the key that gives `ф`). Hotkey
+  layout of the keymap, if any (`a` for the key that gives `α`). Hotkey
   mode uses it, so letters work whatever layout is active.
 
 ## Traits
@@ -114,7 +116,8 @@ nothing else in the crate. `Presenter` is added with its module.
 ```
 
 - `Hidden`: only `Windows` updates the cached list and the pinned
-  letters; keys are ignored.
+  letters; keys are ignored. Each title in the cache is replaced by
+  its row text (see [Row text](#row-text)).
 - `Show`: snapshot the cached list with its pinned letters, build
   `State`. A `Show` while visible is a second hotkey press: it closes
   the popup, or with `HotkeyAction::Last` returns `Activate` for
@@ -136,10 +139,28 @@ are static. After `Show`, `Tab` and `Windows` it calls the mode's
 ## View
 
 `View` borrows the open `State`: mode, query, selected index, and the
-shown rows in display order. Each `Row` has an id, key, icon, title
-and highlight byte ranges. Layouts read the `View`, never the switcher
+shown rows in display order. Each `Row` has an id, key, icon, row
+text (`title`), highlight byte ranges, and the app name and id for
+search. Layouts read the `View`, never the switcher
 state, which keeps rendering replaceable. Building a `View` allocates
 nothing.
+
+## Row text
+
+`TitleFormat` in `title.rs` turns a window into the text of its row,
+from `title_format` and `strip_app_name` in the config
+([config.md](config.md#format)):
+
+1. Sanitize the title and the app name (see below).
+2. With `strip_app_name`, drop `<app>` after ` — `, ` – ` or ` - `
+   from the end of the title when `<app>` is the app name or the last
+   part of the app id, ignoring case; never down to an empty title.
+3. Fill `{app}` and `{title}` in the format, then sanitize the result
+   once more, so an empty app name leaves no stray spaces.
+
+The format is parsed once, when the config is read. The switcher
+applies it on each `Windows` event, so the presenter can resolve
+fonts for the final text before the popup opens.
 
 ## Text and languages
 
@@ -149,8 +170,8 @@ Unicode text, never as bytes or ASCII
 
 - **Encoding:** every string is a Rust `String`, valid UTF-8.
   Adapters convert at the boundary; invalid bytes become `U+FFFD`.
-- **Sanitizing:** when a `Windows` event arrives, each title is
-  cleaned once: control characters (C0, C1) become spaces, bidi
+- **Sanitizing:** when a `Windows` event arrives, each title and app
+  name is cleaned once: control characters (C0, C1) become spaces, bidi
   override and isolate controls (`U+202A` to `U+202E`, `U+2066` to
   `U+2069`) are removed so a title cannot reorder the row, runs of
   whitespace collapse to one space, and the ends are trimmed. Letters,

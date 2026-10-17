@@ -66,6 +66,7 @@ mod tests {
                 id: WindowId(id.into()),
                 key: Some(key),
                 app_id: String::new(),
+                app_name: String::new(),
                 icon: None,
                 title: id.into(),
                 highlights: Vec::new(),
@@ -92,9 +93,9 @@ mod tests {
 
     #[test]
     fn latin_key_works_with_other_layouts() {
-        // Russian layout: the `a` key types `ф`.
-        assert_eq!(press(&mut state(), 'ф', Some('a')), activate("w1"));
-        assert_eq!(press(&mut state(), 'ф', None), Action::None);
+        // Greek layout: the `a` key types `α`.
+        assert_eq!(press(&mut state(), 'α', Some('a')), activate("w1"));
+        assert_eq!(press(&mut state(), 'α', None), Action::None);
     }
 
     #[test]

@@ -21,8 +21,8 @@ Source: `src/modes/hotkey.rs`. Default mode.
   (see [core.md](../core.md#key-assignment)).
 - A key matches by the produced character first (`Key::Char.text`),
   then by the same physical key in the first Latin layout
-  (`Key::Char.latin`). With a Russian layout active, the key that
-  gives `ф` still selects the window marked `a`. Shift does not matter:
+  (`Key::Char.latin`). With a Greek layout active, the key that
+  gives `α` still selects the window marked `a`. Shift does not matter:
   `S` selects the window marked `s`.
 - `Up` and `Down` wrap around the list; `Enter` on an empty list does
   nothing.

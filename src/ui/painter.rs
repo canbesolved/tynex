@@ -32,7 +32,8 @@ impl Painter {
         }
     }
 
-    /// Resolves fonts for new titles, so lookups never run at show time.
+    /// Resolves fonts for new row texts, so lookups never run at show
+    /// time.
     pub fn prepare(&mut self, windows: &[WindowInfo]) {
         for window in windows {
             self.text.prepare(&window.title);

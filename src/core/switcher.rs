@@ -7,6 +7,7 @@ use crate::core::event::{Action, Event, Key, ModeKind};
 use crate::core::keys::Pins;
 use crate::core::state::State;
 use crate::core::text::sanitize_title;
+use crate::core::title::TitleFormat;
 use crate::core::traits::Mode;
 use crate::core::view::{Row, View};
 use crate::core::window::WindowInfo;
@@ -21,24 +22,27 @@ pub enum HotkeyAction {
 /// The switcher, generic over its two modes for static dispatch.
 pub struct Switcher<H, S> {
     on_hotkey: HotkeyAction,  // For `Show` while open
+    format: TitleFormat,      // Row text of each window
     pins: Pins,               // Letter of each window until it closes
-    windows: Vec<WindowInfo>, // Cached list, most recently used first
+    windows: Vec<WindowInfo>, // Cached list, MRU first, titles formatted
     state: Option<State>,     // Some while the popup is open
     hotkey: H,
     search: S,
 }
 
 impl<H: Mode, S: Mode> Switcher<H, S> {
-    /// Creates a hidden switcher with the key string and hotkey action
-    /// from the config.
+    /// Creates a hidden switcher with the key string, hotkey action and
+    /// title format from the config.
     pub fn new(
         keys: &str,
         on_hotkey: HotkeyAction,
+        format: TitleFormat,
         hotkey: H,
         search: S,
     ) -> Self {
         Self {
             on_hotkey,
+            format,
             pins: Pins::new(keys),
             windows: Vec::new(),
             state: None,
@@ -63,11 +67,19 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
         self.state.as_ref().map(State::view)
     }
 
+    /// Returns the cached windows, most recently used first, with their
+    /// row text as title.
+    #[must_use]
+    pub fn windows(&self) -> &[WindowInfo] {
+        &self.windows
+    }
+
     fn update(&mut self, list: Vec<WindowInfo>) -> Action {
         self.windows = list
             .into_iter()
             .map(|w| WindowInfo {
-                title: sanitize_title(&w.title),
+                title: self.format.apply(&w),
+                app_name: sanitize_title(&w.app_name),
                 ..w
             })
             .collect();
@@ -185,6 +197,7 @@ fn row(window: &WindowInfo, key: Option<char>) -> Row {
         id: window.id.clone(),
         key,
         app_id: window.app_id.clone(),
+        app_name: window.app_name.clone(),
         icon: window.icon.clone(),
         title: window.title.clone(),
         highlights: Vec::new(),

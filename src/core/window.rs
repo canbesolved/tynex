@@ -12,6 +12,7 @@ pub struct WindowId(pub String);
 pub struct WindowInfo {
     pub id: WindowId,
     pub app_id: String,       // Desktop file name or WM class
+    pub app_name: String,     // Shown name, from a desktop file or WM class
     pub title: String,        // Sanitized, see `text::sanitize_title`
     pub icon: Option<String>, // Icon name or path
 }

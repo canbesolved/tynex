@@ -9,6 +9,7 @@ use crate::adapters::kde::parse::parse;
 use crate::core::event::{Event, ModeKind};
 use crate::core::queue::EventTx;
 use crate::platform::linux::dbus::Bus;
+use crate::platform::linux::desktop_files::DesktopFiles;
 
 /// Object path the script calls.
 pub const PATH: &str = "/io/github/canbesolved/Tynex/Kde";
@@ -18,12 +19,18 @@ pub const INTERFACE: &str = "io.github.canbesolved.Tynex.Kde";
 
 /// Registers the object; calls become events on `tx`, `Show` opens in
 /// `mode`. Only `kwin`, `KWin`'s unique bus name, may call it, so other
-/// programs cannot inject a fake window list.
+/// programs cannot inject a fake window list. Windows get app names from
+/// desktop files.
 pub fn serve(bus: &Bus, tx: EventTx, kwin: String, mode: ModeKind) {
+    let mut apps = DesktopFiles::default();
+
     bus.register(PATH, move |msg| {
-        let event = request(msg, &kwin, mode)
+        let mut event = request(msg, &kwin, mode)
             .inspect_err(|e| log::warn!("refused a call to {PATH}: {e}"))?;
 
+        if let Event::Windows(list) = &mut event {
+            apps.name(list);
+        }
         tx.send(event);
         Ok(())
     });

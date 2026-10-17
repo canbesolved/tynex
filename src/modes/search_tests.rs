@@ -15,6 +15,7 @@ fn state() -> State {
             id: WindowId(id.into()),
             key: None,
             app_id: String::new(),
+            app_name: String::new(),
             icon: None,
             title: title.into(),
             highlights: Vec::new(),
@@ -84,4 +85,13 @@ fn enter_without_matches_does_nothing() {
 
     typed(&mut s, "zzzz");
     assert_eq!(SearchMode.on_key(Key::Enter, &mut s), Action::None);
+}
+
+#[test]
+fn app_names_match() {
+    let mut s = state();
+
+    s.rows[0].app_name = "Configuración".into(); // Not in the title
+    typed(&mut s, "configuración");
+    assert_eq!(titles(&s), ["Release notes"]);
 }

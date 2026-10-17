@@ -17,6 +17,7 @@ use tynex::core::event::{Action, Event, ModeKind};
 use tynex::core::keys::DEFAULT_KEYS;
 use tynex::core::queue::channel;
 use tynex::core::switcher::{HotkeyAction, Switcher};
+use tynex::core::title::TitleFormat;
 use tynex::core::traits::WindowSource;
 use tynex::modes::hotkey::HotkeyMode;
 use tynex::modes::search::SearchMode;
@@ -65,8 +66,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let theme = Theme::default();
     let (tx, rx) = channel();
     let mut source = MockSource::new();
-    let mut app =
-        Switcher::new(DEFAULT_KEYS, HotkeyAction::Hide, HotkeyMode, SearchMode);
+    let mut app = Switcher::new(
+        DEFAULT_KEYS,
+        HotkeyAction::Hide,
+        TitleFormat::default(),
+        HotkeyMode,
+        SearchMode,
+    );
 
     source.start(tx)?;
     while let Some(event) = rx.recv() {

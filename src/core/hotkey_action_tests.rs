@@ -9,7 +9,8 @@ use crate::core::window::WindowId;
 
 /// A switcher with `ids` open in hotkey mode.
 fn open(action: HotkeyAction, ids: &[&str]) -> Switcher<Letters, Filter> {
-    let mut sw = Switcher::new("asd", action, Letters, Filter);
+    let mut sw =
+        Switcher::new("asd", action, TitleFormat::default(), Letters, Filter);
 
     sw.handle(Event::Windows(list(ids)));
     sw.handle(Event::Show(ModeKind::Hotkey));

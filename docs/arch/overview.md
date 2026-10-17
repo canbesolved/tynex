@@ -59,7 +59,8 @@ src/
     mock/              In-memory windows for tests and manual runs
     kde/               KWin script, runner activation
   platform/            Per-OS backends, gated by cfg(target_os)
-    linux/             Wayland, D-Bus, event loop, fonts, paths
+    linux/             Wayland, D-Bus, event loop, fonts, paths,
+                       desktop files
     macos/             Later
     windows/           Later
   ui/                  Portable: no OS types

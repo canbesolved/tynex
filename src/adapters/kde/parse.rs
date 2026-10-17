@@ -50,7 +50,8 @@ fn record(text: &str) -> Option<WindowInfo> {
     Some(WindowInfo {
         id: WindowId(id.to_owned()),
         app_id: app_id.to_owned(),
-        title: caption.to_owned(), // Sanitized by the core
+        app_name: class.to_owned(), // Until a desktop file names the app
+        title: caption.to_owned(),  // Sanitized by the core
         icon: None,
     })
 }
@@ -62,10 +63,11 @@ mod tests {
     const UUID_A: &str = "0b4c7e2a-1f3d-4c5b-9a6e-7d8f9a0b1c2d"; // Made up
     const UUID_B: &str = "5e6f7a8b-9c0d-4e1f-8a2b-3c4d5e6f7a8b";
 
-    fn window(id: &str, app_id: &str, title: &str) -> WindowInfo {
+    fn window(id: &str, app: (&str, &str), title: &str) -> WindowInfo {
         WindowInfo {
             id: WindowId(id.into()),
-            app_id: app_id.into(),
+            app_id: app.0.into(),
+            app_name: app.1.into(),
             title: title.into(),
             icon: None,
         }
@@ -86,8 +88,8 @@ mod tests {
         assert_eq!(
             parse(&payload),
             [
-                window(UUID_A, "org.kde.konsole", "~ : bash"),
-                window(UUID_B, "firefox", "Café — Firefox"),
+                window(UUID_A, ("org.kde.konsole", "konsole"), "~ : bash"),
+                window(UUID_B, ("firefox", "firefox"), "Café — Firefox"),
             ]
         );
     }
@@ -97,8 +99,11 @@ mod tests {
         let no_desktop_file = format!("{UUID_A}\x1f\x1fxterm\x1f");
         let no_app = format!("{UUID_A}\x1f\x1f\x1fTitle");
 
-        assert_eq!(parse(&no_desktop_file), [window(UUID_A, "xterm", "")]);
-        assert_eq!(parse(&no_app), [window(UUID_A, "", "Title")]);
+        assert_eq!(
+            parse(&no_desktop_file),
+            [window(UUID_A, ("xterm", "xterm"), "")]
+        );
+        assert_eq!(parse(&no_app), [window(UUID_A, ("", ""), "Title")]);
     }
 
     #[test]
@@ -111,7 +116,7 @@ mod tests {
              \x1e{good}\x1e"
         );
 
-        assert_eq!(parse(&payload), [window(UUID_B, "a", "A")]);
+        assert_eq!(parse(&payload), [window(UUID_B, ("a", "a"), "A")]);
     }
 
     #[test]
@@ -124,7 +129,10 @@ mod tests {
 
         assert_eq!(
             parse(&payload),
-            [window(UUID_A, "a", "New"), window(UUID_B, "b", "Old")]
+            [
+                window(UUID_A, ("a", "a"), "New"),
+                window(UUID_B, ("b", "b"), "Old"),
+            ]
         );
     }
 }

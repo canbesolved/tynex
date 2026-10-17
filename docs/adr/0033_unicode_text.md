@@ -7,7 +7,7 @@ decision-makers: "CanBeSolved"
 
 ## Context and Problem Statement
 
-Window titles come in any language: Chinese, Russian, French and many
+Window titles come in any language: Chinese, Spanish, French and many
 more. `tynex` must display them, search them and select windows with
 letter keys whatever keyboard layout is active. How should text be
 handled without heavy crates?
@@ -50,7 +50,7 @@ of the work, and the missing parts are small tables and lookups.
 - Good, because Latin, Cyrillic, Greek and CJK titles display and
   match correctly with no new crate.
 - Good, because a CJK fallback font costs RAM only for used pages.
-- Good, because hotkey letters work with a Russian or Greek layout
+- Good, because hotkey letters work with a Greek or other non-Latin layout
   active.
 - Bad, because Arabic, Hebrew and Indic scripts need shaping and
   right-to-left layout, which come later.
@@ -62,7 +62,7 @@ of the work, and the missing parts are small tables and lookups.
 ### Confirmation
 
 Unit tests cover sanitizing, truncation at combining marks, accent
-folding with highlight offsets, Cyrillic smart case and the Latin key
+folding with highlight offsets, Unicode smart case and the Latin key
 fallback.
 
 ## Pros and Cons of the Options

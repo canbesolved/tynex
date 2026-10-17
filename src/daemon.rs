@@ -76,6 +76,7 @@ fn start(config: Config) -> Result<(), String> {
         app: Switcher::new(
             &config.keys,
             config.hotkey_action,
+            config.appearance.title.clone(),
             HotkeyMode,
             SearchMode,
         ),

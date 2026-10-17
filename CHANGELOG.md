@@ -9,6 +9,20 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- App names from desktop files: the localized `Name` of the app's
+  desktop file, else the WM class (ADR-0045).
+- `title_format` in `[appearance]` sets the row text, for example
+  `"{app} : {title}"` gives `Cursor : My homelab project`. Default
+  `"{title}"`.
+- `strip_app_name` in `[appearance]` drops the app name from the end
+  of titles: `Café — Firefox` becomes `Café`. On by default.
+
+### Changed
+
+- Search matches the app name as well as the title and app id.
+
 ## [0.1.1] - 2026-10-17
 
 Search mode and prebuilt Linux binaries.

@@ -18,7 +18,7 @@ pub struct Hit {
     pub highlights: Vec<Range<usize>>, // Byte ranges in the title
 }
 
-/// Ranks `items` (title, app id) for `query`, best first; equal scores
+/// Ranks `items` (title, app) for `query`, best first; equal scores
 /// keep the order of `items`. An empty query keeps every item.
 ///
 /// Smart case, one typo per four query characters, and an ASCII query
