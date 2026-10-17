@@ -46,5 +46,7 @@ project adheres to
 - Command line (`daemon`, `show`, `hide`, `quit`, `--help`,
   `--version`); `tynex daemon` loads the config and exits with code 78
   on errors.
+- Daemon over D-Bus: single instance, `tynex show`, `hide` and `quit`,
+  and one poll loop for Wayland and D-Bus with no idle wakeups.
 
 [Unreleased]: https://github.com/canbesolved/tynex/commits/main

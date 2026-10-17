@@ -4,4 +4,5 @@
 //! Portable drawing: no OS types.
 
 pub mod layouts;
+pub mod painter;
 pub mod render;

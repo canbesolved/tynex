@@ -6,6 +6,7 @@
 use std::process::ExitCode;
 
 use tynex::cli::{Command, USAGE, parse};
+use tynex::ipc::Request;
 
 /// Program entry point.
 fn main() -> ExitCode {
@@ -22,13 +23,23 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         Ok(Command::Daemon) => tynex::daemon::run(),
-        Ok(Command::Show(_) | Command::Hide | Command::Quit) => {
-            log::error!("cannot reach the daemon: IPC is not available yet");
-            ExitCode::FAILURE
-        }
+        Ok(Command::Show(mode)) => request(Request::Show(mode)),
+        Ok(Command::Hide) => request(Request::Hide),
+        Ok(Command::Quit) => request(Request::Quit),
         Err(message) => {
             eprintln!("tynex: error: {message}\n\n{USAGE}");
             ExitCode::from(2)
+        }
+    }
+}
+
+/// Sends `req` to the daemon and reports a failure.
+fn request(req: Request) -> ExitCode {
+    match tynex::platform::linux::dbus_ipc::send(req) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) => {
+            log::error!("{e}");
+            ExitCode::FAILURE
         }
     }
 }

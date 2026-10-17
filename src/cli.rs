@@ -27,7 +27,7 @@ Options:
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Command {
     Daemon,
-    Show(ModeKind),
+    Show(Option<ModeKind>), // `None`: the mode from the config
     Hide,
     Quit,
     Help,
@@ -44,7 +44,7 @@ pub fn parse(
 ) -> Result<Command, String> {
     let mut parser = lexopt::Parser::from_args(args);
     let mut command = None;
-    let mut mode = ModeKind::Hotkey;
+    let mut mode = None;
 
     while let Some(arg) = parser.next().map_err(|e| e.to_string())? {
         match arg {
@@ -53,8 +53,8 @@ pub fn parse(
             Long("mode") if command == Some("show") => {
                 mode = match parser.value().map_err(|e| e.to_string())?.string()
                 {
-                    Ok(m) if m == "hotkey" => ModeKind::Hotkey,
-                    Ok(m) if m == "search" => ModeKind::Search,
+                    Ok(m) if m == "hotkey" => Some(ModeKind::Hotkey),
+                    Ok(m) if m == "search" => Some(ModeKind::Search),
                     _ => {
                         return Err(
                             "`--mode` expects `hotkey` or `search`".into()
@@ -100,14 +100,14 @@ mod tests {
     #[test]
     fn commands_parse() {
         assert_eq!(run(&["daemon"]), Ok(Command::Daemon));
-        assert_eq!(run(&["show"]), Ok(Command::Show(ModeKind::Hotkey)));
+        assert_eq!(run(&["show"]), Ok(Command::Show(None)));
         assert_eq!(
             run(&["show", "--mode", "search"]),
-            Ok(Command::Show(ModeKind::Search))
+            Ok(Command::Show(Some(ModeKind::Search)))
         );
         assert_eq!(
             run(&["show", "--mode=hotkey"]),
-            Ok(Command::Show(ModeKind::Hotkey))
+            Ok(Command::Show(Some(ModeKind::Hotkey)))
         );
         assert_eq!(run(&["hide"]), Ok(Command::Hide));
         assert_eq!(run(&["quit"]), Ok(Command::Quit));
