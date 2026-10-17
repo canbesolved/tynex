@@ -174,6 +174,11 @@ stable.
   `docs/roadmap`.
 - A pull request covers one scope, passes all checks from Tooling, and
   is merged by the maintainer after review.
+- Branch every pull request from an up-to-date `main`; never stack
+  pull requests. A pull request that touches files of another open
+  pull request waits until that one is merged.
+- Merge with squash merging only, so `main` stays linear: one commit
+  per pull request.
 - Commits follow [Conventional Commits](https://www.conventionalcommits.org):
   `feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`, `chore:`.
 - One logical change per commit. Subject line under 72 characters.
