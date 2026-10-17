@@ -42,6 +42,12 @@ Target: KDE Plasma 6 on Wayland.
   - Column widths follow `width` in proportion; no new keys. Longer
     text is cut to fit.
 
+### 0.1.6
+
+- [ ] Performance: holding `Up` or `Down` moves the selection one row
+  per key repeat, without skipping rows, and each frame is drawn
+  before the next repeat.
+
 ## Next: 0.2.0
 
 - [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
