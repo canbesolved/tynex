@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-10-18
+
+Rows that stay in place: `sort_by`.
+
 ### Added
 
 - `sort_by` sets the row order: `"key"` (default) keeps rows in the
@@ -129,7 +133,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/canbesolved/tynex/releases/tag/v0.1.4
 [0.1.3]: https://github.com/canbesolved/tynex/releases/tag/v0.1.3
 [0.1.2]: https://github.com/canbesolved/tynex/releases/tag/v0.1.2
 [0.1.1]: https://github.com/canbesolved/tynex/releases/tag/v0.1.1
