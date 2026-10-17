@@ -42,8 +42,11 @@ function without(w) {
     return mru.filter((x) => id(x) !== id(w));
 }
 
+// KWin may report a new window as activated before it reports it added.
 function added(w) {
-    mru.push(w); // Moves to the front once activated
+    if (!mru.some((x) => id(x) === id(w))) {
+        mru.push(w); // Moves to the front once activated
+    }
     w.captionChanged.connect(push);
     push();
 }

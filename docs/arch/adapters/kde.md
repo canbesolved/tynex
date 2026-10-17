@@ -93,7 +93,7 @@ order sent:
 - `title` is the caption, sanitized later by the core;
 - `icon` is not set;
 - records without exactly four fields or with an empty id are
-  skipped.
+  skipped, and a repeated id keeps only its first record.
 
 ## D-Bus interface
 
