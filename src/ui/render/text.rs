@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Text: font fallback, measuring, truncation and glyph drawing.
+//! Text in one font: measuring, truncation and glyph drawing.
 
 use std::collections::HashMap;
 use std::ops::Range;
@@ -10,7 +10,7 @@ use skrifa::GlyphId;
 
 use crate::core::text::cut_points;
 use crate::ui::render::canvas::{Canvas, Rgba};
-use crate::ui::render::glyphs::{Face, FontLookup, Raster, rasterize};
+use crate::ui::render::glyphs::{Face, Raster, rasterize};
 
 const ELLIPSIS: &str = "…";
 
@@ -25,55 +25,45 @@ pub struct Style<'a> {
 
 /// One glyph placed on a line.
 struct Placed {
-    font: usize,
     id: GlyphId,
     x: f32,   // Pen position before the glyph
     end: f32, // Pen position after it, without the next kerning
     byte: usize,
 }
 
-/// Text renderer with a glyph cache. Fonts load on first need.
+/// Text renderer with a glyph cache. Characters the font lacks are drawn
+/// as its missing-glyph box.
 pub struct Text {
-    fonts: Vec<Face>, // Index 0 is the primary font
-    font_of: HashMap<char, usize>,
-    lookup: Box<dyn FontLookup>,
-    masks: HashMap<(usize, GlyphId, u32), Option<Raster>>,
+    face: Face,
+    masks: HashMap<(GlyphId, u32), Option<Raster>>, // By glyph and size
 }
 
 impl Text {
     #[must_use]
-    pub fn new(primary: Face, lookup: Box<dyn FontLookup>) -> Self {
+    pub fn new(face: Face) -> Self {
         Self {
-            fonts: vec![primary],
-            font_of: HashMap::new(),
-            lookup,
+            face,
             masks: HashMap::new(),
         }
     }
 
-    /// Returns the primary font's ascent and descent at `size` pixels.
+    /// Returns the font's ascent and descent at `size` pixels.
     #[must_use]
     pub fn metrics(&self, size: f32) -> (f32, f32) {
-        self.fonts[0].metrics(size)
-    }
-
-    /// Resolves the fonts for every character of `text` in advance, so
-    /// fallback lookups happen when a title arrives, not while drawing.
-    pub fn prepare(&mut self, text: &str) {
-        for c in text.chars() {
-            self.font_index(c);
-        }
+        self.face.metrics(size)
     }
 
     /// Returns the advance width of `text` at `size` pixels.
-    pub fn width(&mut self, text: &str, size: f32) -> f32 {
+    #[must_use]
+    pub fn width(&self, text: &str, size: f32) -> f32 {
         self.layout(text, size).1
     }
 
     /// Returns where to cut `text` so it and an ellipsis fit `max`.
     ///
     /// `None` means the whole text fits. Cuts are safe cut points.
-    pub fn fit(&mut self, text: &str, size: f32, max: f32) -> Option<usize> {
+    #[must_use]
+    pub fn fit(&self, text: &str, size: f32, max: f32) -> Option<usize> {
         let (placed, total) = self.layout(text, size);
 
         if total <= max {
@@ -123,48 +113,19 @@ impl Text {
     }
 
     /// Places each glyph and returns the total advance.
-    fn layout(&mut self, text: &str, size: f32) -> (Vec<Placed>, f32) {
+    fn layout(&self, text: &str, size: f32) -> (Vec<Placed>, f32) {
         let mut placed = Vec::with_capacity(text.len());
         let mut x = 0.0;
 
         // No kerning and no shaping: glyphs follow their advances.
         for (byte, c) in text.char_indices() {
-            let font = self.font_index(c);
-            let face = &self.fonts[font];
-            let id = face.glyph(c).unwrap_or(GlyphId::NOTDEF);
-            let end = x + face.advance(id, size);
+            let id = self.face.glyph(c).unwrap_or(GlyphId::NOTDEF);
+            let end = x + self.face.advance(id, size);
 
-            placed.push(Placed {
-                font,
-                id,
-                x,
-                end,
-                byte,
-            });
+            placed.push(Placed { id, x, end, byte });
             x = end;
         }
         (placed, x)
-    }
-
-    /// Returns the index of the font used for `c`, loading a fallback.
-    fn font_index(&mut self, c: char) -> usize {
-        if let Some(&i) = self.font_of.get(&c) {
-            return i;
-        }
-
-        let found = self.fonts.iter().position(|f| f.glyph(c).is_some());
-        let index = found.or_else(|| {
-            let font = self.lookup.font_for(c)?;
-
-            font.glyph(c).is_some().then(|| {
-                self.fonts.push(font);
-                self.fonts.len() - 1
-            })
-        });
-        let index = index.unwrap_or(0);
-
-        self.font_of.insert(c, index);
-        index
     }
 
     /// Draws one placed glyph through its cached raster.
@@ -176,11 +137,10 @@ impl Text {
         size: f32,
         color: Rgba,
     ) {
-        let key = (p.font, p.id, size.to_bits());
-        let face = &self.fonts[p.font];
+        let face = &self.face;
         let mask = self
             .masks
-            .entry(key)
+            .entry((p.id, size.to_bits()))
             .or_insert_with(|| rasterize(face, p.id, size));
 
         if let Some(m) = mask {

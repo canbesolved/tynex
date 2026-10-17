@@ -37,7 +37,7 @@ Text cases for the rules in
 [core.md](../core.md#text-and-languages):
 
 - Spanish (`Música — Dolphin`), for Unicode smart case;
-- Chinese (`微信`), for font fallback;
+- Chinese (`微信`), for missing-glyph boxes or a CJK `font`;
 - accented French (`Café — Firefox`), for accent folding;
 - a combining accent (`e` + `U+0301`) near the truncation point;
 - control characters and a right-to-left override (`U+202E`), for

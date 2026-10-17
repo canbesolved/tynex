@@ -15,6 +15,16 @@ project adheres to
   in the Plasma icon theme, its parents and `hicolor`; PNG and SVG
   (`resvg`). The release binary grows to about 6.6 MB (ADR-0046).
 
+### Changed
+
+- One font for all text: `font` from the config, or the system
+  sans-serif font. Characters it lacks show as boxes; there is no
+  per-character fallback font any more, so set `font` to a font with
+  your scripts, for example Noto Sans CJK (ADR-0047).
+- Titles and app names drop invisible characters (bidi marks such as
+  `U+200E`, zero width space, word joiner, byte order mark), which
+  would show as boxes with one font.
+
 ## [0.1.2] - 2026-10-17
 
 App names and title format.

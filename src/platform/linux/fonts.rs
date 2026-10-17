@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Fonts via `fc-match`: the default font and per-character fallback.
-//! Font files are memory-mapped once and kept for the whole run.
+//! The font via `fc-match` or a configured path. The font file is
+//! memory-mapped once and kept for the whole run.
 
-use std::collections::HashMap;
 use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -13,7 +12,7 @@ use std::{io, ptr};
 use rustix::mm::{MapFlags, ProtFlags, mmap};
 
 use crate::config::Font;
-use crate::ui::render::glyphs::{Face, FontLookup};
+use crate::ui::render::glyphs::Face;
 
 /// Loads the font from the config: a path, or `fc-match` for `auto`.
 ///
@@ -32,23 +31,6 @@ pub fn default_face(font: &Font) -> io::Result<Face> {
     };
 
     load(&path, index)
-}
-
-/// Finds fallback fonts with `fc-match`, one lookup per character.
-#[derive(Default)]
-pub struct FcFallback {
-    loaded: HashMap<(PathBuf, u32), Option<Face>>, // Each file is mapped once
-}
-
-impl FontLookup for FcFallback {
-    fn font_for(&mut self, c: char) -> Option<Face> {
-        let key = fc_match(&format!("sans-serif:charset={:x}", u32::from(c)))?;
-
-        self.loaded
-            .entry(key)
-            .or_insert_with_key(|(path, index)| load(path, *index).ok())
-            .clone()
-    }
 }
 
 /// Runs `fc-match` for `pattern` and returns the file and face index.

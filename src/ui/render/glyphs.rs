@@ -41,21 +41,6 @@ impl Face {
     }
 }
 
-/// Finds a face for a character the loaded faces lack.
-pub trait FontLookup {
-    fn font_for(&mut self, c: char) -> Option<Face>;
-}
-
-/// Lookup that finds nothing: missing glyphs use the primary font's box.
-#[derive(Debug, Default)]
-pub struct NoFallback;
-
-impl FontLookup for NoFallback {
-    fn font_for(&mut self, _c: char) -> Option<Face> {
-        None
-    }
-}
-
 /// A rasterized glyph: offset from the pen position and coverage rows.
 pub(super) struct Raster {
     pub left: i32,

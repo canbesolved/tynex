@@ -34,23 +34,24 @@ ui/render/
 
 ## Fonts and scripts
 
-- **Primary font:** from `font` in the config, or `fc-match` for
-  `auto` ([ADR-0017](../../adr/0017_fc_match.md)).
-- **Fallback:** when the primary font has no glyph for a character,
-  `fc-match -f '%{file}:%{index}' 'sans-serif:charset=<hex>'` finds a
-  font that has it (for example Noto Sans CJK for Chinese). Results
-  are cached per character, so each lookup runs once. `Text::prepare`
-  resolves a title's fonts when a `Windows` event brings it, so lookups
-  never run when the popup opens.
-- **Memory:** font files are mapped read-only with `rustix` (`mmap`),
-  not read into the heap. A CJK font of 20 MB costs RAM only for the
-  pages actually used. `skrifa` loads font collections (`.ttc`) by
-  index. A `Face` needs its data for the whole run (`&'static [u8]`).
-- **No font at all:** the primary font's missing-glyph box is drawn.
+- **One font:** all text uses one face: `font` from the config, or
+  `fc-match sans-serif` for `auto`, run once at start
+  ([ADR-0017](../../adr/0017_fc_match.md),
+  [ADR-0047](../../adr/0047_one_font.md)). There is no fallback font.
+- **Missing characters:** a character the font lacks is drawn as the
+  font's missing-glyph box (`.notdef`). To show Chinese, Japanese or
+  Korean titles, set `font` to a font that has them, for example Noto
+  Sans CJK.
+- **Memory:** the font file is mapped read-only with `rustix`
+  (`mmap`), not read into the heap. A CJK font of 20 MB costs RAM only
+  for the pages actually used. `skrifa` loads font collections
+  (`.ttc`) by index. A `Face` needs its data for the whole run
+  (`&'static [u8]`).
 - **Scripts:** Latin, Cyrillic, Greek, Chinese, Japanese and Korean
-  render correctly without shaping. Arabic, Hebrew and Indic scripts
-  need shaping and right-to-left layout; until then they render
-  imperfectly (see [ROADMAP.md](../../../ROADMAP.md)).
+  render correctly without shaping, when the font has them. Arabic,
+  Hebrew and Indic scripts need shaping and right-to-left layout;
+  until then they render imperfectly (see
+  [ROADMAP.md](../../../ROADMAP.md)).
 - **Emoji:** only outlines are drawn, so color emoji show in one color
   or as a box.
 

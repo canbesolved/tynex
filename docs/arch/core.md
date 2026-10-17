@@ -173,9 +173,12 @@ Unicode text, never as bytes or ASCII
 - **Sanitizing:** when a `Windows` event arrives, each title and app
   name is cleaned once: control characters (C0, C1) become spaces, bidi
   override and isolate controls (`U+202A` to `U+202E`, `U+2066` to
-  `U+2069`) are removed so a title cannot reorder the row, runs of
-  whitespace collapse to one space, and the ends are trimmed. Letters,
-  case and accents are never changed.
+  `U+2069`) are removed so a title cannot reorder the row, invisible
+  characters that fonts draw as boxes are removed (bidi marks `U+061C`,
+  `U+200E`, `U+200F`; zero width space `U+200B`; word joiner and
+  invisible operators `U+2060` to `U+2064`; byte order mark `U+FEFF`),
+  runs of whitespace collapse to one space, and the ends are trimmed.
+  Letters, case and accents are never changed.
 - **Offsets:** positions in a title (highlights, truncation) are byte
   offsets on `char` boundaries. Highlight ranges in `View` are byte
   ranges.

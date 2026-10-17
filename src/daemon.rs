@@ -68,7 +68,7 @@ fn start(config: Config) -> Result<(), String> {
     let presenter = WaylandPresenter::connect().map_err(|e| e.to_string())?;
     let face = fonts::default_face(&config.appearance.font)
         .map_err(|e| format!("cannot load the font: {e}"))?;
-    let text = Text::new(face, Box::new(fonts::FcFallback::default()));
+    let text = Text::new(face);
 
     dbus_ipc::serve(&bus, tx.clone(), config.mode);
     source.start(tx).map_err(|e| e.to_string())?;

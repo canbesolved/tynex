@@ -21,7 +21,7 @@ use tynex::core::title::TitleFormat;
 use tynex::core::traits::WindowSource;
 use tynex::modes::hotkey::HotkeyMode;
 use tynex::modes::search::SearchMode;
-use tynex::platform::linux::fonts::{FcFallback, default_face};
+use tynex::platform::linux::fonts::default_face;
 use tynex::platform::linux::icon_theme::IconTheme;
 use tynex::platform::linux::wayland::{PresenterEvent, WaylandPresenter};
 use tynex::ui::layouts::vertical_list::VerticalList;
@@ -64,8 +64,7 @@ fn redraw(
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut presenter = WaylandPresenter::connect()?;
-    let mut text =
-        Text::new(default_face(&Font::Auto)?, Box::new(FcFallback::default()));
+    let mut text = Text::new(default_face(&Font::Auto)?);
     let mut icons = Icons::new(Box::new(IconTheme::default()));
     let theme = Theme::default();
     let (tx, rx) = channel();
@@ -83,9 +82,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         app.handle(event);
     }
     app.handle(Event::Show(ModeKind::Hotkey));
-    for row in app.view().ok_or("popup is not open")?.rows() {
-        text.prepare(&row.title); // Font fallback before the first frame
-    }
     redraw(&mut presenter, &app, (&mut text, &mut icons), &theme);
 
     let end = Instant::now() + SHOW_FOR;
