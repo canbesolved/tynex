@@ -6,11 +6,11 @@ Later to Next to Now as they are scheduled, and leave this file once
 released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md),
 dropped items in [DEPRECATIONS.md](DEPRECATIONS.md).
 
-| Horizon | Release      | Meaning                              |
-| ------- | ------------ | ------------------------------------ |
-| Now     | 0.1.x        | Patch releases, in the order below   |
-| Next    | 0.2.0, 0.3.0 | Committed for the following releases |
-| Later   | Unplanned    | Accepted ideas, not scheduled yet    |
+| Horizon | Release        | Meaning                              |
+| ------- | -------------- | ------------------------------------ |
+| Now     | 0.1.x          | Patch releases, in the order below   |
+| Next    | 0.2.0 to 0.3.x | Committed for the following releases |
+| Later   | Unplanned      | Accepted ideas, not scheduled yet    |
 
 Rules:
 
@@ -23,9 +23,6 @@ Target: KDE Plasma 6 on Wayland.
 
 ### 0.1.6
 
-- [ ] Performance: holding `Up` or `Down` moves the selection one row
-  per key repeat, without skipping rows, and each frame is drawn
-  before the next repeat.
 - [ ] Hotkey mode becomes the `title_bar` option, and search mode
   becomes the only mode. **Breaking:** the `mode` and `keys` config
   keys and `sort_by = "key"` are removed. Needs an ADR before work
@@ -59,6 +56,12 @@ Target: KDE Plasma 6 on Wayland.
 
 - [ ] Faster, more responsive and smoother UI overall: the popup opens,
   redraws and reacts to every key without visible delay.
+
+### 0.3.1
+
+- [ ] Performance: holding `Up` or `Down` moves the selection one row
+  per key repeat, without skipping rows, and each frame is drawn
+  before the next repeat.
 
 ## Later
 
