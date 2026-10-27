@@ -6,16 +6,18 @@ Later to Next to Now as they are scheduled, and leave this file once
 released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md),
 dropped items in [DEPRECATIONS.md](DEPRECATIONS.md).
 
-| Horizon | Release        | Meaning                              |
-| ------- | -------------- | ------------------------------------ |
-| Now     | 0.1.x          | Patch releases, in the order below   |
-| Next    | 0.2.0 to 0.3.x | Committed for the following releases |
-| Later   | Unplanned      | Accepted ideas, not scheduled yet    |
+| Horizon | Release              | Meaning                              |
+| ------- | -------------------- | ------------------------------------ |
+| Now     | 0.1.x                | Patch releases, in the order below   |
+| Next    | 0.2.0, 0.8.x - 1.0.0 | Committed for the following releases |
+| Later   | Unplanned            | Accepted ideas, not scheduled yet    |
 
 Rules:
 
 - Items are user-facing features, not internal tasks.
 - A design-changing item gets an ADR before work starts.
+- Reserved series: 0.8.x for performance, 0.9.x for security and
+  stability, 1.0.0 for polishing and the first stable release.
 
 ## Now: 0.1.x
 
@@ -54,16 +56,24 @@ Target: KDE Plasma 6 on Wayland.
     window" entry. An app that is not running has one launch entry.
   - Later sources: macOS app bundles, Windows Start menu shortcuts.
 
-### 0.3.0
+### 0.8.x: performance
+
+The whole 0.8.x series is reserved for performance work.
 
 - [ ] Faster, more responsive and smoother UI overall: the popup opens,
   redraws and reacts to every key without visible delay.
-
-### 0.3.1
-
 - [ ] Performance: holding `Up` or `Down` moves the selection one row
   per key repeat, without skipping rows, and each frame is drawn
   before the next repeat.
+
+### 0.9.x: security and stability
+
+The whole 0.9.x series is reserved for security and stability fixes.
+No items yet.
+
+### 1.0.0: first stable release
+
+Polishing and the first stable release. No items yet.
 
 ## Later
 
