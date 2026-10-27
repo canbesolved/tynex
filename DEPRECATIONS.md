@@ -35,3 +35,6 @@ Features that were planned or designed, then dropped before a release.
   same reason.
 - More switching modes. Planned for Later, dropped on 2026-10-27:
   search mode is to be the only mode.
+- Key badge background and text colors in the theme options. Planned
+  for Later, dropped on 2026-10-27: `title_bar` rows show no key
+  letters.

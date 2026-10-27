@@ -125,8 +125,7 @@ Configuration:
 Themes:
 
 - [ ] Theme options: opacity, background, selection, search highlight
-  and text colors, border width and color, key badge background and
-  text colors, font size and style.
+  and text colors, border width and color, font size and style.
 - [ ] Light theme next to the default dark one.
 - [ ] Custom themes in `~/.config/tynex/tynex.theme`, chosen with
   `dark_theme = "tynex.theme"` and `light_theme = "tynex.theme"`; one
