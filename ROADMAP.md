@@ -3,7 +3,8 @@
 Planned features for `tynex`, in the Now / Next / Later format. Each
 horizon maps to a [SemVer](https://semver.org) release. Items move from
 Later to Next to Now as they are scheduled, and leave this file once
-released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md).
+released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md),
+dropped items in [DEPRECATIONS.md](DEPRECATIONS.md).
 
 | Horizon | Release   | Meaning                             |
 | ------- | --------- | ----------------------------------- |

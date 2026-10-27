@@ -16,6 +16,8 @@ module you touch before changing code.
 - `assets/`: images and other media.
 - `ROADMAP.md`: planned features (Now / Next / Later).
 - `CHANGELOG.md`: notable changes, Keep a Changelog format.
+- `DEPRECATIONS.md`: history of deprecated, removed and never shipped
+  features.
 - `CONTRIBUTING.md`: developer environment setup and workflow.
 
 ## Principles
@@ -44,6 +46,8 @@ module you touch before changing code.
   the daemon until edited (see `docs/arch/config.md`).
 - Deferred features go to `ROADMAP.md`, not into module docs. Module
   docs describe what exists or is in the current release.
+- A deprecated or removed feature, or a planned feature dropped from
+  `ROADMAP.md`, gets an entry in `DEPRECATIONS.md`, in the same commit.
 
 ## Decisions (ADR)
 
@@ -63,8 +67,8 @@ module you touch before changing code.
 - Naming: underscores (`snake_case`, `file_name.rs`); hyphens only where
   underscores are not allowed. File names are lowercase, except
   conventional ones (`README.md`, `AGENTS.md`, `CLAUDE.md`,
-  `CONTRIBUTING.md`, `ROADMAP.md`, `CHANGELOG.md`, `LICENSE`,
-  `LICENSES/*.txt`, `REUSE.toml`).
+  `CONTRIBUTING.md`, `ROADMAP.md`, `CHANGELOG.md`, `DEPRECATIONS.md`,
+  `LICENSE`, `LICENSES/*.txt`, `REUSE.toml`).
 - A source file must not exceed 250 lines. Split it into modules first.
 - Every source file (Rust, shell, JavaScript) starts with SPDX / REUSE
   identifiers, after the shebang if any. Other files (docs, config,
