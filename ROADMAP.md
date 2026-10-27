@@ -23,21 +23,6 @@ Rules:
 
 Target: KDE Plasma 6 on Wayland.
 
-### 0.1.6
-
-- [ ] Hotkey mode becomes the `title_bar` option, and prompt mode
-  becomes the only mode. **Breaking:** the `mode` and `keys` config
-  keys and `sort_by = "key"` are removed. Needs an ADR before work
-  starts.
-  - Config: `title_bar = true` shows the window list, `false`
-    (default) hides it.
-  - The list shows under the prompt, or under the icon strip when
-    `icon_bar` is also on.
-  - Rows show the app icon and title, without key letters. `show_app`
-    and `strip_app_name` apply; `show_icon = false` hides the icons.
-  - `strip_app_name` now defaults to `false`, so titles keep the app
-    name.
-
 ## Next
 
 ### 0.2.0

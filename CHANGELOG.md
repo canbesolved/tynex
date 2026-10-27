@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-10-27
+
+Prompt mode only, with `title_bar`. Breaking: hotkey mode is removed.
+
 ### Added
 
 - `title_bar` in `[appearance]` shows the window list under the search
@@ -174,7 +178,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/canbesolved/tynex/releases/tag/v0.1.6
 [0.1.5]: https://github.com/canbesolved/tynex/releases/tag/v0.1.5
 [0.1.4]: https://github.com/canbesolved/tynex/releases/tag/v0.1.4
 [0.1.3]: https://github.com/canbesolved/tynex/releases/tag/v0.1.3
