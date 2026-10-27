@@ -6,16 +6,18 @@ Later to Next to Now as they are scheduled, and leave this file once
 released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md),
 dropped items in [DEPRECATIONS.md](DEPRECATIONS.md).
 
-| Horizon | Release   | Meaning                             |
-| ------- | --------- | ----------------------------------- |
-| Now     | 0.1.x     | Patch releases, in the order below  |
-| Next    | 0.2.0     | Committed for the following release |
-| Later   | Unplanned | Accepted ideas, not scheduled yet   |
+| Horizon | Release              | Meaning                              |
+| ------- | -------------------- | ------------------------------------ |
+| Now     | 0.1.x                | Patch releases, in the order below   |
+| Next    | 0.2.0, 0.8.x - 1.0.0 | Committed for the following releases |
+| Later   | Unplanned            | Accepted ideas, not scheduled yet    |
 
 Rules:
 
 - Items are user-facing features, not internal tasks.
 - A design-changing item gets an ADR before work starts.
+- Reserved series: 0.8.x for performance, 0.9.x for security and
+  stability, 1.0.0 for polishing and the first stable release.
 
 ## Now: 0.1.x
 
@@ -23,13 +25,22 @@ Target: KDE Plasma 6 on Wayland.
 
 ### 0.1.6
 
-- [ ] Performance: holding `Up` or `Down` moves the selection one row
-  per key repeat, without skipping rows, and each frame is drawn
-  before the next repeat.
-- [ ] Faster, more responsive and smoother UI overall: the popup opens,
-  redraws and reacts to every key without visible delay.
+- [ ] Hotkey mode becomes the `title_bar` option, and search mode
+  becomes the only mode. **Breaking:** the `mode` and `keys` config
+  keys and `sort_by = "key"` are removed. Needs an ADR before work
+  starts.
+  - Config: `title_bar = true` shows the window list, `false`
+    (default) hides it.
+  - The list shows under the prompt, or under the icon strip when
+    `icon_bar` is also on.
+  - Rows show the app icon and title, without key letters. `show_app`
+    and `strip_app_name` apply; `show_icon = false` hides the icons.
+  - `strip_app_name` now defaults to `false`, so titles keep the app
+    name.
 
-## Next: 0.2.0
+## Next
+
+### 0.2.0
 
 - [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
   with a custom title, for example `[apps.firefox]` with
@@ -44,6 +55,25 @@ Target: KDE Plasma 6 on Wayland.
   - A running app lists its open windows first, then a "Launch new
     window" entry. An app that is not running has one launch entry.
   - Later sources: macOS app bundles, Windows Start menu shortcuts.
+
+### 0.8.x: performance
+
+The whole 0.8.x series is reserved for performance work.
+
+- [ ] Faster, more responsive and smoother UI overall: the popup opens,
+  redraws and reacts to every key without visible delay.
+- [ ] Performance: holding `Up` or `Down` moves the selection one row
+  per key repeat, without skipping rows, and each frame is drawn
+  before the next repeat.
+
+### 0.9.x: security and stability
+
+The whole 0.9.x series is reserved for security and stability fixes.
+No items yet.
+
+### 1.0.0: first stable release
+
+Polishing and the first stable release. No items yet.
 
 ## Later
 
@@ -75,16 +105,6 @@ Layouts and modes:
     - `Left` and `Right` move along the strip;
     - `Tab` moves through the matches.
   - Launching uses the `launcher` module.
-- [ ] Hotkey mode becomes the `title_bar` option, and search mode
-  becomes the only mode. **Breaking:** the `mode` and `keys` config
-  keys and `sort_by = "key"` are removed. Needs an ADR before work
-  starts.
-  - Config: `title_bar = true` (default) shows the window list, `false`
-    hides it.
-  - The list shows under the prompt, or under the icon strip when
-    `icon_bar` is also on.
-  - Rows show the app icon and title, without key letters. `show_app`
-    and `strip_app_name` apply; `show_icons = false` hides the icons.
 - [ ] Close windows from the popup, like `Alt+F4`: `Ctrl+W` or a right
   click closes the selected window.
   - In the task list, a right click on an app with several windows
@@ -125,8 +145,7 @@ Configuration:
 Themes:
 
 - [ ] Theme options: opacity, background, selection, search highlight
-  and text colors, border width and color, key badge background and
-  text colors, font size and style.
+  and text colors, border width and color, font size and style.
 - [ ] Light theme next to the default dark one.
 - [ ] Custom themes in `~/.config/tynex/tynex.theme`, chosen with
   `dark_theme = "tynex.theme"` and `light_theme = "tynex.theme"`; one
@@ -137,7 +156,8 @@ Themes:
 
 Look:
 
-- [ ] Hide app icons: `show_icons = false` in `[appearance]`.
+- [ ] Hide app icons: `show_icon = true` (default) in `[appearance]`
+  shows them, `false` hides them.
 - [ ] Text shaping and right-to-left layout for Arabic, Hebrew and
   Indic scripts (`rustybuzz`).
 - [ ] Color emoji in titles.
