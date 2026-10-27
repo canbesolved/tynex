@@ -28,13 +28,6 @@ Target: KDE Plasma 6 on Wayland.
 - [ ] Faster, more responsive and smoother UI overall: the popup opens,
   redraws and reacts to every key without visible delay.
 
-### 0.1.7
-
-- [ ] Default key order `keys = "asdfjkl;qweruipghty"`: the home row
-  (`asdfjkl;`) first, then `qweruip`, then the index finger reaches
-  `ghty`. `keys` then accepts `;` besides lowercase letters, and `;`
-  also works when a non-Latin layout is active.
-
 ## Next: 0.2.0
 
 - [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
@@ -56,11 +49,60 @@ Target: KDE Plasma 6 on Wayland.
 Layouts and modes:
 
 - [ ] More layouts: grid, horizontal strip.
-- [ ] More switching modes.
-- [ ] Per-app keys: `key = "w"` in `[apps.<app_id>]` reserves a letter
-  for the app's window; automatic pinning skips reserved letters.
-- [ ] Close windows from the popup, like `Alt+F4`: the `x` key or a
-  mouse click closes the selected window.
+- [ ] Task list in search mode: running apps shown as a row of app
+  icons, one per app, to replace KDE's "Icons-only Task Manager"
+  widget. It shows only with the popup, on demand.
+  - Pinned apps stay in the row while they are not running.
+  - An app with several windows shows their count under its icon.
+  - A mouse click on an icon launches the app if it is not running,
+    activates its window if it has one, or opens a dropdown list of
+    its window titles if it has several.
+  - The dropdown:
+    - opens under the selected app;
+    - lists windows alphabetically by title;
+    - fits the longest title, up to 450 px wide, scaled with the
+      display scale; longer titles end with an ellipsis (`…`);
+    - slides in and out smoothly at about 120 frames per second.
+  - The strip stays in place when the dropdown opens: the popup keeps
+    a fixed size with transparent spare room.
+  - Config: `icon_bar = true` (default) shows the strip with the prompt;
+    with `false`, only the prompt shows until you type. Matches appear
+    below the prompt.
+  - Keys:
+    - `Space` works as `Enter`: it picks the selected match, so
+      search queries no longer contain spaces;
+    - `Left` and `Right` move along the strip;
+    - `Tab` moves through the matches.
+  - Launching uses the `launcher` module.
+- [ ] Remove hotkey mode: search mode becomes the only mode.
+  **Breaking:** the `mode` and `keys` config keys and `sort_by = "key"`
+  are removed. Needs an ADR before work starts.
+- [ ] Close windows from the popup, like `Alt+F4`: `Ctrl+W` or a right
+  click closes the selected window.
+  - In the task list, a right click on an app with several windows
+    opens its dropdown; a right click on a title there closes that
+    window.
+
+Titles:
+
+- [ ] Rename a window from the popup: `F2` edits the selected title in
+  place, `Enter` keeps it, `Esc` cancels. The new title lasts until the
+  window closes.
+- [ ] Title prefixes: a `[title_prefix]` table maps a pattern to a
+  prefix added to matching titles, for example `"Jira" = "[J] "`.
+  Patterns are regular expressions, so plain text matches as well.
+
+Info bar:
+
+- [ ] `info_bar` module: a status bar inside the popup. It runs only
+  while the popup is open, so it adds no idle work.
+  - Config: `[info_bar]` with `placement = "top"`, `"bottom"` or
+    `"both"`.
+  - Custom scripts: a shell script's output is shown in the bar; each
+    output line becomes a row.
+  - Plugins: date and time, battery, power usage in watts, CPU load,
+    RAM usage.
+  - Open questions: hotkeys for bar actions; a keyboard layout plugin.
 
 Panel:
 
@@ -98,6 +140,9 @@ Languages:
   and Korean in search mode.
 - [ ] Phonetic search: match Chinese titles by pinyin and Japanese by
   romaji.
+- [ ] Switch the keyboard layout to English when the popup opens and
+  restore the previous one when it closes: `switch_layout = "us"`, off
+  by default.
 
 Platform support:
 
