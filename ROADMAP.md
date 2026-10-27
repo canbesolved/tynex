@@ -74,9 +74,16 @@ Layouts and modes:
     - `Left` and `Right` move along the strip;
     - `Tab` moves through the matches.
   - Launching uses the `launcher` module.
-- [ ] Remove hotkey mode: search mode becomes the only mode.
-  **Breaking:** the `mode` and `keys` config keys and `sort_by = "key"`
-  are removed. Needs an ADR before work starts.
+- [ ] Hotkey mode becomes the `title_bar` option, and search mode
+  becomes the only mode. **Breaking:** the `mode` and `keys` config
+  keys and `sort_by = "key"` are removed. Needs an ADR before work
+  starts.
+  - Config: `title_bar = true` (default) shows the window list, `false`
+    hides it.
+  - The list shows under the prompt, or under the icon strip when
+    `icon_bar` is also on.
+  - Rows show the app icon and title, without key letters. `show_app`
+    and `strip_app_name` apply; `show_icons = false` hides the icons.
 - [ ] Close windows from the popup, like `Alt+F4`: `Ctrl+W` or a right
   click closes the selected window.
   - In the task list, a right click on an app with several windows
