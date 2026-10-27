@@ -6,7 +6,7 @@
 use dbus::Message;
 
 use crate::adapters::kde::parse::parse;
-use crate::core::event::{Event, ModeKind};
+use crate::core::event::Event;
 use crate::core::queue::EventTx;
 use crate::platform::linux::dbus::Bus;
 use crate::platform::linux::desktop_files::DesktopFiles;
@@ -17,15 +17,15 @@ pub const PATH: &str = "/io/github/canbesolved/Tynex/Kde";
 /// Interface of the object.
 pub const INTERFACE: &str = "io.github.canbesolved.Tynex.Kde";
 
-/// Registers the object; calls become events on `tx`, `Show` opens in
-/// `mode`. Only `kwin`, `KWin`'s unique bus name, may call it, so other
-/// programs cannot inject a fake window list. Windows get app names and
-/// icons from desktop files.
-pub fn serve(bus: &Bus, tx: EventTx, kwin: String, mode: ModeKind) {
+/// Registers the object; calls become events on `tx`. Only `kwin`,
+/// `KWin`'s unique bus name, may call it, so other programs cannot inject
+/// a fake window list. Windows get app names and icons from desktop
+/// files.
+pub fn serve(bus: &Bus, tx: EventTx, kwin: String) {
     let mut apps = DesktopFiles::default();
 
     bus.register(PATH, move |msg| {
-        let mut event = request(msg, &kwin, mode)
+        let mut event = request(msg, &kwin)
             .inspect_err(|e| log::warn!("refused a call to {PATH}: {e}"))?;
 
         if let Event::Windows(list) = &mut event {
@@ -37,7 +37,7 @@ pub fn serve(bus: &Bus, tx: EventTx, kwin: String, mode: ModeKind) {
 }
 
 /// Turns a method call from `kwin` into an event.
-fn request(msg: &Message, kwin: &str, mode: ModeKind) -> Result<Event, String> {
+fn request(msg: &Message, kwin: &str) -> Result<Event, String> {
     if msg.sender().as_deref() != Some(kwin) {
         return Err("only KWin may call this object".into());
     }
@@ -50,7 +50,7 @@ fn request(msg: &Message, kwin: &str, mode: ModeKind) -> Result<Event, String> {
             .read1::<&str>()
             .map(|list| Event::Windows(parse(list)))
             .map_err(|e| e.to_string()),
-        Some("Show") => Ok(Event::Show(mode)),
+        Some("Show") => Ok(Event::Show),
         _ => Err("unknown method".into()),
     }
 }
@@ -84,14 +84,8 @@ mod tests {
         let update = call(KWIN, "Update", Some(""));
         let show = call(KWIN, "Show", None);
 
-        assert_eq!(
-            request(&update, KWIN, ModeKind::Hotkey),
-            Ok(Event::Windows(Vec::new()))
-        );
-        assert_eq!(
-            request(&show, KWIN, ModeKind::Search),
-            Ok(Event::Show(ModeKind::Search))
-        );
+        assert_eq!(request(&update, KWIN), Ok(Event::Windows(Vec::new())));
+        assert_eq!(request(&show, KWIN), Ok(Event::Show));
     }
 
     #[test]
@@ -100,13 +94,13 @@ mod tests {
         let mut anonymous = call(KWIN, "Show", None);
 
         anonymous.set_sender(None);
-        assert!(request(&fake, KWIN, ModeKind::Hotkey).is_err());
-        assert!(request(&anonymous, KWIN, ModeKind::Hotkey).is_err());
+        assert!(request(&fake, KWIN).is_err());
+        assert!(request(&anonymous, KWIN).is_err());
     }
 
     #[test]
     fn bad_calls_are_errors() {
-        let get = |msg| request(&msg, KWIN, ModeKind::Hotkey);
+        let get = |msg| request(&msg, KWIN);
 
         assert!(get(call(KWIN, "Update", None)).is_err()); // No list
         assert!(get(call(KWIN, "Poll", None)).is_err());

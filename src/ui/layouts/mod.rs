@@ -25,8 +25,9 @@ pub struct Metrics {
     pub font_size: f32, // Title size
     pub width: f32,     // Popup width
     pub max_rows: usize,
-    pub scale: f32,     // Output scale factor, 1.0 or more
-    pub show_app: bool, // App name column
+    pub scale: f32,      // Output scale factor, 1.0 or more
+    pub title_bar: bool, // Rows before a query is typed
+    pub show_app: bool,  // App name column
 }
 
 /// Surface size in pixels.

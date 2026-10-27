@@ -14,8 +14,6 @@ use serde::Deserialize;
 
 pub use crate::config::error::ConfigError;
 pub use crate::config::file::{Loaded, load_or_create};
-use crate::core::event::ModeKind;
-use crate::core::keys::DEFAULT_KEYS;
 use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
 
@@ -52,6 +50,7 @@ pub struct AppearanceConfig {
     pub font_size: u16,
     pub width: u16,
     pub max_rows: u16,
+    pub title_bar: bool,      // Window list before typing
     pub show_app: bool,       // App name column
     pub strip_app_name: bool, // Drop the app name from titles
 }
@@ -60,11 +59,9 @@ pub struct AppearanceConfig {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Config {
     pub desktop: Desktop,
-    pub mode: ModeKind,
     pub hotkey_action: HotkeyAction,
     pub sort_by: SortBy,
     pub layout: Layout,
-    pub keys: String,
     pub appearance: AppearanceConfig,
 }
 
@@ -72,18 +69,17 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             desktop: Desktop::Auto,
-            mode: ModeKind::Hotkey,
             hotkey_action: HotkeyAction::Last,
-            sort_by: SortBy::Key,
+            sort_by: SortBy::Recently,
             layout: Layout::VerticalList,
-            keys: DEFAULT_KEYS.into(),
             appearance: AppearanceConfig {
                 font: Font::Auto,
                 font_size: 14,
                 width: 480,
                 max_rows: 19,
+                title_bar: false,
                 show_app: false,
-                strip_app_name: true,
+                strip_app_name: false,
             },
         }
     }

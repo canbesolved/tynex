@@ -5,13 +5,6 @@
 
 use crate::core::window::{WindowId, WindowInfo};
 
-/// Switching mode the popup opens in.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ModeKind {
-    Hotkey,
-    Search,
-}
-
 /// Portable key press. Each platform maps native key events to it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Key {
@@ -34,7 +27,7 @@ pub enum Key {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Event {
     Windows(Vec<WindowInfo>), // Full list, most recently used first
-    Show(ModeKind),
+    Show,
     Key(Key),
     Hide,
     Quit,

@@ -8,7 +8,7 @@ use std::time::Duration;
 use dbus::Message;
 use dbus::channel::{BusType, Channel};
 
-use crate::core::event::{Event, ModeKind};
+use crate::core::event::Event;
 use crate::core::queue::EventTx;
 use crate::ipc::{IpcError, Request};
 use crate::platform::linux::dbus::Bus;
@@ -20,27 +20,26 @@ pub const NAME: &str = "io.github.canbesolved.Tynex";
 pub const PATH: &str = "/io/github/canbesolved/Tynex";
 
 /// Registers the IPC object; requests become events on `tx`.
-pub fn serve(bus: &Bus, tx: EventTx, default_mode: ModeKind) {
+pub fn serve(bus: &Bus, tx: EventTx) {
     bus.register(PATH, move |msg| {
-        let event = request(msg, default_mode)?;
+        let event = request(msg)?;
 
         tx.send(event);
         Ok(())
     });
 }
 
-/// Turns a method call into an event.
-fn request(msg: &Message, default_mode: ModeKind) -> Result<Event, String> {
+/// Turns a method call into an event. `Show` keeps its string argument
+/// from when it named a mode; only the empty string is accepted.
+fn request(msg: &Message) -> Result<Event, String> {
     if msg.interface().as_deref() != Some(NAME) {
         return Err("unknown interface".into());
     }
 
     match msg.member().as_deref() {
         Some("Show") => match msg.read1::<&str>().unwrap_or("") {
-            "" => Ok(Event::Show(default_mode)),
-            "hotkey" => Ok(Event::Show(ModeKind::Hotkey)),
-            "search" => Ok(Event::Show(ModeKind::Search)),
-            other => Err(format!("unknown mode `{other}`")),
+            "" => Ok(Event::Show),
+            other => Err(format!("unknown mode `{other}`: modes were removed")),
         },
         Some("Hide") => Ok(Event::Hide),
         Some("Quit") => Ok(Event::Quit),
@@ -57,20 +56,16 @@ pub fn send(req: Request) -> Result<(), IpcError> {
     let failed = |e: &dyn std::fmt::Display| IpcError::Failed(e.to_string());
     let channel =
         Channel::get_private(BusType::Session).map_err(|e| failed(&e))?;
-    let (member, mode) = match req {
-        Request::Show(mode) => ("Show", mode),
-        Request::Hide => ("Hide", None),
-        Request::Quit => ("Quit", None),
+    let member = match req {
+        Request::Show => "Show",
+        Request::Hide => "Hide",
+        Request::Quit => "Quit",
     };
     let mut msg = Message::new_method_call(NAME, PATH, NAME, member)
         .map_err(|e| failed(&e))?;
 
     if member == "Show" {
-        msg = msg.append1(match mode {
-            None => "",
-            Some(ModeKind::Hotkey) => "hotkey",
-            Some(ModeKind::Search) => "search",
-        });
+        msg = msg.append1("");
     }
 
     match channel.send_with_reply_and_block(msg, Duration::from_secs(2)) {
@@ -104,18 +99,18 @@ mod tests {
     }
 
     #[test]
-    fn show_uses_the_given_or_default_mode() {
-        let show = |arg| request(&call("Show", arg), ModeKind::Search);
+    fn show_accepts_only_an_empty_mode() {
+        let show = |arg| request(&call("Show", arg));
 
-        assert_eq!(show(Some("")), Ok(Event::Show(ModeKind::Search)));
-        assert_eq!(show(None), Ok(Event::Show(ModeKind::Search)));
-        assert_eq!(show(Some("hotkey")), Ok(Event::Show(ModeKind::Hotkey)));
-        assert!(show(Some("fast")).is_err());
+        assert_eq!(show(Some("")), Ok(Event::Show));
+        assert_eq!(show(None), Ok(Event::Show));
+        assert!(show(Some("hotkey")).is_err());
+        assert!(show(Some("search")).is_err());
     }
 
     #[test]
     fn hide_quit_and_unknown_methods() {
-        let get = |m| request(&call(m, None), ModeKind::Hotkey);
+        let get = |m| request(&call(m, None));
 
         assert_eq!(get("Hide"), Ok(Event::Hide));
         assert_eq!(get("Quit"), Ok(Event::Quit));
@@ -125,7 +120,7 @@ mod tests {
             Message::new_method_call(NAME, PATH, "org.example.Other", "Hide")
                 .unwrap();
 
-        assert!(request(&other, ModeKind::Hotkey).is_err());
+        assert!(request(&other).is_err());
     }
 
     #[test]

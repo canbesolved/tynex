@@ -13,8 +13,7 @@ core/
   state.rs      State of an open popup, shared with the modes
   switcher.rs   State machine (tests in switcher_tests.rs)
   view.rs       View and Row: what the presenter must draw
-  keys.rs       Letters pinned to windows
-  order.rs      SortBy: row order (key, app, recently)
+  order.rs      SortBy: row order (recently, app)
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
   title.rs      Row titles: sanitizing and app name stripping
@@ -38,7 +37,7 @@ pub struct WindowInfo {
 /// Inputs to the core.
 pub enum Event {
     Windows(Vec<WindowInfo>), // Full list, most recently used first
-    Show(ModeKind),
+    Show,
     Key(Key),
     Hide,
     Quit,
@@ -60,8 +59,8 @@ events to it:
 - `text`: the character the active layout produces, after dead keys
   and compose (`α` on a Greek layout, `é` with a French one).
 - `latin`: the character of the same physical key in the first Latin
-  layout of the keymap, if any (`a` for the key that gives `α`). Hotkey
-  mode uses it, so letters work whatever layout is active.
+  layout of the keymap, if any (`a` for the key that gives `α`). No
+  mode uses it since hotkey mode was removed.
 
 ## Traits
 
@@ -109,40 +108,40 @@ nothing else in the crate. `Presenter` is added with its module.
 ## Switcher state machine
 
 ```text
-          Show(mode)              Activate / Close
+          Show                    Activate / Close
  Hidden ─────────────> Visible ─────────────────────> Hidden
                        │    ▲
                  Key   │    │ Redraw
                        └────┘
 ```
 
-- `Hidden`: only `Windows` updates the cached list and the pinned
-  letters; keys are ignored. Each title in the cache is replaced by
-  its row title (see [Row title](#row-title)).
-- `Show`: snapshot the cached list with its pinned letters, build
-  `State` with the rows in `sort_by` order (see
-  [Row order](#row-order)), and select the previous window. A `Show`
-  while visible is a second hotkey press: it closes the popup, or with
-  `HotkeyAction::Last` returns `Activate` for the previous window.
-- `Visible`: keys go to the active `Mode`. `Tab` swaps modes; a mode
-  may also switch by setting `state.mode`, and the switcher then calls
-  the new mode's `refresh`. A mode returning `Activate` or `Close`
-  hides the popup.
-- `Windows` while visible: refresh the rows and keep the selection by
-  id. Letters of closed windows are not reused until the popup closes.
+- `Hidden`: only `Windows` updates the cached list; keys are ignored.
+  Each title in the cache is replaced by its row title (see
+  [Row title](#row-title)).
+- `Show`: snapshot the cached list, build `State` with the rows in
+  `sort_by` order (see [Row order](#row-order)), and select the
+  previous window. A `Show` while visible is a second hotkey press: it
+  closes the popup, or with `HotkeyAction::Last` returns `Activate`
+  for the previous window.
+- `Visible`: keys go to the mode. A mode returning `Activate` or
+  `Close` hides the popup.
+- `Windows` while visible: refresh the rows, keep the query and the
+  selection by id.
 - `Hide` and `Quit` close an open popup. The daemon loop stops itself
   on `Quit`.
 
-`Switcher<H, S>` is generic over the hotkey and search modes, so calls
-are static. After `Show`, `Tab` and `Windows` it calls the mode's
-`refresh`, so search can refilter.
+`Switcher<M>` is generic over its mode, search
+([ADR-0050](../adr/0050_search_only.md)), so calls are static. After
+`Show` and `Windows` it calls the mode's `refresh`, so search can
+refilter.
 
 ## View
 
-`View` borrows the open `State`: mode, query, selected index, and the
-shown rows in display order. Each `Row` has an id, key, icon, row
-text (`title`), highlight byte ranges, and the app name and id for
-search. Layouts read the `View`, never the switcher
+`View` borrows the open `State`: query, selected index, and the shown
+rows in display order. Each `Row` has an id, icon, row text (`title`),
+highlight byte ranges, and the app name and id for search. Whether
+rows are drawn before a query is typed is up to the layout
+(`title_bar`). Layouts read the `View`, never the switcher
 state, which keeps rendering replaceable. Building a `View` allocates
 nothing.
 
@@ -188,38 +187,17 @@ Unicode text, never as bytes or ASCII
 Search ([search.md](modes/search.md)) and rendering
 ([render.md](ui/render.md)) build on these rules.
 
-## Key assignment
-
-`Pins` in `keys.rs` gives each window a letter from the configured
-string (default `asdfhjklgqwertyuiop`) and keeps it until the window
-closes ([ADR-0041](../adr/0041_pinned_keys.md)).
-
-- The first window list gets letters in most recently used order: the
-  previous window gets `a`, the active window comes last.
-- Later, windows without a letter take free letters in key string
-  order, most recent window first. A new window gets the first free
-  letter.
-- A closed window frees its letter. While the popup is open, freed
-  letters are held back until it closes, so a letter on screen never
-  moves to another window.
-- Windows beyond the key string get no letter until one is freed;
-  they are reachable with arrows or search.
-- Pins live in memory; a daemon restart assigns them again.
-
 ## Row order
 
 `order` in `order.rs` arranges the rows by `sort_by` from the config
-([ADR-0048](../adr/0048_row_order.md)). Every order starts from the
+([ADR-0048](../adr/0048_row_order.md), amended by
+[ADR-0050](../adr/0050_search_only.md)). Every order starts from the
 most recently used order with the active window last, and sorts
 stably from there:
 
-- `key` (default): by the position of each letter in `keys`. Rows
-  never move; a new window shows at the place of the letter it takes,
-  also in the middle of the list.
-- `app`: by app name, ignoring case, then by letter.
-- `recently`: no sorting; the previous window comes first and the
-  active window last.
+- `recently` (default): no sorting; the previous window comes first
+  and the active window last.
+- `app`: by app name, ignoring case, then by recent use.
 
-Windows without a letter come after those with one. The popup opens
-with the previous window selected in every order, so `Enter` switches
-back like Alt+Tab.
+The popup opens with the previous window selected in every order, so
+`Enter` switches back like Alt+Tab.

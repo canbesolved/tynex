@@ -3,8 +3,8 @@
 
 //! Shows the popup with the mock windows.
 //!
-//! Run in a Wayland session: `cargo run --example popup_demo`. Press a
-//! letter or `Enter` to pick a window, arrows to move, `Esc` to close.
+//! Run in a Wayland session: `cargo run --example popup_demo`. Type to
+//! search, `Enter` to pick a window, arrows to move, `Esc` to close.
 //! Without input the popup closes after a few seconds. Fonts come from
 //! fontconfig, with fallback for scripts the default font lacks.
 
@@ -13,13 +13,11 @@ use std::time::{Duration, Instant};
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use tynex::adapters::mock::MockSource;
 use tynex::config::Font;
-use tynex::core::event::{Action, Event, ModeKind};
-use tynex::core::keys::DEFAULT_KEYS;
+use tynex::core::event::{Action, Event};
 use tynex::core::order::SortBy;
 use tynex::core::queue::channel;
 use tynex::core::switcher::{HotkeyAction, Switcher};
 use tynex::core::traits::WindowSource;
-use tynex::modes::hotkey::HotkeyMode;
 use tynex::modes::search::SearchMode;
 use tynex::platform::linux::fonts::default_face;
 use tynex::platform::linux::icon_theme::IconTheme;
@@ -32,7 +30,7 @@ use tynex::ui::render::theme::Theme;
 
 const SHOW_FOR: Duration = Duration::from_secs(10);
 
-type App = Switcher<HotkeyMode, SearchMode>;
+type App = Switcher<SearchMode>;
 
 /// Sizes the popup for the current view and draws it.
 fn redraw(
@@ -47,6 +45,7 @@ fn redraw(
         width: 480.0,
         max_rows: 19,
         scale: presenter.scale(),
+        title_bar: true,
         show_app: true,
     };
 
@@ -70,20 +69,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let theme = Theme::default();
     let (tx, rx) = channel();
     let mut source = MockSource::new();
-    let mut app = Switcher::new(
-        DEFAULT_KEYS,
-        HotkeyAction::Hide,
-        true,
-        SortBy::Key,
-        HotkeyMode,
-        SearchMode,
-    );
+    let mut app =
+        Switcher::new(HotkeyAction::Hide, true, SortBy::Recently, SearchMode);
 
     source.start(tx)?;
     while let Some(event) = rx.recv() {
         app.handle(event);
     }
-    app.handle(Event::Show(ModeKind::Hotkey));
+    app.handle(Event::Show);
     redraw(&mut presenter, &app, (&mut text, &mut icons), &theme);
 
     let end = Instant::now() + SHOW_FOR;

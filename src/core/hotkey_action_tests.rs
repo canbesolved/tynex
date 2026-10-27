@@ -3,16 +3,16 @@
 
 //! Tests for a hotkey press while the popup is open.
 
-use super::tests::{Filter, Letters, build, list};
+use super::tests::{Filter, build, list};
 use super::*;
 use crate::core::window::WindowId;
 
-/// A switcher with `ids` open in hotkey mode.
-fn open(action: HotkeyAction, ids: &[&str]) -> Switcher<Letters, Filter> {
-    let mut sw = build("asd", action, Letters);
+/// A switcher with `ids` open.
+fn open(action: HotkeyAction, ids: &[&str]) -> Switcher<Filter> {
+    let mut sw = build(action);
 
     sw.handle(Event::Windows(list(ids)));
-    sw.handle(Event::Show(ModeKind::Hotkey));
+    sw.handle(Event::Show);
     sw
 }
 
@@ -20,7 +20,7 @@ fn open(action: HotkeyAction, ids: &[&str]) -> Switcher<Letters, Filter> {
 fn hide_hides_the_open_popup() {
     let mut sw = open(HotkeyAction::Hide, &["active", "prev"]);
 
-    assert_eq!(sw.handle(Event::Show(ModeKind::Hotkey)), Action::Close);
+    assert_eq!(sw.handle(Event::Show), Action::Close);
     assert!(sw.view().is_none());
 }
 
@@ -29,7 +29,7 @@ fn last_switches_to_the_previous_window() {
     let mut sw = open(HotkeyAction::Last, &["active", "prev", "old"]);
 
     assert_eq!(
-        sw.handle(Event::Show(ModeKind::Hotkey)),
+        sw.handle(Event::Show),
         Action::Activate(WindowId("prev".into()))
     );
     assert!(sw.view().is_none());
@@ -39,24 +39,16 @@ fn last_switches_to_the_previous_window() {
 fn last_without_a_previous_window_hides() {
     let mut sw = open(HotkeyAction::Last, &["only"]);
 
-    assert_eq!(sw.handle(Event::Show(ModeKind::Hotkey)), Action::Close);
+    assert_eq!(sw.handle(Event::Show), Action::Close);
 }
 
 #[test]
-fn any_show_while_open_counts_as_a_second_press() {
+fn a_second_press_works_after_typing() {
     let mut sw = open(HotkeyAction::Hide, &["active", "prev"]);
 
-    sw.handle(Event::Key(Key::Tab)); // Now in search mode
-    assert_eq!(sw.handle(Event::Show(ModeKind::Search)), Action::Close);
-}
-
-#[test]
-fn letters_held_while_open_are_released_on_a_second_press() {
-    let mut sw = open(HotkeyAction::Hide, &["x", "a", "b"]); // b gets s
-
-    sw.handle(Event::Windows(list(&["n", "x", "a"]))); // s held
-    sw.handle(Event::Show(ModeKind::Hotkey));
-    sw.handle(Event::Windows(list(&["m", "n", "x", "a"])));
-    sw.handle(Event::Show(ModeKind::Hotkey));
-    assert_eq!(sw.view().unwrap().rows().next().unwrap().key, Some('s'));
+    sw.handle(Event::Key(Key::Char {
+        text: 'p',
+        latin: None,
+    }));
+    assert_eq!(sw.handle(Event::Show), Action::Close);
 }

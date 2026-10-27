@@ -3,14 +3,12 @@
 
 //! State of an open popup, shared by the switcher and the modes.
 
-use crate::core::event::ModeKind;
 use crate::core::view::{Row, View};
 use crate::core::window::WindowId;
 
 /// State of an open popup. Modes read and change it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct State {
-    pub mode: ModeKind,
     pub query: String,
     pub rows: Vec<Row>,    // All windows, active window last
     pub shown: Vec<usize>, // Indices into `rows`, in display order
@@ -20,11 +18,10 @@ pub struct State {
 impl State {
     /// Creates a state showing all `rows` in order.
     #[must_use]
-    pub fn new(mode: ModeKind, rows: Vec<Row>) -> Self {
+    pub fn new(rows: Vec<Row>) -> Self {
         let shown = (0..rows.len()).collect();
 
         Self {
-            mode,
             query: String::new(),
             rows,
             shown,
@@ -35,13 +32,7 @@ impl State {
     /// Returns a read-only view for the presenter.
     #[must_use]
     pub fn view(&self) -> View<'_> {
-        View::new(
-            self.mode,
-            &self.query,
-            self.selected,
-            &self.rows,
-            &self.shown,
-        )
+        View::new(&self.query, self.selected, &self.rows, &self.shown)
     }
 
     /// Returns the id of the selected row, if any row is shown.
@@ -50,16 +41,6 @@ impl State {
         let &i = self.shown.get(self.selected)?;
 
         Some(&self.rows[i].id)
-    }
-
-    /// Returns the id of the shown row with letter `key`.
-    #[must_use]
-    pub fn id_for_key(&self, key: char) -> Option<&WindowId> {
-        self.shown
-            .iter()
-            .map(|&i| &self.rows[i])
-            .find(|row| row.key == Some(key))
-            .map(|row| &row.id)
     }
 
     /// Moves the selection down, wrapping to the first row.

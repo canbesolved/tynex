@@ -12,7 +12,6 @@ use crate::adapters::kde::KdeSource;
 use crate::adapters::mock::MockSource;
 use crate::config::Desktop;
 #[cfg(target_os = "linux")]
-use crate::core::event::ModeKind;
 use crate::core::queue::EventTx;
 use crate::core::traits::{SourceError, WindowSource};
 use crate::core::window::WindowId;
@@ -98,11 +97,10 @@ pub fn select(
     desktop: Desktop,
     current_desktop: Option<&str>,
     bus: &Bus,
-    mode: ModeKind,
 ) -> Result<Source, SourceError> {
     Ok(match pick(desktop, current_desktop)? {
         Kind::Mock => Source::Mock(MockSource::new()),
-        Kind::Kde => Source::Kde(KdeSource::new(bus.clone(), mode)),
+        Kind::Kde => Source::Kde(KdeSource::new(bus.clone())),
     })
 }
 

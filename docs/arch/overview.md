@@ -18,8 +18,7 @@ The reasons behind each choice are in the
 - [ui/render.md](ui/render.md): canvas, text and icons.
 - [ui/layouts/vertical_list.md](ui/layouts/vertical_list.md):
   default layout.
-- [modes/hotkey.md](modes/hotkey.md): letter switching.
-- [modes/search.md](modes/search.md): fuzzy search.
+- [modes/search.md](modes/search.md): fuzzy search, the only mode.
 
 ## Goals
 
@@ -36,7 +35,7 @@ The reasons behind each choice are in the
   role.
 - One resident daemon, `tynex daemon`. While idle it is blocked on the
   event loop and does no work.
-- The CLI, `tynex show [--mode search]`, sends one IPC call to the
+- The CLI, `tynex show`, sends one IPC call to the
   daemon, so any desktop can bind it to a hotkey.
 - One thread: a single `poll` loop over the Wayland and D-Bus file
   descriptors drives the backend and the core. No async runtime, no
@@ -67,7 +66,7 @@ src/
     render/            Canvas, text, icons
     layouts/           vertical_list (default)
     painter.rs         Text, theme and layout: size and draw the popup
-  modes/               hotkey, search
+  modes/               search
   search/              Fuzzy matcher, accent folding
 ```
 

@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Vertical list: one row per window in columns: key badge, icon, app
-//! name and title.
+//! Vertical list: a search prompt, then one row per window in columns:
+//! icon, app name and title.
 
 use std::ops::Range;
 
-use crate::core::event::ModeKind;
 use crate::core::view::{Row, View};
 use crate::ui::layouts::{Layout, Metrics, Paint, Size};
 use crate::ui::render::canvas::{Area, Rgba};
@@ -24,7 +23,6 @@ pub struct VerticalList;
 struct Grid {
     pad: f32,   // Outer padding
     row_h: f32, // Row height
-    badge: f32, // Key badge side
     icon: f32,  // Icon slot side
     gap: f32,   // Space between parts of a row
     font: f32,  // Text size
@@ -38,30 +36,30 @@ impl Grid {
         Self {
             pad: theme.padding * metrics.scale,
             row_h: (font * 2.0).round(),
-            badge: (font * 1.4).round(),
             icon: (font * 1.5).round(),
             gap: (font * 0.6).round(),
             font,
             app: if metrics.show_app { APP_SHARE } else { 0.0 },
         }
     }
+}
 
-    /// Height of the search bar and its separator line.
-    fn search_bar(&self, mode: ModeKind) -> f32 {
-        if mode == ModeKind::Search {
-            self.row_h + 1.0
-        } else {
-            0.0
-        }
-    }
+/// Returns true when rows are drawn: always with `title_bar`, else only
+/// once a query is typed.
+fn shows_rows(view: &View<'_>, metrics: &Metrics) -> bool {
+    metrics.title_bar || !view.query.is_empty()
 }
 
 impl Layout for VerticalList {
     fn size(&self, view: &View<'_>, metrics: &Metrics, theme: &Theme) -> Size {
         let grid = Grid::new(metrics, theme);
         let rows = view.len().clamp(1, metrics.max_rows.max(1)) as f32;
-        let height =
-            2.0 * grid.pad + grid.search_bar(view.mode) + rows * grid.row_h;
+        let list = if shows_rows(view, metrics) {
+            1.0 + rows * grid.row_h // Separator line and rows
+        } else {
+            0.0
+        };
+        let height = 2.0 * grid.pad + grid.row_h + list;
 
         Size {
             width: (metrics.width * metrics.scale).round() as u32,
@@ -98,30 +96,29 @@ impl Layout for VerticalList {
         );
 
         let mut top = grid.pad;
+        let bar = Area::new(
+            grid.pad + grid.gap,
+            top,
+            inner - 2.0 * grid.gap,
+            grid.row_h,
+        );
+        let query = format!("/ {}", view.query);
+        let color = paint.theme.text;
 
-        if view.mode == ModeKind::Search {
-            let bar = Area::new(
-                grid.pad + grid.gap,
-                top,
-                inner - 2.0 * grid.gap,
-                grid.row_h,
-            );
-            let query = format!("/ {}", view.query);
-            let color = paint.theme.text;
-
-            draw_text(paint, &grid, (&query, &[]), bar, color);
-            top += grid.row_h;
-            paint.canvas.fill_rect(
-                Area::new(grid.pad, top, inner, 1.0),
-                paint.theme.border,
-            );
-            top += 1.0;
+        draw_text(paint, &grid, (&query, &[]), bar, color);
+        if !shows_rows(view, metrics) {
+            return;
         }
+        top += grid.row_h;
+        paint.canvas.fill_rect(
+            Area::new(grid.pad, top, inner, 1.0),
+            paint.theme.border,
+        );
+        top += 1.0;
 
         // Scroll so the selected row is always visible.
         let max = metrics.max_rows.max(1);
         let first = (view.selected + 1).saturating_sub(max);
-        let badges = view.mode == ModeKind::Hotkey;
 
         for (index, row) in view.rows().enumerate().skip(first).take(max) {
             let area = Area::new(grid.pad, top, inner, grid.row_h);
@@ -133,45 +130,15 @@ impl Layout for VerticalList {
                     paint.theme.selected,
                 );
             }
-            draw_row(paint, &grid, row, area, badges);
+            draw_row(paint, &grid, row, area);
             top += grid.row_h;
         }
     }
 }
 
-/// Draws one row: key badge (hotkey mode), icon, app name (`show_app`),
-/// title.
-fn draw_row(
-    paint: &mut Paint<'_, '_>,
-    grid: &Grid,
-    row: &Row,
-    area: Area,
-    badge: bool,
-) {
+/// Draws one row: icon, app name (`show_app`), title.
+fn draw_row(paint: &mut Paint<'_, '_>, grid: &Grid, row: &Row, area: Area) {
     let mut left = area.x + grid.gap;
-
-    if badge {
-        let side = grid.badge;
-        let rect = Area::new(left, area.y + (area.h - side) / 2.0, side, side);
-
-        paint
-            .canvas
-            .fill_rounded_rect(rect, side / 4.0, paint.theme.badge);
-        if let Some(key) = row.key {
-            let label = key.to_string();
-            let label_w = paint.text.width(&label, grid.font);
-            let centered = Area::new(
-                rect.x + (side - label_w) / 2.0,
-                rect.y,
-                label_w,
-                side,
-            );
-            let color = paint.theme.badge_text;
-
-            draw_text(paint, grid, (&label, &[]), centered, color);
-        }
-        left += side + grid.gap;
-    }
 
     if let Some(icon) = &row.icon {
         let top = area.y + (area.h - grid.icon) / 2.0;

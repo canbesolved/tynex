@@ -17,6 +17,12 @@ Features that shipped in a release and were removed later.
 - `title_format` in `[appearance]`: added in 0.1.2, removed in 0.1.5
   (**Breaking**). Replaced by `show_app`
   ([ADR-0049](docs/adr/0049_popup_columns.md)).
+- Hotkey mode with letter keys, the `mode` and `keys` config keys and
+  `tynex show --mode`: added in 0.1.0, removed in 0.1.6 (**Breaking**).
+  Search is the only mode; `title_bar` shows the window list
+  ([ADR-0050](docs/adr/0050_search_only.md)).
+- `sort_by = "key"`, rows in letter order: added in 0.1.4, removed in
+  0.1.6 (**Breaking**). `sort_by` defaults to `recently`.
 
 ## Never shipped
 

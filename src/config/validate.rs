@@ -9,9 +9,8 @@ use std::path::{Path, PathBuf};
 use toml::Spanned;
 
 use crate::config::error::ConfigError;
-use crate::config::raw::{RawConfig, RawHotkeyAction, RawMode, RawSortBy};
+use crate::config::raw::{RawConfig, RawHotkeyAction, RawSortBy};
 use crate::config::{AppearanceConfig, Config, Font};
-use crate::core::event::ModeKind;
 use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
 
@@ -26,17 +25,6 @@ pub(super) fn validate(
         errors.push(ConfigError::at(text, span, message));
     };
     let a = raw.appearance;
-
-    if !valid_keys(raw.keys.get_ref()) {
-        err(
-            raw.keys.span(),
-            format!(
-                "`keys` = {:?} is invalid, expected 1 to 26 unique \
-                 lowercase ASCII letters",
-                raw.keys.get_ref()
-            ),
-        );
-    }
 
     let font = match a.font.get_ref().as_str() {
         "auto" => Font::Auto,
@@ -67,47 +55,25 @@ pub(super) fn validate(
 
     Ok(Config {
         desktop: raw.desktop,
-        mode: match raw.mode {
-            RawMode::Hotkey => ModeKind::Hotkey,
-            RawMode::Search => ModeKind::Search,
-        },
         hotkey_action: match raw.hotkey_action {
             RawHotkeyAction::Hide => HotkeyAction::Hide,
             RawHotkeyAction::Last => HotkeyAction::Last,
         },
         sort_by: match raw.sort_by {
-            RawSortBy::Key => SortBy::Key,
             RawSortBy::App => SortBy::App,
             RawSortBy::Recently => SortBy::Recently,
         },
         layout: raw.layout,
-        keys: raw.keys.into_inner(),
         appearance: AppearanceConfig {
             font,
             font_size: a.font_size.into_inner(),
             width: a.width.into_inner(),
             max_rows: a.max_rows.into_inner(),
+            title_bar: a.title_bar,
             show_app: a.show_app,
             strip_app_name: a.strip_app_name,
         },
     })
-}
-
-/// Returns true for 1 to 26 unique lowercase ASCII letters.
-fn valid_keys(keys: &str) -> bool {
-    let mut seen = 0_u32;
-
-    (1..=26).contains(&keys.len())
-        && keys.bytes().all(|b| {
-            let bit = b.is_ascii_lowercase().then(|| 1 << (b - b'a'));
-
-            bit.is_some_and(|bit| {
-                let new = seen & bit == 0;
-
-                seen |= bit;
-                new
-            })
-        })
 }
 
 /// Reports `appearance.<name>` when its value is outside `range`.
@@ -128,21 +94,5 @@ fn check_range(
                 range.end()
             ),
         );
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn keys_rules() {
-        assert!(valid_keys("asdf"));
-        assert!(valid_keys("abcdefghijklmnopqrstuvwxyz"));
-        assert!(!valid_keys(""));
-        assert!(!valid_keys("aa"));
-        assert!(!valid_keys("aS"));
-        assert!(!valid_keys("a1"));
-        assert!(!valid_keys("año"));
     }
 }

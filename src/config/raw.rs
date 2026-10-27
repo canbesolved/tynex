@@ -15,13 +15,6 @@ fn unspanned<T>(value: T) -> Spanned<T> {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub(super) enum RawMode {
-    Hotkey,
-    Search,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "snake_case")]
 pub(super) enum RawHotkeyAction {
     Hide,
     Last,
@@ -30,7 +23,6 @@ pub(super) enum RawHotkeyAction {
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub(super) enum RawSortBy {
-    Key,
     App,
     Recently,
 }
@@ -39,11 +31,9 @@ pub(super) enum RawSortBy {
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawConfig {
     pub desktop: Desktop,
-    pub mode: RawMode,
     pub hotkey_action: RawHotkeyAction,
     pub sort_by: RawSortBy,
     pub layout: Layout,
-    pub keys: Spanned<String>,
     pub appearance: RawAppearance,
 }
 
@@ -51,11 +41,9 @@ impl Default for RawConfig {
     fn default() -> Self {
         Self {
             desktop: Desktop::Auto,
-            mode: RawMode::Hotkey,
             hotkey_action: RawHotkeyAction::Last,
-            sort_by: RawSortBy::Key,
+            sort_by: RawSortBy::Recently,
             layout: Layout::VerticalList,
-            keys: unspanned(crate::core::keys::DEFAULT_KEYS.into()),
             appearance: RawAppearance::default(),
         }
     }
@@ -68,6 +56,7 @@ pub(super) struct RawAppearance {
     pub font_size: Spanned<u16>,
     pub width: Spanned<u16>,
     pub max_rows: Spanned<u16>,
+    pub title_bar: bool,
     pub show_app: bool,
     pub strip_app_name: bool,
 }
@@ -79,8 +68,9 @@ impl Default for RawAppearance {
             font_size: unspanned(14),
             width: unspanned(480),
             max_rows: unspanned(19),
+            title_bar: false,
             show_app: false,
-            strip_app_name: true,
+            strip_app_name: false,
         }
     }
 }

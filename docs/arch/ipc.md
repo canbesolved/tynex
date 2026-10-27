@@ -10,25 +10,26 @@ hotkey.
 
 ## Commands
 
-| CLI                        | D-Bus call       | Effect                    |
-| -------------------------- | ---------------- | ------------------------- |
-| `tynex show`               | `Show("")`       | Open in the config's mode |
-| `tynex show --mode search` | `Show("search")` | Open in search mode       |
-| `tynex hide`               | `Hide()`         | Close the popup           |
-| `tynex quit`               | `Quit()`         | Stop the daemon           |
+| CLI          | D-Bus call | Effect           |
+| ------------ | ---------- | ---------------- |
+| `tynex show` | `Show("")` | Open the popup   |
+| `tynex hide` | `Hide()`   | Close the popup  |
+| `tynex quit` | `Quit()`   | Stop the daemon  |
 
-While the popup is open, both `show` forms act as a second hotkey
-press and follow `hotkey_action` ([config.md](config.md)).
+While the popup is open, `show` acts as a second hotkey press and
+follows `hotkey_action` ([config.md](config.md)). `Show` keeps its
+string argument from when it named a mode; any value other than the
+empty string is refused ([ADR-0050](../adr/0050_search_only.md)).
 
 ## Interface
 
-`src/ipc/` is portable: `Request` (`Show(Option<ModeKind>)`, `Hide`,
-`Quit`) and `IpcError` (`NotRunning` or `Failed`). Each platform
-module provides two functions:
+`src/ipc/` is portable: `Request` (`Show`, `Hide`, `Quit`) and
+`IpcError` (`NotRunning` or `Failed`). Each platform module provides
+two functions:
 
-- `serve(bus, tx, default_mode)`: registers the daemon's object; each
-  call becomes an `Event` on `tx`. Unknown methods or modes get a
-  D-Bus error reply.
+- `serve(bus, tx)`: registers the daemon's object; each call becomes
+  an `Event` on `tx`. Unknown methods or modes get a D-Bus error
+  reply.
 - `send(request)`: used by the CLI; opens a short-lived connection,
   sends one call and waits up to 2 s for the reply. A missing daemon
   (`ServiceUnknown`, `NameHasNoOwner`) is reported as `NotRunning`.

@@ -45,7 +45,6 @@ fn start(config: Config) -> Result<(), String> {
     use crate::core::queue::channel;
     use crate::core::switcher::Switcher;
     use crate::core::traits::WindowSource;
-    use crate::modes::hotkey::HotkeyMode;
     use crate::modes::search::SearchMode;
     use crate::platform::linux::dbus::Bus;
     use crate::platform::linux::event_loop::{self, Parts};
@@ -62,25 +61,22 @@ fn start(config: Config) -> Result<(), String> {
 
     let (tx, rx) = channel();
     let current = std::env::var("XDG_CURRENT_DESKTOP").ok();
-    let mut source =
-        adapters::select(config.desktop, current.as_deref(), &bus, config.mode)
-            .map_err(|e| e.to_string())?;
+    let mut source = adapters::select(config.desktop, current.as_deref(), &bus)
+        .map_err(|e| e.to_string())?;
     let presenter = WaylandPresenter::connect().map_err(|e| e.to_string())?;
     let face = fonts::default_face(&config.appearance.font)
         .map_err(|e| format!("cannot load the font: {e}"))?;
     let text = Text::new(face);
 
-    dbus_ipc::serve(&bus, tx.clone(), config.mode);
+    dbus_ipc::serve(&bus, tx.clone());
     source.start(tx).map_err(|e| e.to_string())?;
     log::info!("daemon started, desktop {:?}", config.desktop);
 
     let mut parts = Parts {
         app: Switcher::new(
-            &config.keys,
             config.hotkey_action,
             config.appearance.strip_app_name,
             config.sort_by,
-            HotkeyMode,
             SearchMode,
         ),
         source,

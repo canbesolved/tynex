@@ -9,6 +9,29 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `title_bar` in `[appearance]` shows the window list under the search
+  prompt before you type (default `false`: only the prompt until you
+  type) (ADR-0050).
+
+### Changed
+
+- **Breaking:** search is the only mode. The popup opens with the
+  previous window selected, so `Enter` right away switches back.
+- `sort_by` defaults to `"recently"`.
+- `strip_app_name` in `[appearance]` defaults to `false`: titles keep
+  the app name.
+
+### Removed
+
+- **Breaking:** hotkey mode and its letter keys. The `mode` and `keys`
+  config keys and `sort_by = "key"` are removed; a config file with
+  them stops the daemon until they are removed. Set
+  `title_bar = true` to keep a window list on screen.
+- **Breaking:** `tynex show --mode`. The D-Bus `Show` call accepts only
+  an empty mode.
+
 ## [0.1.5] - 2026-10-18
 
 Popup rows in columns. Breaking: `title_format` is removed.
