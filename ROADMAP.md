@@ -27,12 +27,14 @@ Target: KDE Plasma 6 on Wayland.
   becomes the only mode. **Breaking:** the `mode` and `keys` config
   keys and `sort_by = "key"` are removed. Needs an ADR before work
   starts.
-  - Config: `title_bar = true` (default) shows the window list, `false`
-    hides it.
+  - Config: `title_bar = true` shows the window list, `false`
+    (default) hides it.
   - The list shows under the prompt, or under the icon strip when
     `icon_bar` is also on.
   - Rows show the app icon and title, without key letters. `show_app`
-    and `strip_app_name` apply; `show_icons = false` hides the icons.
+    and `strip_app_name` apply; `show_icon = false` hides the icons.
+  - `strip_app_name` now defaults to `false`, so titles keep the app
+    name.
 
 ## Next
 
@@ -144,7 +146,8 @@ Themes:
 
 Look:
 
-- [ ] Hide app icons: `show_icons = false` in `[appearance]`.
+- [ ] Hide app icons: `show_icon = true` (default) in `[appearance]`
+  shows them, `false` hides them.
 - [ ] Text shaping and right-to-left layout for Arabic, Hebrew and
   Indic scripts (`rustybuzz`).
 - [ ] Color emoji in titles.
