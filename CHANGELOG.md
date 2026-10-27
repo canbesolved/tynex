@@ -17,8 +17,10 @@ project adheres to
 
 ### Changed
 
-- **Breaking:** search is the only mode. The popup opens with the
+- **Breaking:** prompt mode is the only mode. The popup opens with the
   previous window selected, so `Enter` right away switches back.
+- The only mode is called prompt mode, because it will do more than
+  search (ADR-0051).
 - `sort_by` defaults to `"recently"`.
 - `strip_app_name` in `[appearance]` defaults to `false`: titles keep
   the app name.
@@ -105,11 +107,11 @@ App names and title format.
 
 ## [0.1.1] - 2026-10-17
 
-Search mode and prebuilt Linux binaries.
+Prompt mode and prebuilt Linux binaries.
 
 ### Added
 
-- Search mode: typing filters windows by title and app id with fuzzy
+- Prompt mode: typing filters windows by title and app id with fuzzy
   matching (`frizbee`): smart case, one typo per four characters,
   accent folding (`cafe` finds `Café`) and highlighted matches. The
   release binary grows to about 5.4 MB; the budget is now 10 MB

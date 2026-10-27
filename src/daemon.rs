@@ -45,7 +45,7 @@ fn start(config: Config) -> Result<(), String> {
     use crate::core::queue::channel;
     use crate::core::switcher::Switcher;
     use crate::core::traits::WindowSource;
-    use crate::modes::search::SearchMode;
+    use crate::modes::prompt::PromptMode;
     use crate::platform::linux::dbus::Bus;
     use crate::platform::linux::event_loop::{self, Parts};
     use crate::platform::linux::icon_theme::IconTheme;
@@ -77,7 +77,7 @@ fn start(config: Config) -> Result<(), String> {
             config.hotkey_action,
             config.appearance.strip_app_name,
             config.sort_by,
-            SearchMode,
+            PromptMode,
         ),
         source,
         presenter,

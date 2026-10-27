@@ -38,12 +38,12 @@ blink.cmp.
 - Good, because typo tolerance improves search for fast typists.
 - Bad, because MSRV rises from 1.85 to 1.89.
 - Bad, because the API is pre-1.0 and may change between minor
-  versions; the wrapper in `src/search/fuzzy.rs` contains it.
+  versions; the wrapper in `src/modules/search/fuzzy.rs` contains it.
 
 ### Confirmation
 
-Unit tests in `src/search/` cover ranking, smart case and indices, so
-a `frizbee` upgrade that changes behavior fails CI.
+Unit tests in `src/modules/search/` cover ranking, smart case and
+indices, so a `frizbee` upgrade that changes behavior fails CI.
 
 ## Pros and Cons of the Options
 
@@ -67,4 +67,4 @@ a `frizbee` upgrade that changes behavior fails CI.
 
 ## More Information
 
-See [search.md](../arch/modes/search.md).
+See [search.md](../arch/modules/search.md).

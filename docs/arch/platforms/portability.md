@@ -14,8 +14,8 @@ Three traits isolate the operating system. Everything else is shared.
 
 ## Rules
 
-- `core`, `modes`, `search`, `ui`, `config` and `ipc` traits are pure
-  Rust and compile on all three systems.
+- `core`, `modes`, `modules`, `ui`, `config` and `ipc` traits
+  are pure Rust and compile on all three systems.
 - OS code lives only in `src/platform/<os>/` and `src/adapters/`.
 - Linux-only crates are declared under
   `[target.'cfg(target_os = "linux")'.dependencies]`.

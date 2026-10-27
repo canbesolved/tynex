@@ -25,7 +25,7 @@ Target: KDE Plasma 6 on Wayland.
 
 ### 0.1.6
 
-- [ ] Hotkey mode becomes the `title_bar` option, and search mode
+- [ ] Hotkey mode becomes the `title_bar` option, and prompt mode
   becomes the only mode. **Breaking:** the `mode` and `keys` config
   keys and `sort_by = "key"` are removed. Needs an ADR before work
   starts.
@@ -80,7 +80,7 @@ Polishing and the first stable release. No items yet.
 Layouts and modes:
 
 - [ ] More layouts: grid, horizontal strip.
-- [ ] Task list in search mode: running apps shown as a row of app
+- [ ] Task list in prompt mode: running apps shown as a row of app
   icons, one per app, to replace KDE's "Icons-only Task Manager"
   widget. It shows only with the popup, on demand.
   - Pinned apps stay in the row while they are not running.
@@ -165,7 +165,7 @@ Look:
 Languages:
 
 - [ ] Input method support (`text-input-v3`) to type Chinese, Japanese
-  and Korean in search mode.
+  and Korean in prompt mode.
 - [ ] Phonetic search: match Chinese titles by pinyin and Japanese by
   romaji.
 - [ ] Switch the keyboard layout to English when the popup opens and
@@ -176,7 +176,7 @@ Platform support:
 
 Two parts decide whether `tynex` works in an environment: a presenter
 that shows the popup and an adapter that lists and activates windows.
-Shared parts (core, modes, search, config, renderer) are portable.
+Shared parts (core, modes, modules, config, renderer) are portable.
 
 | Environment                 | Session | Popup        | Windows           |
 | --------------------------- | ------- | ------------ | ----------------- |

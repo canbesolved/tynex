@@ -19,7 +19,7 @@ Features that shipped in a release and were removed later.
   ([ADR-0049](docs/adr/0049_popup_columns.md)).
 - Hotkey mode with letter keys, the `mode` and `keys` config keys and
   `tynex show --mode`: added in 0.1.0, removed in 0.1.6 (**Breaking**).
-  Search is the only mode; `title_bar` shows the window list
+  Prompt mode is the only mode; `title_bar` shows the window list
   ([ADR-0050](docs/adr/0050_search_only.md)).
 - `sort_by = "key"`, rows in letter order: added in 0.1.4, removed in
   0.1.6 (**Breaking**). `sort_by` defaults to `recently`.
@@ -40,7 +40,7 @@ Features that were planned or designed, then dropped before a release.
   the app's window. Planned for Later, dropped on 2026-10-27 for the
   same reason.
 - More switching modes. Planned for Later, dropped on 2026-10-27:
-  search mode is to be the only mode.
+  prompt mode is to be the only mode.
 - Key badge background and text colors in the theme options. Planned
   for Later, dropped on 2026-10-27: `title_bar` rows show no key
   letters.

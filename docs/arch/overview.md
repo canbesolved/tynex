@@ -18,7 +18,8 @@ The reasons behind each choice are in the
 - [ui/render.md](ui/render.md): canvas, text and icons.
 - [ui/layouts/vertical_list.md](ui/layouts/vertical_list.md):
   default layout.
-- [modes/search.md](modes/search.md): fuzzy search, the only mode.
+- [modes/prompt.md](modes/prompt.md): prompt mode, the only mode.
+- [modules/search.md](modules/search.md): fuzzy matching of windows.
 
 ## Goals
 
@@ -66,8 +67,9 @@ src/
     render/            Canvas, text, icons
     layouts/           vertical_list (default)
     painter.rs         Text, theme and layout: size and draw the popup
-  modes/               search
-  search/              Fuzzy matcher, accent folding
+  modes/               prompt
+  modules/
+    search/            Fuzzy matcher, accent folding
 ```
 
 Dependency direction: every module may depend on `core`; `core`

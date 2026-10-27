@@ -130,17 +130,17 @@ nothing else in the crate. `Presenter` is added with its module.
 - `Hide` and `Quit` close an open popup. The daemon loop stops itself
   on `Quit`.
 
-`Switcher<M>` is generic over its mode, search
+`Switcher<M>` is generic over its mode, prompt
 ([ADR-0050](../adr/0050_search_only.md)), so calls are static. After
-`Show` and `Windows` it calls the mode's `refresh`, so search can
+`Show` and `Windows` it calls the mode's `refresh`, so prompt can
 refilter.
 
 ## View
 
 `View` borrows the open `State`: query, selected index, and the shown
 rows in display order. Each `Row` has an id, icon, row text (`title`),
-highlight byte ranges, and the app name and id for search. Whether
-rows are drawn before a query is typed is up to the layout
+highlight byte ranges, and the app name and id for search.
+Whether rows are drawn before a query is typed is up to the layout
 (`title_bar`). Layouts read the `View`, never the switcher
 state, which keeps rendering replaceable. Building a `View` allocates
 nothing.
@@ -184,7 +184,8 @@ Unicode text, never as bytes or ASCII
   to `U+1AFF`, `U+1DC0` to `U+1DFF`, `U+20D0` to `U+20FF`, `U+FE20`
   to `U+FE2F`).
 
-Search ([search.md](modes/search.md)) and rendering
+Prompt mode ([prompt.md](modes/prompt.md)), search
+([modules/search.md](modules/search.md)) and rendering
 ([render.md](ui/render.md)) build on these rules.
 
 ## Row order

@@ -43,4 +43,4 @@ is chosen in [ADR-0022](0022_frizbee.md).
 
 ## More Information
 
-See [search.md](../arch/modes/search.md).
+See [search.md](../arch/modules/search.md).

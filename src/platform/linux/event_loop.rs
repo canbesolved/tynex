@@ -14,13 +14,13 @@ use crate::core::event::{Action, Event};
 use crate::core::queue::EventRx;
 use crate::core::switcher::Switcher;
 use crate::core::traits::WindowSource;
-use crate::modes::search::SearchMode;
+use crate::modes::prompt::PromptMode;
 use crate::platform::linux::dbus::Bus;
 use crate::platform::linux::wayland::{PresenterEvent, WaylandPresenter};
 use crate::ui::painter::Painter;
 
 /// The switcher with its modes.
-pub type App = Switcher<SearchMode>;
+pub type App = Switcher<PromptMode>;
 
 /// Everything the loop drives.
 pub struct Parts {
