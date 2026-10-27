@@ -3,8 +3,7 @@
 
 //! Switcher state machine: open, refresh, route keys, close.
 
-use crate::core::event::{Action, Event, Key, ModeKind};
-use crate::core::keys::Pins;
+use crate::core::event::{Action, Event, Key};
 use crate::core::order::{SortBy, order};
 use crate::core::state::State;
 use crate::core::text::sanitize_title;
@@ -20,38 +19,32 @@ pub enum HotkeyAction {
     Last, // Switch to the previous (last used) window
 }
 
-/// The switcher, generic over its two modes for static dispatch.
-pub struct Switcher<H, S> {
+/// The switcher, generic over its mode for static dispatch.
+pub struct Switcher<M> {
     on_hotkey: HotkeyAction,  // For `Show` while open
     strip_app_name: bool,     // Drop the app name from titles
     sort: SortBy,             // Row order
-    pins: Pins,               // Letter of each window until it closes
     windows: Vec<WindowInfo>, // Cached list, MRU first, row titles
     state: Option<State>,     // Some while the popup is open
-    hotkey: H,
-    search: S,
+    mode: M,
 }
 
-impl<H: Mode, S: Mode> Switcher<H, S> {
-    /// Creates a hidden switcher with the key string, hotkey action,
-    /// title rule and row order from the config.
+impl<M: Mode> Switcher<M> {
+    /// Creates a hidden switcher with the hotkey action, title rule and
+    /// row order from the config.
     pub fn new(
-        keys: &str,
         on_hotkey: HotkeyAction,
         strip_app_name: bool,
         sort: SortBy,
-        hotkey: H,
-        search: S,
+        mode: M,
     ) -> Self {
         Self {
             on_hotkey,
             strip_app_name,
             sort,
-            pins: Pins::new(keys),
             windows: Vec::new(),
             state: None,
-            hotkey,
-            search,
+            mode,
         }
     }
 
@@ -59,7 +52,7 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
     pub fn handle(&mut self, event: Event) -> Action {
         match event {
             Event::Windows(list) => self.update(list),
-            Event::Show(mode) => self.show(mode),
+            Event::Show => self.show(),
             Event::Key(key) => self.key(key),
             Event::Hide | Event::Quit => self.close(),
         }
@@ -87,29 +80,28 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
                 ..w
             })
             .collect();
-        self.pins.update(&self.windows, self.state.is_some());
 
         let Some(old) = self.state.take() else {
             return Action::None;
         };
         let selected = old.selected_id().cloned();
-        let mut state = State::new(old.mode, self.rows());
+        let mut state = State::new(self.rows());
 
         state.query = old.query;
-        self.refresh(&mut state);
+        self.mode.refresh(&mut state);
         state.select_id(selected.as_ref());
         self.state = Some(state);
         Action::Redraw
     }
 
-    fn show(&mut self, mode: ModeKind) -> Action {
+    fn show(&mut self) -> Action {
         if self.state.is_some() {
             return self.pressed_again();
         }
 
-        let mut state = State::new(mode, self.rows());
+        let mut state = State::new(self.rows());
 
-        self.refresh(&mut state);
+        self.mode.refresh(&mut state);
         // The previous window is selected in any order, like Alt+Tab.
         state.select_id(self.windows.get(1).map(|w| &w.id));
         self.state = Some(state);
@@ -120,31 +112,9 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
         let Some(mut state) = self.state.take() else {
             return Action::None;
         };
+        let action = self.mode.on_key(key, &mut state);
 
-        let action = if key == Key::Tab {
-            state.mode = match state.mode {
-                ModeKind::Hotkey => ModeKind::Search,
-                ModeKind::Search => ModeKind::Hotkey,
-            };
-            self.refresh(&mut state);
-            Action::Redraw
-        } else {
-            let before = state.mode;
-            let action = match state.mode {
-                ModeKind::Hotkey => self.hotkey.on_key(key, &mut state),
-                ModeKind::Search => self.search.on_key(key, &mut state),
-            };
-
-            // A mode may switch to the other one, for example with `/`.
-            if state.mode != before {
-                self.refresh(&mut state);
-            }
-            action
-        };
-
-        if matches!(action, Action::Activate(_) | Action::Close) {
-            self.closed();
-        } else {
+        if !matches!(action, Action::Activate(_) | Action::Close) {
             self.state = Some(state);
         }
         action
@@ -152,15 +122,12 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
 
     fn close(&mut self) -> Action {
         match self.state.take() {
-            Some(_) => {
-                self.closed();
-                Action::Close
-            }
+            Some(_) => Action::Close,
             None => Action::None,
         }
     }
 
-    /// Applies `on_hotkey` to a `Show` while open, whatever the mode.
+    /// Applies `on_hotkey` to a `Show` while open.
     fn pressed_again(&mut self) -> Action {
         let previous = match self.on_hotkey {
             HotkeyAction::Hide => None,
@@ -168,36 +135,22 @@ impl<H: Mode, S: Mode> Switcher<H, S> {
         };
 
         self.state = None;
-        self.closed();
         previous.map_or(Action::Close, Action::Activate)
     }
 
-    /// Hands out the letters held while the popup was open.
-    fn closed(&mut self) {
-        self.pins.update(&self.windows, false);
-    }
-
-    /// Builds the rows in `sort` order, each with its pinned letter.
+    /// Builds the rows in `sort` order.
     fn rows(&self) -> Vec<Row> {
-        order(&self.windows, &self.pins, self.sort)
+        order(&self.windows, self.sort)
             .into_iter()
-            .map(|w| row(w, self.pins.get(&w.id)))
+            .map(row)
             .collect()
-    }
-
-    fn refresh(&mut self, state: &mut State) {
-        match state.mode {
-            ModeKind::Hotkey => self.hotkey.refresh(state),
-            ModeKind::Search => self.search.refresh(state),
-        }
     }
 }
 
-/// Builds a row for `window` with letter `key`.
-fn row(window: &WindowInfo, key: Option<char>) -> Row {
+/// Builds a row for `window`.
+fn row(window: &WindowInfo) -> Row {
     Row {
         id: window.id.clone(),
-        key,
         app_id: window.app_id.clone(),
         app_name: window.app_name.clone(),
         icon: window.icon.clone(),
@@ -213,7 +166,3 @@ mod tests;
 #[cfg(test)]
 #[path = "hotkey_action_tests.rs"]
 mod hotkey_action_tests;
-
-#[cfg(test)]
-#[path = "letter_order_tests.rs"]
-mod letter_order_tests;

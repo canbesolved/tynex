@@ -112,7 +112,7 @@ Object `/io/github/canbesolved/Tynex/Kde`, interface
 | `Update` | `s` list | none     | KWin script |
 | `Show`   | none     | none     | KWin script |
 
-`Show` opens the popup in the config's `mode`.
+`Show` opens the popup.
 
 Only KWin may call the object: a call whose sender is not KWin's
 unique name gets an error reply and is logged at `warn` level, so

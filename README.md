@@ -27,22 +27,22 @@
 </p>
 <!-- markdownlint-enable MD033 MD041 -->
 
-Press a hotkey, see your windows in a centered list, press one letter,
-and you are there. No mouse, no scrolling, no waiting.
+Press a hotkey, type a few letters of a window, press `Enter`, and you
+are there. Or press `Enter` right away to go back to the previous
+window. No mouse, no scrolling, no waiting.
 
-> Status: 0.1.5, for KDE Plasma 6 on Wayland. A faster UI and new
-> default keys follow in 0.1.x (see the [roadmap](ROADMAP.md)).
+> Status: 0.1.5, for KDE Plasma 6 on Wayland. The next release removes
+> hotkey mode; see the [roadmap](ROADMAP.md).
 
 ## Features
 
-- Centered popup with a vertical list of open windows.
+- Centered popup with a search prompt: start typing at once; accents
+  and small typos are forgiven.
+- Optional window list under the prompt before you type
+  (`title_bar`), most recently used first or grouped by app
+  (`sort_by`).
 - Each entry shows the app icon and the window title in columns, with
   an optional app name column (`show_app`).
-- Home row keys (`a s d f h j k l`) jump straight to a window, and a
-  window keeps its key until it closes. Rows follow their keys, so they
-  never move (`sort_by`).
-- Fuzzy search mode: open the switcher and start typing; accents and
-  small typos are forgiven.
 - Low footprint: idle at 0 % CPU, under 10 MB of RAM, no GPU usage.
 - Modular core: window sources, layouts and modes are plug-in modules.
 - Configuration in a single TOML file.
@@ -107,11 +107,10 @@ Packages for Debian, Ubuntu and Arch are listed in
 ## Usage
 
 ```bash
-tynex daemon             # Start the background service
-tynex show               # Open the switcher (mode from the config)
-tynex show --mode search # Open the switcher in search mode
-tynex hide               # Close the switcher
-tynex quit               # Stop the background service
+tynex daemon  # Start the background service
+tynex show    # Open the switcher
+tynex hide    # Close the switcher
+tynex quit    # Stop the background service
 ```
 
 On KDE the default hotkey is `Meta+Tab`. Change it in System Settings,
@@ -120,11 +119,9 @@ Pressing the hotkey again switches to the previous window, or closes
 the popup with `hotkey_action = "hide"`. The popup also closes when it
 loses keyboard focus.
 
-In the popup:
-
-- hotkey mode: press the letter next to a window;
-- search mode: type to filter, `Enter` to switch;
-- `Tab` toggles the modes, arrows move, `Esc` closes.
+In the popup, type to filter, `Enter` to switch, arrows to move, and
+`Esc` to clear the query or close. `Enter` right after opening
+switches to the previous window, like Alt+Tab.
 
 ## Configuration
 
@@ -132,18 +129,17 @@ The config file is `~/.config/tynex/tynex.toml`:
 
 ```toml
 desktop = "auto"        # auto | kde | mock
-mode = "hotkey"         # hotkey | search
 hotkey_action = "last"  # hide | last
-sort_by = "key"         # key | app | recently
+sort_by = "recently"    # recently | app
 layout = "vertical_list"
-keys = "asdfhjklgqwertyuiop"
 
 [appearance]
 font = "auto"            # Or a font file with your scripts (CJK)
 font_size = 14
 width = 480
+title_bar = false        # Window list before typing
 show_app = false         # App name column before the title
-strip_app_name = true    # "Café — Firefox" becomes "Café"
+strip_app_name = false   # true: "Café — Firefox" becomes "Café"
 ```
 
 On first start `tynex daemon` writes this file with defaults. Keys
@@ -151,9 +147,12 @@ left out use their built-in defaults. A syntax error, an unknown key
 or an invalid value stops the daemon with a message naming the
 problem. See [docs/arch/config.md](docs/arch/config.md) for the rules.
 
-Upgrading from 0.1.4 or older: 0.1.5 removed `title_format`; delete it
-from `tynex.toml`, and set `show_app = true` for an app name column.
-Removed and renamed keys are listed in [CHANGELOG.md](CHANGELOG.md).
+Upgrading: the next release removes hotkey mode. Delete `mode` and
+`keys` from `tynex.toml`, change `sort_by = "key"` to `"recently"` or
+`"app"`, and set `title_bar = true` to keep a window list on screen.
+`strip_app_name` now defaults to `false`. 0.1.5 removed
+`title_format`; set `show_app = true` for an app name column. Removed
+and renamed keys are listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 

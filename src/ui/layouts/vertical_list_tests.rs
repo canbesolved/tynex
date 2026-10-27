@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Tests for the vertical list: sizes, badges, selection and scrolling.
+//! Tests for the vertical list: sizes, rows, selection and scrolling.
 
 use super::*;
 use crate::core::state::State;
@@ -17,14 +17,14 @@ const M: Metrics = Metrics {
     width: 300.0,
     max_rows: 3,
     scale: 1.0,
+    title_bar: true,
     show_app: false,
 };
 
-fn state(mode: ModeKind, n: usize) -> State {
+fn state(n: usize) -> State {
     let rows = (0..n)
         .map(|i| Row {
             id: WindowId(format!("w{i}")),
-            key: char::from_digit(10 + i as u32, 36), // a, b, c, …
             app_id: String::new(),
             app_name: String::new(),
             icon: None,
@@ -33,7 +33,7 @@ fn state(mode: ModeKind, n: usize) -> State {
         })
         .collect();
 
-    State::new(mode, rows)
+    State::new(rows)
 }
 
 /// Draws `state` and returns the RGBA buffer and its size.
@@ -66,41 +66,48 @@ fn pixel(data: &[u8], size: Size, x: f32, y: f32) -> [u8; 4] {
     [data[i], data[i + 1], data[i + 2], data[i + 3]]
 }
 
-/// Center of row `n` of the list body, in hotkey mode.
+/// Center of row `n` of the list, below the search prompt.
 fn row_center(n: usize) -> f32 {
     let g = Grid::new(&M, &Theme::default());
 
-    g.pad + g.row_h * (n as f32 + 0.5)
+    g.pad + g.row_h + 1.0 + g.row_h * (n as f32 + 0.5)
 }
 
 #[test]
 fn height_follows_rows_up_to_max() {
     let theme = Theme::default();
-    let size =
-        |n| VerticalList.size(&state(ModeKind::Hotkey, n).view(), &M, &theme);
+    let size = |n| VerticalList.size(&state(n).view(), &M, &theme);
     let g = Grid::new(&M, &theme);
 
     assert_eq!(size(2).width, 300);
-    assert_eq!(size(2).height, (2.0 * g.pad + 2.0 * g.row_h) as u32);
+    assert_eq!(size(2).height, (2.0 * g.pad + 3.0 * g.row_h + 1.0) as u32);
     assert_eq!(size(9).height, size(3).height); // Capped at max_rows
     assert_eq!(size(0).height, size(1).height); // Never collapses
 }
 
 #[test]
-fn search_mode_adds_a_search_bar() {
+fn without_title_bar_rows_wait_for_a_query() {
     let theme = Theme::default();
-    let hotkey =
-        VerticalList.size(&state(ModeKind::Hotkey, 2).view(), &M, &theme);
-    let search =
-        VerticalList.size(&state(ModeKind::Search, 2).view(), &M, &theme);
-    let g = Grid::new(&M, &theme);
+    let m = Metrics {
+        title_bar: false,
+        ..M
+    };
+    let g = Grid::new(&m, &theme);
+    let mut s = state(2);
 
-    assert_eq!(search.height - hotkey.height, (g.row_h + 1.0) as u32);
+    let prompt = VerticalList.size(&s.view(), &m, &theme);
+
+    assert_eq!(prompt.height, (2.0 * g.pad + g.row_h) as u32);
+    s.query = "w".into();
+    assert_eq!(
+        VerticalList.size(&s.view(), &m, &theme),
+        VerticalList.size(&s.view(), &M, &theme)
+    );
 }
 
 #[test]
 fn selected_row_is_highlighted() {
-    let mut s = state(ModeKind::Hotkey, 3);
+    let mut s = state(3);
 
     s.selected = 1;
 
@@ -118,34 +125,8 @@ fn selected_row_is_highlighted() {
 }
 
 #[test]
-fn badges_only_in_hotkey_mode() {
-    let g = Grid::new(&M, &Theme::default());
-    let corner = g.pad + g.gap + g.badge / 2.0; // Badge center, hotkey row 0
-    let badge = |mode| {
-        let (data, size) = render(&state(mode, 2));
-        let y = if mode == ModeKind::Search {
-            g.row_h + 1.0
-        } else {
-            0.0
-        };
-
-        pixel(&data, size, corner + g.badge / 3.0, y + row_center(0))
-    };
-    let theme = Theme::default();
-
-    assert_eq!(
-        badge(ModeKind::Hotkey)[..3],
-        [theme.badge.0, theme.badge.1, theme.badge.2]
-    );
-    assert_ne!(
-        badge(ModeKind::Search)[..3],
-        [theme.badge.0, theme.badge.1, theme.badge.2]
-    );
-}
-
-#[test]
 fn list_scrolls_to_keep_selection_visible() {
-    let mut s = state(ModeKind::Hotkey, 6);
+    let mut s = state(6);
 
     s.selected = 4; // Rows 2 to 4 are shown; row 4 is the last one
 
@@ -160,7 +141,7 @@ fn list_scrolls_to_keep_selection_visible() {
 
 #[test]
 fn app_column_only_with_show_app() {
-    let mut s = state(ModeKind::Hotkey, 1);
+    let mut s = state(1);
 
     s.rows[0].app_name = "WWWW".into();
 

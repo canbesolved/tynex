@@ -43,7 +43,7 @@ impl Mode for SearchMode {
                 self.refresh(s);
                 Action::Redraw
             }
-            Key::Tab => Action::None, // Handled by the switcher
+            Key::Tab => Action::None,
         }
     }
 

@@ -1,5 +1,7 @@
 # Search mode
 
+The only mode ([ADR-0050](../../adr/0050_search_only.md)).
+
 Source: `src/modes/search.rs`, `src/search/fuzzy.rs` and
 `src/search/fold.rs`.
 
@@ -11,13 +13,14 @@ Source: `src/modes/search.rs`, `src/search/fuzzy.rs` and
 | `Backspace`    | Delete last char, refilter          |
 | `Up` / `Down`  | Move selection                      |
 | `Enter`        | Activate selected window, close     |
-| `Tab`          | Switch to hotkey mode               |
+| `Tab`          | Ignored                             |
 | `Esc`          | Clear query; close if already empty |
 
-Opening with `tynex show --mode search` (or `mode = "search"` in config)
-lets the user type immediately after the hotkey. The best match is
-selected after every change of the query. Switching back to hotkey
-mode shows all windows again; the query stays for the next switch.
+The popup opens with the previous window selected, so `Enter` right
+after the hotkey switches back like Alt+Tab. Typing starts at once;
+the best match is selected after every change of the query. Whether
+the window list shows before typing depends on `title_bar` (see
+[config.md](../config.md#format)).
 
 ## Matching
 

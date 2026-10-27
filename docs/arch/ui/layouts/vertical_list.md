@@ -5,15 +5,21 @@ Source: `src/ui/layouts/vertical_list.rs`. The default layout.
 ## Look
 
 ```text
-Hotkey mode, show_app = true
+Before typing, title_bar = false (default)
 ╭──────────────────────────────────────╮
-│ [a] ▣  Konsole   ~/projects/demo     │
-│ [s] ▣  Firefox   Release notes       │
-│ [d] ▣  Dolphin   Downloads           │
-│ [f] ▣  Kate      overview.md         │
+│ /                                    │
 ╰──────────────────────────────────────╯
 
-Search mode, show_app = true
+Before typing, title_bar = true, show_app = true
+╭──────────────────────────────────────╮
+│ /                                    │
+├──────────────────────────────────────┤
+│ ▣  Konsole   ~/projects/demo         │
+│ ▣  Firefox   Release notes           │
+│ ▣  Dolphin   Downloads               │
+╰──────────────────────────────────────╯
+
+After typing, show_app = true
 ╭──────────────────────────────────────╮
 │ / firef                              │
 ├──────────────────────────────────────┤
@@ -24,18 +30,20 @@ Search mode, show_app = true
 
 With `show_app = false` (default) the app name column is left out.
 
-The selected row is highlighted. The search bar shows only in search
-mode.
+The selected row is highlighted. The search bar is always shown; the
+rows show with `title_bar`, or once a query is typed.
 
 ## Rules
 
-- Width from `appearance.width`; height = rows x row height + padding,
-  at least one row, plus the search bar in search mode.
-- Sizes follow the font: row height 2 x font size, key badge 1.4 x,
-  icon slot 1.5 x, gaps 0.6 x; all multiplied by the output scale.
-- Row in columns: key badge (hotkey mode), app icon, app name (with
-  `show_app`), title. A window without an icon keeps an empty slot,
-  so titles stay aligned.
+- Width from `appearance.width`; height = search bar + padding, plus
+  a separator line and rows x row height (at least one row) when rows
+  are shown.
+- Sizes follow the font: row height 2 x font size, icon slot 1.5 x,
+  gaps 0.6 x; all multiplied by the output scale.
+- Row in columns: app icon, app name (with `show_app`), title. Rows
+  have no key letters ([ADR-0050](../../../adr/0050_search_only.md)).
+  A window without an icon keeps an empty slot, so titles stay
+  aligned.
 - Column widths follow `appearance.width`: the app name column takes
   30 % of the text width after the icon, the title the rest; no extra
   config keys
@@ -46,8 +54,8 @@ mode.
   highlights (see [render.md](../render.md)).
 - At most `appearance.max_rows` rows; the list scrolls so the selected
   row stays visible.
-- In search mode the key badge column is hidden; the search bar shows
-  `/ query` above a separator line.
+- The search bar shows `/ query`; a separator line divides it from
+  the rows.
 
 ## Contract
 

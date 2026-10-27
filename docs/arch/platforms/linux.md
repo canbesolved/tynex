@@ -54,7 +54,7 @@ protocol. No client toolkit.
   `set_buffer_scale` are used. A `Scale` event asks for a redraw.
 
 Try it in a Wayland session: `cargo run --example popup_demo` shows the
-mock windows; a letter or `Enter` prints the chosen window, `Esc`
+mock windows; typing searches, `Enter` prints the chosen window, `Esc`
 closes, and without input it closes after ten seconds.
 
 ## Buffers
@@ -87,7 +87,8 @@ closes, and without input it closes after ten seconds.
   `LANG`.
 - For `Key::Char.latin`, the level-1 keysym of the same keycode is read
   from the first layout where it is an ASCII letter
-  (`key_get_syms_by_level`).
+  (`key_get_syms_by_level`). No mode uses it since hotkey mode was
+  removed.
 - Key repeat, for arrows and `Backspace` only, uses the rate and delay
   sent by the compositor. `next_deadline` gives the poll timeout and
   `dispatch` reports due repeats; leaving focus or hiding stops it.

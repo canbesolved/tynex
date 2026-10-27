@@ -4,7 +4,6 @@
 //! Search mode key tests.
 
 use super::*;
-use crate::core::event::ModeKind;
 use crate::core::view::Row;
 use crate::core::window::WindowId;
 
@@ -13,7 +12,6 @@ fn state() -> State {
         .into_iter()
         .map(|(id, title)| Row {
             id: WindowId(id.into()),
-            key: None,
             app_id: String::new(),
             app_name: String::new(),
             icon: None,
@@ -21,7 +19,7 @@ fn state() -> State {
             highlights: Vec::new(),
         })
         .collect();
-    let mut s = State::new(ModeKind::Search, rows);
+    let mut s = State::new(rows);
 
     SearchMode.refresh(&mut s);
     s

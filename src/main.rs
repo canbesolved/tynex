@@ -23,7 +23,7 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         Ok(Command::Daemon) => tynex::daemon::run(),
-        Ok(Command::Show(mode)) => request(Request::Show(mode)),
+        Ok(Command::Show) => request(Request::Show),
         Ok(Command::Hide) => request(Request::Hide),
         Ok(Command::Quit) => request(Request::Quit),
         Err(message) => {

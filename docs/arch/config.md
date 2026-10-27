@@ -33,25 +33,26 @@ this). Every key is optional: a missing key takes the value shown here.
 
 ```toml
 desktop = "auto"         # auto | kde | mock
-mode = "hotkey"          # hotkey | search
 # Hotkey pressed again while the popup is open: "hide" closes the
 # popup, "last" switches to the previously used window.
 hotkey_action = "last"   # hide | last
-# Row order: "key" keeps rows in letter order so they never move, "app"
-# groups them by app name, "recently" puts the last used window first.
-sort_by = "key"          # key | app | recently
+# Row order: "recently" puts the last used window first, "app" groups
+# windows by app name.
+sort_by = "recently"     # recently | app
 layout = "vertical_list"
-keys = "asdfhjklgqwertyuiop"
 
 [appearance]
 font = "auto"            # Font file path, or auto
 font_size = 14
 width = 480
 max_rows = 19
+# Show the window list under the search prompt before typing. Matches
+# are always shown once you type.
+title_bar = false
 # Show the app name in its own column before the title.
 show_app = false
 # Drop " — <app name>" from the end of window titles.
-strip_app_name = true
+strip_app_name = false
 ```
 
 `desktop` selects the window source adapter. `auto` picks `kde` when
@@ -59,9 +60,16 @@ the colon-separated `XDG_CURRENT_DESKTOP` list contains `KDE`, and fails
 otherwise; it never selects `mock`.
 
 `hotkey_action` sets what pressing the hotkey (or `tynex show`) does
-while the popup is open, in either mode: `hide` closes it, `last`
+while the popup is open: `hide` closes it, `last`
 switches to the previously used window, or closes it when there is
 none.
+
+`appearance.title_bar` shows the window list under the search prompt
+as soon as the popup opens. With `false` (default) only the prompt
+shows until you type; matches then appear below it. It replaces hotkey
+mode, which 0.1.6 removed with the `mode` and `keys` keys
+([ADR-0050](../adr/0050_search_only.md)); a config that still has them
+stops the daemon with an unknown key error.
 
 `appearance.show_app` adds an app name column before the title (see
 [ADR-0045](../adr/0045_app_names.md) for where names come from and
@@ -75,9 +83,10 @@ The end must equal the app name or the last part of the app id
 (`konsole` for `org.kde.konsole`), ignoring case. A title that would
 become empty stays as it is.
 
-`sort_by` sets the order of the rows: `key` by letter, `app` by app
-name, `recently` by last use. The popup always opens with the previous
-window selected (see [core.md](core.md#row-order)).
+`sort_by` sets the order of the rows: `recently` (default) by last
+use, `app` by app name. The popup always opens with the previous
+window selected (see [core.md](core.md#row-order)). `key`, the letter
+order, was removed in 0.1.6 and is rejected.
 
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
 
@@ -103,15 +112,14 @@ The config is read once, when `tynex daemon` starts
 | Key                         | Rule                                      |
 | --------------------------- | ----------------------------------------- |
 | `desktop`                   | `auto`, `kde` or `mock`                   |
-| `mode`                      | `hotkey` or `search`                      |
 | `hotkey_action`             | `hide` or `last`                          |
-| `sort_by`                   | `key`, `app` or `recently`                |
+| `sort_by`                   | `recently` or `app`                       |
 | `layout`                    | `vertical_list`                           |
-| `keys`                      | 1 to 26 unique ASCII lowercase letters    |
 | `appearance.font`           | `auto` or a path to an existing font file |
 | `appearance.font_size`      | 8 to 72                                   |
 | `appearance.width`          | 200 to 2000                               |
 | `appearance.max_rows`       | 1 to 50                                   |
+| `appearance.title_bar`      | `true` or `false`                         |
 | `appearance.show_app`       | `true` or `false`                         |
 | `appearance.strip_app_name` | `true` or `false`                         |
 
@@ -129,7 +137,8 @@ messages.
 
 ```text
 tynex: error: ~/.config/tynex/tynex.toml:1:1: unknown key `adaptr`,
-  expected one of `desktop`, `mode`, `layout`, `keys`, `appearance`
+  expected one of `desktop`, `hotkey_action`, `sort_by`, `layout`,
+  `appearance`
 tynex: error: ~/.config/tynex/tynex.toml:9:13: `appearance.font_size`
   = 120 is out of range, expected 8 to 72
 ```

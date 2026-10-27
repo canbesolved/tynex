@@ -5,14 +5,12 @@
 
 use std::ops::Range;
 
-use crate::core::event::ModeKind;
 use crate::core::window::WindowId;
 
 /// One list entry.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Row {
     pub id: WindowId,
-    pub key: Option<char>,
     pub app_id: String,   // Matched by search, not drawn
     pub app_name: String, // Drawn with `show_app`, matched by search
     pub icon: Option<String>,
@@ -23,7 +21,6 @@ pub struct Row {
 /// Read-only snapshot of the popup, borrowed from the switcher state.
 #[derive(Debug, Clone, Copy)]
 pub struct View<'a> {
-    pub mode: ModeKind,
     pub query: &'a str,
     pub selected: usize, // Index into the shown rows
     rows: &'a [Row],
@@ -32,14 +29,12 @@ pub struct View<'a> {
 
 impl<'a> View<'a> {
     pub(crate) fn new(
-        mode: ModeKind,
         query: &'a str,
         selected: usize,
         rows: &'a [Row],
         shown: &'a [usize],
     ) -> Self {
         Self {
-            mode,
             query,
             selected,
             rows,

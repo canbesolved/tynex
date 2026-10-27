@@ -6,12 +6,10 @@
 
 use std::fmt;
 
-use crate::core::event::ModeKind;
-
 /// A request sent by `tynex show`, `hide` or `quit`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Request {
-    Show(Option<ModeKind>), // `None`: the mode from the config
+    Show,
     Hide,
     Quit,
 }

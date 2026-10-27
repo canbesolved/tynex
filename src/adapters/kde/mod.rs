@@ -11,7 +11,6 @@ mod parse;
 use std::fs;
 use std::path::PathBuf;
 
-use crate::core::event::ModeKind;
 use crate::core::queue::EventTx;
 use crate::core::traits::{SourceError, WindowSource};
 use crate::core::window::WindowId;
@@ -24,19 +23,14 @@ const SCRIPT: &str = include_str!("tynex.js");
 /// Window source backed by `KWin`.
 pub struct KdeSource {
     bus: Bus,
-    mode: ModeKind,          // Mode the shortcut opens
     script: Option<PathBuf>, // Script file, while loaded
 }
 
 impl KdeSource {
     /// Creates the source; nothing is sent to `KWin` before `start`.
     #[must_use]
-    pub fn new(bus: Bus, mode: ModeKind) -> Self {
-        Self {
-            bus,
-            mode,
-            script: None,
-        }
+    pub fn new(bus: Bus) -> Self {
+        Self { bus, script: None }
     }
 }
 
@@ -54,7 +48,7 @@ impl WindowSource for KdeSource {
                 SourceError(format!("cannot write the KWin script: {e}"))
             })?;
 
-        bridge::serve(&self.bus, tx, kwin, self.mode);
+        bridge::serve(&self.bus, tx, kwin);
         kwin::load(&self.bus, &file)?;
         self.script = Some(file);
         log::info!("KWin script loaded");

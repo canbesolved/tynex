@@ -5,21 +5,36 @@
 
 use tynex::adapters::mock::MockSource;
 use tynex::adapters::{self, Kind, Source};
-use tynex::config;
-use tynex::core::event::{Action, Event, Key, ModeKind};
+use tynex::config::{self, Config};
+use tynex::core::event::{Action, Event, Key};
 use tynex::core::queue::{EventRx, channel};
 use tynex::core::switcher::Switcher;
 use tynex::core::traits::WindowSource;
 use tynex::core::window::WindowId;
-use tynex::modes::hotkey::HotkeyMode;
 use tynex::modes::search::SearchMode;
 
-type App = Switcher<HotkeyMode, SearchMode>;
+type App = Switcher<SearchMode>;
 
 /// The registry's pick for `desktop`, built without a session bus.
 fn mock(desktop: config::Desktop) -> Source {
     assert_eq!(adapters::pick(desktop, None), Ok(Kind::Mock));
     Source::Mock(MockSource::new())
+}
+
+/// A switcher built from `config`, fed by a started mock source.
+fn start(config: &Config) -> (App, Source, EventRx) {
+    let mut source = mock(config.desktop);
+    let (tx, rx) = channel();
+    let mut sw = Switcher::new(
+        config.hotkey_action,
+        config.appearance.strip_app_name,
+        config.sort_by,
+        SearchMode,
+    );
+
+    source.start(tx).expect("mock starts");
+    pump(&rx, &mut sw);
+    (sw, source, rx)
 }
 
 /// Feeds all queued events to the switcher.
@@ -29,59 +44,34 @@ fn pump(rx: &EventRx, sw: &mut App) {
     }
 }
 
-/// Opens the popup and presses `letter`, then activates the result.
-fn switch(sw: &mut App, source: &mut Source, rx: &EventRx, letter: char) {
-    sw.handle(Event::Show(ModeKind::Hotkey));
+/// Opens the popup, types `query`, presses `Enter` and activates the
+/// result.
+fn switch(sw: &mut App, source: &mut Source, rx: &EventRx, query: &str) {
+    sw.handle(Event::Show);
+    for c in query.chars() {
+        sw.handle(Event::Key(Key::Char {
+            text: c,
+            latin: None,
+        }));
+    }
 
-    let key = Key::Char {
-        text: letter,
-        latin: None,
-    };
-
-    match sw.handle(Event::Key(key)) {
+    match sw.handle(Event::Key(Key::Enter)) {
         Action::Activate(id) => source.activate(&id).expect("known window"),
         other => panic!("expected activation, got {other:?}"),
     }
     pump(rx, sw);
 }
 
-fn first_rows(sw: &mut App, n: usize) -> Vec<(String, Option<char>)> {
-    sw.handle(Event::Show(ModeKind::Hotkey));
-
-    let rows = sw.view().expect("popup is open").rows();
-    let first = rows.take(n).map(|r| (r.title.clone(), r.key)).collect();
-
-    sw.handle(Event::Hide);
-    first
-}
-
 #[test]
 fn mock_source_drives_the_switcher() {
-    let text = "desktop = \"mock\"\nkeys = \"asdf\"\n";
-    let config = config::parse(text, &|_| false).expect("valid config");
-    let mut source = mock(config.desktop);
-    let (tx, rx) = channel();
-    let mut sw = Switcher::new(
-        &config.keys,
-        config.hotkey_action,
-        config.appearance.strip_app_name,
-        config.sort_by,
-        HotkeyMode,
-        SearchMode,
-    );
+    let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
+    let (mut sw, mut source, rx) = start(&config);
 
-    source.start(tx).expect("mock starts");
-    pump(&rx, &mut sw);
-
-    // The previous window gets `a`; rows follow their letters.
-    let start = [("Café".into(), Some('a')), ("Música".into(), Some('s'))];
-
-    assert_eq!(first_rows(&mut sw, 2), start);
-
-    // Letters and rows stay in place while switching (`sort_by = "key"`).
-    switch(&mut sw, &mut source, &rx, 'a');
-    switch(&mut sw, &mut source, &rx, 's');
-    assert_eq!(first_rows(&mut sw, 2), start);
+    // `Enter` right after opening goes back and forth, like Alt+Tab.
+    switch(&mut sw, &mut source, &rx, "");
+    switch(&mut sw, &mut source, &rx, "");
+    // Typing picks the best match.
+    switch(&mut sw, &mut source, &rx, "musica");
 
     let Source::Mock(mock) = &source else {
         unreachable!("mock source")
@@ -89,27 +79,29 @@ fn mock_source_drives_the_switcher() {
 
     assert_eq!(
         mock.activations(),
-        [WindowId("mock-02".into()), WindowId("mock-03".into())]
+        ["mock-02", "mock-01", "mock-03"].map(|id| WindowId(id.into()))
+    );
+}
+
+#[test]
+fn titles_keep_the_app_name_by_default() {
+    let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
+    let (mut sw, ..) = start(&config);
+
+    sw.handle(Event::Show);
+    assert_eq!(
+        sw.view().unwrap().rows().next().unwrap().title,
+        "Café — Firefox"
     );
 }
 
 #[test]
 fn titles_from_the_source_are_stripped() {
-    let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
-    let mut source = mock(config.desktop);
-    let (tx, rx) = channel();
-    let mut sw = Switcher::new(
-        &config.keys,
-        config.hotkey_action,
-        config.appearance.strip_app_name,
-        config.sort_by,
-        HotkeyMode,
-        SearchMode,
-    );
+    let text = "desktop = \"mock\"\n[appearance]\nstrip_app_name = true\n";
+    let config = config::parse(text, &|_| false).unwrap();
+    let (mut sw, ..) = start(&config);
 
-    source.start(tx).unwrap();
-    pump(&rx, &mut sw);
-    sw.handle(Event::Show(config.mode));
+    sw.handle(Event::Show);
 
     let rows: Vec<_> = sw
         .view()
