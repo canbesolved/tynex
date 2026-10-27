@@ -6,11 +6,11 @@ Later to Next to Now as they are scheduled, and leave this file once
 released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md),
 dropped items in [DEPRECATIONS.md](DEPRECATIONS.md).
 
-| Horizon | Release   | Meaning                             |
-| ------- | --------- | ----------------------------------- |
-| Now     | 0.1.x     | Patch releases, in the order below  |
-| Next    | 0.2.0     | Committed for the following release |
-| Later   | Unplanned | Accepted ideas, not scheduled yet   |
+| Horizon | Release      | Meaning                              |
+| ------- | ------------ | ------------------------------------ |
+| Now     | 0.1.x        | Patch releases, in the order below   |
+| Next    | 0.2.0, 0.3.0 | Committed for the following releases |
+| Later   | Unplanned    | Accepted ideas, not scheduled yet    |
 
 Rules:
 
@@ -26,10 +26,20 @@ Target: KDE Plasma 6 on Wayland.
 - [ ] Performance: holding `Up` or `Down` moves the selection one row
   per key repeat, without skipping rows, and each frame is drawn
   before the next repeat.
-- [ ] Faster, more responsive and smoother UI overall: the popup opens,
-  redraws and reacts to every key without visible delay.
+- [ ] Hotkey mode becomes the `title_bar` option, and search mode
+  becomes the only mode. **Breaking:** the `mode` and `keys` config
+  keys and `sort_by = "key"` are removed. Needs an ADR before work
+  starts.
+  - Config: `title_bar = true` (default) shows the window list, `false`
+    hides it.
+  - The list shows under the prompt, or under the icon strip when
+    `icon_bar` is also on.
+  - Rows show the app icon and title, without key letters. `show_app`
+    and `strip_app_name` apply; `show_icons = false` hides the icons.
 
-## Next: 0.2.0
+## Next
+
+### 0.2.0
 
 - [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
   with a custom title, for example `[apps.firefox]` with
@@ -44,6 +54,11 @@ Target: KDE Plasma 6 on Wayland.
   - A running app lists its open windows first, then a "Launch new
     window" entry. An app that is not running has one launch entry.
   - Later sources: macOS app bundles, Windows Start menu shortcuts.
+
+### 0.3.0
+
+- [ ] Faster, more responsive and smoother UI overall: the popup opens,
+  redraws and reacts to every key without visible delay.
 
 ## Later
 
@@ -75,16 +90,6 @@ Layouts and modes:
     - `Left` and `Right` move along the strip;
     - `Tab` moves through the matches.
   - Launching uses the `launcher` module.
-- [ ] Hotkey mode becomes the `title_bar` option, and search mode
-  becomes the only mode. **Breaking:** the `mode` and `keys` config
-  keys and `sort_by = "key"` are removed. Needs an ADR before work
-  starts.
-  - Config: `title_bar = true` (default) shows the window list, `false`
-    hides it.
-  - The list shows under the prompt, or under the icon strip when
-    `icon_bar` is also on.
-  - Rows show the app icon and title, without key letters. `show_app`
-    and `strip_app_name` apply; `show_icons = false` hides the icons.
 - [ ] Close windows from the popup, like `Alt+F4`: `Ctrl+W` or a right
   click closes the selected window.
   - In the task list, a right click on an app with several windows
