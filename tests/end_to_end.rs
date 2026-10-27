@@ -11,9 +11,9 @@ use tynex::core::queue::{EventRx, channel};
 use tynex::core::switcher::Switcher;
 use tynex::core::traits::WindowSource;
 use tynex::core::window::WindowId;
-use tynex::modes::search::SearchMode;
+use tynex::modes::prompt::PromptMode;
 
-type App = Switcher<SearchMode>;
+type App = Switcher<PromptMode>;
 
 /// The registry's pick for `desktop`, built without a session bus.
 fn mock(desktop: config::Desktop) -> Source {
@@ -29,7 +29,7 @@ fn start(config: &Config) -> (App, Source, EventRx) {
         config.hotkey_action,
         config.appearance.strip_app_name,
         config.sort_by,
-        SearchMode,
+        PromptMode,
     );
 
     source.start(tx).expect("mock starts");

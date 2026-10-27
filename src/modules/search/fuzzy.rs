@@ -9,7 +9,7 @@ use std::ops::Range;
 
 use frizbee::{Config, Matcher};
 
-use crate::search::fold::Folded;
+use crate::modules::search::fold::Folded;
 
 /// A window that matches the query.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -33,7 +33,7 @@ the code paths in use are paged into memory, so RSS and idle CPU stay
 within their budgets.
 
 - The release binary target is under 10 MB.
-- `src/search/fuzzy.rs` calls a single `frizbee` entry point,
+- `src/modules/search/fuzzy.rs` calls a single `frizbee` entry point,
   `match_list_indices`; each extra one adds about 1 MB.
 - An own matcher stays a long-term option in
   [ROADMAP.md](../../ROADMAP.md).

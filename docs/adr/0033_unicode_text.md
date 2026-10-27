@@ -82,5 +82,5 @@ fallback.
 ## More Information
 
 See [core.md](../arch/core.md#text-and-languages),
-[search.md](../arch/modes/search.md) and
+[search.md](../arch/modules/search.md) and
 [render.md](../arch/ui/render.md).

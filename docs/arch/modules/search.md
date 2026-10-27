@@ -1,26 +1,10 @@
-# Search mode
+# Search
 
-The only mode ([ADR-0050](../../adr/0050_search_only.md)).
+Fuzzy matching of window titles and app names. A module, not a mode.
+Prompt mode calls it ([prompt.md](../modes/prompt.md),
+[ADR-0051](../../adr/0051_prompt_mode.md)).
 
-Source: `src/modes/search.rs`, `src/search/fuzzy.rs` and
-`src/search/fold.rs`.
-
-## Behavior
-
-| Key            | Action                              |
-| -------------- | ----------------------------------- |
-| Printable char | Append to query, refilter           |
-| `Backspace`    | Delete last char, refilter          |
-| `Up` / `Down`  | Move selection                      |
-| `Enter`        | Activate selected window, close     |
-| `Tab`          | Ignored                             |
-| `Esc`          | Clear query; close if already empty |
-
-The popup opens with the previous window selected, so `Enter` right
-after the hotkey switches back like Alt+Tab. Typing starts at once;
-the best match is selected after every change of the query. Whether
-the window list shows before typing depends on `title_bar` (see
-[config.md](../config.md#format)).
+Source: `src/modules/search/fuzzy.rs` and `src/modules/search/fold.rs`.
 
 ## Matching
 

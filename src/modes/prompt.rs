@@ -1,18 +1,18 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Search mode: typing filters windows with fuzzy matching.
+//! Prompt mode: typing filters windows with fuzzy matching.
 
 use crate::core::event::{Action, Key};
 use crate::core::state::State;
 use crate::core::traits::Mode;
-use crate::search::fuzzy::rank;
+use crate::modules::search::fuzzy::rank;
 
 /// Typed characters build a query; the best match is selected.
 #[derive(Debug, Default)]
-pub struct SearchMode;
+pub struct PromptMode;
 
-impl Mode for SearchMode {
+impl Mode for PromptMode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
         match key {
             Key::Char { text, .. } => {
@@ -73,5 +73,5 @@ impl Mode for SearchMode {
 }
 
 #[cfg(test)]
-#[path = "search_tests.rs"]
+#[path = "prompt_tests.rs"]
 mod tests;

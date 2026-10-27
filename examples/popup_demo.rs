@@ -18,7 +18,7 @@ use tynex::core::order::SortBy;
 use tynex::core::queue::channel;
 use tynex::core::switcher::{HotkeyAction, Switcher};
 use tynex::core::traits::WindowSource;
-use tynex::modes::search::SearchMode;
+use tynex::modes::prompt::PromptMode;
 use tynex::platform::linux::fonts::default_face;
 use tynex::platform::linux::icon_theme::IconTheme;
 use tynex::platform::linux::wayland::{PresenterEvent, WaylandPresenter};
@@ -30,7 +30,7 @@ use tynex::ui::render::theme::Theme;
 
 const SHOW_FOR: Duration = Duration::from_secs(10);
 
-type App = Switcher<SearchMode>;
+type App = Switcher<PromptMode>;
 
 /// Sizes the popup for the current view and draws it.
 fn redraw(
@@ -70,7 +70,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (tx, rx) = channel();
     let mut source = MockSource::new();
     let mut app =
-        Switcher::new(HotkeyAction::Hide, true, SortBy::Recently, SearchMode);
+        Switcher::new(HotkeyAction::Hide, true, SortBy::Recently, PromptMode);
 
     source.start(tx)?;
     while let Some(event) = rx.recv() {
