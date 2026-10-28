@@ -12,6 +12,7 @@ use std::time::{Duration, Instant};
 
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use tynex::adapters::mock::MockSource;
+use tynex::config::LauncherMode;
 use tynex::config::{Font, MainConfig, OutputBarConfig, TitleBarConfig};
 use tynex::core::event::{Action, Event};
 use tynex::core::order::SortBy;
@@ -19,6 +20,7 @@ use tynex::core::queue::channel;
 use tynex::core::switcher::{HotkeyAction, Switcher};
 use tynex::core::traits::WindowSource;
 use tynex::modes::prompt::PromptMode;
+use tynex::modules::input::Input;
 use tynex::platform::linux::fonts::default_face;
 use tynex::platform::linux::icon_theme::IconTheme;
 use tynex::platform::linux::wayland::{PresenterEvent, WaylandPresenter};
@@ -59,8 +61,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut painter = Painter::new(text, icons, &main, &output, &title);
     let (tx, rx) = channel();
     let mut source = MockSource::new();
-    let mut app =
-        Switcher::new(HotkeyAction::Hide, true, SortBy::Recently, PromptMode);
+    let mut app = Switcher::new(
+        HotkeyAction::Hide,
+        true,
+        SortBy::Recently,
+        PromptMode::new(Input::new(LauncherMode::Off, Vec::new())),
+    );
 
     source.start(tx)?;
     while let Some(event) = rx.recv() {
@@ -99,6 +105,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             match action {
                 Action::Activate(id) => {
                     println!("activate {}", id.0);
+                    return close(&mut presenter);
+                }
+                Action::Launch(id) => {
+                    println!("launch {id}");
                     return close(&mut presenter);
                 }
                 Action::Close => return close(&mut presenter),

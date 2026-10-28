@@ -68,7 +68,8 @@ fn accents_fold_and_highlight_the_real_letters() {
     assert_eq!(highlights("café", 2), [(0, 5)]);
 
     // A query with accents is not folded: `è` is a typo for `é`.
-    assert_eq!(highlights("cafè", 2), [(0, 3)]);
+    // Queries under five characters allow no typo, so no hit.
+    assert_eq!(order("cafè"), [] as [usize; 0]);
 }
 
 #[test]
@@ -79,7 +80,27 @@ fn non_ascii_matches_with_unicode_case() {
 }
 
 #[test]
-fn one_typo_per_four_characters() {
+fn typos_start_at_five_characters() {
     assert_eq!(order("relaese")[0], 0); // 7 characters, 1 typo
     assert_eq!(order("rlz"), []); // 3 characters, no typo
+    // "codx" is not a subsequence of any title without a typo.
+    assert_eq!(order("codx"), [] as [usize; 0]);
+}
+
+#[test]
+fn code_skips_unrelated_app_names() {
+    let items = [
+        ("Visual Studio Code", "code"),
+        ("Contact Theme Editor", "contactthemeeditor"),
+        ("Video Downloader", "videodownloader"),
+        ("VLC media player", "vlc"),
+        ("KDE Connect", "org.kde.kdeconnect"),
+        ("Discover", "org.kde.discover"),
+    ];
+    let titles: Vec<_> = rank("code", &items)
+        .into_iter()
+        .map(|h| items[h.index].0)
+        .collect();
+
+    assert_eq!(titles, ["Visual Studio Code"]);
 }

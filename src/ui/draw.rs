@@ -55,7 +55,6 @@ pub(crate) struct Grid {
     pub icon: f32,  // Icon slot side
     pub gap: f32,   // Space between parts of a row
     pub font: f32,  // Text size
-    pub app: f32,   // Share of the text width for app names, 0 when hidden
 }
 
 impl Grid {
@@ -68,11 +67,6 @@ impl Grid {
             icon: (font * 1.5).round(),
             gap: (font * 0.6).round(),
             font,
-            app: if metrics.show_app_icon {
-                APP_SHARE
-            } else {
-                0.0
-            },
         }
     }
 }
@@ -104,16 +98,17 @@ pub(crate) fn icon_size(metrics: &Metrics, theme: &Theme) -> u32 {
     Grid::new(metrics, theme).icon as u32
 }
 
-/// Draws one window row: icon, app name (`show_app_icon`), title.
+/// Draws one window row: icon, optional app name, title.
 ///
-/// `highlights` are search matches. The title bar passes an empty
-/// slice; the output bar passes the row's matches.
+/// `show_app` is for the title bar only. `highlights` are search
+/// matches; the title bar passes an empty slice.
 pub(crate) fn draw_row(
     paint: &mut Paint<'_, '_>,
     grid: &Grid,
     row: &Row,
     area: Area,
     highlights: &[Range<usize>],
+    show_app: bool,
 ) {
     let mut left = area.x + grid.gap;
 
@@ -129,8 +124,8 @@ pub(crate) fn draw_row(
     }
     left += grid.icon + grid.gap;
 
-    if grid.app > 0.0 {
-        let width = ((area.x + area.w - grid.gap - left) * grid.app).round();
+    if show_app {
+        let width = ((area.x + area.w - grid.gap - left) * APP_SHARE).round();
         let app = Area::new(left, area.y, width, area.h);
 
         draw_text(paint, grid, (&row.app_name, &[]), app, paint.theme.app_text);

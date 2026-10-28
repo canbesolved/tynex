@@ -15,28 +15,30 @@ use crate::modules::search::fold::Folded;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Hit {
     pub index: usize,                  // Index into the ranked items
+    pub score: u16,                    // Higher is better
     pub highlights: Vec<Range<usize>>, // Byte ranges in the title
 }
 
 /// Ranks `items` (title, app) for `query`, best first; equal scores
 /// keep the order of `items`. An empty query keeps every item.
 ///
-/// Smart case, one typo per four query characters, and an ASCII query
-/// also matches accented letters.
+/// Smart case, one typo per four characters once the query has at
+/// least five characters (shorter queries allow none), and an ASCII
+/// query also matches accented letters.
 #[must_use]
 pub fn rank(query: &str, items: &[(&str, &str)]) -> Vec<Hit> {
     if query.is_empty() {
         return (0..items.len())
             .map(|index| Hit {
                 index,
+                score: 0,
                 highlights: Vec::new(),
             })
             .collect();
     }
 
-    let typos = u16::try_from(query.chars().count() / 4).unwrap_or(u16::MAX);
     let mut matcher =
-        Matcher::new(query, &Config::default().max_typos(Some(typos)));
+        Matcher::new(query, &Config::default().max_typos(Some(typos(query))));
     let titles: Vec<Folded> = items
         .iter()
         .map(|(title, _)| {
@@ -58,6 +60,7 @@ pub fn rank(query: &str, items: &[(&str, &str)]) -> Vec<Hit> {
         scores[i] = Some(m.score);
         hits.push(Hit {
             index: i,
+            score: m.score,
             highlights: titles[i].ranges(items[i].0, &m.indices),
         });
     }
@@ -67,11 +70,17 @@ pub fn rank(query: &str, items: &[(&str, &str)]) -> Vec<Hit> {
 
         match scores[i] {
             Some(score) if score >= m.score => {}
-            Some(_) => scores[i] = Some(m.score),
+            Some(_) => {
+                scores[i] = Some(m.score);
+                if let Some(hit) = hits.iter_mut().find(|h| h.index == i) {
+                    hit.score = m.score;
+                }
+            }
             None => {
                 scores[i] = Some(m.score);
                 hits.push(Hit {
                     index: i,
+                    score: m.score,
                     highlights: Vec::new(), // Only the title is drawn
                 });
             }
@@ -79,6 +88,18 @@ pub fn rank(query: &str, items: &[(&str, &str)]) -> Vec<Hit> {
     }
     hits.sort_by_key(|h| (Reverse(scores[h.index]), h.index));
     hits
+}
+
+/// Typos allowed for `query`: none under five characters, then one
+/// per four characters (`code` is exact-ish; `relaese` still works).
+fn typos(query: &str) -> u16 {
+    let n = query.chars().count();
+
+    if n < 5 {
+        0
+    } else {
+        u16::try_from(n / 4).unwrap_or(u16::MAX)
+    }
 }
 
 #[cfg(test)]

@@ -139,7 +139,7 @@ fn parse_entry(text: &str, locales: &[String]) -> Entry {
 /// Returns the `Name[...]` tags to try for a POSIX locale such as
 /// `sr_RS.UTF-8@latin`, best first: `sr_RS@latin`, `sr_RS`, `sr@latin`,
 /// `sr`. `C` and `POSIX` have none.
-fn locale_keys(locale: &str) -> Vec<String> {
+pub(crate) fn locale_keys(locale: &str) -> Vec<String> {
     let (base, modifier) = match locale.split_once('@') {
         Some((base, m)) => (base, Some(m)),
         None => (locale, None),

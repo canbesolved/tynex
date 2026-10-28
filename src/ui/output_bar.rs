@@ -59,7 +59,7 @@ pub(crate) fn draw(
                 paint.theme.selected,
             );
         }
-        draw::draw_row(paint, grid, row, area, &row.highlights);
+        draw::draw_row(paint, grid, row, area, &row.highlights, false);
         top += grid.row_h;
     }
 }

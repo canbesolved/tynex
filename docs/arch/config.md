@@ -48,6 +48,9 @@ width = 480
 action = "last"              # hide | last
 
 [input_bar]
+# Installed apps in the output bar: "off" hides them, "all" includes
+# terminal apps, "gui_only" skips Terminal=true.
+launcher.mode = "off"        # off | all | gui_only
 
 [output_bar]
 # Cap for the output bar and the title bar.
@@ -74,8 +77,9 @@ fails otherwise; it never selects `mock`.
 while the popup is open: `hide` closes it, `last` switches to the
 previously used window, or closes it when there is none.
 
-`[input_bar]` is empty today. `launcher.mode` is planned for 0.2.1
-([ROADMAP.md](../../ROADMAP.md)).
+`input_bar.launcher.mode` adds installed apps to the output bar
+([ADR-0056](../adr/0056_launcher_input.md)): `"off"` (default),
+`"all"`, or `"gui_only"` (skips `Terminal=true`).
 
 `output_bar.max_rows` caps both the output bar and the title bar.
 
@@ -87,8 +91,9 @@ mode, which 0.1.6 removed with the `mode` and `keys` keys
 stops the daemon with an unknown key error.
 
 `title_bar.show_app_icon` adds an app name column before the title
-(see [ADR-0045](../adr/0045_app_names.md) for where names come from and
-[title_bar.md](ui/title_bar.md) for the columns). It replaces
+in the title bar only (see [ADR-0045](../adr/0045_app_names.md) for
+where names come from and [title_bar.md](ui/title_bar.md) for the
+columns). The output bar never shows that column. It replaces
 `appearance.show_app` and earlier `title_format`; a config that still
 has them stops the daemon with an unknown key error.
 
@@ -143,6 +148,7 @@ The config is read once, when `tynex daemon` starts
 | `main.font_size`           | 8 to 72                                   |
 | `main.width`               | 200 to 2000                               |
 | `hotkeys.action`           | `hide` or `last`                          |
+| `input_bar.launcher.mode`  | `off`, `all` or `gui_only`                |
 | `output_bar.max_rows`      | 1 to 50                                   |
 | `title_bar.enabled`        | `true` or `false`                         |
 | `title_bar.sort_by`        | `recently` or `app`                       |

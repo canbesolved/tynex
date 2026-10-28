@@ -3,10 +3,12 @@
 Source: `src/ui/output_bar.rs`. The result of what was typed in the
 [input bar](input_bar.md).
 
-The result depends on the request. Today a query shows the windows
-it matched. Later requests can show found applications or a model
-answer in this same module
-([ADR-0054](../../adr/0054_output_bar.md)).
+The result depends on the request. A query shows the windows it
+matched, and with the launcher on, launch rows for installed apps
+([ADR-0054](../../adr/0054_output_bar.md),
+[ADR-0056](../../adr/0056_launcher_input.md),
+[modules/input.md](../modules/input.md)). Later requests can show a
+model answer in this same module.
 
 ## Look
 
@@ -43,11 +45,12 @@ The first list under the input is the output bar. With
   does not collapse.
 - At most `output_bar.max_rows` rows. The list scrolls so the
   selected match stays visible.
-- Rows use the same columns as the title bar: icon, app name (with
-  `show_app_icon`), title. Matched letters use the highlight color
-  (see [render.md](render.md)).
-- `Enter` activates the selected match. Up and down move that
-  selection. Prompt mode owns the keys; this module only draws.
+- Rows are icon and title only. The app name column is title-bar
+  only (`title_bar.show_app_icon`). Matched letters use the highlight
+  color (see [render.md](render.md)).
+- `Enter` activates a window row or launches an app row. Up and down
+  move that selection. Prompt mode owns the keys; this module only
+  draws.
 
 ## Contract
 
@@ -55,4 +58,4 @@ The first list under the input is the output bar. With
 - `height`: the separator and the result rows, or zero when hidden.
   Pure.
 - `draw`: draws the separator, the selection and the columns. Reads
-  only `View` (`rows`, the matched windows).
+  only `View` (`rows`, the output list).

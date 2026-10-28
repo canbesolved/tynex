@@ -47,6 +47,7 @@ pub trait Mode {
     /// Handles one key press while the popup is open.
     fn on_key(&mut self, key: Key, s: &mut State) -> Action;
 
-    /// Recomputes `shown` and highlights after the rows or mode changed.
+    /// Recomputes `output` and highlights after the rows or mode
+    /// changed.
     fn refresh(&mut self, _s: &mut State) {}
 }

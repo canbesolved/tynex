@@ -27,7 +27,9 @@ const M: Metrics = Metrics {
 fn state(n: usize) -> State {
     let rows = (0..n)
         .map(|i| Row {
-            id: WindowId(format!("w{i}")),
+            target: crate::core::view::RowTarget::Window(WindowId(format!(
+                "w{i}"
+            ))),
             app_id: String::new(),
             app_name: String::new(),
             icon: None,
@@ -180,4 +182,27 @@ fn app_column_only_with_show_app_icon() {
 
     assert!(app_pixels(&shown) > 0);
     assert_eq!(app_pixels(&M), 0);
+}
+
+#[test]
+fn output_bar_never_draws_the_app_column() {
+    let mut s = state(1);
+
+    s.query = "w".into();
+    s.rows[0].app_name = "WWWW".into();
+    s.output = s.rows.clone();
+
+    let app = Theme::default().app_text;
+    let metrics = Metrics {
+        title_bar: false,
+        show_app_icon: true,
+        ..M
+    };
+    let (data, _) = render_with(&s, &metrics);
+    let app_pixels = data
+        .chunks(4)
+        .filter(|px| px[..3] == [app.0, app.1, app.2])
+        .count();
+
+    assert_eq!(app_pixels, 0);
 }

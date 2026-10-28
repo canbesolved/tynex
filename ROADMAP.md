@@ -25,7 +25,7 @@ Target: KDE Plasma 6 on Wayland.
 
 ### 0.2.1
 
-- [ ] Launcher, a sub-module of the input bar. The input bar takes
+- [x] Launcher, a sub-module of the input bar. The input bar takes
   the query. The launcher turns matching installed apps into rows.
   The output bar draws those rows. The launcher is not its own bar.
   - Config: `launcher.mode = "off"` (default), `"all"` or

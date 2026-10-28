@@ -12,6 +12,7 @@ use tynex::core::switcher::Switcher;
 use tynex::core::traits::WindowSource;
 use tynex::core::window::WindowId;
 use tynex::modes::prompt::PromptMode;
+use tynex::modules::input::Input;
 
 type App = Switcher<PromptMode>;
 
@@ -29,7 +30,7 @@ fn start(config: &Config) -> (App, Source, EventRx) {
         config.hotkeys.action,
         config.title_bar.strip_app_name,
         config.title_bar.sort_by,
-        PromptMode,
+        PromptMode::new(Input::new(config.input_bar.launcher, Vec::new())),
     );
 
     source.start(tx).expect("mock starts");

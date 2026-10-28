@@ -4,19 +4,20 @@ The only mode ([ADR-0050](../../adr/0050_search_only.md)). It is
 called prompt mode because it will do more than search
 ([ADR-0051](../../adr/0051_prompt_mode.md)).
 
-Source: `src/modes/prompt.rs`. Matching is the
-[search](../modules/search.md) module.
+Source: `src/modes/prompt.rs`. The
+[input](../modules/input.md) module rebuilds the output list
+(search, then the launcher).
 
 ## Behavior
 
-| Key            | Action                              |
-| -------------- | ----------------------------------- |
-| Printable char | Append to query, refilter           |
-| `Backspace`    | Delete last char, refilter          |
-| `Up` / `Down`  | Move selection                      |
-| `Enter`        | Activate selected window, close     |
-| `Tab`          | Ignored                             |
-| `Esc`          | Clear query; close if already empty |
+| Key            | Action                                         |
+| -------------- | ---------------------------------------------- |
+| Printable char | Append to query, refilter                      |
+| `Backspace`    | Delete last char, refilter                     |
+| `Up` / `Down`  | Move selection                                 |
+| `Enter`        | Activate a window or launch an app, then close |
+| `Tab`          | Ignored                                        |
+| `Esc`          | Clear query; close if already empty            |
 
 The popup opens with the previous window selected, so `Enter` right
 after the hotkey switches back like Alt+Tab. Typing starts at once;

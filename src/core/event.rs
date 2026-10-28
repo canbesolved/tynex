@@ -39,5 +39,6 @@ pub enum Action {
     None,
     Redraw,
     Activate(WindowId),
+    Launch(String), // App id
     Close,
 }

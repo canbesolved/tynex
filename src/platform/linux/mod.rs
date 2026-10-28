@@ -4,6 +4,7 @@
 //! Linux backend: Wayland presenter, D-Bus, event loop, fonts, paths,
 //! desktop files.
 
+pub mod apps;
 pub mod dbus;
 pub mod dbus_ipc;
 pub mod desktop_files;

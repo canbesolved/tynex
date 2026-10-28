@@ -9,11 +9,19 @@ project adheres to
 
 ## [Unreleased]
 
-Config sections per module. Breaking: `[appearance]` and the old
-top-level keys are removed.
+### Added
+
+- Launcher as an input-bar sub-module: matching installed apps appear
+  in the output bar; `Enter` starts them (ADR-0056).
+  - Config: `input_bar.launcher.mode = "off"` (default), `"all"`, or
+    `"gui_only"`.
+  - Linux: `.desktop` catalog and `Exec` spawn in
+    `platform/linux/apps/`.
 
 ### Changed
 
+- `title_bar.show_app_icon` draws the app name column in the title
+  bar only; the output bar shows icon and title.
 - **Breaking:** the config file is one section per part and module:
   `[main]`, `[hotkeys]`, `[input_bar]`, `[output_bar]`,
   `[title_bar]` (ADR-0055).

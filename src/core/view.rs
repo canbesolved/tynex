@@ -8,12 +8,19 @@ use std::ops::Range;
 
 use crate::core::window::WindowId;
 
+/// What selecting a row does.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RowTarget {
+    Window(WindowId),
+    Launch(String), // App id
+}
+
 /// One list entry.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Row {
-    pub id: WindowId,
+    pub target: RowTarget,
     pub app_id: String,   // Matched by search, not drawn
-    pub app_name: String, // Drawn with `show_app_icon`, matched by search
+    pub app_name: String, // Title-bar column; matched by search
     pub icon: Option<String>,
     pub title: String, // Sanitized, app name stripped
     pub highlights: Vec<Range<usize>>, // Byte ranges in `title`
@@ -23,55 +30,53 @@ pub struct Row {
 #[derive(Debug, Clone, Copy)]
 pub struct View<'a> {
     pub query: &'a str,
-    pub selected: usize, // Index into the shown rows
-    rows: &'a [Row],
-    shown: &'a [usize],
+    pub selected: usize, // Index into the output rows
+    windows: &'a [Row],
+    output: &'a [Row],
 }
 
 impl<'a> View<'a> {
     pub(crate) fn new(
         query: &'a str,
         selected: usize,
-        rows: &'a [Row],
-        shown: &'a [usize],
+        windows: &'a [Row],
+        output: &'a [Row],
     ) -> Self {
         Self {
             query,
             selected,
-            rows,
-            shown,
+            windows,
+            output,
         }
     }
 
     /// Returns the open windows, in list order. The title bar draws
     /// these. Search does not filter them.
     pub fn windows(&self) -> impl Iterator<Item = &'a Row> + 'a {
-        self.rows.iter()
+        self.windows.iter()
     }
 
     /// Returns the number of open windows.
     #[must_use]
     pub fn window_count(&self) -> usize {
-        self.rows.len()
+        self.windows.len()
     }
 
     /// Returns the output rows, in display order. The output bar draws
-    /// these: the windows the current query matched.
+    /// these: matches of the current query.
     pub fn rows(&self) -> impl Iterator<Item = &'a Row> + 'a {
-        let rows = self.rows;
-
-        self.shown.iter().map(move |&i| &rows[i])
+        self.output.iter()
     }
 
     /// Returns the number of output rows.
     #[must_use]
     pub fn len(&self) -> usize {
-        self.shown.len()
+        self.output.len()
     }
 
     /// Returns true when there is nothing to draw.
     #[must_use]
     pub fn is_empty(&self) -> bool {
-        self.shown.is_empty()
+        self.output.is_empty()
     }
 }

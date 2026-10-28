@@ -24,11 +24,18 @@ pub fn row_title(window: &WindowInfo, strip: bool) -> String {
     strip_app_name(&title, &app, &window.app_id).to_owned()
 }
 
+/// Last segment of a reverse-DNS app id (`org.kde.konsole` →
+/// `konsole`).
+#[must_use]
+pub fn short_app_id(app_id: &str) -> &str {
+    app_id.rsplit('.').next().unwrap_or(app_id)
+}
+
 /// Drops ` — <app>` from the end of `title` when `<app>` is the app name
 /// or the last part of the app id, ignoring case. Never returns an empty
 /// title.
 fn strip_app_name<'a>(title: &'a str, app: &str, app_id: &str) -> &'a str {
-    let short_id = app_id.rsplit('.').next().unwrap_or_default();
+    let short_id = short_app_id(app_id);
     let is_app = |text: &str| {
         [app, short_id]
             .iter()
