@@ -98,6 +98,11 @@ Target: KDE Plasma 6 on Wayland.
 - [ ] When you search, the output bar lists open windows first, then
   installed apps from the launcher.
 
+### 0.2.12
+
+- [ ] Update the default theme to the Endgame color palette. Exact
+  color values will be added when the palette is finalized.
+
 ## Next
 
 ### 0.8.x: performance
