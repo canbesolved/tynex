@@ -154,8 +154,10 @@ Launcher:
 
 Info bar:
 
-- [ ] `info_bar` module: a status bar inside the popup. It runs only
-  while the popup is open, so it adds no idle work.
+- [ ] `info_bar` module: a status bar inside the popup that can replace
+  useful parts of the system panel (time and date, battery percentage,
+  and the like). It runs only while the popup is open, so it adds no
+  idle work.
   - Config: `[info_bar]` with `placement = "top"`, `"bottom"` or
     `"both"`.
   - Custom scripts: a shell script's output is shown in the bar; each
@@ -163,11 +165,6 @@ Info bar:
   - Plugins: date and time, battery, power usage in watts, CPU load,
     RAM usage.
   - Open questions: hotkeys for bar actions; a keyboard layout plugin.
-
-Panel:
-
-- [ ] Dock or panel with useful information, to replace the system
-  panel: time and date, battery percentage.
 
 Configuration:
 
