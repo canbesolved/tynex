@@ -102,9 +102,7 @@ Target: KDE Plasma 6 on Wayland.
 
 ### 0.3.x: config file
 
-- [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
-  with a custom title, for example `[apps.firefox]` with
-  `title = "Web"`.
+No items yet.
 
 ### 0.8.x: performance
 
@@ -173,6 +171,9 @@ Panel:
 
 Configuration:
 
+- [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
+  with a custom prefix before the app name, for example
+  `[apps.firefox]` with `prefix = "Web"` so rows read `Web: Firefox`.
 - [ ] `tynex reload`: re-read the config without restarting. An invalid
   file is reported and the running config stays in use.
 
