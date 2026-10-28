@@ -91,6 +91,12 @@ Target: KDE Plasma 6 on Wayland.
 
 - [ ] Pinned apps stay in the icon bar while they are not running.
 
+### 0.2.11
+
+- [ ] Each UI module is its own block: a small gap separates the bars
+  (for example the input bar and the title bar), and every block uses
+  the same rounded border and theme colors.
+
 ## Next
 
 ### 0.3.x: config file
