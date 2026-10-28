@@ -11,14 +11,17 @@ use crate::core::view::View;
 use crate::ui::draw::{self, Grid, Metrics, Paint};
 use crate::ui::render::canvas::Area;
 
-/// Returns true when the open-window list is enabled.
-pub(crate) fn shows(metrics: &Metrics) -> bool {
-    metrics.title_bar
+/// Returns true when the open-window list is on screen.
+///
+/// It shows only while enabled and the query is empty. Typing hides
+/// it; clearing the query shows it again.
+pub(crate) fn shows(view: &View<'_>, metrics: &Metrics) -> bool {
+    metrics.title_bar && view.query.is_empty()
 }
 
 /// Returns the extra popup height for the separator and the windows.
 pub(crate) fn height(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
-    if !shows(metrics) {
+    if !shows(view, metrics) {
         return 0.0;
     }
     let rows = view.window_count().clamp(1, metrics.max_rows.max(1)) as f32;
@@ -35,7 +38,7 @@ pub(crate) fn draw(
     mut top: f32,
     inner: f32,
 ) {
-    if !shows(metrics) {
+    if !shows(view, metrics) {
         return;
     }
     paint
@@ -43,17 +46,15 @@ pub(crate) fn draw(
         .fill_rect(Area::new(grid.pad, top, inner, 1.0), paint.theme.border);
     top += 1.0;
 
-    // The selection lives in this list only while there is no output.
-    // A query selects a match in the output bar instead.
+    // Drawn only while the query is empty, so the selection is here.
     let max = metrics.max_rows.max(1);
-    let selected = view.query.is_empty().then_some(view.selected);
-    let first = selected.map_or(0, |index| (index + 1).saturating_sub(max));
+    let first = (view.selected + 1).saturating_sub(max);
     let radius = paint.theme.radius * metrics.scale;
 
     for (index, row) in view.windows().enumerate().skip(first).take(max) {
         let area = Area::new(grid.pad, top, inner, grid.row_h);
 
-        if selected == Some(index) {
+        if index == view.selected {
             paint.canvas.fill_rounded_rect(
                 area,
                 radius / 2.0,

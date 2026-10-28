@@ -145,9 +145,10 @@ windows, and the output rows in display order. Each `Row` has an id,
 icon, row text (`title`), highlight byte ranges, and the app name and
 id for search. `windows` is every open window, for the title bar.
 `rows` is the current result, for the output bar: the matches while
-a query is typed. The title bar is shown with `title_bar.enabled`.
-Popup modules read the `View`, never the switcher state, which keeps
-rendering replaceable. Building a `View` allocates nothing.
+a query is typed. The title bar is shown when `title_bar.enabled`
+is set and the query is empty. Popup modules read the `View`, never
+the switcher state, which keeps rendering replaceable. Building a
+`View` allocates nothing.
 
 ## Row title
 
