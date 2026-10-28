@@ -23,20 +23,6 @@ Rules:
 
 Target: KDE Plasma 6 on Wayland.
 
-### 0.2.1
-
-- [x] Launcher, a sub-module of the input bar. The input bar takes
-  the query. The launcher turns matching installed apps into rows.
-  The output bar draws those rows. The launcher is not its own bar.
-  - Config: `launcher.mode = "off"` (default), `"all"` or
-    `"gui_only"` inside `[input_bar]`. `gui_only` skips terminal
-    apps (`Terminal=true`).
-  - Linux: `.desktop` files from `$XDG_DATA_HOME/applications` and
-    `$XDG_DATA_DIRS`; `NoDisplay` and `Hidden` entries are never shown.
-  - A running app lists its open windows first, then a "Launch new
-    window" entry. An app that is not running has one launch entry.
-  - Later sources: macOS app bundles, Windows Start menu shortcuts.
-
 ### 0.2.2
 
 - [ ] Icon bar: running apps shown as a row of app icons, one per app,
