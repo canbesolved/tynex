@@ -19,9 +19,7 @@ Rules:
 - Reserved series: 0.8.x for performance, 0.9.x for security and
   stability, 1.0.0 for polishing and the first stable release.
 
-## Now: 0.2.x
-
-Target: KDE Plasma 6 on Wayland.
+## Now
 
 ### 0.2.2
 
