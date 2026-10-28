@@ -184,8 +184,9 @@ Themes:
 
 Look:
 
-- [ ] Hide app icons: `show_icon = true` (default) in `[appearance]`
-  shows them, `false` hides them.
+- [ ] Title bar app icons: under `[title_bar]`, `show_icons = true`
+  (default) draws each row with its app icon and title; `false` shows
+  titles only.
 - [ ] Text shaping and right-to-left layout for Arabic, Hebrew and
   Indic scripts (`rustybuzz`).
 - [ ] Color emoji in titles.
