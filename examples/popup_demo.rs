@@ -12,7 +12,7 @@ use std::time::{Duration, Instant};
 
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use tynex::adapters::mock::MockSource;
-use tynex::config::Font;
+use tynex::config::{AppearanceConfig, Font};
 use tynex::core::event::{Action, Event};
 use tynex::core::order::SortBy;
 use tynex::core::queue::channel;
@@ -22,51 +22,40 @@ use tynex::modes::prompt::PromptMode;
 use tynex::platform::linux::fonts::default_face;
 use tynex::platform::linux::icon_theme::IconTheme;
 use tynex::platform::linux::wayland::{PresenterEvent, WaylandPresenter};
-use tynex::ui::layouts::vertical_list::VerticalList;
-use tynex::ui::layouts::{Layout, Metrics, Paint};
+use tynex::ui::painter::Painter;
 use tynex::ui::render::icons::Icons;
 use tynex::ui::render::text::Text;
-use tynex::ui::render::theme::Theme;
 
 const SHOW_FOR: Duration = Duration::from_secs(10);
 
 type App = Switcher<PromptMode>;
 
 /// Sizes the popup for the current view and draws it.
-fn redraw(
-    presenter: &mut WaylandPresenter,
-    app: &App,
-    (text, icons): (&mut Text, &mut Icons),
-    theme: &Theme,
-) {
+fn redraw(presenter: &mut WaylandPresenter, app: &App, painter: &mut Painter) {
     let Some(view) = app.view() else { return };
-    let m = Metrics {
-        font_size: 14.0,
-        width: 480.0,
-        max_rows: 19,
-        scale: presenter.scale(),
-        title_bar: true,
-        show_app: true,
-    };
+    let scale = presenter.scale();
 
-    presenter.show(VerticalList.size(&view, &m, theme));
-    presenter.draw(|canvas| {
-        let mut paint = Paint {
-            canvas,
-            text,
-            icons,
-            theme,
-        };
-
-        VerticalList.draw(&view, &m, &mut paint);
-    });
+    presenter.show(painter.size(&view, scale));
+    presenter.draw(|canvas| painter.draw(canvas, &view, scale));
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut presenter = WaylandPresenter::connect()?;
-    let mut text = Text::new(default_face(&Font::Auto)?);
-    let mut icons = Icons::new(Box::new(IconTheme::default()));
-    let theme = Theme::default();
+    let text = Text::new(default_face(&Font::Auto)?);
+    let icons = Icons::new(Box::new(IconTheme::default()));
+    let mut painter = Painter::new(
+        text,
+        icons,
+        AppearanceConfig {
+            font: Font::Auto,
+            font_size: 14,
+            width: 480,
+            max_rows: 19,
+            title_bar: true,
+            show_app: true,
+            strip_app_name: false,
+        },
+    );
     let (tx, rx) = channel();
     let mut source = MockSource::new();
     let mut app =
@@ -77,7 +66,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         app.handle(event);
     }
     app.handle(Event::Show);
-    redraw(&mut presenter, &app, (&mut text, &mut icons), &theme);
+    redraw(&mut presenter, &app, &mut painter);
 
     let end = Instant::now() + SHOW_FOR;
 
@@ -113,12 +102,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 Action::Close => return close(&mut presenter),
                 Action::Redraw => {
-                    redraw(
-                        &mut presenter,
-                        &app,
-                        (&mut text, &mut icons),
-                        &theme,
-                    );
+                    redraw(&mut presenter, &app, &mut painter);
                 }
                 Action::None => {}
             }

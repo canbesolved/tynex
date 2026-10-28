@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! What the presenter must draw. Layouts read it, never the switcher.
+//! What the presenter must draw. Popup modules read it, never the
+//! switcher.
 
 use std::ops::Range;
 
@@ -42,14 +43,27 @@ impl<'a> View<'a> {
         }
     }
 
-    /// Returns the rows to draw, in display order.
+    /// Returns the open windows, in list order. The title bar draws
+    /// these. Search does not filter them.
+    pub fn windows(&self) -> impl Iterator<Item = &'a Row> + 'a {
+        self.rows.iter()
+    }
+
+    /// Returns the number of open windows.
+    #[must_use]
+    pub fn window_count(&self) -> usize {
+        self.rows.len()
+    }
+
+    /// Returns the output rows, in display order. The output bar draws
+    /// these: the windows the current query matched.
     pub fn rows(&self) -> impl Iterator<Item = &'a Row> + 'a {
         let rows = self.rows;
 
         self.shown.iter().map(move |&i| &rows[i])
     }
 
-    /// Returns the number of rows to draw.
+    /// Returns the number of output rows.
     #[must_use]
     pub fn len(&self) -> usize {
         self.shown.len()

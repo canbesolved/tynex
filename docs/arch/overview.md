@@ -16,8 +16,9 @@ The reasons behind each choice are in the
 - [platforms/linux.md](platforms/linux.md): Wayland presenter, D-Bus.
 - [platforms/portability.md](platforms/portability.md): macOS, Windows.
 - [ui/render.md](ui/render.md): canvas, text and icons.
-- [ui/layouts/vertical_list.md](ui/layouts/vertical_list.md):
-  default layout.
+- [ui/input_bar.md](ui/input_bar.md): input bar.
+- [ui/output_bar.md](ui/output_bar.md): results of the input.
+- [ui/title_bar.md](ui/title_bar.md): open windows.
 - [modes/prompt.md](modes/prompt.md): prompt mode, the only mode.
 - [modules/search.md](modules/search.md): fuzzy matching of windows.
 
@@ -26,9 +27,23 @@ The reasons behind each choice are in the
 - Show the switcher in under one frame (16 ms) after the hotkey.
 - Zero CPU use while idle, RSS under 10 MB, release binary under 10 MB
   ([ADR-0044](../adr/0044_binary_budget.md)).
-- Every part (window source, UI, layout, mode, IPC) is a replaceable
-  module behind a small trait.
+- Every part (window source, UI module, mode, IPC) is a replaceable
+  module.
 - Linux first (KDE Plasma 6, Wayland), portable to macOS and Windows.
+
+## UI modules
+
+The popup is five modules: the input bar, the output bar, the title
+bar, the info bar and the icon bar
+([ADR-0053](../adr/0053_ui_module_toggles.md),
+[ADR-0054](../adr/0054_output_bar.md)). The painter stacks the ones
+that are enabled. Each module can be changed on its own.
+
+The input bar is always on. The output bar shows the result of the
+input, and only when there is one. The title bar, the info bar and
+the icon bar can each be turned on or off. The input bar, the output
+bar and the title bar exist. The info bar and the icon bar are
+planned ([ROADMAP.md](../../ROADMAP.md)).
 
 ## Process model
 
@@ -65,8 +80,11 @@ src/
     windows/           Later
   ui/                  Portable: no OS types
     render/            Canvas, text, icons
-    layouts/           vertical_list (default)
-    painter.rs         Text, theme and layout: size and draw the popup
+    draw.rs            Shared sizes and text drawing
+    input_bar.rs       Input bar
+    output_bar.rs      Result of the input
+    title_bar.rs       Open windows
+    painter.rs         Input, output, then title bar
   modes/               prompt
   modules/
     search/            Fuzzy matcher, accent folding

@@ -11,7 +11,7 @@ use wayland_client::protocol::wl_shm::Format;
 use wayland_protocols_wlr::layer_shell::v1::client as layer_shell;
 
 use crate::platform::linux::wayland::state::{Popup, Wl};
-use crate::ui::layouts::Size;
+use crate::ui::Size;
 
 /// Creates the popup: overlay layer, no anchors (centered), exclusive
 /// keyboard. It is mapped after the first configure and buffer commit.

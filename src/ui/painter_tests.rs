@@ -1,17 +1,20 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Tests for the vertical list: sizes, rows, selection and scrolling.
+//! Tests for the popup: sizes, rows, selection and scrolling.
 
-use super::*;
+use super::{draw_popup, measured};
 use crate::core::state::State;
+use crate::core::view::Row;
 use crate::core::window::WindowId;
+use crate::ui::draw::{Grid, Metrics, Paint, Size};
 use crate::ui::render::canvas::Canvas;
 use crate::ui::render::glyphs::Face;
 use crate::ui::render::icons::{Icons, NoIcons};
 use crate::ui::render::text::Text;
+use crate::ui::render::theme::Theme;
 
-const FONT: &[u8] = include_bytes!("../../../tests/fonts/dejavu_sans.ttf");
+const FONT: &[u8] = include_bytes!("../../tests/fonts/dejavu_sans.ttf");
 const M: Metrics = Metrics {
     font_size: 14.0,
     width: 300.0,
@@ -44,7 +47,7 @@ fn render(state: &State) -> (Vec<u8>, Size) {
 /// Draws `state` with metrics `m`.
 fn render_with(state: &State, m: &Metrics) -> (Vec<u8>, Size) {
     let theme = Theme::default();
-    let size = VerticalList.size(&state.view(), m, &theme);
+    let size = measured(&state.view(), m, &theme);
     let mut data = vec![0; (size.width * size.height * 4) as usize];
     let mut canvas = Canvas::new(&mut data, size.width, size.height).unwrap();
     let mut text = Text::new(Face::new(FONT, 0).unwrap());
@@ -56,7 +59,7 @@ fn render_with(state: &State, m: &Metrics) -> (Vec<u8>, Size) {
         theme: &theme,
     };
 
-    VerticalList.draw(&state.view(), m, &mut paint);
+    draw_popup(&state.view(), m, &mut paint);
     (data, size)
 }
 
@@ -66,7 +69,7 @@ fn pixel(data: &[u8], size: Size, x: f32, y: f32) -> [u8; 4] {
     [data[i], data[i + 1], data[i + 2], data[i + 3]]
 }
 
-/// Center of row `n` of the list, below the search prompt.
+/// Center of row `n` of the list, below the input bar.
 fn row_center(n: usize) -> f32 {
     let g = Grid::new(&M, &Theme::default());
 
@@ -76,7 +79,7 @@ fn row_center(n: usize) -> f32 {
 #[test]
 fn height_follows_rows_up_to_max() {
     let theme = Theme::default();
-    let size = |n| VerticalList.size(&state(n).view(), &M, &theme);
+    let size = |n| measured(&state(n).view(), &M, &theme);
     let g = Grid::new(&M, &theme);
 
     assert_eq!(size(2).width, 300);
@@ -95,13 +98,30 @@ fn without_title_bar_rows_wait_for_a_query() {
     let g = Grid::new(&m, &theme);
     let mut s = state(2);
 
-    let prompt = VerticalList.size(&s.view(), &m, &theme);
+    let input = measured(&s.view(), &m, &theme);
 
-    assert_eq!(prompt.height, (2.0 * g.pad + g.row_h) as u32);
+    assert_eq!(input.height, (2.0 * g.pad + g.row_h) as u32);
     s.query = "w".into();
     assert_eq!(
-        VerticalList.size(&s.view(), &m, &theme),
-        VerticalList.size(&s.view(), &M, &theme)
+        measured(&s.view(), &m, &theme),
+        measured(&state(2).view(), &M, &theme)
+    );
+}
+
+#[test]
+fn query_stacks_the_output_bar_above_the_title_bar() {
+    let theme = Theme::default();
+    let mut s = state(2);
+    let open = measured(&s.view(), &M, &theme);
+
+    s.query = "w".into();
+
+    let g = Grid::new(&M, &theme);
+    let list = 1.0 + 2.0 * g.row_h;
+
+    assert_eq!(
+        measured(&s.view(), &M, &theme).height,
+        open.height + list as u32
     );
 }
 

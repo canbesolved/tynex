@@ -36,15 +36,16 @@ window. No mouse, no scrolling, no waiting.
 
 ## Features
 
-- Centered popup with a search prompt: start typing at once; accents
+- Centered popup with a input bar: start typing at once; accents
   and small typos are forgiven.
-- Optional window list under the prompt before you type
-  (`title_bar`), most recently used first or grouped by app
-  (`sort_by`).
+- Optional list of open windows (`title_bar`), most recently used
+  first or grouped by app (`sort_by`).
+- Matches appear in the output bar as you type.
 - Each entry shows the app icon and the window title in columns, with
   an optional app name column (`show_app`).
 - Low footprint: idle at 0 % CPU, under 10 MB of RAM, no GPU usage.
-- Modular core: window sources, layouts and modes are plug-in modules.
+- Modular core: window sources, UI modules and modes are plug-in
+  modules.
 - Configuration in a single TOML file.
 
 ## Supported environments
@@ -131,7 +132,6 @@ The config file is `~/.config/tynex/tynex.toml`:
 desktop = "auto"        # auto | kde | mock
 hotkey_action = "last"  # hide | last
 sort_by = "recently"    # recently | app
-layout = "vertical_list"
 
 [appearance]
 font = "auto"            # Or a font file with your scripts (CJK)
@@ -147,7 +147,8 @@ left out use their built-in defaults. A syntax error, an unknown key
 or an invalid value stops the daemon with a message naming the
 problem. See [docs/arch/config.md](docs/arch/config.md) for the rules.
 
-Upgrading from 0.1.5 or older: 0.1.6 removed hotkey mode. Delete
+Upgrading to 0.1.7: delete `layout` from `tynex.toml`. Upgrading from
+0.1.5 or older: 0.1.6 removed hotkey mode. Delete
 `mode` and `keys` from `tynex.toml`, change `sort_by = "key"` to
 `"recently"` or `"app"`, and set `title_bar = true` to keep a window
 list on screen. `strip_app_name` now defaults to `false`. 0.1.5
@@ -157,7 +158,8 @@ Removed and renamed keys are listed in [CHANGELOG.md](CHANGELOG.md).
 ## Architecture
 
 Small resident daemon, pure core, and pluggable modules behind traits:
-window sources (adapters), presenters (platforms), layouts and modes.
+window sources (adapters), presenters (platforms), UI modules and
+modes.
 
 - [Overview](docs/arch/overview.md)
 - [Tech stack](docs/arch/stack.md)

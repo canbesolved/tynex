@@ -23,6 +23,18 @@ Rules:
 
 Target: KDE Plasma 6 on Wayland.
 
+### 0.1.7
+
+- [ ] Adjust the project structure and code for a single mode. The
+  layout term no longer applies. The popup UI is modules: input
+  bar, output bar, info bar, icon bar and title bar. Each can be
+  changed on its own. The input bar is always on. The title bar
+  lists open windows. The output bar shows the result of the input.
+  - **Breaking:** remove the `layout` config key. A file that still
+    sets it stops the daemon until the key is removed.
+  - Code and docs name those modules instead of a layout
+    (`ui/layouts`, the `Layout` trait and the architecture pages).
+
 ## Next
 
 ### 0.2.0
@@ -62,9 +74,8 @@ Polishing and the first stable release. No items yet.
 
 ## Later
 
-Layouts and modes:
+Window list:
 
-- [ ] More layouts: grid, horizontal strip.
 - [ ] Task list in prompt mode: running apps shown as a row of app
   icons, one per app, to replace KDE's "Icons-only Task Manager"
   widget. It shows only with the popup, on demand.
@@ -81,9 +92,9 @@ Layouts and modes:
     - slides in and out smoothly at about 120 frames per second.
   - The strip stays in place when the dropdown opens: the popup keeps
     a fixed size with transparent spare room.
-  - Config: `icon_bar = true` (default) shows the strip with the prompt;
-    with `false`, only the prompt shows until you type. Matches appear
-    below the prompt.
+  - Config: `icon_bar = true` (default) shows the strip with the
+    input bar; with `false`, only the input bar shows until you
+    type. Matches appear in the output bar.
   - Keys:
     - `Space` works as `Enter`: it picks the selected match, so
       search queries no longer contain spaces;
