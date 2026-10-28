@@ -25,6 +25,45 @@ Target: KDE Plasma 6 on Wayland.
 
 ### 0.2.2
 
+- [ ] The title bar hides as soon as you type. It shows only while the
+  query is empty.
+
+### 0.2.3
+
+- [ ] **Breaking:** The title bar row is the app icon and the window
+  title. The app name column and `title_bar.show_app_icon` are removed.
+  A config that still sets `show_app_icon` stops the daemon.
+
+### 0.2.4
+
+- [ ] A launch row reads `<app name>: New window` instead of
+  `Launch new window`.
+
+### 0.2.5
+
+- [ ] The input bar prompt is `>` instead of `/`.
+
+### 0.2.6
+
+- [ ] The input bar shows a line cursor.
+
+### 0.2.7
+
+- [ ] Hint text inside the input bar while the query is empty. It hides
+  as soon as you type. Config under `[input_bar]`:
+  - `hint.enabled`: `true` or `false`.
+  - `hint.font_size`: hint text size.
+  - `hint.font_color`: `"#RRGGBB"`.
+  - `hint.string`: a shell command. On every launch its stdout is the
+    hint text, for example `bash -c 'date'` or `cat /tmp/weather.txt`.
+
+### 0.2.8
+
+- [ ] `Space` works as `Enter`: it picks the selected match, so a
+  search query no longer contains spaces.
+
+### 0.2.9
+
 - [ ] Icon bar: running apps shown as a row of app icons, one per app,
   to replace KDE's "Icons-only Task Manager" widget. It shows only
   with the popup, on demand.
@@ -44,13 +83,11 @@ Target: KDE Plasma 6 on Wayland.
     strip with the input bar; with `false`, only the input bar shows
     until you type. Matches appear in the output bar.
   - Keys:
-    - `Space` works as `Enter`: it picks the selected match, so
-      search queries no longer contain spaces;
     - `Left` and `Right` move along the strip;
     - `Tab` moves through the matches.
   - Launching uses the launcher sub-module of the input bar.
 
-### 0.2.3
+### 0.2.10
 
 - [ ] Pinned apps stay in the icon bar while they are not running.
 
