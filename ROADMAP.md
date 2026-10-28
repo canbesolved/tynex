@@ -23,18 +23,6 @@ Rules:
 
 Target: KDE Plasma 6 on Wayland.
 
-### 0.1.7
-
-- [ ] Adjust the project structure and code for a single mode. The
-  layout term no longer applies. The popup UI is modules: input
-  bar, output bar, info bar, icon bar and title bar. Each can be
-  changed on its own. The input bar is always on. The title bar
-  lists open windows. The output bar shows the result of the input.
-  - **Breaking:** remove the `layout` config key. A file that still
-    sets it stops the daemon until the key is removed.
-  - Code and docs name those modules instead of a layout
-    (`ui/layouts`, the `Layout` trait and the architecture pages).
-
 ## Next
 
 ### 0.2.0

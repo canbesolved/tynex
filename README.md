@@ -31,12 +31,12 @@ Press a hotkey, type a few letters of a window, press `Enter`, and you
 are there. Or press `Enter` right away to go back to the previous
 window. No mouse, no scrolling, no waiting.
 
-> Status: 0.1.6, for KDE Plasma 6 on Wayland. Per-app titles and a
+> Status: 0.1.7, for KDE Plasma 6 on Wayland. Per-app titles and a
 > launcher follow in 0.2.0 (see the [roadmap](ROADMAP.md)).
 
 ## Features
 
-- Centered popup with a input bar: start typing at once; accents
+- Centered popup with an input bar: start typing at once; accents
   and small typos are forgiven.
 - Optional list of open windows (`title_bar`), most recently used
   first or grouped by app (`sort_by`).
@@ -52,7 +52,7 @@ window. No mouse, no scrolling, no waiting.
 
 | Environment      | Session | Status  |
 | ---------------- | ------- | ------- |
-| KDE Plasma 6     | Wayland | 0.1.6   |
+| KDE Plasma 6     | Wayland | 0.1.7   |
 | Other DEs / WMs  | Any     | Planned |
 | macOS, Windows   | -       | Planned |
 
@@ -66,7 +66,7 @@ prebuilt binaries for Linux x86_64 and arm64 (glibc 2.35 or newer),
 for example:
 
 ```bash
-v=0.1.6 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
+v=0.1.7 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
 url=https://github.com/canbesolved/tynex/releases/download/v$v
 curl -LO "$url/tynex-$v-$t.tar.gz" -LO "$url/SHA256SUMS"
 sha256sum -c --ignore-missing SHA256SUMS
@@ -147,12 +147,13 @@ left out use their built-in defaults. A syntax error, an unknown key
 or an invalid value stops the daemon with a message naming the
 problem. See [docs/arch/config.md](docs/arch/config.md) for the rules.
 
-Upgrading to 0.1.7: delete `layout` from `tynex.toml`. Upgrading from
-0.1.5 or older: 0.1.6 removed hotkey mode. Delete
-`mode` and `keys` from `tynex.toml`, change `sort_by = "key"` to
-`"recently"` or `"app"`, and set `title_bar = true` to keep a window
-list on screen. `strip_app_name` now defaults to `false`. 0.1.5
-removed `title_format`; set `show_app = true` for an app name column.
+Upgrading from 0.1.6: 0.1.7 removed `layout`. Delete it from
+`tynex.toml`. Upgrading from 0.1.5 or older: 0.1.6 removed hotkey
+mode. Delete `mode` and `keys` from `tynex.toml`, change
+`sort_by = "key"` to `"recently"` or `"app"`, and set
+`title_bar = true` to keep a window list on screen.
+`strip_app_name` now defaults to `false`. 0.1.5 removed
+`title_format`; set `show_app = true` for an app name column.
 Removed and renamed keys are listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
