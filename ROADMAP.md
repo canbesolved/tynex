@@ -89,10 +89,6 @@ Target: KDE Plasma 6 on Wayland.
 
 ### 0.2.10
 
-- [ ] Pinned apps stay in the icon bar while they are not running.
-
-### 0.2.11
-
 - [ ] Each UI module is its own block: a small gap separates the bars
   (for example the input bar and the title bar), and every block uses
   the same rounded border and theme colors.
@@ -142,6 +138,10 @@ Titles:
 - [ ] Title prefixes: a `[title_prefix]` table maps a pattern to a
   prefix added to matching titles, for example `"Jira" = "[J] "`.
   Patterns are regular expressions, so plain text matches as well.
+
+Icon bar:
+
+- [ ] Pinned apps stay in the icon bar while they are not running.
 
 Info bar:
 
