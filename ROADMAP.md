@@ -21,14 +21,6 @@ Rules:
 
 ## Now
 
-### 0.2.3
-
-- [ ] **Breaking:** The title bar row is the app icon and the window
-  title. The app name column and `title_bar.show_app_icon` are
-  removed. A config that still sets `show_app_icon` stops the daemon.
-  `show_icons` (default `true`) draws the icon; `false` shows titles
-  only.
-
 ### 0.2.4
 
 - [ ] A launch row reads `<app name>: New window` instead of

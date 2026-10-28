@@ -9,6 +9,11 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-10-29
+
+The title bar row is the app icon and the window title. Breaking:
+`show_app_icon` is removed.
+
 ### Added
 
 - `title_bar.show_icons` (default `true`) draws the app icon before
@@ -246,7 +251,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/canbesolved/tynex/releases/tag/v0.2.3
 [0.2.2]: https://github.com/canbesolved/tynex/releases/tag/v0.2.2
 [0.2.0]: https://github.com/canbesolved/tynex/releases/tag/v0.2.0
 [0.1.7]: https://github.com/canbesolved/tynex/releases/tag/v0.1.7
