@@ -23,5 +23,5 @@ after the hotkey switches back like Alt+Tab. Typing starts at once;
 the best match is selected after every change of the query. The bar
 on screen is the [input bar](../ui/input_bar.md). Matches are drawn
 in the [output bar](../ui/output_bar.md). Open windows show when
-`title_bar` is set (see [config.md](../config.md#format) and
+`title_bar.enabled` is set (see [config.md](../config.md#format) and
 [title_bar.md](../ui/title_bar.md)).

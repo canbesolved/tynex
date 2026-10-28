@@ -6,11 +6,11 @@ Later to Next to Now as they are scheduled, and leave this file once
 released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md),
 dropped items in [DEPRECATIONS.md](DEPRECATIONS.md).
 
-| Horizon | Release              | Meaning                              |
-| ------- | -------------------- | ------------------------------------ |
-| Now     | 0.1.x                | Patch releases, in the order below   |
-| Next    | 0.2.0, 0.8.x - 1.0.0 | Committed for the following releases |
-| Later   | Unplanned            | Accepted ideas, not scheduled yet    |
+| Horizon | Release               | Meaning                              |
+| ------- | --------------------- | ------------------------------------ |
+| Now     | 0.2.x                 | Patch releases, in the order below   |
+| Next    | 0.3.x, 0.8.x - 1.0.0  | Committed for the following releases |
+| Later   | Unplanned             | Accepted ideas, not scheduled yet    |
 
 Rules:
 
@@ -19,27 +19,62 @@ Rules:
 - Reserved series: 0.8.x for performance, 0.9.x for security and
   stability, 1.0.0 for polishing and the first stable release.
 
-## Now: 0.1.x
+## Now: 0.2.x
 
 Target: KDE Plasma 6 on Wayland.
 
-## Next
+### 0.2.1
 
-### 0.2.0
-
-- [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
-  with a custom title, for example `[apps.firefox]` with
-  `title = "Web"`.
-- [ ] `launcher` module: find installed GUI apps and show them in the
-  list with icon and name, filtered with fuzzy search, to start an app
-  from the same popup.
-  - Config: `launcher = "off"` (default), `"all"` or `"gui_only"`.
-    `gui_only` skips terminal apps (`Terminal=true`).
+- [ ] Launcher, a sub-module of the input bar. The input bar takes
+  the query. The launcher turns matching installed apps into rows.
+  The output bar draws those rows. The launcher is not its own bar.
+  - Config: `launcher.mode = "off"` (default), `"all"` or
+    `"gui_only"` inside `[input_bar]`. `gui_only` skips terminal
+    apps (`Terminal=true`).
   - Linux: `.desktop` files from `$XDG_DATA_HOME/applications` and
     `$XDG_DATA_DIRS`; `NoDisplay` and `Hidden` entries are never shown.
   - A running app lists its open windows first, then a "Launch new
     window" entry. An app that is not running has one launch entry.
   - Later sources: macOS app bundles, Windows Start menu shortcuts.
+
+### 0.2.2
+
+- [ ] Icon bar: running apps shown as a row of app icons, one per app,
+  to replace KDE's "Icons-only Task Manager" widget. It shows only
+  with the popup, on demand.
+  - An app with several windows shows their count under its icon.
+  - A mouse click on an icon launches the app if it is not running,
+    activates its window if it has one, or opens a dropdown list of
+    its window titles if it has several.
+  - The dropdown:
+    - opens under the selected app;
+    - lists windows alphabetically by title;
+    - fits the longest title, up to 450 px wide, scaled with the
+      display scale; longer titles end with an ellipsis (`…`);
+    - slides in and out smoothly at about 120 frames per second.
+  - The strip stays in place when the dropdown opens: the popup keeps
+    a fixed size with transparent spare room.
+  - Config: `[icon_bar]` with `enabled = true` (default) shows the
+    strip with the input bar; with `false`, only the input bar shows
+    until you type. Matches appear in the output bar.
+  - Keys:
+    - `Space` works as `Enter`: it picks the selected match, so
+      search queries no longer contain spaces;
+    - `Left` and `Right` move along the strip;
+    - `Tab` moves through the matches.
+  - Launching uses the launcher sub-module of the input bar.
+
+### 0.2.3
+
+- [ ] Pinned apps stay in the icon bar while they are not running.
+
+## Next
+
+### 0.3.x: config file
+
+- [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
+  with a custom title, for example `[apps.firefox]` with
+  `title = "Web"`.
 
 ### 0.8.x: performance
 
@@ -64,34 +99,9 @@ Polishing and the first stable release. No items yet.
 
 Window list:
 
-- [ ] Task list in prompt mode: running apps shown as a row of app
-  icons, one per app, to replace KDE's "Icons-only Task Manager"
-  widget. It shows only with the popup, on demand.
-  - Pinned apps stay in the row while they are not running.
-  - An app with several windows shows their count under its icon.
-  - A mouse click on an icon launches the app if it is not running,
-    activates its window if it has one, or opens a dropdown list of
-    its window titles if it has several.
-  - The dropdown:
-    - opens under the selected app;
-    - lists windows alphabetically by title;
-    - fits the longest title, up to 450 px wide, scaled with the
-      display scale; longer titles end with an ellipsis (`…`);
-    - slides in and out smoothly at about 120 frames per second.
-  - The strip stays in place when the dropdown opens: the popup keeps
-    a fixed size with transparent spare room.
-  - Config: `icon_bar = true` (default) shows the strip with the
-    input bar; with `false`, only the input bar shows until you
-    type. Matches appear in the output bar.
-  - Keys:
-    - `Space` works as `Enter`: it picks the selected match, so
-      search queries no longer contain spaces;
-    - `Left` and `Right` move along the strip;
-    - `Tab` moves through the matches.
-  - Launching uses the `launcher` module.
 - [ ] Close windows from the popup, like `Alt+F4`: `Ctrl+W` or a right
   click closes the selected window.
-  - In the task list, a right click on an app with several windows
+  - In the icon bar, a right click on an app with several windows
     opens its dropdown; a right click on a title there closes that
     window.
 

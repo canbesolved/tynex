@@ -12,7 +12,7 @@ use std::time::{Duration, Instant};
 
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use tynex::adapters::mock::MockSource;
-use tynex::config::{AppearanceConfig, Font};
+use tynex::config::{Font, MainConfig, OutputBarConfig, TitleBarConfig};
 use tynex::core::event::{Action, Event};
 use tynex::core::order::SortBy;
 use tynex::core::queue::channel;
@@ -43,19 +43,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut presenter = WaylandPresenter::connect()?;
     let text = Text::new(default_face(&Font::Auto)?);
     let icons = Icons::new(Box::new(IconTheme::default()));
-    let mut painter = Painter::new(
-        text,
-        icons,
-        AppearanceConfig {
-            font: Font::Auto,
-            font_size: 14,
-            width: 480,
-            max_rows: 19,
-            title_bar: true,
-            show_app: true,
-            strip_app_name: false,
-        },
-    );
+    let main = MainConfig {
+        desktop: tynex::config::Desktop::Mock,
+        font: Font::Auto,
+        font_size: 14,
+        width: 480,
+    };
+    let output = OutputBarConfig { max_rows: 19 };
+    let title = TitleBarConfig {
+        enabled: true,
+        sort_by: SortBy::Recently,
+        show_app_icon: true,
+        strip_app_name: false,
+    };
+    let mut painter = Painter::new(text, icons, &main, &output, &title);
     let (tx, rx) = channel();
     let mut source = MockSource::new();
     let mut app =

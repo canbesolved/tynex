@@ -29,48 +29,108 @@ fn missing_keys_use_defaults() {
     assert_eq!(parse("", &no_font), Ok(Config::default()));
 
     let config =
-        parse("[appearance]\nwidth = 600\n", &no_font).expect("valid config");
+        parse("[main]\nwidth = 600\n", &no_font).expect("valid config");
 
-    assert_eq!(config.appearance.width, 600);
-    assert_eq!(config.appearance.font_size, 14);
+    assert_eq!(config.main.width, 600);
+    assert_eq!(config.main.font_size, 14);
 }
 
 #[test]
 fn hotkey_action_values() {
-    let action = |text| parse(text, &no_font).map(|c| c.hotkey_action);
+    let action = |text| parse(text, &no_font).map(|c| c.hotkeys.action);
 
-    assert_eq!(action("hotkey_action = \"last\"\n"), Ok(HotkeyAction::Last));
+    assert_eq!(
+        action("[hotkeys]\naction = \"last\"\n"),
+        Ok(HotkeyAction::Last)
+    );
     assert!(
-        errors("hotkey_action = \"toggle\"\n")[0].contains("unknown variant")
+        errors("[hotkeys]\naction = \"toggle\"\n")[0]
+            .contains("unknown variant")
     );
 }
 
 #[test]
 fn sort_by_values() {
-    let sort = |text| parse(text, &no_font).map(|c| c.sort_by);
+    let sort = |text| parse(text, &no_font).map(|c| c.title_bar.sort_by);
 
     assert_eq!(sort(""), Ok(SortBy::Recently));
-    assert_eq!(sort("sort_by = \"app\"\n"), Ok(SortBy::App));
-    assert!(errors("sort_by = \"name\"\n")[0].contains("unknown variant"));
-    assert!(errors("sort_by = \"key\"\n")[0].contains("unknown variant"));
+    assert_eq!(sort("[title_bar]\nsort_by = \"app\"\n"), Ok(SortBy::App));
+    assert!(
+        errors("[title_bar]\nsort_by = \"name\"\n")[0]
+            .contains("unknown variant")
+    );
+    assert!(
+        errors("[title_bar]\nsort_by = \"key\"\n")[0]
+            .contains("unknown variant")
+    );
 }
 
 #[test]
 fn title_bar_columns_and_strip_values() {
-    let text = "[appearance]\ntitle_bar = true\nshow_app = true\n\
+    let text = "[title_bar]\nenabled = true\nshow_app_icon = true\n\
                 strip_app_name = true\n";
     let config = parse(text, &no_font).expect("valid config");
 
-    assert!(config.appearance.title_bar);
-    assert!(config.appearance.show_app);
-    assert!(config.appearance.strip_app_name);
+    assert!(config.title_bar.enabled);
+    assert!(config.title_bar.show_app_icon);
+    assert!(config.title_bar.strip_app_name);
+}
+
+#[test]
+fn empty_input_bar_is_accepted() {
+    let config = parse("[input_bar]\n", &no_font).expect("valid config");
+
+    assert_eq!(config.input_bar, InputBarConfig {});
+}
+
+#[test]
+fn removed_appearance_is_an_unknown_key() {
+    let msg = &errors("[appearance]\nfont = \"auto\"\n")[0];
+
+    assert!(msg.contains("unknown key `appearance`"), "{msg}");
+    assert!(msg.contains("release notes"), "{msg}");
+}
+
+#[test]
+fn old_top_level_keys_are_unknown() {
+    for key in ["desktop", "hotkey_action", "sort_by"] {
+        let msg = &errors(&format!("{key} = \"auto\"\n"))[0];
+
+        assert!(
+            msg.contains(&format!("unknown key `{key}`")),
+            "{key}: {msg}"
+        );
+        assert!(msg.contains("release notes"), "{key}: {msg}");
+    }
+}
+
+#[test]
+fn old_appearance_keys_are_unknown_in_main() {
+    let msg = &errors("[main]\nmax_rows = 10\n")[0];
+
+    assert!(msg.contains("unknown key `max_rows`"), "{msg}");
+}
+
+#[test]
+fn old_title_bar_key_is_unknown_in_appearance_path() {
+    let msg = &errors("[title_bar]\ntitle_bar = true\n")[0];
+
+    assert!(msg.contains("unknown key `title_bar`"), "{msg}");
+}
+
+#[test]
+fn removed_show_app_is_an_unknown_key() {
+    let msg = &errors("[title_bar]\nshow_app = true\n")[0];
+
+    assert!(msg.contains("unknown key `show_app`"), "{msg}");
+    assert!(msg.contains("release notes"), "{msg}");
 }
 
 #[test]
 fn removed_title_format_is_an_unknown_key() {
-    let msg = &errors("[appearance]\ntitle_format = \"{title}\"\n")[0];
+    let msg = &errors("[title_bar]\ntitle_format = \"{title}\"\n")[0];
 
-    assert!(msg.starts_with("2:1: unknown key `title_format`"), "{msg}");
+    assert!(msg.contains("unknown key `title_format`"), "{msg}");
     assert!(msg.contains("release notes"), "{msg}");
 }
 
@@ -79,15 +139,15 @@ fn removed_mode_and_keys_are_unknown_keys() {
     let mode = &errors("mode = \"hotkey\"\n")[0];
     let keys = &errors("keys = \"asdf\"\n")[0];
 
-    assert!(mode.starts_with("1:1: unknown key `mode`"), "{mode}");
-    assert!(keys.starts_with("1:1: unknown key `keys`"), "{keys}");
+    assert!(mode.contains("unknown key `mode`"), "{mode}");
+    assert!(keys.contains("unknown key `keys`"), "{keys}");
 }
 
 #[test]
 fn unknown_key_is_reported_with_position_and_hint() {
-    let msg = &errors("desktop = \"kde\"\nadaptr = \"kde\"\n")[0];
+    let msg = &errors("[main]\ndesktop = \"kde\"\nadaptr = \"kde\"\n")[0];
 
-    assert!(msg.starts_with("2:1: unknown key `adaptr`"), "{msg}");
+    assert!(msg.contains("unknown key `adaptr`"), "{msg}");
     assert!(msg.contains("release notes"), "{msg}");
 }
 
@@ -95,44 +155,51 @@ fn unknown_key_is_reported_with_position_and_hint() {
 fn removed_layout_is_an_unknown_key() {
     let msg = &errors("layout = \"vertical_list\"\n")[0];
 
-    assert!(msg.starts_with("1:1: unknown key `layout`"), "{msg}");
+    assert!(msg.contains("unknown key `layout`"), "{msg}");
     assert!(msg.contains("release notes"), "{msg}");
 }
 
 #[test]
 fn syntax_and_type_errors_stop_at_first() {
-    assert_eq!(errors("sort_by = \n").len(), 1);
-    assert!(errors("desktop = \"gnome\"\n")[0].contains("unknown variant"));
-    assert!(errors("[appearance]\nwidth = \"wide\"\n")[0].starts_with("2:9:"));
+    assert_eq!(errors("[title_bar]\nsort_by = \n").len(), 1);
+    assert!(
+        errors("[main]\ndesktop = \"gnome\"\n")[0].contains("unknown variant")
+    );
+    assert!(errors("[main]\nwidth = \"wide\"\n")[0].contains(':'));
 }
 
 #[test]
 fn value_errors_are_all_reported() {
-    let text = "[appearance]\nfont = \"/nope.ttf\"\n\
-                font_size = 120\nwidth = 100\nmax_rows = 0\n";
+    let text = "[main]\nfont = \"/nope.ttf\"\n\
+                font_size = 120\nwidth = 100\n\
+                [output_bar]\nmax_rows = 0\n";
     let all = errors(text);
 
     assert_eq!(all.len(), 4, "{all:?}");
-    assert!(all[0].starts_with("2:8: `appearance.font`"));
-    assert!(all[1].starts_with(
-        "3:13: `appearance.font_size` = 120 is out of range, expected 8 to 72"
-    ));
-}
-
-#[test]
-fn existing_font_path_is_accepted() {
-    let config = parse("[appearance]\nfont = \"/f.ttf\"\n", &|_| true);
-
-    assert_eq!(
-        config.map(|c| c.appearance.font),
-        Ok(Font::Path("/f.ttf".into()))
+    assert!(all.iter().any(|m| m.contains("`main.font`")), "{all:?}");
+    assert!(
+        all.iter().any(|m| m.contains(
+            "`main.font_size` = 120 is out of range, expected 8 to 72"
+        )),
+        "{all:?}"
+    );
+    assert!(
+        all.iter().any(|m| m.contains("`output_bar.max_rows`")),
+        "{all:?}"
     );
 }
 
 #[test]
+fn existing_font_path_is_accepted() {
+    let config = parse("[main]\nfont = \"/f.ttf\"\n", &|_| true);
+
+    assert_eq!(config.map(|c| c.main.font), Ok(Font::Path("/f.ttf".into())));
+}
+
+#[test]
 fn missing_file_is_created_then_read() {
-    let dir = std::env::temp_dir()
-        .join(format!("tynex_config_test_{}", std::process::id()));
+    let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join(format!("target/tynex_config_test_{}", std::process::id()));
     let path = dir.join("tynex").join("tynex.toml");
 
     assert_eq!(

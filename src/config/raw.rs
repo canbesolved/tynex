@@ -30,44 +30,93 @@ pub(super) enum RawSortBy {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawConfig {
-    pub desktop: Desktop,
-    pub hotkey_action: RawHotkeyAction,
-    pub sort_by: RawSortBy,
-    pub appearance: RawAppearance,
+    pub main: RawMain,
+    pub hotkeys: RawHotkeys,
+    pub input_bar: RawInputBar,
+    pub output_bar: RawOutputBar,
+    pub title_bar: RawTitleBar,
 }
 
 impl Default for RawConfig {
     fn default() -> Self {
         Self {
-            desktop: Desktop::Auto,
-            hotkey_action: RawHotkeyAction::Last,
-            sort_by: RawSortBy::Recently,
-            appearance: RawAppearance::default(),
+            main: RawMain::default(),
+            hotkeys: RawHotkeys::default(),
+            input_bar: RawInputBar {},
+            output_bar: RawOutputBar::default(),
+            title_bar: RawTitleBar::default(),
         }
     }
 }
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]
-pub(super) struct RawAppearance {
+pub(super) struct RawMain {
+    pub desktop: Desktop,
     pub font: Spanned<String>,
     pub font_size: Spanned<u16>,
     pub width: Spanned<u16>,
-    pub max_rows: Spanned<u16>,
-    pub title_bar: bool,
-    pub show_app: bool,
-    pub strip_app_name: bool,
 }
 
-impl Default for RawAppearance {
+impl Default for RawMain {
     fn default() -> Self {
         Self {
+            desktop: Desktop::Auto,
             font: unspanned("auto".into()),
             font_size: unspanned(14),
             width: unspanned(480),
+        }
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub(super) struct RawHotkeys {
+    pub action: RawHotkeyAction,
+}
+
+impl Default for RawHotkeys {
+    fn default() -> Self {
+        Self {
+            action: RawHotkeyAction::Last,
+        }
+    }
+}
+
+/// Empty in 0.2.0; `launcher.mode` comes in 0.2.1.
+#[derive(Deserialize, Default)]
+#[serde(deny_unknown_fields, default)]
+pub(super) struct RawInputBar {}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub(super) struct RawOutputBar {
+    pub max_rows: Spanned<u16>,
+}
+
+impl Default for RawOutputBar {
+    fn default() -> Self {
+        Self {
             max_rows: unspanned(19),
-            title_bar: false,
-            show_app: false,
+        }
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub(super) struct RawTitleBar {
+    pub enabled: bool,
+    pub sort_by: RawSortBy,
+    pub show_app_icon: bool,
+    pub strip_app_name: bool,
+}
+
+impl Default for RawTitleBar {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            sort_by: RawSortBy::Recently,
+            show_app_icon: false,
             strip_app_name: false,
         }
     }

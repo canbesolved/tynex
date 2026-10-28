@@ -9,6 +9,24 @@ project adheres to
 
 ## [Unreleased]
 
+Config sections per module. Breaking: `[appearance]` and the old
+top-level keys are removed.
+
+### Changed
+
+- **Breaking:** the config file is one section per part and module:
+  `[main]`, `[hotkeys]`, `[input_bar]`, `[output_bar]`,
+  `[title_bar]` (ADR-0055).
+  - `desktop`, `font`, `font_size` and `width` move to `[main]`.
+  - `hotkey_action` becomes `hotkeys.action`.
+  - `max_rows` becomes `output_bar.max_rows`.
+  - `title_bar` becomes `title_bar.enabled`.
+  - `sort_by` becomes `title_bar.sort_by`.
+  - `show_app` becomes `title_bar.show_app_icon`.
+  - `strip_app_name` becomes `title_bar.strip_app_name`.
+  - `[appearance]` is removed. A file that still has an old key
+    stops the daemon until the file is edited.
+
 ## [0.1.7] - 2026-10-28
 
 UI modules. Breaking: the `layout` config key is removed.

@@ -17,7 +17,7 @@ hotkey.
 | `tynex quit` | `Quit()`   | Stop the daemon  |
 
 While the popup is open, `show` acts as a second hotkey press and
-follows `hotkey_action` ([config.md](config.md)). `Show` keeps its
+follows `hotkeys.action` ([config.md](config.md)). `Show` keeps its
 string argument from when it named a mode; any value other than the
 empty string is refused ([ADR-0050](../adr/0050_search_only.md)).
 

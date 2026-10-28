@@ -12,7 +12,7 @@
     clippy::cast_sign_loss
 )]
 
-use crate::config::AppearanceConfig;
+use crate::config::{MainConfig, OutputBarConfig, TitleBarConfig};
 use crate::core::view::View;
 use crate::core::window::WindowInfo;
 use crate::ui::draw::{self, Grid, Metrics, Paint, Size};
@@ -22,23 +22,37 @@ use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
 use crate::ui::{input_bar, output_bar, title_bar};
 
-/// Draws views with the configured appearance. Built once at start, so
-/// fonts and glyph caches stay warm between shows.
+/// Draws views with the configured look. Built once at start, so fonts
+/// and glyph caches stay warm between shows.
 pub struct Painter {
     text: Text,
     icons: Icons,
     theme: Theme,
-    appearance: AppearanceConfig,
+    font_size: u16,
+    width: u16,
+    max_rows: u16,
+    title_bar: bool,
+    show_app_icon: bool,
 }
 
 impl Painter {
     #[must_use]
-    pub fn new(text: Text, icons: Icons, appearance: AppearanceConfig) -> Self {
+    pub fn new(
+        text: Text,
+        icons: Icons,
+        main: &MainConfig,
+        output: &OutputBarConfig,
+        title: &TitleBarConfig,
+    ) -> Self {
         Self {
             text,
             icons,
             theme: Theme::default(),
-            appearance,
+            font_size: main.font_size,
+            width: main.width,
+            max_rows: output.max_rows,
+            title_bar: title.enabled,
+            show_app_icon: title.show_app_icon,
         }
     }
 
@@ -78,12 +92,12 @@ impl Painter {
 
     fn metrics(&self, scale: f32) -> Metrics {
         Metrics {
-            font_size: f32::from(self.appearance.font_size),
-            width: f32::from(self.appearance.width),
-            max_rows: usize::from(self.appearance.max_rows),
+            font_size: f32::from(self.font_size),
+            width: f32::from(self.width),
+            max_rows: usize::from(self.max_rows),
             scale,
-            title_bar: self.appearance.title_bar,
-            show_app: self.appearance.show_app,
+            title_bar: self.title_bar,
+            show_app_icon: self.show_app_icon,
         }
     }
 }

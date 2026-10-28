@@ -28,9 +28,9 @@ pub(crate) struct Metrics {
     pub font_size: f32, // Title size
     pub width: f32,     // Popup width
     pub max_rows: usize,
-    pub scale: f32,      // Output scale factor, 1.0 or more
-    pub title_bar: bool, // Open window list
-    pub show_app: bool,  // App name column
+    pub scale: f32,          // Output scale factor, 1.0 or more
+    pub title_bar: bool,     // Open window list
+    pub show_app_icon: bool, // App name column
 }
 
 /// Surface size in pixels.
@@ -68,7 +68,11 @@ impl Grid {
             icon: (font * 1.5).round(),
             gap: (font * 0.6).round(),
             font,
-            app: if metrics.show_app { APP_SHARE } else { 0.0 },
+            app: if metrics.show_app_icon {
+                APP_SHARE
+            } else {
+                0.0
+            },
         }
     }
 }
@@ -100,7 +104,7 @@ pub(crate) fn icon_size(metrics: &Metrics, theme: &Theme) -> u32 {
     Grid::new(metrics, theme).icon as u32
 }
 
-/// Draws one window row: icon, app name (`show_app`), title.
+/// Draws one window row: icon, app name (`show_app_icon`), title.
 ///
 /// `highlights` are search matches. The title bar passes an empty
 /// slice; the output bar passes the row's matches.

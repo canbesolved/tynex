@@ -29,7 +29,7 @@ pub fn run() -> ExitCode {
         }
     };
 
-    match start(config) {
+    match start(&config) {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
             log::error!("{e}");
@@ -40,7 +40,7 @@ pub fn run() -> ExitCode {
 
 /// Builds every part once, then runs the event loop until `Quit`.
 #[cfg(target_os = "linux")]
-fn start(config: Config) -> Result<(), String> {
+fn start(config: &Config) -> Result<(), String> {
     use crate::adapters;
     use crate::core::queue::channel;
     use crate::core::switcher::Switcher;
@@ -61,22 +61,23 @@ fn start(config: Config) -> Result<(), String> {
 
     let (tx, rx) = channel();
     let current = std::env::var("XDG_CURRENT_DESKTOP").ok();
-    let mut source = adapters::select(config.desktop, current.as_deref(), &bus)
-        .map_err(|e| e.to_string())?;
+    let mut source =
+        adapters::select(config.main.desktop, current.as_deref(), &bus)
+            .map_err(|e| e.to_string())?;
     let presenter = WaylandPresenter::connect().map_err(|e| e.to_string())?;
-    let face = fonts::default_face(&config.appearance.font)
+    let face = fonts::default_face(&config.main.font)
         .map_err(|e| format!("cannot load the font: {e}"))?;
     let text = Text::new(face);
 
     dbus_ipc::serve(&bus, tx.clone());
     source.start(tx).map_err(|e| e.to_string())?;
-    log::info!("daemon started, desktop {:?}", config.desktop);
+    log::info!("daemon started, desktop {:?}", config.main.desktop);
 
     let mut parts = Parts {
         app: Switcher::new(
-            config.hotkey_action,
-            config.appearance.strip_app_name,
-            config.sort_by,
+            config.hotkeys.action,
+            config.title_bar.strip_app_name,
+            config.title_bar.sort_by,
             PromptMode,
         ),
         source,
@@ -85,7 +86,9 @@ fn start(config: Config) -> Result<(), String> {
         painter: Painter::new(
             text,
             Icons::new(Box::new(IconTheme::default())),
-            config.appearance,
+            &config.main,
+            &config.output_bar,
+            &config.title_bar,
         ),
         rx,
     };

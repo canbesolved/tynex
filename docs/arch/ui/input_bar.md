@@ -11,7 +11,9 @@ bar. The mode is [modes/prompt.md](../modes/prompt.md).
 The input bar is always on. It cannot be disabled. The
 [output bar](output_bar.md) shows the result of what is typed here.
 The title bar, the info bar and the icon bar can be turned off on
-their own ([ADR-0053](../../adr/0053_ui_module_toggles.md)).
+their own ([ADR-0053](../../adr/0053_ui_module_toggles.md)). Config
+sections follow the modules
+([ADR-0055](../../adr/0055_config_sections.md)).
 
 ```text
 / firef
