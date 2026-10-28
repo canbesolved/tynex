@@ -9,7 +9,7 @@ dropped items in [DEPRECATIONS.md](DEPRECATIONS.md).
 | Horizon | Release               | Meaning                              |
 | ------- | --------------------- | ------------------------------------ |
 | Now     | 0.2.x                 | Patch releases, in the order below   |
-| Next    | 0.3.x, 0.8.x - 1.0.0  | Committed for the following releases |
+| Next    | 0.8.x - 1.0.0         | Committed for the following releases |
 | Later   | Unplanned             | Accepted ideas, not scheduled yet    |
 
 Rules:
@@ -99,10 +99,6 @@ Target: KDE Plasma 6 on Wayland.
   installed apps from the launcher.
 
 ## Next
-
-### 0.3.x: config file
-
-No items yet.
 
 ### 0.8.x: performance
 
