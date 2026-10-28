@@ -31,9 +31,8 @@ Press a hotkey, type a few letters of a window, press `Enter`, and you
 are there. Or press `Enter` right away to go back to the previous
 window. No mouse, no scrolling, no waiting.
 
-> Status: 0.1.7, for KDE Plasma 6 on Wayland. A config layout, a
-> launcher and the icon bar follow in 0.2.x (see the
-> [roadmap](ROADMAP.md)).
+> Status: 0.2.0, for KDE Plasma 6 on Wayland. The icon bar follows
+> in 0.2.x (see the [roadmap](ROADMAP.md)).
 
 ## Features
 
@@ -41,9 +40,11 @@ window. No mouse, no scrolling, no waiting.
   and small typos are forgiven.
 - Optional list of open windows (`title_bar.enabled`), most recently
   used first or grouped by app (`title_bar.sort_by`).
-- Matches appear in the output bar as you type.
+- Matches appear in the output bar as you type; with
+  `input_bar.launcher.mode` set, installed apps appear there too.
 - Each entry shows the app icon and the window title in columns, with
-  an optional app name column (`title_bar.show_app_icon`).
+  an optional app name column on the title bar
+  (`title_bar.show_app_icon`).
 - Low footprint: idle at 0 % CPU, under 10 MB of RAM, no GPU usage.
 - Modular core: window sources, UI modules and modes are plug-in
   modules.
@@ -53,7 +54,7 @@ window. No mouse, no scrolling, no waiting.
 
 | Environment      | Session | Status  |
 | ---------------- | ------- | ------- |
-| KDE Plasma 6     | Wayland | 0.1.7   |
+| KDE Plasma 6     | Wayland | 0.2.0   |
 | Other DEs / WMs  | Any     | Planned |
 | macOS, Windows   | -       | Planned |
 
@@ -67,7 +68,7 @@ prebuilt binaries for Linux x86_64 and arm64 (glibc 2.35 or newer),
 for example:
 
 ```bash
-v=0.1.7 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
+v=0.2.0 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
 url=https://github.com/canbesolved/tynex/releases/download/v$v
 curl -LO "$url/tynex-$v-$t.tar.gz" -LO "$url/SHA256SUMS"
 sha256sum -c --ignore-missing SHA256SUMS
@@ -140,6 +141,7 @@ width = 480
 action = "last"              # hide | last
 
 [input_bar]
+launcher.mode = "off"        # off | all | gui_only
 
 [output_bar]
 max_rows = 19

@@ -9,6 +9,11 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-28
+
+Config sections and launcher. Breaking: `[appearance]` and the old
+top-level keys are removed.
+
 ### Added
 
 - Launcher as an input-bar sub-module: matching installed apps appear
@@ -221,7 +226,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.1.7...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/canbesolved/tynex/releases/tag/v0.2.0
 [0.1.7]: https://github.com/canbesolved/tynex/releases/tag/v0.1.7
 [0.1.6]: https://github.com/canbesolved/tynex/releases/tag/v0.1.6
 [0.1.5]: https://github.com/canbesolved/tynex/releases/tag/v0.1.5
