@@ -9,6 +9,17 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `title_bar.show_icons` (default `true`) draws the app icon before
+  each title-bar title. `false` shows titles only (ADR-0058).
+
+### Removed
+
+- **Breaking:** `title_bar.show_app_icon` and the app name column.
+  A config that still sets `show_app_icon` stops the daemon
+  (ADR-0058).
+
 ## [0.2.2] - 2026-10-29
 
 The title bar hides while the query is non-empty.

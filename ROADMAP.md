@@ -24,8 +24,10 @@ Rules:
 ### 0.2.3
 
 - [ ] **Breaking:** The title bar row is the app icon and the window
-  title. The app name column and `title_bar.show_app_icon` are removed.
-  A config that still sets `show_app_icon` stops the daemon.
+  title. The app name column and `title_bar.show_app_icon` are
+  removed. A config that still sets `show_app_icon` stops the daemon.
+  `show_icons` (default `true`) draws the icon; `false` shows titles
+  only.
 
 ### 0.2.4
 
@@ -182,9 +184,6 @@ Themes:
 
 Look:
 
-- [ ] Title bar app icons: under `[title_bar]`, `show_icons = true`
-  (default) draws each row with its app icon and title; `false` shows
-  titles only.
 - [ ] Text shaping and right-to-left layout for Arabic, Hebrew and
   Indic scripts (`rustybuzz`).
 - [ ] Color emoji in titles.

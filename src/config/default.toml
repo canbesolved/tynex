@@ -25,7 +25,7 @@ enabled = false
 # Row order: "recently" puts the last used window first, "app" groups
 # windows by app name.
 sort_by = "recently"         # recently | app
-# Show the app name in its own column before the title.
-show_app_icon = false
+# Draw the app icon before the title. false shows titles only.
+show_icons = true
 # Drop " — <app name>" from the end of window titles.
 strip_app_name = false

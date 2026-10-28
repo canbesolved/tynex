@@ -21,7 +21,7 @@ const M: Metrics = Metrics {
     max_rows: 3,
     scale: 1.0,
     title_bar: true,
-    show_app_icon: false,
+    show_icons: true,
 };
 
 fn state(n: usize) -> State {
@@ -171,47 +171,48 @@ fn list_scrolls_to_keep_selection_visible() {
 }
 
 #[test]
-fn app_column_only_with_show_app_icon() {
-    let mut s = state(1);
-
-    s.rows[0].app_name = "WWWW".into();
-
-    let app = Theme::default().app_text;
-    let app_pixels = |m: &Metrics| {
-        let (data, _) = render_with(&s, m);
-
-        data.chunks(4)
-            .filter(|px| px[..3] == [app.0, app.1, app.2])
-            .count()
-    };
-    let shown = Metrics {
-        show_app_icon: true,
+fn titles_only_starts_where_the_icon_slot_was() {
+    let s = state(1);
+    let g = Grid::new(&M, &Theme::default());
+    let x = g.pad + g.gap + 4.0; // Inside the icon slot
+    let y = row_center(0);
+    let icons = Metrics {
+        show_icons: true,
         ..M
     };
+    let titles = Metrics {
+        show_icons: false,
+        ..M
+    };
+    let (with_slot, size) = render_with(&s, &icons);
+    let (text_only, _) = render_with(&s, &titles);
 
-    assert!(app_pixels(&shown) > 0);
-    assert_eq!(app_pixels(&M), 0);
+    assert_ne!(pixel(&with_slot, size, x, y), pixel(&text_only, size, x, y));
 }
 
 #[test]
-fn output_bar_never_draws_the_app_column() {
-    let mut s = state(1);
+fn output_bar_keeps_the_icon_slot() {
+    let open = state(1);
+    let mut typed = state(1);
 
-    s.query = "w".into();
-    s.rows[0].app_name = "WWWW".into();
-    s.output = s.rows.clone();
+    typed.query = "w".into();
+    typed.rows[0].app_name = "WWWW".into();
+    typed.output = typed.rows.clone();
 
-    let app = Theme::default().app_text;
-    let metrics = Metrics {
-        title_bar: false,
-        show_app_icon: true,
-        ..M
-    };
-    let (data, _) = render_with(&s, &metrics);
-    let app_pixels = data
-        .chunks(4)
-        .filter(|px| px[..3] == [app.0, app.1, app.2])
-        .count();
+    let g = Grid::new(&M, &Theme::default());
+    let x = g.pad + g.gap + 4.0;
+    let y = row_center(0);
+    let title = render(&open);
+    let output = render_with(
+        &typed,
+        &Metrics {
+            title_bar: false,
+            ..M
+        },
+    );
 
-    assert_eq!(app_pixels, 0);
+    assert_eq!(
+        pixel(&title.0, title.1, x, y),
+        pixel(&output.0, output.1, x, y)
+    );
 }

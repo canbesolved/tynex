@@ -20,7 +20,7 @@ pub enum RowTarget {
 pub struct Row {
     pub target: RowTarget,
     pub app_id: String,   // Matched by search, not drawn
-    pub app_name: String, // Title-bar column; matched by search
+    pub app_name: String, // Matched by search, not drawn
     pub icon: Option<String>,
     pub title: String, // Sanitized, app name stripped
     pub highlights: Vec<Range<usize>>, // Byte ranges in `title`

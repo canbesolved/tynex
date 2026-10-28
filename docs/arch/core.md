@@ -162,8 +162,9 @@ with `title_bar.strip_app_name` from the config
    part of the app id, ignoring case; never down to an empty title.
 
 The switcher applies it on each `Windows` event. The app name stays a
-separate field of `Row`; the title bar draws it in its own column
-with `show_app_icon`. The output bar does not.
+separate field of `Row` for search. The title bar draws the icon when
+`show_icons` is set, then the title. The output bar always draws the
+icon and the title.
 
 ## Text and languages
 
