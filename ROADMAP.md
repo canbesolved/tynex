@@ -21,11 +21,6 @@ Rules:
 
 ## Now
 
-### 0.2.2
-
-- [ ] The title bar hides as soon as you type. It shows only while the
-  query is empty.
-
 ### 0.2.3
 
 - [ ] **Breaking:** The title bar row is the app icon and the window

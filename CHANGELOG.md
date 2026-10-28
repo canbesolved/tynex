@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-10-29
+
+The title bar hides while the query is non-empty.
+
 ### Changed
 
 - The title bar hides as soon as you type, and shows again when the
@@ -231,7 +235,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/canbesolved/tynex/releases/tag/v0.2.2
 [0.2.0]: https://github.com/canbesolved/tynex/releases/tag/v0.2.0
 [0.1.7]: https://github.com/canbesolved/tynex/releases/tag/v0.1.7
 [0.1.6]: https://github.com/canbesolved/tynex/releases/tag/v0.1.6
