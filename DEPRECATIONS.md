@@ -26,6 +26,11 @@ Features that shipped in a release and were removed later.
 - `layout` config key (`vertical_list`): added in 0.1.0, removed in
   0.1.7 (**Breaking**). The popup is UI modules
   ([ADR-0052](docs/adr/0052_ui_modules.md)).
+- `[appearance]` and the top-level keys `desktop`, `hotkey_action`
+  and `sort_by`: added in 0.1.0, removed in 0.2.0 (**Breaking**).
+  Replaced by `[main]`, `[hotkeys]`, `[output_bar]` and
+  `[title_bar]`. `show_app` becomes `title_bar.show_app_icon`
+  ([ADR-0055](docs/adr/0055_config_sections.md)).
 
 ## Never shipped
 

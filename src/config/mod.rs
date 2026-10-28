@@ -36,40 +36,68 @@ pub enum Font {
     Path(PathBuf),
 }
 
-/// The `[appearance]` table.
+/// The `[main]` table: process and frame settings.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct AppearanceConfig {
+pub struct MainConfig {
+    pub desktop: Desktop,
     pub font: Font,
     pub font_size: u16,
     pub width: u16,
-    pub max_rows: u16,
-    pub title_bar: bool,      // Window list before typing
-    pub show_app: bool,       // App name column
+}
+
+/// The `[hotkeys]` table.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HotkeysConfig {
+    pub action: HotkeyAction,
+}
+
+/// The `[input_bar]` table. Empty in 0.2.0.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct InputBarConfig {}
+
+/// The `[output_bar]` table.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OutputBarConfig {
+    pub max_rows: u16, // Cap for the output bar and the title bar
+}
+
+/// The `[title_bar]` table.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TitleBarConfig {
+    pub enabled: bool,        // Window list before typing
+    pub sort_by: SortBy,      // Row order
+    pub show_app_icon: bool,  // App name column
     pub strip_app_name: bool, // Drop the app name from titles
 }
 
 /// The whole config file, validated.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Config {
-    pub desktop: Desktop,
-    pub hotkey_action: HotkeyAction,
-    pub sort_by: SortBy,
-    pub appearance: AppearanceConfig,
+    pub main: MainConfig,
+    pub hotkeys: HotkeysConfig,
+    pub input_bar: InputBarConfig,
+    pub output_bar: OutputBarConfig,
+    pub title_bar: TitleBarConfig,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
-            desktop: Desktop::Auto,
-            hotkey_action: HotkeyAction::Last,
-            sort_by: SortBy::Recently,
-            appearance: AppearanceConfig {
+            main: MainConfig {
+                desktop: Desktop::Auto,
                 font: Font::Auto,
                 font_size: 14,
                 width: 480,
-                max_rows: 19,
-                title_bar: false,
-                show_app: false,
+            },
+            hotkeys: HotkeysConfig {
+                action: HotkeyAction::Last,
+            },
+            input_bar: InputBarConfig {},
+            output_bar: OutputBarConfig { max_rows: 19 },
+            title_bar: TitleBarConfig {
+                enabled: false,
+                sort_by: SortBy::Recently,
+                show_app_icon: false,
                 strip_app_name: false,
             },
         }

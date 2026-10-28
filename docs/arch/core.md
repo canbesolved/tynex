@@ -138,14 +138,15 @@ windows, and the output rows in display order. Each `Row` has an id,
 icon, row text (`title`), highlight byte ranges, and the app name and
 id for search. `windows` is every open window, for the title bar.
 `rows` is the current result, for the output bar: the matches while
-a query is typed. The title bar is shown with `title_bar`. Popup
-modules read the `View`, never the switcher state, which keeps
+a query is typed. The title bar is shown with `title_bar.enabled`.
+Popup modules read the `View`, never the switcher state, which keeps
 rendering replaceable. Building a `View` allocates nothing.
 
 ## Row title
 
 `row_title` in `title.rs` gives each window the title its row shows,
-with `strip_app_name` from the config ([config.md](config.md#format)):
+with `title_bar.strip_app_name` from the config
+([config.md](config.md#format)):
 
 1. Sanitize the title and the app name (see below).
 2. With `strip_app_name`, drop `<app>` after ` — `, ` – ` or ` - `
@@ -154,7 +155,7 @@ with `strip_app_name` from the config ([config.md](config.md#format)):
 
 The switcher applies it on each `Windows` event. The app name stays a
 separate field of `Row`; the title bar and the output bar draw it in
-its own column with `show_app`.
+its own column with `show_app_icon`.
 
 ## Text and languages
 
@@ -187,7 +188,8 @@ Prompt mode ([prompt.md](modes/prompt.md)), search
 
 ## Row order
 
-`order` in `order.rs` arranges the rows by `sort_by` from the config
+`order` in `order.rs` arranges the rows by `title_bar.sort_by` from
+the config
 ([ADR-0048](../adr/0048_row_order.md), amended by
 [ADR-0050](../adr/0050_search_only.md)). Every order starts from the
 most recently used order with the active window last, and sorts

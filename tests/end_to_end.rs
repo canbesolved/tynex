@@ -23,12 +23,12 @@ fn mock(desktop: config::Desktop) -> Source {
 
 /// A switcher built from `config`, fed by a started mock source.
 fn start(config: &Config) -> (App, Source, EventRx) {
-    let mut source = mock(config.desktop);
+    let mut source = mock(config.main.desktop);
     let (tx, rx) = channel();
     let mut sw = Switcher::new(
-        config.hotkey_action,
-        config.appearance.strip_app_name,
-        config.sort_by,
+        config.hotkeys.action,
+        config.title_bar.strip_app_name,
+        config.title_bar.sort_by,
         PromptMode,
     );
 
@@ -64,7 +64,8 @@ fn switch(sw: &mut App, source: &mut Source, rx: &EventRx, query: &str) {
 
 #[test]
 fn mock_source_drives_the_switcher() {
-    let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
+    let config =
+        config::parse("[main]\ndesktop = \"mock\"\n", &|_| false).unwrap();
     let (mut sw, mut source, rx) = start(&config);
 
     // `Enter` right after opening goes back and forth, like Alt+Tab.
@@ -85,7 +86,8 @@ fn mock_source_drives_the_switcher() {
 
 #[test]
 fn titles_keep_the_app_name_by_default() {
-    let config = config::parse("desktop = \"mock\"\n", &|_| false).unwrap();
+    let config =
+        config::parse("[main]\ndesktop = \"mock\"\n", &|_| false).unwrap();
     let (mut sw, ..) = start(&config);
 
     sw.handle(Event::Show);
@@ -97,7 +99,8 @@ fn titles_keep_the_app_name_by_default() {
 
 #[test]
 fn titles_from_the_source_are_stripped() {
-    let text = "desktop = \"mock\"\n[appearance]\nstrip_app_name = true\n";
+    let text = "[main]\ndesktop = \"mock\"\n\
+                [title_bar]\nstrip_app_name = true\n";
     let config = config::parse(text, &|_| false).unwrap();
     let (mut sw, ..) = start(&config);
 

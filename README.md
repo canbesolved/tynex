@@ -31,18 +31,19 @@ Press a hotkey, type a few letters of a window, press `Enter`, and you
 are there. Or press `Enter` right away to go back to the previous
 window. No mouse, no scrolling, no waiting.
 
-> Status: 0.1.7, for KDE Plasma 6 on Wayland. Per-app titles and a
-> launcher follow in 0.2.0 (see the [roadmap](ROADMAP.md)).
+> Status: 0.1.7, for KDE Plasma 6 on Wayland. A config layout, a
+> launcher and the icon bar follow in 0.2.x (see the
+> [roadmap](ROADMAP.md)).
 
 ## Features
 
 - Centered popup with an input bar: start typing at once; accents
   and small typos are forgiven.
-- Optional list of open windows (`title_bar`), most recently used
-  first or grouped by app (`sort_by`).
+- Optional list of open windows (`title_bar.enabled`), most recently
+  used first or grouped by app (`title_bar.sort_by`).
 - Matches appear in the output bar as you type.
 - Each entry shows the app icon and the window title in columns, with
-  an optional app name column (`show_app`).
+  an optional app name column (`title_bar.show_app_icon`).
 - Low footprint: idle at 0 % CPU, under 10 MB of RAM, no GPU usage.
 - Modular core: window sources, UI modules and modes are plug-in
   modules.
@@ -117,8 +118,8 @@ tynex quit    # Stop the background service
 On KDE the default hotkey is `Meta+Tab`. Change it in System Settings,
 Shortcuts, `tynex`. On other desktops bind `tynex show` to any key.
 Pressing the hotkey again switches to the previous window, or closes
-the popup with `hotkey_action = "hide"`. The popup also closes when it
-loses keyboard focus.
+the popup with `hotkeys.action = "hide"`. The popup also closes when
+it loses keyboard focus.
 
 In the popup, type to filter, `Enter` to switch, arrows to move, and
 `Esc` to clear the query or close. `Enter` right after opening
@@ -129,17 +130,25 @@ switches to the previous window, like Alt+Tab.
 The config file is `~/.config/tynex/tynex.toml`:
 
 ```toml
-desktop = "auto"        # auto | kde | mock
-hotkey_action = "last"  # hide | last
-sort_by = "recently"    # recently | app
-
-[appearance]
-font = "auto"            # Or a font file with your scripts (CJK)
+[main]
+desktop = "auto"             # auto | kde | mock
+font = "auto"                # Or a font file with your scripts (CJK)
 font_size = 14
 width = 480
-title_bar = false        # Window list before typing
-show_app = false         # App name column before the title
-strip_app_name = false   # true: "Café — Firefox" becomes "Café"
+
+[hotkeys]
+action = "last"              # hide | last
+
+[input_bar]
+
+[output_bar]
+max_rows = 19
+
+[title_bar]
+enabled = false              # Window list before typing
+sort_by = "recently"         # recently | app
+show_app_icon = false        # App name column before the title
+strip_app_name = false       # true: "Café — Firefox" becomes "Café"
 ```
 
 On first start `tynex daemon` writes this file with defaults. Keys
@@ -147,14 +156,13 @@ left out use their built-in defaults. A syntax error, an unknown key
 or an invalid value stops the daemon with a message naming the
 problem. See [docs/arch/config.md](docs/arch/config.md) for the rules.
 
-Upgrading from 0.1.6: 0.1.7 removed `layout`. Delete it from
-`tynex.toml`. Upgrading from 0.1.5 or older: 0.1.6 removed hotkey
-mode. Delete `mode` and `keys` from `tynex.toml`, change
-`sort_by = "key"` to `"recently"` or `"app"`, and set
-`title_bar = true` to keep a window list on screen.
-`strip_app_name` now defaults to `false`. 0.1.5 removed
-`title_format`; set `show_app = true` for an app name column.
-Removed and renamed keys are listed in [CHANGELOG.md](CHANGELOG.md).
+Upgrading to 0.2.0: move keys into the new sections. `desktop`,
+`font`, `font_size` and `width` go under `[main]`. `hotkey_action`
+becomes `hotkeys.action`. `sort_by`, `title_bar`, `show_app` and
+`strip_app_name` move under `[title_bar]` as `sort_by`, `enabled`,
+`show_app_icon` and `strip_app_name`. `max_rows` moves to
+`[output_bar]`. Delete `[appearance]`. Removed and renamed keys are
+listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 

@@ -11,7 +11,7 @@ answer in this same module
 ## Look
 
 ```text
-After typing, title_bar = false
+After typing, title_bar.enabled = false
 ╭──────────────────────────────────────╮
 │ / firef                              │
 ├──────────────────────────────────────┤
@@ -19,7 +19,7 @@ After typing, title_bar = false
 │ ▣  Firefox   Café                    │
 ╰──────────────────────────────────────╯
 
-After typing, title_bar = true
+After typing, title_bar.enabled = true
 ╭──────────────────────────────────────╮
 │ / firef                              │
 ├──────────────────────────────────────┤
@@ -31,8 +31,8 @@ After typing, title_bar = true
 ╰──────────────────────────────────────╯
 ```
 
-The first list under the input is the output bar. With `title_bar`
-the open windows stay below it, unfiltered. See
+The first list under the input is the output bar. With
+`title_bar.enabled` the open windows stay below it, unfiltered. See
 [title_bar.md](title_bar.md).
 
 ## Rules
@@ -41,11 +41,11 @@ the open windows stay below it, unfiltered. See
   hide it.
 - An empty match list still keeps one row of height, so the popup
   does not collapse.
-- At most `appearance.max_rows` rows. The list scrolls so the
+- At most `output_bar.max_rows` rows. The list scrolls so the
   selected match stays visible.
 - Rows use the same columns as the title bar: icon, app name (with
-  `show_app`), title. Matched letters use the highlight color (see
-  [render.md](render.md)).
+  `show_app_icon`), title. Matched letters use the highlight color
+  (see [render.md](render.md)).
 - `Enter` activates the selected match. Up and down move that
   selection. Prompt mode owns the keys; this module only draws.
 

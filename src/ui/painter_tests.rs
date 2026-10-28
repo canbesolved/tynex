@@ -21,7 +21,7 @@ const M: Metrics = Metrics {
     max_rows: 3,
     scale: 1.0,
     title_bar: true,
-    show_app: false,
+    show_app_icon: false,
 };
 
 fn state(n: usize) -> State {
@@ -160,7 +160,7 @@ fn list_scrolls_to_keep_selection_visible() {
 }
 
 #[test]
-fn app_column_only_with_show_app() {
+fn app_column_only_with_show_app_icon() {
     let mut s = state(1);
 
     s.rows[0].app_name = "WWWW".into();
@@ -174,7 +174,7 @@ fn app_column_only_with_show_app() {
             .count()
     };
     let shown = Metrics {
-        show_app: true,
+        show_app_icon: true,
         ..M
     };
 
