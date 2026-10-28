@@ -20,7 +20,7 @@ Source: `src/modules/search/fuzzy.rs` and `src/modules/search/fold.rs`.
 - Results are sorted by the better score of title and app; ties
   keep the row order from `sort_by` (see
   [core.md](../core.md#row-order)).
-- Match indices go into `View` so the layout can highlight them, for
+- Match indices go into `View` so the output bar can highlight them, for
   the title only. `frizbee` returns byte offsets of matched
   characters; they are merged into byte ranges.
 - One entry point, `match_list_indices`, single-threaded: the window

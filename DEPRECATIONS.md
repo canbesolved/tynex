@@ -23,6 +23,9 @@ Features that shipped in a release and were removed later.
   ([ADR-0050](docs/adr/0050_search_only.md)).
 - `sort_by = "key"`, rows in letter order: added in 0.1.4, removed in
   0.1.6 (**Breaking**). `sort_by` defaults to `recently`.
+- `layout` config key (`vertical_list`): added in 0.1.0, removed in
+  0.1.7 (**Breaking**). The popup is UI modules
+  ([ADR-0052](docs/adr/0052_ui_modules.md)).
 
 ## Never shipped
 
@@ -44,3 +47,6 @@ Features that were planned or designed, then dropped before a release.
 - Key badge background and text colors in the theme options. Planned
   for Later, dropped on 2026-10-27: `title_bar` rows show no key
   letters.
+- Grid and horizontal strip layouts. Planned for Later, dropped on
+  2026-10-28: the popup is UI modules, not a choice of layout
+  ([ADR-0052](docs/adr/0052_ui_modules.md)).

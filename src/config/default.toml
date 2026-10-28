@@ -5,15 +5,14 @@ hotkey_action = "last"   # hide | last
 # Row order: "recently" puts the last used window first, "app" groups
 # windows by app name.
 sort_by = "recently"     # recently | app
-layout = "vertical_list"
 
 [appearance]
 font = "auto"            # Font file path, or auto
 font_size = 14
 width = 480
 max_rows = 19
-# Show the window list under the search prompt before typing. Matches
-# are always shown once you type.
+# Show the open windows. Search matches are the output bar, shown
+# once you type.
 title_bar = false
 # Show the app name in its own column before the title.
 show_app = false

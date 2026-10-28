@@ -25,7 +25,8 @@ module you touch before changing code.
 - Footprint first: no idle CPU work, no polling loops, no GPU context,
   no heavy dependencies. Justify every new crate.
 - Modularity: the core (`src/core/`) is pure logic with no I/O. New
-  window managers, layouts, modes and backends plug in through traits.
+  window managers, UI modules, modes and backends plug in through
+  traits.
 - Portability: no OS-specific types outside `src/platform/` and
   `src/adapters/`. Gate them with `cfg(target_os = "...")`.
 - Be concise in code, comments, docs and commit messages.

@@ -32,7 +32,7 @@ use crate::platform::linux::wayland::error::{error, missing};
 use crate::platform::linux::wayland::keyboard::Keyboard;
 pub use crate::platform::linux::wayland::state::PresenterEvent;
 use crate::platform::linux::wayland::state::Wl;
-use crate::ui::layouts::Size;
+use crate::ui::Size;
 use crate::ui::render::canvas::Canvas;
 
 /// The popup on a Wayland compositor with `wlr-layer-shell`.

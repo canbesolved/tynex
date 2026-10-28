@@ -20,6 +20,8 @@ Source: `src/modes/prompt.rs`. Matching is the
 
 The popup opens with the previous window selected, so `Enter` right
 after the hotkey switches back like Alt+Tab. Typing starts at once;
-the best match is selected after every change of the query. Whether
-the window list shows before typing depends on `title_bar` (see
-[config.md](../config.md#format)).
+the best match is selected after every change of the query. The bar
+on screen is the [input bar](../ui/input_bar.md). Matches are drawn
+in the [output bar](../ui/output_bar.md). Open windows show when
+`title_bar` is set (see [config.md](../config.md#format) and
+[title_bar.md](../ui/title_bar.md)).

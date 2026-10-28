@@ -9,7 +9,7 @@ unit-testable and identical on every platform.
 core/
   window.rs     WindowId, WindowInfo
   event.rs      Event, Action, Key
-  traits.rs     WindowSource, Presenter, Layout, Mode
+  traits.rs     WindowSource, Presenter, Mode
   state.rs      State of an open popup, shared with the modes
   switcher.rs   State machine (tests in switcher_tests.rs)
   view.rs       View and Row: what the presenter must draw
@@ -80,12 +80,6 @@ pub trait Presenter {
     fn hide(&mut self);
 }
 
-/// Arranges entries on a canvas.
-pub trait Layout {
-    fn size(&self, view: &View, m: &Metrics) -> Size;
-    fn draw(&self, view: &View, canvas: &mut Canvas);
-}
-
 /// Turns key presses into switcher actions.
 pub trait Mode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action;
@@ -101,9 +95,11 @@ switcher. Everything runs on one thread, so no locks are needed, and
 adapters never see the platform event loop. `SourceError` carries a
 message for the log.
 
-`WindowSource` and `Mode` live in `core/traits.rs`. `Layout` lives in
-`ui/layouts/` because it draws on a `Canvas`, and the core depends on
-nothing else in the crate. `Presenter` is added with its module.
+`WindowSource` and `Mode` live in `core/traits.rs`. The popup is drawn
+by UI modules in `ui/` ([input bar](ui/input_bar.md),
+[title bar](ui/title_bar.md)), which read a `View` and never the
+switcher. The core depends on nothing else in the crate. `Presenter`
+is added with its module.
 
 ## Switcher state machine
 
@@ -137,13 +133,14 @@ refilter.
 
 ## View
 
-`View` borrows the open `State`: query, selected index, and the shown
-rows in display order. Each `Row` has an id, icon, row text (`title`),
-highlight byte ranges, and the app name and id for search.
-Whether rows are drawn before a query is typed is up to the layout
-(`title_bar`). Layouts read the `View`, never the switcher
-state, which keeps rendering replaceable. Building a `View` allocates
-nothing.
+`View` borrows the open `State`: query, selected index, the open
+windows, and the output rows in display order. Each `Row` has an id,
+icon, row text (`title`), highlight byte ranges, and the app name and
+id for search. `windows` is every open window, for the title bar.
+`rows` is the current result, for the output bar: the matches while
+a query is typed. The title bar is shown with `title_bar`. Popup
+modules read the `View`, never the switcher state, which keeps
+rendering replaceable. Building a `View` allocates nothing.
 
 ## Row title
 
@@ -156,8 +153,8 @@ with `strip_app_name` from the config ([config.md](config.md#format)):
    part of the app id, ignoring case; never down to an empty title.
 
 The switcher applies it on each `Windows` event. The app name stays a
-separate field of `Row`; the layout draws it in its own column with
-`show_app`.
+separate field of `Row`; the title bar and the output bar draw it in
+its own column with `show_app`.
 
 ## Text and languages
 

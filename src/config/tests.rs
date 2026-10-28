@@ -92,8 +92,16 @@ fn unknown_key_is_reported_with_position_and_hint() {
 }
 
 #[test]
+fn removed_layout_is_an_unknown_key() {
+    let msg = &errors("layout = \"vertical_list\"\n")[0];
+
+    assert!(msg.starts_with("1:1: unknown key `layout`"), "{msg}");
+    assert!(msg.contains("release notes"), "{msg}");
+}
+
+#[test]
 fn syntax_and_type_errors_stop_at_first() {
-    assert_eq!(errors("layout = \n").len(), 1);
+    assert_eq!(errors("sort_by = \n").len(), 1);
     assert!(errors("desktop = \"gnome\"\n")[0].contains("unknown variant"));
     assert!(errors("[appearance]\nwidth = \"wide\"\n")[0].starts_with("2:9:"));
 }

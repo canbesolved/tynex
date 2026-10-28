@@ -39,15 +39,14 @@ hotkey_action = "last"   # hide | last
 # Row order: "recently" puts the last used window first, "app" groups
 # windows by app name.
 sort_by = "recently"     # recently | app
-layout = "vertical_list"
 
 [appearance]
 font = "auto"            # Font file path, or auto
 font_size = 14
 width = 480
 max_rows = 19
-# Show the window list under the search prompt before typing. Matches
-# are always shown once you type.
+# Show the open windows. Search matches are the output bar, shown
+# once you type.
 title_bar = false
 # Show the app name in its own column before the title.
 show_app = false
@@ -64,18 +63,25 @@ while the popup is open: `hide` closes it, `last`
 switches to the previously used window, or closes it when there is
 none.
 
-`appearance.title_bar` shows the window list under the search prompt
-as soon as the popup opens. With `false` (default) only the prompt
-shows until you type; matches then appear below it. It replaces hotkey
+`appearance.title_bar` shows the open windows. With `false` (default)
+only the input bar shows until you type. Matches then appear in the
+output bar, whether or not the title bar is on. It replaces hotkey
 mode, which 0.1.6 removed with the `mode` and `keys` keys
 ([ADR-0050](../adr/0050_search_only.md)); a config that still has them
 stops the daemon with an unknown key error.
 
 `appearance.show_app` adds an app name column before the title (see
 [ADR-0045](../adr/0045_app_names.md) for where names come from and
-[vertical_list.md](ui/layouts/vertical_list.md) for the columns). It
+[title_bar.md](ui/title_bar.md) for the columns). It
 replaces `title_format`, which 0.1.5 removed; a config that still has
 it stops the daemon with an unknown key error.
+
+`layout` was removed in 0.1.7
+([ADR-0052](../adr/0052_ui_modules.md)). The popup is UI modules, so
+there is nothing to choose. The input bar is always on; the title
+bar can be turned off on its own
+([ADR-0053](../adr/0053_ui_module_toggles.md)). A config that still
+sets `layout` stops the daemon with an unknown key error.
 
 `appearance.strip_app_name` drops the app name from the end of a
 title, after ` — `, ` – ` or ` - `: `Café — Firefox` becomes `Café`.
@@ -114,7 +120,6 @@ The config is read once, when `tynex daemon` starts
 | `desktop`                   | `auto`, `kde` or `mock`                   |
 | `hotkey_action`             | `hide` or `last`                          |
 | `sort_by`                   | `recently` or `app`                       |
-| `layout`                    | `vertical_list`                           |
 | `appearance.font`           | `auto` or a path to an existing font file |
 | `appearance.font_size`      | 8 to 72                                   |
 | `appearance.width`          | 200 to 2000                               |
@@ -137,8 +142,7 @@ messages.
 
 ```text
 tynex: error: ~/.config/tynex/tynex.toml:1:1: unknown key `adaptr`,
-  expected one of `desktop`, `hotkey_action`, `sort_by`, `layout`,
-  `appearance`
+  expected one of `desktop`, `hotkey_action`, `sort_by`, `appearance`
 tynex: error: ~/.config/tynex/tynex.toml:9:13: `appearance.font_size`
   = 120 is out of range, expected 8 to 72
 ```

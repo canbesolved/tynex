@@ -63,7 +63,6 @@ pub(super) fn validate(
             RawSortBy::App => SortBy::App,
             RawSortBy::Recently => SortBy::Recently,
         },
-        layout: raw.layout,
         appearance: AppearanceConfig {
             font,
             font_size: a.font_size.into_inner(),

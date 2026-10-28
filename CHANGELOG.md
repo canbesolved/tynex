@@ -9,6 +9,19 @@ project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- The popup is UI modules: input bar, output bar, title bar, info
+  bar and icon bar. Each can be changed on its own. The input bar is
+  always on. The title bar lists open windows only. Search matches
+  are the output bar, which will also show later results of the input
+  (ADR-0052, ADR-0053, ADR-0054).
+
+### Removed
+
+- **Breaking:** the `layout` config key. A file that still sets it
+  stops the daemon until the key is removed.
+
 ## [0.1.6] - 2026-10-27
 
 Prompt mode only, with `title_bar`. Breaking: hotkey mode is removed.

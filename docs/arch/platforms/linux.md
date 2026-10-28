@@ -40,7 +40,7 @@ protocol. No client toolkit.
 - Layer `overlay`, no anchors, so the compositor centers the surface.
 - Keyboard interactivity `exclusive`: all keys go to the popup while it
   is shown. No global key grabbing.
-- Size comes from `Layout::size` in physical pixels; the surface size
+- Size comes from `Painter::size` in physical pixels; the surface size
   is that divided by the scale, rounded up.
 - `show`: create the surface, wait for `configure`, draw, commit.
 - `draw`: returns false until the surface is configured or while both

@@ -6,7 +6,7 @@
 use serde::Deserialize;
 use toml::Spanned;
 
-use crate::config::{Desktop, Layout};
+use crate::config::Desktop;
 
 /// Values not from the file get an empty span.
 fn unspanned<T>(value: T) -> Spanned<T> {
@@ -33,7 +33,6 @@ pub(super) struct RawConfig {
     pub desktop: Desktop,
     pub hotkey_action: RawHotkeyAction,
     pub sort_by: RawSortBy,
-    pub layout: Layout,
     pub appearance: RawAppearance,
 }
 
@@ -43,7 +42,6 @@ impl Default for RawConfig {
             desktop: Desktop::Auto,
             hotkey_action: RawHotkeyAction::Last,
             sort_by: RawSortBy::Recently,
-            layout: Layout::VerticalList,
             appearance: RawAppearance::default(),
         }
     }

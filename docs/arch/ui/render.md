@@ -76,8 +76,9 @@ ui/render/
    its aspect kept, and cached per (name, size). Misses are cached
    too.
 
-The icon size is the layout's icon slot at the output scale
-(`Layout::icon_size`). `Painter::prepare` loads the icons of a new
+The icon size is the row icon slot at the output scale
+(`draw::icon_size`), shared by the title bar and the output bar.
+`Painter::prepare` loads the icons of a new
 window list, so files are read when windows change, not when the
 popup opens; a scale change loads the new size on the next draw. A
 missing icon leaves its slot empty.
