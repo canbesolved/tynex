@@ -9,7 +9,7 @@ dropped items in [DEPRECATIONS.md](DEPRECATIONS.md).
 | Horizon | Release               | Meaning                              |
 | ------- | --------------------- | ------------------------------------ |
 | Now     | 0.2.x                 | Patch releases, in the order below   |
-| Next    | 0.3.x, 0.8.x - 1.0.0  | Committed for the following releases |
+| Next    | 0.8.x - 1.0.0         | Committed for the following releases |
 | Later   | Unplanned             | Accepted ideas, not scheduled yet    |
 
 Rules:
@@ -19,9 +19,7 @@ Rules:
 - Reserved series: 0.8.x for performance, 0.9.x for security and
   stability, 1.0.0 for polishing and the first stable release.
 
-## Now: 0.2.x
-
-Target: KDE Plasma 6 on Wayland.
+## Now
 
 ### 0.2.2
 
@@ -93,13 +91,17 @@ Target: KDE Plasma 6 on Wayland.
   (for example the input bar and the title bar), and every block uses
   the same rounded border and theme colors.
 
+### 0.2.11
+
+- [ ] When you search, the output bar lists open windows first, then
+  installed apps from the launcher.
+
+### 0.2.12
+
+- [ ] Update the default theme to the Endgame color palette. Exact
+  color values will be added when the palette is finalized.
+
 ## Next
-
-### 0.3.x: config file
-
-- [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
-  with a custom title, for example `[apps.firefox]` with
-  `title = "Web"`.
 
 ### 0.8.x: performance
 
@@ -135,18 +137,29 @@ Titles:
 - [ ] Rename a window from the popup: `F2` edits the selected title in
   place, `Enter` keeps it, `Esc` cancels. The new title lasts until the
   window closes.
-- [ ] Title prefixes: a `[title_prefix]` table maps a pattern to a
-  prefix added to matching titles, for example `"Jira" = "[J] "`.
-  Patterns are regular expressions, so plain text matches as well.
+- [ ] Configurable prefixes on rows and titles:
+  - Per app: `[apps.<app_id>]` with `prefix = "Web"` so launcher rows
+    read `Web: Firefox`.
+  - By pattern: `[title_prefix]` maps a pattern to a prefix on matching
+    window titles, for example `"Jira" = "[J] "`. Patterns are regular
+    expressions, so plain text matches as well.
 
 Icon bar:
 
 - [ ] Pinned apps stay in the icon bar while they are not running.
 
+Launcher:
+
+- [ ] App aliases: map a name to an installed app, for example
+  `Firefox = "Web Browser"`. A query that matches the alias suggests
+  launching that app.
+
 Info bar:
 
-- [ ] `info_bar` module: a status bar inside the popup. It runs only
-  while the popup is open, so it adds no idle work.
+- [ ] `info_bar` module: a status bar inside the popup that can replace
+  useful parts of the system panel (time and date, battery percentage,
+  and the like). It runs only while the popup is open, so it adds no
+  idle work.
   - Config: `[info_bar]` with `placement = "top"`, `"bottom"` or
     `"both"`.
   - Custom scripts: a shell script's output is shown in the bar; each
@@ -154,11 +167,6 @@ Info bar:
   - Plugins: date and time, battery, power usage in watts, CPU load,
     RAM usage.
   - Open questions: hotkeys for bar actions; a keyboard layout plugin.
-
-Panel:
-
-- [ ] Dock or panel with useful information, to replace the system
-  panel: time and date, battery percentage.
 
 Configuration:
 
@@ -179,8 +187,9 @@ Themes:
 
 Look:
 
-- [ ] Hide app icons: `show_icon = true` (default) in `[appearance]`
-  shows them, `false` hides them.
+- [ ] Title bar app icons: under `[title_bar]`, `show_icons = true`
+  (default) draws each row with its app icon and title; `false` shows
+  titles only.
 - [ ] Text shaping and right-to-left layout for Arabic, Hebrew and
   Indic scripts (`rustybuzz`).
 - [ ] Color emoji in titles.
