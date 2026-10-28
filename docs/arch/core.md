@@ -8,11 +8,12 @@ unit-testable and identical on every platform.
 ```text
 core/
   window.rs     WindowId, WindowInfo
+  app.rs        AppInfo: id, name, icon (no Exec)
   event.rs      Event, Action, Key
   traits.rs     WindowSource, Presenter, Mode
   state.rs      State of an open popup, shared with the modes
   switcher.rs   State machine (tests in switcher_tests.rs)
-  view.rs       View and Row: what the presenter must draw
+  view.rs       View, Row, RowTarget: what the presenter must draw
   order.rs      SortBy: row order (recently, app)
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
@@ -48,9 +49,15 @@ pub enum Action {
     None,
     Redraw,
     Activate(WindowId),
+    Launch(String), // App id
     Close,
 }
 ```
+
+`AppInfo` is `id`, `name`, `icon`. `Exec` stays on the platform.
+A `Row` has a `RowTarget`: `Window` or `Launch`. `State` keeps open
+windows in `rows` (title bar) and the result list in `output`
+(output bar and selection).
 
 `Key` is a portable enum (`Char { text, latin }`, `Enter`, `Esc`,
 `Tab`, `Up`, `Down`, `Backspace`). Each platform maps native key
@@ -83,7 +90,7 @@ pub trait Presenter {
 /// Turns key presses into switcher actions.
 pub trait Mode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action;
-    /// Recomputes shown rows and highlights; default does nothing.
+    /// Recomputes output rows and highlights; default does nothing.
     fn refresh(&mut self, s: &mut State) {}
 }
 ```
@@ -104,8 +111,8 @@ is added with its module.
 ## Switcher state machine
 
 ```text
-          Show                    Activate / Close
- Hidden ─────────────> Visible ─────────────────────> Hidden
+          Show                 Activate / Launch / Close
+ Hidden ─────────────> Visible ─────────────────────────> Hidden
                        │    ▲
                  Key   │    │ Redraw
                        └────┘
@@ -119,8 +126,8 @@ is added with its module.
   previous window. A `Show` while visible is a second hotkey press: it
   closes the popup, or with `HotkeyAction::Last` returns `Activate`
   for the previous window.
-- `Visible`: keys go to the mode. A mode returning `Activate` or
-  `Close` hides the popup.
+- `Visible`: keys go to the mode. A mode returning `Activate`,
+  `Launch` or `Close` hides the popup.
 - `Windows` while visible: refresh the rows, keep the query and the
   selection by id.
 - `Hide` and `Quit` close an open popup. The daemon loop stops itself
@@ -154,8 +161,8 @@ with `title_bar.strip_app_name` from the config
    part of the app id, ignoring case; never down to an empty title.
 
 The switcher applies it on each `Windows` event. The app name stays a
-separate field of `Row`; the title bar and the output bar draw it in
-its own column with `show_app_icon`.
+separate field of `Row`; the title bar draws it in its own column
+with `show_app_icon`. The output bar does not.
 
 ## Text and languages
 

@@ -9,10 +9,12 @@ use std::path::{Path, PathBuf};
 use toml::Spanned;
 
 use crate::config::error::ConfigError;
-use crate::config::raw::{RawConfig, RawHotkeyAction, RawSortBy};
+use crate::config::raw::{
+    RawConfig, RawHotkeyAction, RawLauncherMode, RawSortBy,
+};
 use crate::config::{
-    Config, Font, HotkeysConfig, InputBarConfig, MainConfig, OutputBarConfig,
-    TitleBarConfig,
+    Config, Font, HotkeysConfig, InputBarConfig, LauncherMode, MainConfig,
+    OutputBarConfig, TitleBarConfig,
 };
 use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
@@ -70,7 +72,13 @@ pub(super) fn validate(
                 RawHotkeyAction::Last => HotkeyAction::Last,
             },
         },
-        input_bar: InputBarConfig {},
+        input_bar: InputBarConfig {
+            launcher: match raw.input_bar.launcher.mode {
+                RawLauncherMode::Off => LauncherMode::Off,
+                RawLauncherMode::All => LauncherMode::All,
+                RawLauncherMode::GuiOnly => LauncherMode::GuiOnly,
+            },
+        },
         output_bar: OutputBarConfig {
             max_rows: raw.output_bar.max_rows.into_inner(),
         },

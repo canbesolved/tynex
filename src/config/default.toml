@@ -10,6 +10,9 @@ width = 480
 action = "last"              # hide | last
 
 [input_bar]
+# Installed apps in the output bar: "off" hides them, "all" includes
+# terminal apps, "gui_only" skips Terminal=true.
+launcher.mode = "off"        # off | all | gui_only
 
 [output_bar]
 # Cap for the output bar and the title bar.

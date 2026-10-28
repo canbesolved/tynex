@@ -4,7 +4,10 @@ Source: `src/ui/input_bar.rs`. The input bar at the top of the popup.
 Typing starts here.
 
 Prompt mode handles keys and the query. This module only draws the
-bar. The mode is [modes/prompt.md](../modes/prompt.md).
+bar. The mode is [modes/prompt.md](../modes/prompt.md). Sub-modules
+that read the query live under [modules/input.md](../modules/input.md)
+([ADR-0056](../../adr/0056_launcher_input.md)): search matches open
+windows; the launcher matches installed apps. Neither draws.
 
 ## Look
 

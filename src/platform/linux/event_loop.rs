@@ -15,6 +15,7 @@ use crate::core::queue::EventRx;
 use crate::core::switcher::Switcher;
 use crate::core::traits::WindowSource;
 use crate::modes::prompt::PromptMode;
+use crate::platform::linux::apps::Apps;
 use crate::platform::linux::dbus::Bus;
 use crate::platform::linux::wayland::{PresenterEvent, WaylandPresenter};
 use crate::ui::painter::Painter;
@@ -29,6 +30,7 @@ pub struct Parts {
     pub presenter: WaylandPresenter,
     pub bus: Bus,
     pub painter: Painter,
+    pub apps: Apps,
     pub rx: EventRx,
 }
 
@@ -48,6 +50,7 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
 
         p.presenter.flush().map_err(|e| e.to_string())?;
         p.bus.flush(); // Calls such as an activation
+        p.apps.reap();
         wait(p)?;
 
         for event in p.presenter.dispatch().map_err(|e| e.to_string())? {
@@ -110,6 +113,12 @@ fn handle(p: &mut Parts, event: Event) -> bool {
             log::info!("activate {}", id.0);
             if let Err(e) = p.source.activate(&id) {
                 log::warn!("cannot activate {}: {e}", id.0);
+            }
+        }
+        Action::Launch(id) => {
+            p.presenter.hide();
+            if let Err(e) = p.apps.launch(&id) {
+                log::warn!("cannot launch {id}: {e}");
             }
         }
         Action::Close => p.presenter.hide(),

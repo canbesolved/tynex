@@ -27,7 +27,16 @@ pub(super) enum RawSortBy {
     Recently,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub(super) enum RawLauncherMode {
+    #[default]
+    Off,
+    All,
+    GuiOnly,
+}
+
+#[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawConfig {
     pub main: RawMain,
@@ -35,18 +44,6 @@ pub(super) struct RawConfig {
     pub input_bar: RawInputBar,
     pub output_bar: RawOutputBar,
     pub title_bar: RawTitleBar,
-}
-
-impl Default for RawConfig {
-    fn default() -> Self {
-        Self {
-            main: RawMain::default(),
-            hotkeys: RawHotkeys::default(),
-            input_bar: RawInputBar {},
-            output_bar: RawOutputBar::default(),
-            title_bar: RawTitleBar::default(),
-        }
-    }
 }
 
 #[derive(Deserialize)]
@@ -83,10 +80,17 @@ impl Default for RawHotkeys {
     }
 }
 
-/// Empty in 0.2.0; `launcher.mode` comes in 0.2.1.
 #[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields, default)]
-pub(super) struct RawInputBar {}
+pub(super) struct RawInputBar {
+    pub launcher: RawLauncher,
+}
+
+#[derive(Deserialize, Default)]
+#[serde(deny_unknown_fields, default)]
+pub(super) struct RawLauncher {
+    pub mode: RawLauncherMode,
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]

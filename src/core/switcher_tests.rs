@@ -33,9 +33,13 @@ impl Mode for Filter {
     fn refresh(&mut self, s: &mut State) {
         let query = s.query.clone();
 
-        s.shown = (0..s.rows.len())
-            .filter(|&i| s.rows[i].title.contains(&query))
+        s.output = s
+            .rows
+            .iter()
+            .filter(|r| r.title.contains(&query))
+            .cloned()
             .collect();
+        s.selected = 0;
     }
 }
 
@@ -70,7 +74,10 @@ fn shown(sw: &Switcher<Filter>) -> Vec<String> {
     sw.view()
         .expect("popup is open")
         .rows()
-        .map(|r| r.id.0.clone())
+        .map(|r| match &r.target {
+            crate::core::view::RowTarget::Window(id) => id.0.clone(),
+            crate::core::view::RowTarget::Launch(id) => id.clone(),
+        })
         .collect()
 }
 

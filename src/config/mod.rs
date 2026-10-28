@@ -51,9 +51,20 @@ pub struct HotkeysConfig {
     pub action: HotkeyAction,
 }
 
-/// The `[input_bar]` table. Empty in 0.2.0.
+/// How installed apps appear in the output bar.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum LauncherMode {
+    #[default]
+    Off, // No launch rows
+    All,     // GUI and terminal apps
+    GuiOnly, // Skip Terminal=true
+}
+
+/// The `[input_bar]` table.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub struct InputBarConfig {}
+pub struct InputBarConfig {
+    pub launcher: LauncherMode,
+}
 
 /// The `[output_bar]` table.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -92,7 +103,9 @@ impl Default for Config {
             hotkeys: HotkeysConfig {
                 action: HotkeyAction::Last,
             },
-            input_bar: InputBarConfig {},
+            input_bar: InputBarConfig {
+                launcher: LauncherMode::Off,
+            },
             output_bar: OutputBarConfig { max_rows: 19 },
             title_bar: TitleBarConfig {
                 enabled: false,

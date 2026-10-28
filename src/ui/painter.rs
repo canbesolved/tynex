@@ -59,9 +59,21 @@ impl Painter {
     /// Loads the icons of new windows at output `scale`, so files are
     /// never read at show time.
     pub fn prepare(&mut self, windows: &[WindowInfo], scale: f32) {
+        self.prepare_icons(
+            windows.iter().filter_map(|w| w.icon.as_deref()),
+            scale,
+        );
+    }
+
+    /// Loads named icons at output `scale`.
+    pub fn prepare_icons<'a>(
+        &mut self,
+        icons: impl Iterator<Item = &'a str>,
+        scale: f32,
+    ) {
         let size = draw::icon_size(&self.metrics(scale), &self.theme);
 
-        for icon in windows.iter().filter_map(|w| w.icon.as_deref()) {
+        for icon in icons {
             self.icons.prepare(icon, size);
         }
     }

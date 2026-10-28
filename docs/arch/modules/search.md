@@ -9,14 +9,19 @@ Source: `src/modules/search/fuzzy.rs` and `src/modules/search/fold.rs`.
 ## Matching
 
 - `frizbee` scores the query against the row title (`title`) and
-  against the app name and id, joined by a space (Smith-Waterman,
-  like `fzf`). So `firefox` finds Firefox windows even when
-  `strip_app_name` removed the name from their titles.
+  against the app haystack: the display name and the short app id
+  (last segment of a reverse-DNS id, for example `konsole` from
+  `org.kde.konsole`), joined by a space when they differ
+  (Smith-Waterman, like `fzf`). So `firefox` finds Firefox windows
+  even when `strip_app_name` removed the name from their titles. The
+  full id is not matched, so `code` does not hit
+  `org.rustdesk.RustDesk`.
 - Smart case: case-insensitive unless the query has an uppercase
   letter.
 - Typo tolerance: up to one typo per four query characters
-  (`max_typos`), so looser matches can follow the best ones. Queries
-  under four characters allow no typo.
+  (`max_typos`), but only once the query has at least five
+  characters. Shorter queries (`code`, `c`) allow no typo, so weak
+  near-matches stay out.
 - Results are sorted by the better score of title and app; ties
   keep the row order from `title_bar.sort_by` (see
   [core.md](../core.md#row-order)).

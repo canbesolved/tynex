@@ -9,7 +9,7 @@ use crate::core::state::State;
 use crate::core::text::sanitize_title;
 use crate::core::title::row_title;
 use crate::core::traits::Mode;
-use crate::core::view::{Row, View};
+use crate::core::view::{Row, RowTarget, View};
 use crate::core::window::WindowInfo;
 
 /// What a hotkey press does while the popup is open.
@@ -114,7 +114,10 @@ impl<M: Mode> Switcher<M> {
         };
         let action = self.mode.on_key(key, &mut state);
 
-        if !matches!(action, Action::Activate(_) | Action::Close) {
+        if !matches!(
+            action,
+            Action::Activate(_) | Action::Launch(_) | Action::Close
+        ) {
             self.state = Some(state);
         }
         action
@@ -150,7 +153,7 @@ impl<M: Mode> Switcher<M> {
 /// Builds a row for `window`.
 fn row(window: &WindowInfo) -> Row {
     Row {
-        id: window.id.clone(),
+        target: RowTarget::Window(window.id.clone()),
         app_id: window.app_id.clone(),
         app_name: window.app_name.clone(),
         icon: window.icon.clone(),

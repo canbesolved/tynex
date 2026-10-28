@@ -46,6 +46,8 @@ fn start(config: &Config) -> Result<(), String> {
     use crate::core::switcher::Switcher;
     use crate::core::traits::WindowSource;
     use crate::modes::prompt::PromptMode;
+    use crate::modules::input::Input;
+    use crate::platform::linux::apps::Apps;
     use crate::platform::linux::dbus::Bus;
     use crate::platform::linux::event_loop::{self, Parts};
     use crate::platform::linux::icon_theme::IconTheme;
@@ -68,7 +70,20 @@ fn start(config: &Config) -> Result<(), String> {
     let face = fonts::default_face(&config.main.font)
         .map_err(|e| format!("cannot load the font: {e}"))?;
     let text = Text::new(face);
+    let apps = Apps::scan(config.input_bar.launcher);
+    let app_list = apps.list();
+    let mut painter = Painter::new(
+        text,
+        Icons::new(Box::new(IconTheme::default())),
+        &config.main,
+        &config.output_bar,
+        &config.title_bar,
+    );
 
+    painter.prepare_icons(
+        app_list.iter().filter_map(|a| a.icon.as_deref()),
+        presenter.scale(),
+    );
     dbus_ipc::serve(&bus, tx.clone());
     source.start(tx).map_err(|e| e.to_string())?;
     log::info!("daemon started, desktop {:?}", config.main.desktop);
@@ -78,18 +93,13 @@ fn start(config: &Config) -> Result<(), String> {
             config.hotkeys.action,
             config.title_bar.strip_app_name,
             config.title_bar.sort_by,
-            PromptMode,
+            PromptMode::new(Input::new(config.input_bar.launcher, app_list)),
         ),
         source,
         presenter,
         bus,
-        painter: Painter::new(
-            text,
-            Icons::new(Box::new(IconTheme::default())),
-            &config.main,
-            &config.output_bar,
-            &config.title_bar,
-        ),
+        painter,
+        apps,
         rx,
     };
 

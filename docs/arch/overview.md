@@ -20,6 +20,8 @@ The reasons behind each choice are in the
 - [ui/output_bar.md](ui/output_bar.md): results of the input.
 - [ui/title_bar.md](ui/title_bar.md): open windows.
 - [modes/prompt.md](modes/prompt.md): prompt mode, the only mode.
+- [modules/input.md](modules/input.md): input sub-modules (search,
+  launcher).
 - [modules/search.md](modules/search.md): fuzzy matching of windows.
 
 ## Goals
@@ -87,6 +89,7 @@ src/
     painter.rs         Input, output, then title bar
   modes/               prompt
   modules/
+    input/             Search, then launcher; one output list
     search/            Fuzzy matcher, accent folding
 ```
 
@@ -115,6 +118,7 @@ until executed, so it adds nothing to RAM.
 KWin script --Update------> KdeSource --Event::Windows--> core cache
 hotkey/CLI  --Show--------> core --View--> Presenter (map surface)
 key press   --Event::Key--> Mode --Action::Activate(id)--> KdeSource
+                         \- Mode --Action::Launch(id)--> apps spawn
 KdeSource   --Run(id)-----> KWin /WindowsRunner --> window activated
 ```
 

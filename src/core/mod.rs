@@ -3,6 +3,7 @@
 
 //! Pure switcher logic: no I/O, no OS types, no threads.
 
+pub mod app;
 pub mod event;
 pub mod order;
 pub mod queue;

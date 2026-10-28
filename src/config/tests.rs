@@ -77,10 +77,34 @@ fn title_bar_columns_and_strip_values() {
 }
 
 #[test]
-fn empty_input_bar_is_accepted() {
+fn empty_input_bar_uses_launcher_off() {
     let config = parse("[input_bar]\n", &no_font).expect("valid config");
 
-    assert_eq!(config.input_bar, InputBarConfig {});
+    assert_eq!(
+        config.input_bar,
+        InputBarConfig {
+            launcher: LauncherMode::Off,
+        }
+    );
+}
+
+#[test]
+fn launcher_mode_values() {
+    let mode = |text| parse(text, &no_font).map(|c| c.input_bar.launcher);
+
+    assert_eq!(mode(""), Ok(LauncherMode::Off));
+    assert_eq!(
+        mode("[input_bar]\nlauncher.mode = \"all\"\n"),
+        Ok(LauncherMode::All)
+    );
+    assert_eq!(
+        mode("[input_bar]\nlauncher.mode = \"gui_only\"\n"),
+        Ok(LauncherMode::GuiOnly)
+    );
+    assert!(
+        errors("[input_bar]\nlauncher.mode = \"yes\"\n")[0]
+            .contains("unknown variant")
+    );
 }
 
 #[test]

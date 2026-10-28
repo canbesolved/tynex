@@ -4,14 +4,25 @@
 //! Prompt mode key tests.
 
 use super::*;
-use crate::core::view::Row;
+use crate::config::LauncherMode;
+use crate::core::app::AppInfo;
+use crate::core::view::{Row, RowTarget};
 use crate::core::window::WindowId;
+use crate::modules::input::Input;
+
+fn mode() -> PromptMode {
+    PromptMode::new(Input::new(LauncherMode::Off, Vec::new()))
+}
+
+fn mode_with_apps(apps: Vec<AppInfo>) -> PromptMode {
+    PromptMode::new(Input::new(LauncherMode::All, apps))
+}
 
 fn state() -> State {
     let rows = [("w1", "Release notes"), ("w2", "Café"), ("w3", "Kate")]
         .into_iter()
         .map(|(id, title)| Row {
-            id: WindowId(id.into()),
+            target: RowTarget::Window(WindowId(id.into())),
             app_id: String::new(),
             app_name: String::new(),
             icon: None,
@@ -21,13 +32,13 @@ fn state() -> State {
         .collect();
     let mut s = State::new(rows);
 
-    PromptMode.refresh(&mut s);
+    mode().refresh(&mut s);
     s
 }
 
-fn typed(s: &mut State, text: &str) {
+fn typed(mode: &mut PromptMode, s: &mut State, text: &str) {
     for c in text.chars() {
-        PromptMode.on_key(
+        mode.on_key(
             Key::Char {
                 text: c,
                 latin: None,
@@ -43,53 +54,76 @@ fn titles(s: &State) -> Vec<String> {
 
 #[test]
 fn typing_filters_and_selects_the_best_match() {
+    let mut mode = mode();
     let mut s = state();
 
-    typed(&mut s, "cafe");
+    typed(&mut mode, &mut s, "cafe");
     assert_eq!(titles(&s), ["Café"]);
-    assert_eq!(s.rows[1].highlights.first(), Some(&(0..5)));
-    assert_eq!(s.rows[1].highlights.len(), 1);
+    assert_eq!(s.output[0].highlights.first(), Some(&(0..5)));
+    assert_eq!(s.output[0].highlights.len(), 1);
     assert_eq!(
-        PromptMode.on_key(Key::Enter, &mut s),
+        mode.on_key(Key::Enter, &mut s),
         Action::Activate(WindowId("w2".into()))
     );
 }
 
 #[test]
 fn backspace_widens_the_filter() {
+    let mut mode = mode();
     let mut s = state();
 
-    typed(&mut s, "kz"); // Too short for a typo
+    typed(&mut mode, &mut s, "kz"); // Too short for a typo
     assert_eq!(titles(&s), [] as [&str; 0]);
-    PromptMode.on_key(Key::Backspace, &mut s);
+    mode.on_key(Key::Backspace, &mut s);
     assert_eq!(titles(&s), ["Kate"]);
 }
 
 #[test]
 fn esc_clears_the_query_then_closes() {
+    let mut mode = mode();
     let mut s = state();
 
-    typed(&mut s, "kate");
-    assert_eq!(PromptMode.on_key(Key::Esc, &mut s), Action::Redraw);
+    typed(&mut mode, &mut s, "kate");
+    assert_eq!(mode.on_key(Key::Esc, &mut s), Action::Redraw);
     assert_eq!(s.query, "");
     assert_eq!(titles(&s).len(), 3);
     assert!(s.rows.iter().all(|r| r.highlights.is_empty()));
-    assert_eq!(PromptMode.on_key(Key::Esc, &mut s), Action::Close);
+    assert_eq!(mode.on_key(Key::Esc, &mut s), Action::Close);
 }
 
 #[test]
 fn enter_without_matches_does_nothing() {
+    let mut mode = mode();
     let mut s = state();
 
-    typed(&mut s, "zzzz");
-    assert_eq!(PromptMode.on_key(Key::Enter, &mut s), Action::None);
+    typed(&mut mode, &mut s, "zzzz");
+    assert_eq!(mode.on_key(Key::Enter, &mut s), Action::None);
 }
 
 #[test]
 fn app_names_match() {
+    let mut mode = mode();
     let mut s = state();
 
     s.rows[0].app_name = "Configuración".into(); // Not in the title
-    typed(&mut s, "configuración");
+    typed(&mut mode, &mut s, "configuración");
     assert_eq!(titles(&s), ["Release notes"]);
+}
+
+#[test]
+fn enter_on_launch_row_returns_launch() {
+    let apps = vec![AppInfo {
+        id: "firefox".into(),
+        name: "Firefox".into(),
+        icon: None,
+    }];
+    let mut mode = mode_with_apps(apps);
+    let mut s = State::new(Vec::new());
+
+    typed(&mut mode, &mut s, "fire");
+    assert_eq!(titles(&s), ["Firefox"]);
+    assert_eq!(
+        mode.on_key(Key::Enter, &mut s),
+        Action::Launch("firefox".into())
+    );
 }

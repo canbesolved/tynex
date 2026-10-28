@@ -22,8 +22,23 @@ platform/linux/
   fonts.rs        The font: configured path or fc-match, mapped once
   key_file.rs     Reader for desktop entries, theme indexes, kdeglobals
   desktop_files.rs  App names and icons from desktop files
+  apps/           Launcher catalog: scan `.desktop`, spawn Exec
   icon_theme.rs   IconTheme: icon files from freedesktop icon themes
 ```
+
+## Launcher catalog
+
+`apps/` scans `$XDG_DATA_HOME/applications` and `$XDG_DATA_DIRS` once
+at daemon start when `input_bar.launcher.mode` is not `"off"`
+([ADR-0056](../../adr/0056_launcher_input.md)). First file for an id
+wins; subdirectory paths use `-` in the id. Entries that are not
+`Type=Application`, or have `NoDisplay`, `Hidden`, or an empty
+`Exec`, are skipped. `gui_only` also skips `Terminal=true`.
+
+`Exec` is split on quotes, not a shell. Field codes that need a file
+or URL are dropped; `%%`, `%c`, `%k` and `%i` are expanded.
+`Terminal=true` starts through `xdg-terminal-exec` when it is on
+`PATH`. The child is its own session; the event loop reaps it.
 
 ## Wayland presenter
 
