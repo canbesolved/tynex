@@ -93,6 +93,11 @@ Target: KDE Plasma 6 on Wayland.
   (for example the input bar and the title bar), and every block uses
   the same rounded border and theme colors.
 
+### 0.2.11
+
+- [ ] When you search, the output bar lists open windows first, then
+  installed apps from the launcher.
+
 ## Next
 
 ### 0.3.x: config file
@@ -142,6 +147,12 @@ Titles:
 Icon bar:
 
 - [ ] Pinned apps stay in the icon bar while they are not running.
+
+Launcher:
+
+- [ ] App aliases: map a name to an installed app, for example
+  `Firefox = "Web Browser"`. A query that matches the alias suggests
+  launching that app.
 
 Info bar:
 
