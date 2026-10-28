@@ -19,18 +19,15 @@ use crate::ui::render::icons::Icons;
 use crate::ui::render::text::{Style, Text};
 use crate::ui::render::theme::Theme;
 
-/// Share of the text width that the app name column takes.
-pub(crate) const APP_SHARE: f32 = 0.3;
-
 /// Sizes and options from the config and the output, in physical pixels.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub(crate) struct Metrics {
     pub font_size: f32, // Title size
     pub width: f32,     // Popup width
     pub max_rows: usize,
-    pub scale: f32,          // Output scale factor, 1.0 or more
-    pub title_bar: bool,     // Open window list
-    pub show_app_icon: bool, // App name column
+    pub scale: f32,       // Output scale factor, 1.0 or more
+    pub title_bar: bool,  // Open window list
+    pub show_icons: bool, // Title-bar icon slot
 }
 
 /// Surface size in pixels.
@@ -98,9 +95,10 @@ pub(crate) fn icon_size(metrics: &Metrics, theme: &Theme) -> u32 {
     Grid::new(metrics, theme).icon as u32
 }
 
-/// Draws one window row: icon, optional app name, title.
+/// Draws one window row: optional icon, then the title.
 ///
-/// `show_app` is for the title bar only. `highlights` are search
+/// `show_icon` reserves the icon slot. A row without an icon keeps
+/// the empty slot so titles stay aligned. `highlights` are search
 /// matches; the title bar passes an empty slice.
 pub(crate) fn draw_row(
     paint: &mut Paint<'_, '_>,
@@ -108,28 +106,22 @@ pub(crate) fn draw_row(
     row: &Row,
     area: Area,
     highlights: &[Range<usize>],
-    show_app: bool,
+    show_icon: bool,
 ) {
     let mut left = area.x + grid.gap;
 
-    if let Some(icon) = &row.icon {
-        let top = area.y + (area.h - grid.icon) / 2.0;
+    if show_icon {
+        if let Some(icon) = &row.icon {
+            let top = area.y + (area.h - grid.icon) / 2.0;
 
-        paint.icons.draw(
-            paint.canvas,
-            icon,
-            grid.icon as u32,
-            (left as i32, top.round() as i32),
-        );
-    }
-    left += grid.icon + grid.gap;
-
-    if show_app {
-        let width = ((area.x + area.w - grid.gap - left) * APP_SHARE).round();
-        let app = Area::new(left, area.y, width, area.h);
-
-        draw_text(paint, grid, (&row.app_name, &[]), app, paint.theme.app_text);
-        left += width + grid.gap;
+            paint.icons.draw(
+                paint.canvas,
+                icon,
+                grid.icon as u32,
+                (left as i32, top.round() as i32),
+            );
+        }
+        left += grid.icon + grid.gap;
     }
 
     let title =

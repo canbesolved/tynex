@@ -77,7 +77,7 @@ pub struct OutputBarConfig {
 pub struct TitleBarConfig {
     pub enabled: bool,        // Window list before typing
     pub sort_by: SortBy,      // Row order
-    pub show_app_icon: bool,  // App name column
+    pub show_icons: bool,     // Icon before each title
     pub strip_app_name: bool, // Drop the app name from titles
 }
 
@@ -110,7 +110,7 @@ impl Default for Config {
             title_bar: TitleBarConfig {
                 enabled: false,
                 sort_by: SortBy::Recently,
-                show_app_icon: false,
+                show_icons: true,
                 strip_app_name: false,
             },
         }

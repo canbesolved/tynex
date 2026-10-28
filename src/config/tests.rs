@@ -66,14 +66,29 @@ fn sort_by_values() {
 }
 
 #[test]
-fn title_bar_columns_and_strip_values() {
-    let text = "[title_bar]\nenabled = true\nshow_app_icon = true\n\
+fn title_bar_icons_and_strip_values() {
+    let text = "[title_bar]\nenabled = true\nshow_icons = false\n\
                 strip_app_name = true\n";
     let config = parse(text, &no_font).expect("valid config");
 
     assert!(config.title_bar.enabled);
-    assert!(config.title_bar.show_app_icon);
+    assert!(!config.title_bar.show_icons);
     assert!(config.title_bar.strip_app_name);
+}
+
+#[test]
+fn show_icons_defaults_to_true() {
+    let config = parse("[title_bar]\n", &no_font).expect("valid config");
+
+    assert!(config.title_bar.show_icons);
+}
+
+#[test]
+fn removed_show_app_icon_is_an_unknown_key() {
+    let msg = &errors("[title_bar]\nshow_app_icon = true\n")[0];
+
+    assert!(msg.contains("unknown key `show_app_icon`"), "{msg}");
+    assert!(msg.contains("release notes"), "{msg}");
 }
 
 #[test]

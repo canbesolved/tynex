@@ -43,9 +43,8 @@ window. No mouse, no scrolling, no waiting.
   (`title_bar.sort_by`).
 - Matches appear in the output bar as you type; with
   `input_bar.launcher.mode` set, installed apps appear there too.
-- Each entry shows the app icon and the window title in columns, with
-  an optional app name column on the title bar
-  (`title_bar.show_app_icon`).
+- Each entry shows the app icon and the window title. The title bar
+  can hide its icons with `title_bar.show_icons = false`.
 - Low footprint: idle at 0 % CPU, under 10 MB of RAM, no GPU usage.
 - Modular core: window sources, UI modules and modes are plug-in
   modules.
@@ -150,7 +149,7 @@ max_rows = 19
 [title_bar]
 enabled = false              # Window list before typing
 sort_by = "recently"         # recently | app
-show_app_icon = false        # App name column before the title
+show_icons = true            # false: titles only
 strip_app_name = false       # true: "Café — Firefox" becomes "Café"
 ```
 
@@ -166,6 +165,10 @@ becomes `hotkeys.action`. `sort_by`, `title_bar`, `show_app` and
 `show_app_icon` and `strip_app_name`. `max_rows` moves to
 `[output_bar]`. Delete `[appearance]`. Removed and renamed keys are
 listed in [CHANGELOG.md](CHANGELOG.md).
+
+Upgrading to 0.2.3: delete `title_bar.show_app_icon`. The app name
+column is gone. `title_bar.show_icons` (default `true`) draws the
+icon; `false` shows titles only.
 
 ## Architecture
 

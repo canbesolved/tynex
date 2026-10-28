@@ -55,7 +55,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let title = TitleBarConfig {
         enabled: true,
         sort_by: SortBy::Recently,
-        show_app_icon: true,
+        show_icons: true,
         strip_app_name: false,
     };
     let mut painter = Painter::new(text, icons, &main, &output, &title);

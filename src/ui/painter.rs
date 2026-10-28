@@ -32,7 +32,7 @@ pub struct Painter {
     width: u16,
     max_rows: u16,
     title_bar: bool,
-    show_app_icon: bool,
+    show_icons: bool,
 }
 
 impl Painter {
@@ -52,7 +52,7 @@ impl Painter {
             width: main.width,
             max_rows: output.max_rows,
             title_bar: title.enabled,
-            show_app_icon: title.show_app_icon,
+            show_icons: title.show_icons,
         }
     }
 
@@ -109,7 +109,7 @@ impl Painter {
             max_rows: usize::from(self.max_rows),
             scale,
             title_bar: self.title_bar,
-            show_app_icon: self.show_app_icon,
+            show_icons: self.show_icons,
         }
     }
 }

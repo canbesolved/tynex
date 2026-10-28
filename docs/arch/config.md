@@ -63,8 +63,8 @@ enabled = false
 # Row order: "recently" puts the last used window first, "app" groups
 # windows by app name.
 sort_by = "recently"         # recently | app
-# Show the app name in its own column before the title.
-show_app_icon = false
+# Draw the app icon before the title. false shows titles only.
+show_icons = true
 # Drop " — <app name>" from the end of window titles.
 strip_app_name = false
 ```
@@ -92,12 +92,16 @@ removed with the `mode` and `keys` keys
 ([ADR-0050](../adr/0050_search_only.md)); a config that still has them
 stops the daemon with an unknown key error.
 
-`title_bar.show_app_icon` adds an app name column before the title
-in the title bar only (see [ADR-0045](../adr/0045_app_names.md) for
-where names come from and [title_bar.md](ui/title_bar.md) for the
-columns). The output bar never shows that column. It replaces
-`appearance.show_app` and earlier `title_format`; a config that still
-has them stops the daemon with an unknown key error.
+`title_bar.show_icons` draws the app icon before the title (default
+`true`). `false` shows titles only, with no icon slot. A window
+without an icon keeps an empty slot when icons are on. The output
+bar always draws the icon
+([ADR-0058](../adr/0058_title_bar_row.md)).
+
+`title_bar.show_app_icon`, the app name column, was removed in 0.2.3.
+It replaces `appearance.show_app` and earlier `title_format`. A
+config that still sets `show_app_icon`, `show_app` or `title_format`
+stops the daemon with an unknown key error.
 
 `layout` was removed in 0.1.7
 ([ADR-0052](../adr/0052_ui_modules.md)). The popup is UI modules, so
@@ -154,7 +158,7 @@ The config is read once, when `tynex daemon` starts
 | `output_bar.max_rows`      | 1 to 50                                   |
 | `title_bar.enabled`        | `true` or `false`                         |
 | `title_bar.sort_by`        | `recently` or `app`                       |
-| `title_bar.show_app_icon`  | `true` or `false`                         |
+| `title_bar.show_icons`     | `true` or `false`                         |
 | `title_bar.strip_app_name` | `true` or `false`                         |
 
 Syntax and type errors stop at the first error, as reported by `toml`.

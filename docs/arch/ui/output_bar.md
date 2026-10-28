@@ -35,9 +35,8 @@ windows again when `title_bar.enabled` is set. See
   does not collapse.
 - At most `output_bar.max_rows` rows. The list scrolls so the
   selected match stays visible.
-- Rows are icon and title only. The app name column is title-bar
-  only (`title_bar.show_app_icon`). Matched letters use the highlight
-  color (see [render.md](render.md)).
+- Rows are icon and title. The icon slot is always reserved here.
+  Matched letters use the highlight color (see [render.md](render.md)).
 - `Enter` activates a window row or launches an app row. Up and down
   move that selection. Prompt mode owns the keys; this module only
   draws.

@@ -88,7 +88,7 @@ pub(super) fn validate(
                 RawSortBy::App => SortBy::App,
                 RawSortBy::Recently => SortBy::Recently,
             },
-            show_app_icon: raw.title_bar.show_app_icon,
+            show_icons: raw.title_bar.show_icons,
             strip_app_name: raw.title_bar.strip_app_name,
         },
     })

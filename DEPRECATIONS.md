@@ -31,6 +31,9 @@ Features that shipped in a release and were removed later.
   Replaced by `[main]`, `[hotkeys]`, `[output_bar]` and
   `[title_bar]`. `show_app` becomes `title_bar.show_app_icon`
   ([ADR-0055](docs/adr/0055_config_sections.md)).
+- `title_bar.show_app_icon`, the app name column: added in 0.2.0,
+  removed in 0.2.3 (**Breaking**). Replaced by `title_bar.show_icons`
+  ([ADR-0058](docs/adr/0058_title_bar_row.md)).
 
 ## Never shipped
 

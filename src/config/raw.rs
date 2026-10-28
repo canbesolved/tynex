@@ -111,7 +111,7 @@ impl Default for RawOutputBar {
 pub(super) struct RawTitleBar {
     pub enabled: bool,
     pub sort_by: RawSortBy,
-    pub show_app_icon: bool,
+    pub show_icons: bool,
     pub strip_app_name: bool,
 }
 
@@ -120,7 +120,7 @@ impl Default for RawTitleBar {
         Self {
             enabled: false,
             sort_by: RawSortBy::Recently,
-            show_app_icon: false,
+            show_icons: true,
             strip_app_name: false,
         }
     }

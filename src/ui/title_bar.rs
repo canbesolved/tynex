@@ -61,7 +61,7 @@ pub(crate) fn draw(
                 paint.theme.selected,
             );
         }
-        draw::draw_row(paint, grid, row, area, &[], metrics.show_app_icon);
+        draw::draw_row(paint, grid, row, area, &[], metrics.show_icons);
         top += grid.row_h;
     }
 }
