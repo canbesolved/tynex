@@ -134,9 +134,12 @@ Titles:
 - [ ] Rename a window from the popup: `F2` edits the selected title in
   place, `Enter` keeps it, `Esc` cancels. The new title lasts until the
   window closes.
-- [ ] Title prefixes: a `[title_prefix]` table maps a pattern to a
-  prefix added to matching titles, for example `"Jira" = "[J] "`.
-  Patterns are regular expressions, so plain text matches as well.
+- [ ] Configurable prefixes on rows and titles:
+  - Per app: `[apps.<app_id>]` with `prefix = "Web"` so launcher rows
+    read `Web: Firefox`.
+  - By pattern: `[title_prefix]` maps a pattern to a prefix on matching
+    window titles, for example `"Jira" = "[J] "`. Patterns are regular
+    expressions, so plain text matches as well.
 
 Icon bar:
 
@@ -164,9 +167,6 @@ Info bar:
 
 Configuration:
 
-- [ ] Per-app settings: an `[apps.<app_id>]` table per app, starting
-  with a custom prefix before the app name, for example
-  `[apps.firefox]` with `prefix = "Web"` so rows read `Web: Firefox`.
 - [ ] `tynex reload`: re-read the config without restarting. An invalid
   file is reported and the running config stays in use.
 
