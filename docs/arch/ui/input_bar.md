@@ -28,5 +28,6 @@ sections follow the modules
 
 - One row high: 2 x font size, times the output scale.
 - The painter in `src/ui/painter.rs` draws the frame and the padding
-  around this bar, then the output bar when the query has a result,
-  then the [title bar](title_bar.md) when it is enabled.
+  around this bar, then the output bar when the query is non-empty,
+  then the [title bar](title_bar.md) when it is enabled and the query
+  is empty.

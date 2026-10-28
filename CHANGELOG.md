@@ -9,6 +9,11 @@ project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- The title bar hides as soon as you type, and shows again when the
+  query is cleared, if it is enabled (ADR-0057).
+
 ## [0.2.0] - 2026-10-28
 
 Config sections and launcher. Breaking: `[appearance]` and the old

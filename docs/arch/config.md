@@ -83,10 +83,12 @@ previously used window, or closes it when there is none.
 
 `output_bar.max_rows` caps both the output bar and the title bar.
 
-`title_bar.enabled` shows the open windows. With `false` (default)
-only the input bar shows until you type. Matches then appear in the
-output bar, whether or not the title bar is on. It replaces hotkey
-mode, which 0.1.6 removed with the `mode` and `keys` keys
+`title_bar.enabled` shows the open windows while the query is empty
+([ADR-0057](../adr/0057_title_bar_query.md)). Typing hides them.
+Clearing the query with `Backspace` or `Esc` shows them again. With
+`false` (default) only the input bar shows until you type. Matches
+then appear in the output bar. It replaces hotkey mode, which 0.1.6
+removed with the `mode` and `keys` keys
 ([ADR-0050](../adr/0050_search_only.md)); a config that still has them
 stops the daemon with an unknown key error.
 

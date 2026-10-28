@@ -111,20 +111,29 @@ fn without_title_bar_rows_wait_for_a_query() {
 }
 
 #[test]
-fn query_stacks_the_output_bar_above_the_title_bar() {
+fn typing_hides_the_title_bar_until_the_query_is_cleared() {
     let theme = Theme::default();
-    let mut s = state(2);
+    let off = Metrics {
+        title_bar: false,
+        ..M
+    };
+    let mut s = state(3);
+
+    s.output.truncate(1); // One match, three open windows
+
     let open = measured(&s.view(), &M, &theme);
+    let input_only = measured(&s.view(), &off, &theme);
 
     s.query = "w".into();
 
-    let g = Grid::new(&M, &theme);
-    let list = 1.0 + 2.0 * g.row_h;
+    let typed = measured(&s.view(), &M, &theme);
 
-    assert_eq!(
-        measured(&s.view(), &M, &theme).height,
-        open.height + list as u32
-    );
+    assert!(typed.height < open.height);
+    assert_eq!(typed, measured(&s.view(), &off, &theme));
+
+    s.query.clear();
+    assert_eq!(measured(&s.view(), &M, &theme), open);
+    assert_eq!(measured(&s.view(), &off, &theme), input_only);
 }
 
 #[test]

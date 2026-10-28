@@ -13,28 +13,18 @@ model answer in this same module.
 ## Look
 
 ```text
-After typing, title_bar.enabled = false
+After typing
 ╭──────────────────────────────────────╮
 │ / firef                              │
 ├──────────────────────────────────────┤
 │ ▣  Firefox   Release notes           │
 │ ▣  Firefox   Café                    │
 ╰──────────────────────────────────────╯
-
-After typing, title_bar.enabled = true
-╭──────────────────────────────────────╮
-│ / firef                              │
-├──────────────────────────────────────┤
-│ ▣  Firefox   Release notes           │
-├──────────────────────────────────────┤
-│ ▣  Konsole   ~/projects/demo         │
-│ ▣  Firefox   Release notes           │
-│ ▣  Dolphin   Downloads               │
-╰──────────────────────────────────────╯
 ```
 
-The first list under the input is the output bar. With
-`title_bar.enabled` the open windows stay below it, unfiltered. See
+The list under the input is the output bar. The title bar is hidden
+while the query is non-empty. Clearing the query shows the open
+windows again when `title_bar.enabled` is set. See
 [title_bar.md](title_bar.md).
 
 ## Rules
