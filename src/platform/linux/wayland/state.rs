@@ -13,6 +13,7 @@ use wayland_client::globals::GlobalListContents;
 use wayland_client::protocol::wl_buffer::{self, WlBuffer};
 use wayland_client::protocol::wl_compositor::WlCompositor;
 use wayland_client::protocol::wl_keyboard::WlKeyboard;
+use wayland_client::protocol::wl_pointer::WlPointer;
 use wayland_client::protocol::wl_registry::WlRegistry;
 use wayland_client::protocol::wl_seat::WlSeat;
 use wayland_client::protocol::wl_shm::{self, Format, WlShm};
@@ -32,10 +33,12 @@ use crate::platform::linux::wayland::keyboard::Keyboard;
 pub enum PresenterEvent {
     Key(Key),   // A key press, or a repeat of a held key
     Configured, // The popup can be drawn
-    Scale(f32), // The output scale changed; redraw at the new size
-    Redraw,     // A skipped frame can be drawn; a buffer was released
-    Closed,     // The compositor closed the popup
-    FocusLost,  // Keyboard focus left the open popup
+    Scale(f32), /* The output scale changed; redraw at the
+                 * new size */
+    Redraw,    // A skipped frame can be drawn; a buffer was released
+    Closed,    // The compositor closed the popup
+    FocusLost, // Keyboard focus left the open popup
+    Click { x: f64, y: f64 }, // Surface coordinates of a left click
 }
 
 /// The open popup surface.
@@ -57,6 +60,9 @@ pub(super) struct Wl {
     pub _seat: Option<WlSeat>, // Kept bound for keyboard events
     pub keyboard_proxy: Option<WlKeyboard>,
     pub keyboard: Keyboard,
+    pub pointer_proxy: Option<WlPointer>,
+    pub pointer_x: f64, // Last surface coordinate
+    pub pointer_y: f64,
     pub formats: Vec<Format>,
     pub scale: f32,
     pub popup: Option<Popup>,

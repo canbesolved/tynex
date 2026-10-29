@@ -79,6 +79,7 @@ fn start(config: &Config) -> Result<(), String> {
         &config.output_bar,
         &config.title_bar,
         &config.input_bar.hint,
+        &config.icon_bar,
     );
 
     painter.prepare_icons(
@@ -97,6 +98,8 @@ fn start(config: &Config) -> Result<(), String> {
             PromptMode::new(
                 Input::new(config.input_bar.launcher.clone(), app_list),
                 config.title_bar.enabled,
+                config.icon_bar.enabled,
+                config.output_bar.max_rows,
             ),
         ),
         source,

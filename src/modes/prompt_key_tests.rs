@@ -22,7 +22,7 @@ fn prompt(
     launcher: LauncherConfig,
     apps: Vec<AppInfo>,
 ) -> PromptMode {
-    PromptMode::new(Input::new(launcher, apps), title_bar)
+    PromptMode::new(Input::new(launcher, apps), title_bar, false, 19)
 }
 
 fn space() -> Key {

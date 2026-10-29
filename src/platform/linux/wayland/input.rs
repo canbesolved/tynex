@@ -30,12 +30,18 @@ impl Dispatch<WlSeat, ()> for Wl {
             return;
         };
         let has_keyboard = caps.contains(Capability::Keyboard);
+        let has_pointer = caps.contains(Capability::Pointer);
 
         if has_keyboard && s.keyboard_proxy.is_none() {
             s.keyboard_proxy = Some(seat.get_keyboard(qh, ()));
         } else if !has_keyboard && let Some(keyboard) = s.keyboard_proxy.take()
         {
             keyboard.release();
+        }
+        if has_pointer && s.pointer_proxy.is_none() {
+            s.pointer_proxy = Some(seat.get_pointer(qh, ()));
+        } else if !has_pointer && let Some(pointer) = s.pointer_proxy.take() {
+            pointer.release();
         }
     }
 }

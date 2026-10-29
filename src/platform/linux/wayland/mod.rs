@@ -16,6 +16,7 @@ mod buffer;
 mod error;
 mod input;
 mod keyboard;
+mod pointer;
 mod state;
 mod surface;
 
@@ -68,6 +69,9 @@ impl WaylandPresenter {
             _seat: globals.bind(&qh, 4..=7, ()).ok(), // 4+ sends repeat info
             keyboard_proxy: None,
             keyboard: Keyboard::new(),
+            pointer_proxy: None,
+            pointer_x: 0.0,
+            pointer_y: 0.0,
             formats: Vec::new(),
             scale: 1.0,
             popup: None,

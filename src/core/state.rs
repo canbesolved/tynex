@@ -3,7 +3,7 @@
 
 //! State of an open popup, shared by the switcher and the modes.
 
-use crate::core::view::{Row, RowTarget, View};
+use crate::core::view::{AppIcon, Row, RowTarget, Strip, View};
 use crate::core::window::WindowId;
 
 /// State of an open popup. Modes read and change it.
@@ -15,6 +15,9 @@ pub struct State {
     pub rows: Vec<Row>,   // Open windows, for the title bar
     pub output: Vec<Row>, // Result list, for the output bar
     pub selected: usize,  // Index into `output`
+    pub icons: Vec<AppIcon>, // Running apps, most recent first
+    pub icon: usize,      // Index into `icons`
+    pub dropdown: Option<usize>, // Selected title while open
 }
 
 impl State {
@@ -30,6 +33,9 @@ impl State {
             rows,
             output,
             selected: 0,
+            icons: Vec::new(),
+            icon: 0,
+            dropdown: None,
         }
     }
 
@@ -107,6 +113,11 @@ impl State {
             self.selected,
             &self.rows,
             &self.output,
+            &Strip {
+                icon: self.icon,
+                dropdown: self.dropdown,
+                icons: &self.icons,
+            },
         )
     }
 

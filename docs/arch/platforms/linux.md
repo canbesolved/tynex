@@ -14,7 +14,8 @@ platform/linux/
     state.rs      Dispatch state: globals, popup, events
     surface.rs    Layer-shell surface setup, commit and teardown
     buffer.rs     wl_shm double buffer on a memfd
-    input.rs      wl_seat and wl_keyboard events
+    input.rs      wl_seat, wl_keyboard and wl_pointer
+    pointer.rs    Left click while the popup is shown
     keyboard.rs   xkb keymap, compose, repeat, native key -> core Key
     error.rs      PresenterError
   dbus.rs         Shared D-Bus connection, dispatch, calls
@@ -134,6 +135,13 @@ closes, and without input it closes after ten seconds.
 Tests use real keymaps from the system's XKB data (`us,gr`), so CI
 installs `libxkbcommon-dev`.
 
+## Pointer
+
+`wl_pointer` is bound with the keyboard. A left press while the popup
+is shown becomes a click in surface coordinates. The event loop
+multiplies those by the output scale and hit-tests the drawn icons
+and dropdown. The right button is ignored.
+
 ## Event loop
 
 One thread, one `rustix::event::poll` call over:
@@ -141,8 +149,11 @@ One thread, one `rustix::event::poll` call over:
 - the Wayland connection fd;
 - the D-Bus connection fd (`dbus` channel watch).
 
-The poll timeout is the nearest deadline: key repeat while the popup is
-shown, otherwise none, so an idle daemon never wakes up. Events from both
+The poll timeout is the nearest deadline: key repeat, the hint timer,
+or a dropdown slide (about every 1/120 s while it moves). A hidden
+popup, a finished slide and an idle daemon add no timeout
+([ADR-0036](../../adr/0036_no_idle_wakeups.md), amended by
+[ADR-0062](../../adr/0062_icon_bar.md)). Events from both
 sources go to the core in order, so no locks or channels are needed.
 
 `event_loop.rs` owns the parts (`Parts`: switcher, window source,
@@ -153,8 +164,8 @@ presenter, bus, painter, event queue). Each turn it:
 2. applies the action: `Redraw` sizes and draws the popup, `Activate`
    hides it and calls the window source, `Close` hides it;
 3. flushes Wayland requests and D-Bus calls, then polls;
-4. dispatches Wayland events (keys, configure, scale, closed) and
-   D-Bus calls, which push new events into the queue.
+4. dispatches Wayland events (keys, clicks, configure, scale, closed)
+   and D-Bus calls, which push new events into the queue.
 
 A `Quit` request hides the popup and ends the loop. Measured with the
 mock source: about 6 MB RSS and no context switches while idle.

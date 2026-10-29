@@ -14,8 +14,9 @@ use crate::ui::render::icons::{Icons, NoIcons};
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
 
-const FONT: &[u8] = include_bytes!("../../tests/fonts/dejavu_sans.ttf");
-const M: Metrics = Metrics {
+pub(in crate::ui) const FONT: &[u8] =
+    include_bytes!("../../tests/fonts/dejavu_sans.ttf");
+pub(in crate::ui) const M: Metrics = Metrics {
     font_size: 14.0,
     width: 300.0,
     max_rows: 3,
@@ -23,9 +24,11 @@ const M: Metrics = Metrics {
     title_bar: true,
     show_icons: true,
     hint_color: Rgba(0x8d, 0xa7, 0x87, 0xff),
+    icon_bar: false,
+    icon_size: 24.0,
 };
 
-fn state(n: usize) -> State {
+pub(in crate::ui) fn state(n: usize) -> State {
     let rows = (0..n)
         .map(|i| Row {
             target: crate::core::view::RowTarget::Window(WindowId(format!(
@@ -44,7 +47,7 @@ fn state(n: usize) -> State {
 }
 
 /// Draws `state` and returns the RGBA buffer and its size.
-fn render(state: &State) -> (Vec<u8>, Size) {
+pub(in crate::ui) fn render(state: &State) -> (Vec<u8>, Size) {
     render_with(state, &M)
 }
 
@@ -67,7 +70,7 @@ fn render_with(state: &State, m: &Metrics) -> (Vec<u8>, Size) {
     (data, size)
 }
 
-fn pixel(data: &[u8], size: Size, x: f32, y: f32) -> [u8; 4] {
+pub(in crate::ui) fn pixel(data: &[u8], size: Size, x: f32, y: f32) -> [u8; 4] {
     let i = ((y as u32 * size.width + x as u32) * 4) as usize;
 
     [data[i], data[i + 1], data[i + 2], data[i + 3]]
@@ -217,34 +220,4 @@ fn output_bar_keeps_the_icon_slot() {
         pixel(&title.0, title.1, x, y),
         pixel(&output.0, output.1, x, y)
     );
-}
-
-#[test]
-fn input_bar_draws_a_beam_at_the_cursor() {
-    let g = Grid::new(&M, &Theme::default());
-    let (data, size) = render(&state(0));
-    let text = Text::new(Face::new(FONT, 0).unwrap());
-    let (ascent, descent) = text.metrics(g.font);
-    let left = g.pad + g.gap;
-    let mark = text.width(">", g.font);
-    let space = text.width(" ", g.font);
-    let x = (left + mark + g.gap + space).round();
-    let y = (g.pad + g.row_h / 2.0 + f32::midpoint(ascent, descent)).round();
-    let caret = [0xe6, 0xed, 0xf3, 0xff];
-
-    assert_eq!(pixel(&data, size, x, y), caret);
-    assert_eq!(pixel(&data, size, x, y - 1.0), caret);
-    assert_ne!(pixel(&data, size, x + 3.0, y), caret);
-
-    let mut s = state(0);
-
-    s.query = "ab".into();
-
-    let start = render(&s);
-    s.cursor = 2;
-    let end = render(&s);
-    let x1 = (left + mark + g.gap + space + text.width("ab", g.font)).round();
-
-    assert_ne!(pixel(&start.0, size, x1, y), caret);
-    assert_eq!(pixel(&end.0, size, x1, y), caret);
 }

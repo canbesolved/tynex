@@ -36,6 +36,7 @@ pub enum Event {
     Windows(Vec<WindowInfo>), // Full list, most recently used first
     Show,
     Key(Key),
+    Click(Click),
     Hide,
     Quit,
 }
@@ -48,4 +49,12 @@ pub enum Action {
     Activate(WindowId),
     Launch(String), // App id
     Close,
+}
+
+/// Where a click landed in the popup.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Click {
+    Icon(usize), // Index into the running apps
+    Menu(usize), // Index into the open dropdown
+    Elsewhere,   // Inside the popup, not on an icon or title
 }

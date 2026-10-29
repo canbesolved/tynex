@@ -6,32 +6,61 @@
 //! `Space` confirms the selected row, the same as `Enter`. `Tab`
 //! walks the list that is on screen.
 
-use crate::core::event::{Action, Key};
+use crate::core::event::{Action, Click, Key};
 use crate::core::state::State;
 use crate::core::traits::Mode;
 use crate::core::view::RowTarget;
 use crate::modules::input::Input;
+
+#[path = "prompt_icon.rs"]
+mod prompt_icon;
 
 /// Typed characters build a query; the best match is selected.
 #[derive(Debug)]
 pub struct PromptMode {
     input: Input,
     title_bar: bool, // `title_bar.enabled` from the config
+    icon_bar: bool,  // `icon_bar.enabled` from the config
+    max_rows: usize, // Cap for the dropdown
 }
 
 impl PromptMode {
-    /// Creates a prompt mode. `title_bar` is `title_bar.enabled`.
+    /// Creates a prompt mode.
+    ///
+    /// `title_bar` and `icon_bar` are the module switches. `max_rows`
+    /// caps the dropdown.
     #[must_use]
-    pub fn new(input: Input, title_bar: bool) -> Self {
-        Self { input, title_bar }
+    pub fn new(
+        input: Input,
+        title_bar: bool,
+        icon_bar: bool,
+        max_rows: u16,
+    ) -> Self {
+        Self {
+            input,
+            title_bar,
+            icon_bar,
+            max_rows: usize::from(max_rows).max(1),
+        }
+    }
+
+    /// Returns true while the icon strip is on screen.
+    fn strip(&self, s: &State) -> bool {
+        self.icon_bar && s.query.is_empty()
     }
 }
 
 impl Mode for PromptMode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
+        if self.strip(s)
+            && let Some(action) = prompt_icon::key(key, s, self.max_rows)
+        {
+            return action;
+        }
         match key {
             Key::Char { text: ' ', .. } | Key::Enter => confirm(s),
             Key::Char { text, .. } => {
+                s.close_dropdown();
                 s.insert(text);
                 self.refresh(s);
                 Action::Redraw
@@ -98,6 +127,19 @@ impl Mode for PromptMode {
 
     fn refresh(&mut self, s: &mut State) {
         self.input.refresh(s);
+        if self.strip(s) {
+            s.settle_dropdown(self.max_rows);
+        } else {
+            s.close_dropdown();
+        }
+    }
+
+    fn on_click(&mut self, click: Click, s: &mut State) -> Action {
+        if self.strip(s) {
+            prompt_icon::click(click, s, self.max_rows)
+        } else {
+            Action::None
+        }
     }
 }
 
@@ -117,3 +159,7 @@ mod tests;
 #[cfg(test)]
 #[path = "prompt_key_tests.rs"]
 mod key_tests;
+
+#[cfg(test)]
+#[path = "prompt_icon_tests.rs"]
+mod icon_tests;

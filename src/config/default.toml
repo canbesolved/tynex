@@ -27,7 +27,7 @@ hint.text = 'date +"%A %b %-d %T %Y"'
 hint.update = 0
 
 [output_bar]
-# Cap for the output bar and the title bar.
+# Cap for the output bar, the title bar and an icon dropdown.
 max_rows = 19
 
 [title_bar]
@@ -41,3 +41,9 @@ sort_by = "recently"         # recently | app
 show_icons = true
 # Drop " — <app name>" from the end of window titles.
 strip_app_name = false
+
+[icon_bar]
+# Row of running apps under the input bar. false hides it.
+enabled = true
+# Icon side in logical pixels, scaled with the display.
+icon_size = 24

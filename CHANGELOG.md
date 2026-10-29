@@ -9,6 +9,17 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `[icon_bar]` draws one icon per running app under the input bar
+  while the query is empty. `enabled` defaults to `true`.
+  `icon_size` defaults to `24` logical pixels (8 to 128) and scales
+  with the display. The row is centered, or shrunk until it fits.
+  An app with several windows shows a count and opens a dropdown
+  of its titles. `Left` and `Right` move along the strip. `Enter`,
+  `Space` and a left click activate one window, open the dropdown,
+  or launch. The dropdown slides over 150 ms (ADR-0062).
+
 ## [0.2.8] - 2026-10-29
 
 `Space` confirms the selected match, and `Tab` walks the visible list.

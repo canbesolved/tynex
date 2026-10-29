@@ -29,8 +29,10 @@ while the title bar is showing, and matches while the output bar is
 showing. With neither list on screen, `Tab` does nothing.
 `Shift+Tab` steps forward too.
 
-The popup opens with the previous window selected, so `Space` or
-`Enter` right after the hotkey switches back like Alt+Tab. Typing
+The popup opens with the previous window selected. With the icon bar
+off, or when that app has one window, `Space` or `Enter` switches
+back like Alt+Tab. With the icon bar on and several windows, those
+keys open its dropdown (see [icon_bar.md](../ui/icon_bar.md)). Typing
 starts at once; the best match is selected after every change of
 the query. The bar on screen is the
 [input bar](../ui/input_bar.md). Matches are drawn
@@ -39,3 +41,13 @@ in the [output bar](../ui/output_bar.md). Open windows show when
 them; clearing the query shows them again (see
 [config.md](../config.md#format) and
 [title_bar.md](../ui/title_bar.md)).
+
+## Icon bar
+
+While `[icon_bar] enabled` is set and the query is empty, `Left` and
+`Right` move along the icons and close an open dropdown. `Enter` and
+`Space` activate one window, open the dropdown, or launch. `Up`,
+`Down` and `Tab` move inside an open dropdown; otherwise they still
+move the list above. `Esc` closes the dropdown first, then clears
+the query or closes the popup. A typed character hides the strip,
+and `Left` and `Right` move the cursor again.

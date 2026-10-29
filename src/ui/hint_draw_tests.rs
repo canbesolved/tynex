@@ -23,6 +23,8 @@ fn metrics(color: Rgba) -> Metrics {
         title_bar: false,
         show_icons: false,
         hint_color: color,
+        icon_bar: false,
+        icon_size: 24.0,
     }
 }
 

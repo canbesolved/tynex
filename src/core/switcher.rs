@@ -3,7 +3,8 @@
 
 //! Switcher state machine: open, refresh, route keys, close.
 
-use crate::core::event::{Action, Event, Key};
+use crate::core::event::{Action, Click, Event, Key};
+use crate::core::icons;
 use crate::core::order::{SortBy, order};
 use crate::core::state::State;
 use crate::core::text::sanitize_title;
@@ -64,6 +65,7 @@ impl<M: Mode> Switcher<M> {
             Event::Windows(list) => self.update(list),
             Event::Show => self.show(),
             Event::Key(key) => self.key(key),
+            Event::Click(click) => self.click(click),
             Event::Hide | Event::Quit => self.close(),
         }
     }
@@ -95,11 +97,14 @@ impl<M: Mode> Switcher<M> {
             return Action::None;
         };
         let selected = old.selected_id().cloned();
+        let app = old.icons.get(old.icon).map(|icon| icon.app_id.clone());
+        let dropdown = old.dropdown;
         let mut state = State::new(self.rows());
 
         state.query = old.query;
         state.cursor = old.cursor;
         state.hint = old.hint;
+        self.apply_icons(&mut state, app.as_deref(), dropdown);
         self.mode.refresh(&mut state);
         state.select_id(selected.as_ref());
         self.state = Some(state);
@@ -112,8 +117,14 @@ impl<M: Mode> Switcher<M> {
         }
 
         let mut state = State::new(self.rows());
+        let app = self
+            .windows
+            .get(1)
+            .or_else(|| self.windows.first())
+            .map(|window| window.app_id.clone());
 
         state.hint.clone_from(&self.hint);
+        self.apply_icons(&mut state, app.as_deref(), None);
         self.mode.refresh(&mut state);
         // The previous window is selected in any order, like Alt+Tab.
         state.select_id(self.windows.get(1).map(|w| &w.id));
@@ -127,6 +138,21 @@ impl<M: Mode> Switcher<M> {
         };
         let action = self.mode.on_key(key, &mut state);
 
+        self.keep(action, state)
+    }
+
+    /// Routes one click to the mode. Same lifetime rules as `key`.
+    fn click(&mut self, click: Click) -> Action {
+        let Some(mut state) = self.state.take() else {
+            return Action::None;
+        };
+        let action = self.mode.on_click(click, &mut state);
+
+        self.keep(action, state)
+    }
+
+    /// Keeps `state` unless the popup is closing.
+    fn keep(&mut self, action: Action, state: State) -> Action {
         if !matches!(
             action,
             Action::Activate(_) | Action::Launch(_) | Action::Close
@@ -134,6 +160,18 @@ impl<M: Mode> Switcher<M> {
             self.state = Some(state);
         }
         action
+    }
+
+    /// Fills the icon strip from the cached windows.
+    fn apply_icons(
+        &self,
+        state: &mut State,
+        app: Option<&str>,
+        dropdown: Option<usize>,
+    ) {
+        state.icons = icons::running(&self.windows);
+        state.select_icon(app);
+        state.dropdown = dropdown;
     }
 
     fn close(&mut self) -> Action {

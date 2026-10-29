@@ -33,6 +33,8 @@ fn start(config: &Config) -> (App, Source, EventRx) {
         PromptMode::new(
             Input::new(config.input_bar.launcher.clone(), Vec::new()),
             config.title_bar.enabled,
+            config.icon_bar.enabled,
+            config.output_bar.max_rows,
         ),
     );
 
@@ -72,8 +74,16 @@ fn mock_source_drives_the_switcher() {
         config::parse("[main]\ndesktop = \"mock\"\n", &|_| false).unwrap();
     let (mut sw, mut source, rx) = start(&config);
 
-    // `Enter` right after opening goes back and forth, like Alt+Tab.
-    switch(&mut sw, &mut source, &rx, "");
+    // Firefox has two windows, so the first Enter opens its dropdown
+    // and the next Enter activates the first title, Café (mock-02).
+    sw.handle(Event::Show);
+    assert_eq!(sw.handle(Event::Key(Key::Enter)), Action::Redraw);
+    match sw.handle(Event::Key(Key::Enter)) {
+        Action::Activate(id) => source.activate(&id).expect("known window"),
+        other => panic!("expected activation, got {other:?}"),
+    }
+    pump(&rx, &mut sw);
+    // The previous app now has one window, so Enter activates it.
     switch(&mut sw, &mut source, &rx, "");
     // Typing picks the best match.
     switch(&mut sw, &mut source, &rx, "musica");

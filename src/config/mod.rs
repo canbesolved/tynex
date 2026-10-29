@@ -149,6 +149,22 @@ pub struct TitleBarConfig {
     pub strip_app_name: bool, // Drop the app name from titles
 }
 
+/// The `[icon_bar]` table.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct IconBarConfig {
+    pub enabled: bool,  // Running-app strip under the input bar
+    pub icon_size: u16, // Logical pixels, scaled with the display
+}
+
+impl Default for IconBarConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            icon_size: 24,
+        }
+    }
+}
+
 /// The whole config file, validated.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Config {
@@ -157,6 +173,7 @@ pub struct Config {
     pub input_bar: InputBarConfig,
     pub output_bar: OutputBarConfig,
     pub title_bar: TitleBarConfig,
+    pub icon_bar: IconBarConfig,
 }
 
 impl Default for Config {
@@ -179,6 +196,7 @@ impl Default for Config {
                 show_icons: true,
                 strip_app_name: false,
             },
+            icon_bar: IconBarConfig::default(),
         }
     }
 }
@@ -226,3 +244,7 @@ mod new_window_tests;
 #[cfg(test)]
 #[path = "hint_tests.rs"]
 mod hint_tests;
+
+#[cfg(test)]
+#[path = "icon_tests.rs"]
+mod icon_tests;
