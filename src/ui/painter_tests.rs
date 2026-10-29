@@ -217,3 +217,17 @@ fn output_bar_keeps_the_icon_slot() {
         pixel(&output.0, output.1, x, y)
     );
 }
+
+#[test]
+fn input_bar_underlines_after_the_prompt() {
+    let g = Grid::new(&M, &Theme::default());
+    let (data, size) = render(&state(0));
+    let text = Text::new(Face::new(FONT, 0).unwrap());
+    let (ascent, descent) = text.metrics(g.font);
+    let x = (g.pad + g.gap + text.width("> ", g.font)).round();
+    let y = (g.pad + g.row_h / 2.0 + f32::midpoint(ascent, descent)).round();
+    let caret = [0xe6, 0xed, 0xf3, 0xff];
+
+    assert_eq!(pixel(&data, size, x, y), caret);
+    assert_ne!(pixel(&data, size, x, y - 1.0), caret);
+}

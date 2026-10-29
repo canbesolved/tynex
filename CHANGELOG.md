@@ -9,6 +9,16 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-10-29
+
+The input bar shows an underline cursor.
+
+### Added
+
+- The input bar draws a one-pixel underline after the query, one
+  space wide, in the text color. It stays while the query is empty
+  and does not blink.
+
 ## [0.2.5] - 2026-10-29
 
 The input bar prompt is `>`.
@@ -277,7 +287,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.5...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.6...HEAD
+[0.2.6]: https://github.com/canbesolved/tynex/releases/tag/v0.2.6
 [0.2.5]: https://github.com/canbesolved/tynex/releases/tag/v0.2.5
 [0.2.4]: https://github.com/canbesolved/tynex/releases/tag/v0.2.4
 [0.2.3]: https://github.com/canbesolved/tynex/releases/tag/v0.2.3

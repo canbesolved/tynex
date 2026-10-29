@@ -86,6 +86,8 @@ impl Text {
     }
 
     /// Draws `text` with its baseline at `(x, y)`, truncated to `max`.
+    ///
+    /// Returns the advance of the drawn text, including the ellipsis.
     pub fn draw(
         &mut self,
         canvas: &mut Canvas<'_>,
@@ -93,7 +95,7 @@ impl Text {
         (x, y): (f32, f32),
         max: f32,
         style: &Style<'_>,
-    ) {
+    ) -> f32 {
         let end = self.fit(text, style.size, max);
         let shown = &text[..end.unwrap_or(text.len())];
         let (placed, width) = self.layout(shown, style.size);
@@ -105,11 +107,16 @@ impl Text {
             self.blit(canvas, p, (x, y), style.size, color);
         }
 
-        if end.is_some() {
-            for p in &self.layout(ELLIPSIS, style.size).0 {
-                self.blit(canvas, p, (x + width, y), style.size, style.color);
-            }
+        if end.is_none() {
+            return width;
         }
+
+        let (marks, extra) = self.layout(ELLIPSIS, style.size);
+
+        for p in &marks {
+            self.blit(canvas, p, (x + width, y), style.size, style.color);
+        }
+        width + extra
     }
 
     /// Places each glyph and returns the total advance.

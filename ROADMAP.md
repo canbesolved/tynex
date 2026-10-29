@@ -23,10 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.6
-
-- [ ] The input bar shows a line cursor.
-
 ### 0.2.7
 
 - [ ] Hint text inside the input bar while the query is empty. It hides

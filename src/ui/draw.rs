@@ -70,13 +70,15 @@ impl Grid {
 
 /// Draws `text` in `color`, vertically centered in `area`, with the
 /// `highlights` byte ranges in the highlight color.
+///
+/// Returns the advance of the drawn text.
 pub(crate) fn draw_text(
     paint: &mut Paint<'_, '_>,
     grid: &Grid,
     (text, highlights): (&str, &[Range<usize>]),
     area: Area,
     color: Rgba,
-) {
+) -> f32 {
     let style = Style {
         size: grid.font,
         color,
@@ -87,7 +89,7 @@ pub(crate) fn draw_text(
 
     paint
         .text
-        .draw(paint.canvas, text, (area.x, base), area.w, &style);
+        .draw(paint.canvas, text, (area.x, base), area.w, &style)
 }
 
 /// Returns the icon side in pixels.
@@ -135,7 +137,7 @@ pub(crate) fn draw_row(
 }
 
 /// Returns the baseline that centers text of `size` in `area`.
-fn baseline(paint: &Paint<'_, '_>, size: f32, area: Area) -> f32 {
+pub(crate) fn baseline(paint: &Paint<'_, '_>, size: f32, area: Area) -> f32 {
     let (ascent, descent) = paint.text.metrics(size);
     let center = area.y + area.h / 2.0;
 
