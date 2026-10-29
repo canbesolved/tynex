@@ -27,11 +27,11 @@
 </p>
 <!-- markdownlint-enable MD033 MD041 -->
 
-Press a hotkey, type a few letters of a window, press `Enter`, and you
-are there. Or press `Enter` right away to go back to the previous
-window. No mouse, no scrolling, no waiting.
+Press a hotkey, type a few letters of a window, press `Enter` or
+`Space`, and you are there. Or press either right away to go back to
+the previous window. No mouse, no scrolling, no waiting.
 
-> Status: 0.2.7 — MVP with KDE Plasma 6 on Wayland support. The icon
+> Status: 0.2.8 — MVP with KDE Plasma 6 on Wayland support. The icon
 > bar follows in 0.2.x (see the [roadmap](ROADMAP.md)).
 
 ## Features
@@ -55,7 +55,7 @@ window. No mouse, no scrolling, no waiting.
 
 | Environment      | Session | Status  |
 | ---------------- | ------- | ------- |
-| KDE Plasma 6     | Wayland | 0.2.7   |
+| KDE Plasma 6     | Wayland | 0.2.8   |
 | Other DEs / WMs  | Any     | Planned |
 | macOS, Windows   | -       | Planned |
 
@@ -69,7 +69,7 @@ prebuilt binaries for Linux x86_64 and arm64 (glibc 2.35 or newer),
 for example:
 
 ```bash
-v=0.2.7 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
+v=0.2.8 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
 url=https://github.com/canbesolved/tynex/releases/download/v$v
 curl -LO "$url/tynex-$v-$t.tar.gz" -LO "$url/SHA256SUMS"
 sha256sum -c --ignore-missing SHA256SUMS
@@ -123,9 +123,11 @@ Pressing the hotkey again switches to the previous window, or closes
 the popup with `hotkeys.action = "hide"`. The popup also closes when
 it loses keyboard focus.
 
-In the popup, type to filter, `Enter` to switch, arrows to move, and
-`Esc` to clear the query or close. `Enter` right after opening
-switches to the previous window, like Alt+Tab.
+In the popup, type to filter, `Enter` or `Space` to switch, `Tab` or
+the arrows to move, and `Esc` to clear the query or close. `Enter` or
+`Space` right after opening switches to the previous window, like
+Alt+Tab. `Tab` walks the open windows when the title bar is on, and
+the matches while you type.
 
 ## Configuration
 

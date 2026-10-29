@@ -30,10 +30,10 @@ fn start(config: &Config) -> (App, Source, EventRx) {
         config.hotkeys.action,
         config.title_bar.strip_app_name,
         config.title_bar.sort_by,
-        PromptMode::new(Input::new(
-            config.input_bar.launcher.clone(),
-            Vec::new(),
-        )),
+        PromptMode::new(
+            Input::new(config.input_bar.launcher.clone(), Vec::new()),
+            config.title_bar.enabled,
+        ),
     );
 
     source.start(tx).expect("mock starts");

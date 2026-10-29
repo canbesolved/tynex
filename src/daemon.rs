@@ -94,10 +94,10 @@ fn start(config: &Config) -> Result<(), String> {
             config.hotkeys.action,
             config.title_bar.strip_app_name,
             config.title_bar.sort_by,
-            PromptMode::new(Input::new(
-                config.input_bar.launcher.clone(),
-                app_list,
-            )),
+            PromptMode::new(
+                Input::new(config.input_bar.launcher.clone(), app_list),
+                config.title_bar.enabled,
+            ),
         ),
         source,
         presenter,

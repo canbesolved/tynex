@@ -36,6 +36,9 @@ slot so titles stay aligned. `false` shows titles only.
 The list hides as soon as you type. Matches appear in the output
 bar. Clearing the query with `Backspace` or `Esc` shows this list
 again when it is enabled. The selected row is highlighted.
+`Tab` moves that highlight one row forward and wraps. `Up` and
+`Down` move it too
+([ADR-0061](../../adr/0061_prompt_keys.md)).
 
 ## Rules
 

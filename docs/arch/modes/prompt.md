@@ -19,14 +19,21 @@ Source: `src/modes/prompt.rs`. The
 | `Backspace`                | Delete the character before it |
 | `Delete`                   | Delete the character after it  |
 | `Up` / `Down`              | Move the selection             |
-| `Enter`                    | Activate or launch, then close |
-| `Tab`                      | Ignored                        |
+| `Space` / `Enter`          | Activate or launch, then close |
+| `Tab`                      | Walk the list on screen        |
 | `Esc`                      | Clear query; close if empty    |
 
-The popup opens with the previous window selected, so `Enter` right
-after the hotkey switches back like Alt+Tab. Typing starts at once;
-the best match is selected after every change of the query. The bar
-on screen is the [input bar](../ui/input_bar.md). Matches are drawn
+`Space` is not inserted
+([ADR-0061](../../adr/0061_prompt_keys.md)). `Tab` walks open windows
+while the title bar is showing, and matches while the output bar is
+showing. With neither list on screen, `Tab` does nothing.
+`Shift+Tab` steps forward too.
+
+The popup opens with the previous window selected, so `Space` or
+`Enter` right after the hotkey switches back like Alt+Tab. Typing
+starts at once; the best match is selected after every change of
+the query. The bar on screen is the
+[input bar](../ui/input_bar.md). Matches are drawn
 in the [output bar](../ui/output_bar.md). Open windows show when
 `title_bar.enabled` is set and the query is empty. Typing hides
 them; clearing the query shows them again (see

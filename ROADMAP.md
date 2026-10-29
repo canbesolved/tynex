@@ -23,11 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.8
-
-- [ ] `Space` works as `Enter`: it picks the selected match, so a
-  search query no longer contains spaces.
-
 ### 0.2.9
 
 - [ ] Icon bar: running apps shown as a row of app icons, one per app,
@@ -48,9 +43,7 @@ Target: MVP with KDE Plasma 6 on Wayland support.
   - Config: `[icon_bar]` with `enabled = true` (default) shows the
     strip with the input bar; with `false`, only the input bar shows
     until you type. Matches appear in the output bar.
-  - Keys:
-    - `Left` and `Right` move along the strip;
-    - `Tab` moves through the matches.
+  - `Left` and `Right` move along the strip.
   - Launching uses the launcher sub-module of the input bar.
 
 ### 0.2.10
@@ -68,11 +61,6 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 
 - [ ] Update the default theme to the Endgame color palette. Exact
   color values will be added when the palette is finalized.
-
-### 0.2.13
-
-- [ ] `Tab` moves the selection through open windows in the title bar
-  when `title_bar.enabled` is set.
 
 ## Next
 

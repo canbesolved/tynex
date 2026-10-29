@@ -9,6 +9,19 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-10-29
+
+`Space` confirms the selected match, and `Tab` walks the visible list.
+
+### Changed
+
+- `Space` picks the selected match, the same as `Enter`. A search
+  query no longer contains spaces (ADR-0061).
+- `Tab` moves the selection through the list on screen: open windows
+  in the title bar while the query is empty and `title_bar.enabled`
+  is set, and matches in the output bar while a query is typed. With
+  neither list showing, `Tab` does nothing (ADR-0061).
+
 ## [0.2.7] - 2026-10-29
 
 The input bar shows a hint while the query is empty.
@@ -315,7 +328,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.7...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.8...HEAD
+[0.2.8]: https://github.com/canbesolved/tynex/releases/tag/v0.2.8
 [0.2.7]: https://github.com/canbesolved/tynex/releases/tag/v0.2.7
 [0.2.6]: https://github.com/canbesolved/tynex/releases/tag/v0.2.6
 [0.2.5]: https://github.com/canbesolved/tynex/releases/tag/v0.2.5
