@@ -12,7 +12,12 @@ action = "last"              # hide | last
 [input_bar]
 # Installed apps in the output bar: "off" hides them, "all" includes
 # terminal apps, "gui_only" skips Terminal=true.
-launcher.mode = "off"        # off | all | gui_only
+launcher.mode = "gui_only"   # off | all | gui_only
+# Extra row under a running app. false hides that row.
+launcher.new_window = true
+# One space, a plus, two spaces, then "New window".
+launcher.new_window_text = " +  New window"
+launcher.new_window_text_color = "#8da787" # #RRGGBB
 
 [output_bar]
 # Cap for the output bar and the title bar.

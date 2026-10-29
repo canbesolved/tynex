@@ -127,13 +127,11 @@ pub(crate) fn draw_row(
     let title =
         Area::new(left, area.y, area.x + area.w - grid.gap - left, area.h);
 
-    draw_text(
-        paint,
-        grid,
-        (&row.title, highlights),
-        title,
-        paint.theme.text,
-    );
+    let color = row
+        .title_color
+        .map_or(paint.theme.text, |c| Rgba(c.r, c.g, c.b, 0xff));
+
+    draw_text(paint, grid, (&row.title, highlights), title, color);
 }
 
 /// Returns the baseline that centers text of `size` in `area`.

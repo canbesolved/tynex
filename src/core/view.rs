@@ -15,6 +15,37 @@ pub enum RowTarget {
     Launch(String), // App id
 }
 
+/// Opaque `#RRGGBB` text color.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Rgb {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+}
+
+impl Rgb {
+    /// Builds a color from channels.
+    #[must_use]
+    pub const fn new(r: u8, g: u8, b: u8) -> Self {
+        Self { r, g, b }
+    }
+
+    /// Parses `#RRGGBB`.
+    #[must_use]
+    pub fn parse(text: &str) -> Option<Self> {
+        let hex = text.strip_prefix('#')?;
+
+        if hex.len() != 6 || !hex.bytes().all(|b| b.is_ascii_hexdigit()) {
+            return None;
+        }
+        Some(Self {
+            r: u8::from_str_radix(&hex[0..2], 16).ok()?,
+            g: u8::from_str_radix(&hex[2..4], 16).ok()?,
+            b: u8::from_str_radix(&hex[4..6], 16).ok()?,
+        })
+    }
+}
+
 /// One list entry.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Row {
@@ -23,6 +54,7 @@ pub struct Row {
     pub app_name: String, // Matched by search, not drawn
     pub icon: Option<String>,
     pub title: String, // Sanitized, app name stripped
+    pub title_color: Option<Rgb>, // None uses the theme text color
     pub highlights: Vec<Range<usize>>, // Byte ranges in `title`
 }
 

@@ -50,7 +50,12 @@ action = "last"              # hide | last
 [input_bar]
 # Installed apps in the output bar: "off" hides them, "all" includes
 # terminal apps, "gui_only" skips Terminal=true.
-launcher.mode = "off"        # off | all | gui_only
+launcher.mode = "gui_only"   # off | all | gui_only
+# Extra row under a running app. false hides that row.
+launcher.new_window = true
+# One space, a plus, two spaces, then "New window".
+launcher.new_window_text = " +  New window"
+launcher.new_window_text_color = "#8da787" # #RRGGBB
 
 [output_bar]
 # Cap for the output bar and the title bar.
@@ -78,8 +83,18 @@ while the popup is open: `hide` closes it, `last` switches to the
 previously used window, or closes it when there is none.
 
 `input_bar.launcher.mode` adds installed apps to the output bar
-([ADR-0056](../adr/0056_launcher_input.md)): `"off"` (default),
-`"all"`, or `"gui_only"` (skips `Terminal=true`).
+([ADR-0056](../adr/0056_launcher_input.md)): `"off"`, `"all"`, or
+`"gui_only"` (default; skips `Terminal=true`).
+
+`launcher.new_window` is the extra row under a running app
+([ADR-0059](../adr/0059_new_window_row.md)). It defaults to `true`.
+`false` hides that row; an app that is not running is still one
+launch row titled with its name. `launcher.new_window_text` is the
+title. The default is one space, `+`, two spaces, then `New window`.
+`launcher.new_window_text_color` is `#RRGGBB`. The default
+`#8da787` is a little dimmer than the theme text. A missing key
+uses the default. An empty title or a color that is not `#RRGGBB`
+stops the daemon.
 
 `output_bar.max_rows` caps both the output bar and the title bar.
 
@@ -147,19 +162,22 @@ The config is read once, when `tynex daemon` starts
 
 ## Validation
 
-| Key                        | Rule                                      |
-| -------------------------- | ----------------------------------------- |
-| `main.desktop`             | `auto`, `kde` or `mock`                   |
-| `main.font`                | `auto` or a path to an existing font file |
-| `main.font_size`           | 8 to 72                                   |
-| `main.width`               | 200 to 2000                               |
-| `hotkeys.action`           | `hide` or `last`                          |
-| `input_bar.launcher.mode`  | `off`, `all` or `gui_only`                |
-| `output_bar.max_rows`      | 1 to 50                                   |
-| `title_bar.enabled`        | `true` or `false`                         |
-| `title_bar.sort_by`        | `recently` or `app`                       |
-| `title_bar.show_icons`     | `true` or `false`                         |
-| `title_bar.strip_app_name` | `true` or `false`                         |
+| Key                              | Rule                                      |
+| -------------------------------- | ----------------------------------------- |
+| `main.desktop`                   | `auto`, `kde` or `mock`                   |
+| `main.font`                      | `auto` or a path to an existing font file |
+| `main.font_size`                 | 8 to 72                                   |
+| `main.width`                     | 200 to 2000                               |
+| `hotkeys.action`                 | `hide` or `last`                          |
+| `input_bar.launcher.mode`        | `off`, `all` or `gui_only`                |
+| `launcher.new_window`            | `true` or `false`                         |
+| `launcher.new_window_text`       | a non-empty string                        |
+| `launcher.new_window_text_color` | `#RRGGBB`                                 |
+| `output_bar.max_rows`            | 1 to 50                                   |
+| `title_bar.enabled`              | `true` or `false`                         |
+| `title_bar.sort_by`              | `recently` or `app`                       |
+| `title_bar.show_icons`           | `true` or `false`                         |
+| `title_bar.strip_app_name`       | `true` or `false`                         |
 
 Syntax and type errors stop at the first error, as reported by `toml`.
 Value checks run on the parsed file and report every invalid key at

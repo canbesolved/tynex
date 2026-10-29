@@ -5,7 +5,7 @@
 
 pub mod launcher;
 
-use crate::config::LauncherMode;
+use crate::config::{LauncherConfig, LauncherMode, NewWindowConfig};
 use crate::core::app::AppInfo;
 use crate::core::state::State;
 use crate::modules::search::app_haystack;
@@ -15,6 +15,7 @@ use crate::modules::search::fuzzy::rank;
 #[derive(Debug, Clone)]
 pub struct Input {
     mode: LauncherMode,
+    new_window: NewWindowConfig,
     apps: Vec<AppInfo>,
 }
 
@@ -22,8 +23,12 @@ impl Input {
     /// Creates an input module. `apps` is empty when the launcher is
     /// off.
     #[must_use]
-    pub fn new(mode: LauncherMode, apps: Vec<AppInfo>) -> Self {
-        Self { mode, apps }
+    pub fn new(launcher: LauncherConfig, apps: Vec<AppInfo>) -> Self {
+        Self {
+            mode: launcher.mode,
+            new_window: launcher.new_window,
+            apps,
+        }
     }
 
     /// Recomputes `output` and highlights from `query` and `rows`.
@@ -43,7 +48,8 @@ impl Input {
             return;
         }
 
-        s.output = launcher::merge(&s.query, &s.rows, &self.apps);
+        s.output =
+            launcher::merge(&s.query, &s.rows, &self.apps, &self.new_window);
         s.selected = 0;
     }
 }

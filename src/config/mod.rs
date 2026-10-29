@@ -16,6 +16,7 @@ pub use crate::config::error::ConfigError;
 pub use crate::config::file::{Loaded, load_or_create};
 use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
+use crate::core::view::Rgb;
 
 /// The default config file, written on first start.
 pub const DEFAULT_TOML: &str = include_str!("default.toml");
@@ -54,16 +55,56 @@ pub struct HotkeysConfig {
 /// How installed apps appear in the output bar.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum LauncherMode {
-    #[default]
     Off, // No launch rows
-    All,     // GUI and terminal apps
+    All, // GUI and terminal apps
+    #[default]
     GuiOnly, // Skip Terminal=true
+}
+
+/// Default title of the extra row under a running app.
+pub(crate) const NEW_WINDOW_TEXT: &str = " +  New window";
+
+/// Default color of that title, `#8da787`.
+pub(crate) const NEW_WINDOW_COLOR: Rgb = Rgb::new(0x8d, 0xa7, 0x87);
+
+/// Installed apps in the output bar, and the extra new-window row.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LauncherConfig {
+    pub mode: LauncherMode,
+    pub new_window: NewWindowConfig,
+}
+
+impl Default for LauncherConfig {
+    fn default() -> Self {
+        Self {
+            mode: LauncherMode::GuiOnly,
+            new_window: NewWindowConfig::default(),
+        }
+    }
+}
+
+/// The extra row under a running app.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NewWindowConfig {
+    pub enabled: bool,
+    pub text_color: Rgb,
+    pub text: String,
+}
+
+impl Default for NewWindowConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            text_color: NEW_WINDOW_COLOR,
+            text: NEW_WINDOW_TEXT.into(),
+        }
+    }
 }
 
 /// The `[input_bar]` table.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct InputBarConfig {
-    pub launcher: LauncherMode,
+    pub launcher: LauncherConfig,
 }
 
 /// The `[output_bar]` table.
@@ -104,7 +145,7 @@ impl Default for Config {
                 action: HotkeyAction::Last,
             },
             input_bar: InputBarConfig {
-                launcher: LauncherMode::Off,
+                launcher: LauncherConfig::default(),
             },
             output_bar: OutputBarConfig { max_rows: 19 },
             title_bar: TitleBarConfig {
@@ -152,3 +193,7 @@ fn message(raw: &str) -> String {
 #[cfg(test)]
 #[path = "tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "new_window_tests.rs"]
+mod new_window_tests;

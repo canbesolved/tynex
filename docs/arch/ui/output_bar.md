@@ -37,6 +37,8 @@ windows again when `title_bar.enabled` is set. See
   selected match stays visible.
 - Rows are icon and title. The icon slot is always reserved here.
   Matched letters use the highlight color (see [render.md](render.md)).
+  A new-window row uses its configured title color
+  ([ADR-0059](../../adr/0059_new_window_row.md)).
 - `Enter` activates a window row or launches an app row. Up and down
   move that selection. Prompt mode owns the keys; this module only
   draws.
