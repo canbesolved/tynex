@@ -11,17 +11,17 @@ project adheres to
 
 ### Added
 
-- `input_bar.launcher.new_window` turns the extra launch row under a
-  running app on or off (`enabled`), and sets its `text` and
-  `font_color` (`#RRGGBB`). The default title is two spaces, `+`,
-  two spaces, then `New window`. The default color `#A8B3BD` is a
-  little dimmer than the other row text (ADR-0059).
+- `launcher.new_window` under `[input_bar]` turns the extra launch
+  row under a running app on or off. `launcher.new_window_text` and
+  `launcher.new_window_text_color` (`#RRGGBB`) set its title and
+  color. The default title is one space, `+`, two spaces, then
+  `New window`. The default color is `#8da787` (ADR-0059).
 
 ### Changed
 
-- A launch row for a running app reads `+  New window`, with two
-  spaces before the plus and two after it, instead of
-  `Launch new window`.
+- The default `launcher.mode` is `gui_only` instead of `off`.
+- A launch row for a running app reads one space, `+`, two spaces,
+  then `New window`, instead of `Launch new window`.
 
 ## [0.2.3] - 2026-10-29
 

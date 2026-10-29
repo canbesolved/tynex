@@ -18,22 +18,25 @@ fn errors(text: &str) -> Vec<String> {
 }
 
 #[test]
-fn missing_table_uses_the_dim_default() {
-    let config = parse("", &no_font).expect("valid config");
-    let row = config.input_bar.launcher.new_window;
+fn missing_keys_keep_the_row_on() {
+    let row = parse("[input_bar]\nlauncher.mode = \"all\"\n", &no_font)
+        .expect("valid config")
+        .input_bar
+        .launcher
+        .new_window;
 
     assert!(row.enabled);
-    assert_eq!(row.font_color, Rgb::new(0xA8, 0xB3, 0xBD));
-    assert_eq!(row.text, "  +  New window");
+    assert_eq!(row.text_color, NEW_WINDOW_COLOR);
+    assert_eq!(row.text, NEW_WINDOW_TEXT);
 }
 
 #[test]
 fn new_window_values() {
     let text = "\
-[input_bar.launcher.new_window]\n\
-enabled = false\n\
-font_color = \"#112233\"\n\
-text = \"  +  Open\"\n";
+[input_bar]\n\
+launcher.new_window = false\n\
+launcher.new_window_text_color = \"#112233\"\n\
+launcher.new_window_text = \" +  Open\"\n";
     let row = parse(text, &no_font)
         .expect("valid config")
         .input_bar
@@ -41,22 +44,33 @@ text = \"  +  Open\"\n";
         .new_window;
 
     assert!(!row.enabled);
-    assert_eq!(row.font_color, Rgb::new(0x11, 0x22, 0x33));
-    assert_eq!(row.text, "  +  Open");
+    assert_eq!(row.text_color, Rgb::new(0x11, 0x22, 0x33));
+    assert_eq!(row.text, " +  Open");
 }
 
 #[test]
 fn bad_color_and_empty_text_are_reported() {
     let text = "\
-[input_bar.launcher.new_window]\n\
-font_color = \"##112233\"\n\
-text = \"\"\n";
+[input_bar]\n\
+launcher.new_window_text_color = \"##112233\"\n\
+launcher.new_window_text = \"\"\n";
     let all = errors(text);
 
     assert!(
-        all.iter()
-            .any(|m| m.contains("font_color") && m.contains("#RRGGBB")),
+        all.iter().any(|m| {
+            m.contains("new_window_text_color") && m.contains("#RRGGBB")
+        }),
         "{all:?}"
     );
-    assert!(all.iter().any(|m| m.contains("text")), "{all:?}");
+    assert!(all.iter().any(|m| m.contains("new_window_text")), "{all:?}");
+}
+
+#[test]
+fn nested_new_window_table_is_unknown() {
+    let msg = &errors("[input_bar.launcher.new_window]\nenabled = true\n")[0];
+
+    assert!(
+        msg.contains("new_window") || msg.contains("invalid type"),
+        "{msg}"
+    );
 }

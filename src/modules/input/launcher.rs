@@ -186,7 +186,7 @@ fn launch_row(
         } else {
             app.name.clone()
         },
-        title_color: running.then_some(new_window.font_color),
+        title_color: running.then_some(new_window.text_color),
         highlights: Vec::new(),
     }
 }

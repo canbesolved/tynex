@@ -16,8 +16,9 @@ change ([modes/prompt.md](../modes/prompt.md)).
 ## Search
 
 Open windows are ranked with the
-[search](search.md) module. With `input_bar.launcher.mode = "off"`
-(default), the output list is only those matches.
+[search](search.md) module. With `input_bar.launcher.mode = "off"`,
+the output list is only those matches. The default mode is
+`"gui_only"`.
 
 ## Launcher
 
@@ -26,9 +27,10 @@ installed apps join the output list
 ([ADR-0056](../../adr/0056_launcher_input.md)):
 
 - A running app whose name or id matches: all of its open windows,
-  then a new-window row when `new_window.enabled` is set. Its title
-  and color come from that table. The default title is two spaces,
-  `+`, two spaces, then `New window`, in `#A8B3BD`.
+  then a new-window row when `launcher.new_window` is set. The
+  default title is one space, `+`, two spaces, then `New window`,
+  in `#8da787`. `launcher.new_window_text` and
+  `launcher.new_window_text_color` change that title and color.
 - A title-only match: those windows, then the launch row when the
   app is installed.
 - An app that is not running and matches: one launch row (title =

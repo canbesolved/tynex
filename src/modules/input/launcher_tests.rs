@@ -50,7 +50,7 @@ fn running_app_lists_windows_then_launch() {
     let apps = vec![app("firefox", "Firefox"), app("kate", "Kate")];
     let out = merge("fire", &windows, &apps, &label());
 
-    assert_eq!(titles(&out), ["Release notes", "Café", "  +  New window"]);
+    assert_eq!(titles(&out), ["Release notes", "Café", " +  New window"]);
     assert!(matches!(
         out.last().map(|r| &r.target),
         Some(RowTarget::Launch(id)) if id == "firefox"
@@ -132,7 +132,7 @@ fn new_window_row_uses_the_configured_text_and_color() {
     let apps = vec![app("firefox", "Firefox")];
     let row = NewWindowConfig {
         enabled: true,
-        font_color: Rgb::new(1, 2, 3),
+        text_color: Rgb::new(1, 2, 3),
         text: "  +  Open".into(),
     };
     let out = merge("fire", &windows, &apps, &row);

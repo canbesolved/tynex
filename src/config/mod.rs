@@ -55,11 +55,17 @@ pub struct HotkeysConfig {
 /// How installed apps appear in the output bar.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum LauncherMode {
-    #[default]
     Off, // No launch rows
-    All,     // GUI and terminal apps
+    All, // GUI and terminal apps
+    #[default]
     GuiOnly, // Skip Terminal=true
 }
+
+/// Default title of the extra row under a running app.
+pub(crate) const NEW_WINDOW_TEXT: &str = " +  New window";
+
+/// Default color of that title, `#8da787`.
+pub(crate) const NEW_WINDOW_COLOR: Rgb = Rgb::new(0x8d, 0xa7, 0x87);
 
 /// Installed apps in the output bar, and the extra new-window row.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -71,7 +77,7 @@ pub struct LauncherConfig {
 impl Default for LauncherConfig {
     fn default() -> Self {
         Self {
-            mode: LauncherMode::Off,
+            mode: LauncherMode::GuiOnly,
             new_window: NewWindowConfig::default(),
         }
     }
@@ -81,7 +87,7 @@ impl Default for LauncherConfig {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NewWindowConfig {
     pub enabled: bool,
-    pub font_color: Rgb,
+    pub text_color: Rgb,
     pub text: String,
 }
 
@@ -89,8 +95,8 @@ impl Default for NewWindowConfig {
     fn default() -> Self {
         Self {
             enabled: true,
-            font_color: Rgb::new(0xA8, 0xB3, 0xBD),
-            text: "  +  New window".into(),
+            text_color: NEW_WINDOW_COLOR,
+            text: NEW_WINDOW_TEXT.into(),
         }
     }
 }

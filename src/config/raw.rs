@@ -30,10 +30,22 @@ pub(super) enum RawSortBy {
 #[derive(Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub(super) enum RawLauncherMode {
-    #[default]
     Off,
     All,
+    #[default]
     GuiOnly,
+}
+
+fn default_new_window() -> bool {
+    true
+}
+
+fn default_new_window_text() -> Spanned<String> {
+    unspanned(super::NEW_WINDOW_TEXT.into())
+}
+
+fn default_new_window_color() -> Spanned<String> {
+    unspanned("#8da787".into())
 }
 
 #[derive(Deserialize, Default)]
@@ -86,27 +98,25 @@ pub(super) struct RawInputBar {
     pub launcher: RawLauncher,
 }
 
-#[derive(Deserialize, Default)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawLauncher {
     pub mode: RawLauncherMode,
-    pub new_window: RawNewWindow,
+    #[serde(default = "default_new_window")]
+    pub new_window: bool,
+    #[serde(default = "default_new_window_text")]
+    pub new_window_text: Spanned<String>,
+    #[serde(default = "default_new_window_color")]
+    pub new_window_text_color: Spanned<String>,
 }
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields, default)]
-pub(super) struct RawNewWindow {
-    pub enabled: bool,
-    pub font_color: Spanned<String>,
-    pub text: Spanned<String>,
-}
-
-impl Default for RawNewWindow {
+impl Default for RawLauncher {
     fn default() -> Self {
         Self {
-            enabled: true,
-            font_color: unspanned("#A8B3BD".into()),
-            text: unspanned("  +  New window".into()),
+            mode: RawLauncherMode::GuiOnly,
+            new_window: default_new_window(),
+            new_window_text: default_new_window_text(),
+            new_window_text_color: default_new_window_color(),
         }
     }
 }

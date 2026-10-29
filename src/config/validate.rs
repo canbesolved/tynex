@@ -10,7 +10,7 @@ use toml::Spanned;
 
 use crate::config::error::ConfigError;
 use crate::config::raw::{
-    RawConfig, RawHotkeyAction, RawLauncherMode, RawNewWindow, RawSortBy,
+    RawConfig, RawHotkeyAction, RawLauncher, RawLauncherMode, RawSortBy,
 };
 use crate::config::{
     Config, Font, HotkeysConfig, InputBarConfig, LauncherConfig, LauncherMode,
@@ -55,8 +55,7 @@ pub(super) fn validate(
         1..=50,
         &mut err,
     );
-    let new_window =
-        check_new_window(&raw.input_bar.launcher.new_window, &mut err);
+    let new_window = check_new_window(&raw.input_bar.launcher, &mut err);
 
     if !errors.is_empty() {
         return Err(errors);
@@ -103,34 +102,34 @@ pub(super) fn validate(
 /// Checks the new-window row. A bad color or an empty title is an
 /// error; the returned value is then unused.
 fn check_new_window(
-    raw: &RawNewWindow,
+    raw: &RawLauncher,
     err: &mut impl FnMut(std::ops::Range<usize>, String),
 ) -> NewWindowConfig {
-    let color = raw.font_color.get_ref();
-    let font_color = Rgb::parse(color).unwrap_or_else(|| {
+    let color = raw.new_window_text_color.get_ref();
+    let text_color = Rgb::parse(color).unwrap_or_else(|| {
         err(
-            raw.font_color.span(),
+            raw.new_window_text_color.span(),
             format!(
-                "`input_bar.launcher.new_window.font_color` = {color:?} \
+                "`input_bar.launcher.new_window_text_color` = {color:?} \
                  is not a color, expected \"#RRGGBB\""
             ),
         );
-        NewWindowConfig::default().font_color
+        NewWindowConfig::default().text_color
     });
-    let text = raw.text.get_ref();
+    let text = raw.new_window_text.get_ref();
 
     if text.is_empty() {
         err(
-            raw.text.span(),
-            "`input_bar.launcher.new_window.text` is empty, expected \
+            raw.new_window_text.span(),
+            "`input_bar.launcher.new_window_text` is empty, expected \
              a title"
                 .into(),
         );
     }
 
     NewWindowConfig {
-        enabled: raw.enabled,
-        font_color,
+        enabled: raw.new_window,
+        text_color,
         text: text.clone(),
     }
 }

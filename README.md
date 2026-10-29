@@ -142,12 +142,10 @@ width = 480
 action = "last"              # hide | last
 
 [input_bar]
-launcher.mode = "off"        # off | all | gui_only
-
-[input_bar.launcher.new_window]
-enabled = true               # false hides the extra row
-font_color = "#A8B3BD"       # #RRGGBB, a little dimmer
-text = "  +  New window"
+launcher.mode = "gui_only"   # off | all | gui_only
+launcher.new_window = true   # false hides the extra row
+launcher.new_window_text = " +  New window"
+launcher.new_window_text_color = "#8da787" # #RRGGBB
 
 [output_bar]
 max_rows = 19
