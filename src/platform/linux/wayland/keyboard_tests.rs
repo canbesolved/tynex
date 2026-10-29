@@ -44,6 +44,13 @@ fn special_keys_map_by_keysym() {
         Some(Key::Tab)
     );
     assert_eq!(to_key(keysyms::KEY_KP_Down, None, None), Some(Key::Down));
+    assert_eq!(to_key(keysyms::KEY_Left, None, None), Some(Key::Left));
+    assert_eq!(
+        to_key(keysyms::KEY_KP_Delete, None, None),
+        Some(Key::Delete)
+    );
+    assert_eq!(word_move(Key::Left, true), Key::WordLeft);
+    assert_eq!(word_move(Key::Right, false), Key::Right);
 }
 
 #[test]

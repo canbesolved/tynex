@@ -62,6 +62,7 @@ pub struct Row {
 #[derive(Debug, Clone, Copy)]
 pub struct View<'a> {
     pub query: &'a str,
+    pub cursor: usize,   // Byte index in `query`
     pub selected: usize, // Index into the output rows
     windows: &'a [Row],
     output: &'a [Row],
@@ -70,12 +71,14 @@ pub struct View<'a> {
 impl<'a> View<'a> {
     pub(crate) fn new(
         query: &'a str,
+        cursor: usize,
         selected: usize,
         windows: &'a [Row],
         output: &'a [Row],
     ) -> Self {
         Self {
             query,
+            cursor,
             selected,
             windows,
             output,

@@ -88,6 +88,7 @@ impl<M: Mode> Switcher<M> {
         let mut state = State::new(self.rows());
 
         state.query = old.query;
+        state.cursor = old.cursor;
         self.mode.refresh(&mut state);
         state.select_id(selected.as_ref());
         self.state = Some(state);

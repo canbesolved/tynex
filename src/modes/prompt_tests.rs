@@ -135,3 +135,27 @@ fn enter_on_launch_row_returns_launch() {
         Action::Launch("firefox".into())
     );
 }
+
+#[test]
+fn cursor_edits_at_its_position() {
+    let mut mode = mode();
+    let mut s = state();
+
+    typed(&mut mode, &mut s, "é");
+    assert_eq!(s.cursor, "é".len());
+    mode.on_key(Key::Left, &mut s);
+    assert_eq!(s.cursor, 0);
+    mode.on_key(Key::Right, &mut s);
+    typed(&mut mode, &mut s, " xx");
+    mode.on_key(Key::WordLeft, &mut s);
+    assert_eq!(s.cursor, "é ".len());
+    mode.on_key(Key::Home, &mut s);
+    mode.on_key(Key::Delete, &mut s);
+    assert_eq!(s.query, " xx");
+    mode.on_key(Key::End, &mut s);
+    mode.on_key(Key::Left, &mut s);
+    mode.on_key(Key::Backspace, &mut s);
+    assert_eq!(s.query, " x");
+    mode.on_key(Key::WordRight, &mut s);
+    assert_eq!(s.cursor, s.query.len());
+}

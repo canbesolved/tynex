@@ -14,7 +14,7 @@ impl Mode for Filter {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
         match key {
             Key::Char { text, .. } => {
-                s.query.push(text);
+                s.insert(text);
                 self.refresh(s);
                 Action::Redraw
             }
@@ -167,6 +167,7 @@ fn update_while_open_keeps_query_and_selection() {
     sw.handle(letter('a'));
     sw.handle(Event::Windows(list(&["b", "a", "x"])));
     assert_eq!(shown(&sw), ["a"]); // Query kept and applied
+    assert_eq!(sw.view().unwrap().cursor, 1);
 }
 
 #[test]

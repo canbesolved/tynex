@@ -11,8 +11,17 @@ use xkbcommon::xkb::{self, compose, keysyms};
 
 use crate::core::event::Key;
 
-/// Keys that repeat while held: moving the selection and deleting.
-const REPEATED: [Key; 3] = [Key::Up, Key::Down, Key::Backspace];
+/// Keys that repeat while held: moving and deleting.
+const REPEATED: &[Key] = &[
+    Key::Up,
+    Key::Down,
+    Key::Left,
+    Key::Right,
+    Key::WordLeft,
+    Key::WordRight,
+    Key::Backspace,
+    Key::Delete,
+];
 
 /// Translates raw key events into `core::Key` values.
 pub(super) struct Keyboard {
@@ -104,7 +113,10 @@ impl Keyboard {
             Compose::Text(text) => Some(text),
             Compose::Plain => Some(state.key_get_utf8(code)),
         };
-        let key_out = to_key(sym, text.as_deref(), latin(keymap, code));
+        let ctrl = state
+            .mod_name_is_active(xkb::MOD_NAME_CTRL, xkb::STATE_MODS_EFFECTIVE);
+        let key_out = to_key(sym, text.as_deref(), latin(keymap, code))
+            .map(|key| word_move(key, ctrl));
 
         self.held = key_out
             .filter(|k| REPEATED.contains(k) && self.rate > 0)
@@ -174,6 +186,15 @@ fn compose_step(compose: Option<&mut compose::State>, sym: u32) -> Compose {
     }
 }
 
+/// Maps `Left` and `Right` to a word move while Control is held.
+fn word_move(key: Key, ctrl: bool) -> Key {
+    match key {
+        Key::Left if ctrl => Key::WordLeft,
+        Key::Right if ctrl => Key::WordRight,
+        other => other,
+    }
+}
+
 /// Maps a keysym and its text to a `core::Key`.
 fn to_key(sym: u32, text: Option<&str>, latin: Option<char>) -> Option<Key> {
     match sym {
@@ -182,7 +203,12 @@ fn to_key(sym: u32, text: Option<&str>, latin: Option<char>) -> Option<Key> {
         keysyms::KEY_Tab | keysyms::KEY_ISO_Left_Tab => Some(Key::Tab),
         keysyms::KEY_Up | keysyms::KEY_KP_Up => Some(Key::Up),
         keysyms::KEY_Down | keysyms::KEY_KP_Down => Some(Key::Down),
+        keysyms::KEY_Left | keysyms::KEY_KP_Left => Some(Key::Left),
+        keysyms::KEY_Right | keysyms::KEY_KP_Right => Some(Key::Right),
+        keysyms::KEY_Home | keysyms::KEY_KP_Home => Some(Key::Home),
+        keysyms::KEY_End | keysyms::KEY_KP_End => Some(Key::End),
         keysyms::KEY_BackSpace => Some(Key::Backspace),
+        keysyms::KEY_Delete | keysyms::KEY_KP_Delete => Some(Key::Delete),
         _ => {
             let mut chars = text?.chars();
             let c = chars.next().filter(|c| !c.is_control())?;

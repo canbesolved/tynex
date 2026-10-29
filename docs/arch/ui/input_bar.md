@@ -22,9 +22,11 @@ sections follow the modules
 > firef
 ```
 
-`>` is fixed. The rest is the query, empty until you type. A
-one-pixel underline in the text color follows it, one space wide,
-including while the query is empty. It does not blink.
+`>` is fixed. A row gap and one space separate it from the query.
+The rest is the query, empty until you type. A 1 px beam in the
+text color stands at the cursor, 10% shorter than the text,
+including while the query is empty. `Left` and `Right` move it.
+It does not blink.
 
 ## Rules
 

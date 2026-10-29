@@ -11,13 +11,17 @@ project adheres to
 
 ## [0.2.6] - 2026-10-29
 
-The input bar shows an underline cursor.
+The input bar shows a beam cursor.
 
 ### Added
 
-- The input bar draws a one-pixel underline after the query, one
-  space wide, in the text color. It stays while the query is empty
-  and does not blink.
+- A row gap and one space separate `>` from the query.
+- The input bar draws a 1 px beam at the cursor, 10% shorter than
+  the text, in the text color. `Left` and `Right` move it by one
+  character, `Home` and `End` jump, and `Ctrl+Left` and
+  `Ctrl+Right` move by word. Typing inserts at the cursor.
+  `Backspace` and `Delete` remove the character before it and at
+  it. The beam stays while the query is empty and does not blink.
 
 ## [0.2.5] - 2026-10-29
 

@@ -10,14 +10,18 @@ Source: `src/modes/prompt.rs`. The
 
 ## Behavior
 
-| Key            | Action                                         |
-| -------------- | ---------------------------------------------- |
-| Printable char | Append to query, refilter                      |
-| `Backspace`    | Delete last char, refilter                     |
-| `Up` / `Down`  | Move selection                                 |
-| `Enter`        | Activate a window or launch an app, then close |
-| `Tab`          | Ignored                                        |
-| `Esc`          | Clear query; close if already empty            |
+| Key                        | Action                         |
+| -------------------------- | ------------------------------ |
+| Printable char             | Insert at the cursor, refilter |
+| `Left` / `Right`           | Move the cursor one character  |
+| `Ctrl+Left` / `Ctrl+Right` | Move the cursor one word       |
+| `Home` / `End`             | Jump to the start or the end   |
+| `Backspace`                | Delete the character before it |
+| `Delete`                   | Delete the character after it  |
+| `Up` / `Down`              | Move the selection             |
+| `Enter`                    | Activate or launch, then close |
+| `Tab`                      | Ignored                        |
+| `Esc`                      | Clear query; close if empty    |
 
 The popup opens with the previous window selected, so `Enter` right
 after the hotkey switches back like Alt+Tab. Typing starts at once;

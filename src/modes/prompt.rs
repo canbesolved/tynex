@@ -27,14 +27,44 @@ impl Mode for PromptMode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
         match key {
             Key::Char { text, .. } => {
-                s.query.push(text);
+                s.insert(text);
                 self.refresh(s);
                 Action::Redraw
             }
             Key::Backspace => {
-                if s.query.pop().is_some() {
+                if s.backspace() {
                     self.refresh(s);
                 }
+                Action::Redraw
+            }
+            Key::Delete => {
+                if s.delete() {
+                    self.refresh(s);
+                }
+                Action::Redraw
+            }
+            Key::Left => {
+                s.move_left();
+                Action::Redraw
+            }
+            Key::Right => {
+                s.move_right();
+                Action::Redraw
+            }
+            Key::WordLeft => {
+                s.move_word_left();
+                Action::Redraw
+            }
+            Key::WordRight => {
+                s.move_word_right();
+                Action::Redraw
+            }
+            Key::Home => {
+                s.cursor = 0;
+                Action::Redraw
+            }
+            Key::End => {
+                s.cursor = s.query.len();
                 Action::Redraw
             }
             Key::Up => {
@@ -53,6 +83,7 @@ impl Mode for PromptMode {
             Key::Esc if s.query.is_empty() => Action::Close,
             Key::Esc => {
                 s.query.clear();
+                s.cursor = 0;
                 self.refresh(s);
                 Action::Redraw
             }

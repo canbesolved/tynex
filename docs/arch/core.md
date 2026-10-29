@@ -60,7 +60,8 @@ windows in `rows` (title bar) and the result list in `output`
 (output bar and selection).
 
 `Key` is a portable enum (`Char { text, latin }`, `Enter`, `Esc`,
-`Tab`, `Up`, `Down`, `Backspace`). Each platform maps native key
+`Tab`, `Up`, `Down`, `Left`, `Right`, `Home`, `End`, `Backspace`,
+`Delete`, `WordLeft`, `WordRight`). Each platform maps native key
 events to it:
 
 - `text`: the character the active layout produces, after dead keys
@@ -128,8 +129,8 @@ is added with its module.
   for the previous window.
 - `Visible`: keys go to the mode. A mode returning `Activate`,
   `Launch` or `Close` hides the popup.
-- `Windows` while visible: refresh the rows, keep the query and the
-  selection by id.
+- `Windows` while visible: refresh the rows, keep the query, the
+  cursor and the selection by id.
 - `Hide` and `Quit` close an open popup. The daemon loop stops itself
   on `Quit`.
 
@@ -140,8 +141,9 @@ refilter.
 
 ## View
 
-`View` borrows the open `State`: query, selected index, the open
-windows, and the output rows in display order. Each `Row` has an id,
+`View` borrows the open `State`: query, cursor, selected index, the
+open windows, and the output rows in display order. Each `Row` has
+an id,
 icon, row text (`title`), an optional title color, highlight byte
 ranges, and the app name and id for search. A row with no title
 color uses the theme text color. `windows` is every open window,
