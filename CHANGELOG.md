@@ -17,12 +17,21 @@ The input bar shows a hint while the query is empty.
 
 - `hint.enabled`, `hint.text`, `hint.font_color` and `hint.update`
   live under `[input_bar]`. `hint.text` is a shell command. Its
-  first stdout line is the hint, drawn at `main.font_size`. The
-  popup opens before the command exits. Until then the hint steps
-  through `.`, `..`, `...` and blank. `hint.update` is the wait in
-  seconds after the command exits; `0` runs once per open. The
-  default command is `date +"%A %b %-d %T %Y"` and the default color
-  is `#8da787` (ADR-0060).
+  first stdout line is the hint, centered in the popup, at
+  `main.font_size`. The popup opens before the command exits.
+  Until then the hint steps through `.`, `..`, `...` and blank.
+  `hint.update` is the wait in seconds after the command exits;
+  `0` runs once per open. The default command is
+  `date +"%A %b %-d %T %Y"` and the default color is `#8da787`
+  (ADR-0060).
+
+### Fixed
+
+- A hint that arrives while both popup buffers are busy is drawn
+  when a buffer is released, instead of staying on the loading dot
+  until the next key.
+- A hint refresh keeps the previous text until the new line is
+  ready, so the loading dots do not flash over it.
 
 ## [0.2.6] - 2026-10-29
 

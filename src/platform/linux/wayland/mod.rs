@@ -72,6 +72,7 @@ impl WaylandPresenter {
             scale: 1.0,
             popup: None,
             buffers: None,
+            frame_pending: false,
             events: Vec::new(),
         };
 
@@ -157,6 +158,7 @@ impl WaylandPresenter {
             return false;
         };
         let Some((i, pixels)) = buffers.free() else {
+            self.wl.frame_pending = true;
             return false;
         };
         let Some(mut canvas) = Canvas::new(pixels, width, height) else {

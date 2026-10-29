@@ -61,7 +61,9 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
                 PresenterEvent::Key(key) => {
                     handle(p, Event::Key(key));
                 }
-                PresenterEvent::Configured | PresenterEvent::Scale(_) => {
+                PresenterEvent::Configured
+                | PresenterEvent::Scale(_)
+                | PresenterEvent::Redraw => {
                     redraw(p);
                 }
                 PresenterEvent::Closed | PresenterEvent::FocusLost => {

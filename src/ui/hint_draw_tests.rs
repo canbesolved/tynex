@@ -26,7 +26,7 @@ fn metrics(color: Rgba) -> Metrics {
     }
 }
 
-fn render(state: &State, color: Rgba) -> Vec<u8> {
+fn render(state: &State, color: Rgba) -> (Vec<u8>, u32) {
     let m = metrics(color);
     let theme = Theme::default();
     let size = measured(&state.view(), &m, &theme);
@@ -42,7 +42,7 @@ fn render(state: &State, color: Rgba) -> Vec<u8> {
     };
 
     draw_popup(&state.view(), &m, &mut paint);
-    data
+    (data, size.width)
 }
 
 #[test]
@@ -52,7 +52,7 @@ fn empty_query_draws_the_hint_in_its_color() {
 
     hinted.hint = "WWW".into();
 
-    let pixels = render(&hinted, color);
+    let (pixels, width) = render(&hinted, color);
     let mut typed = hinted.clone();
 
     typed.query = "x".into();
@@ -60,9 +60,9 @@ fn empty_query_draws_the_hint_in_its_color() {
     let mut hidden = State::new(Vec::new());
 
     hidden.query = "x".into();
-    assert_ne!(pixels, render(&State::new(Vec::new()), color));
-    assert!(pixels.chunks(4).any(|px| px[0] > px[1] && px[0] > px[2]));
-    assert_eq!(render(&typed, color), render(&hidden, color));
+    assert_ne!(pixels, render(&State::new(Vec::new()), color).0);
+    assert!((red_center(&pixels, width) - width as f32 / 2.0).abs() < 12.0);
+    assert_eq!(render(&typed, color).0, render(&hidden, color).0);
 }
 
 #[test]
@@ -72,7 +72,21 @@ fn loading_dots_use_the_hint_color() {
 
     hinted.hint = "...".into();
 
-    let pixels = render(&hinted, color);
+    let (pixels, _) = render(&hinted, color);
 
     assert!(pixels.chunks(4).any(|px| px[0] > px[1] && px[0] > px[2]));
+}
+
+/// Returns the average x of hint-colored pixels.
+fn red_center(pixels: &[u8], width: u32) -> f32 {
+    let mut sum = 0.0;
+    let mut n = 0.0;
+
+    for (i, px) in pixels.chunks(4).enumerate() {
+        if px[0] > px[1] && px[0] > px[2] && px[0] > 40 {
+            sum += (i as u32 % width) as f32;
+            n += 1.0;
+        }
+    }
+    sum / n
 }

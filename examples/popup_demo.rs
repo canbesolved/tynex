@@ -111,9 +111,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Action::Close
                 }
                 PresenterEvent::Key(key) => app.handle(Event::Key(key)),
-                PresenterEvent::Scale(_) | PresenterEvent::Configured => {
-                    Action::Redraw
-                }
+                PresenterEvent::Scale(_)
+                | PresenterEvent::Configured
+                | PresenterEvent::Redraw => Action::Redraw,
             };
 
             match action {

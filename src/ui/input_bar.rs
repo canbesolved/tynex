@@ -21,7 +21,7 @@ pub(crate) fn height(grid: &Grid) -> f32 {
 /// Draws `>` and the query at `top`, with a beam at the cursor.
 ///
 /// The gap after `>` is the row gap plus one space. An empty query
-/// shows `hint` in `hint_color` instead.
+/// shows `hint` in `hint_color`, centered in the popup.
 pub(crate) fn draw(
     view: &View<'_>,
     grid: &Grid,
@@ -36,11 +36,6 @@ pub(crate) fn draw(
     let gap = grid.gap + paint.text.width(" ", grid.font);
     let query_x = bar.x + mark_w + gap;
     let room = bar.x + bar.w - query_x;
-    let (text, color) = if view.query.is_empty() {
-        (view.hint, hint_color)
-    } else {
-        (view.query, paint.theme.text)
-    };
 
     draw_text(
         paint,
@@ -49,13 +44,15 @@ pub(crate) fn draw(
         Area::new(bar.x, bar.y, mark_w, bar.h),
         paint.theme.text,
     );
-    if room > 0.0 && !text.is_empty() {
+    if view.query.is_empty() {
+        draw_hint(paint, grid, view.hint, bar, inner, hint_color);
+    } else if room > 0.0 {
         draw_text(
             paint,
             grid,
-            (text, &[]),
+            (view.query, &[]),
             Area::new(query_x, bar.y, room, bar.h),
-            color,
+            paint.theme.text,
         );
     }
 
@@ -63,6 +60,37 @@ pub(crate) fn draw(
     let typed = paint.text.width(&view.query[..at], grid.font);
 
     beam(paint, grid, bar, (mark_w + gap + typed).min(bar.w));
+}
+
+/// Draws `hint` centered on the popup width, in `color`.
+fn draw_hint(
+    paint: &mut Paint<'_, '_>,
+    grid: &Grid,
+    hint: &str,
+    bar: Area,
+    inner: f32,
+    color: Rgba,
+) {
+    if hint.is_empty() {
+        return;
+    }
+
+    let width = paint.text.width(hint, grid.font);
+    let popup_w = inner + 2.0 * grid.pad;
+    let left = grid.pad;
+    let right = popup_w - grid.pad;
+    let x = ((popup_w - width) / 2.0).clamp(left, right);
+    let max = right - x;
+
+    if max > 0.0 {
+        draw_text(
+            paint,
+            grid,
+            (hint, &[]),
+            Area::new(x, bar.y, max, bar.h),
+            color,
+        );
+    }
 }
 
 /// Draws a 1 px beam, 10% shorter than the text, at `advance`.

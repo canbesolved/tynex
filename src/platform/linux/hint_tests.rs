@@ -60,6 +60,20 @@ fn finished_command_yields_the_first_line() {
 }
 
 #[test]
+fn refresh_keeps_the_previous_text() {
+    let mut hint = hint(r"printf 'next\n'", Duration::from_secs(30));
+
+    hint.last = "prev".into();
+    assert_eq!(hint.on_show(Instant::now()), "prev");
+    assert!(hint.tick.is_none());
+
+    let line = wait_until(&mut hint, |text| text == "next");
+
+    assert_eq!(line.as_deref(), Some("next"));
+    assert_eq!(hint.last, "next");
+}
+
+#[test]
 fn missing_command_keeps_an_empty_hint() {
     let mut hint = hint("tynex-no-such-bin", Duration::ZERO);
 

@@ -33,6 +33,7 @@ pub enum PresenterEvent {
     Key(Key),   // A key press, or a repeat of a held key
     Configured, // The popup can be drawn
     Scale(f32), // The output scale changed; redraw at the new size
+    Redraw,     // A skipped frame can be drawn; a buffer was released
     Closed,     // The compositor closed the popup
     FocusLost,  // Keyboard focus left the open popup
 }
@@ -60,6 +61,7 @@ pub(super) struct Wl {
     pub scale: f32,
     pub popup: Option<Popup>,
     pub buffers: Option<Buffers>,
+    pub frame_pending: bool, // Draw again when a buffer is released
     pub events: Vec<PresenterEvent>,
 }
 
@@ -103,8 +105,18 @@ impl Dispatch<WlBuffer, usize> for Wl {
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
-        if let (wl_buffer::Event::Release, Some(b)) = (e, &mut s.buffers) {
+        if !matches!(e, wl_buffer::Event::Release) {
+            return;
+        }
+        if let Some(b) = &mut s.buffers {
             b.busy[i] = false;
+        }
+        // A frame was skipped while both buffers were busy. Draw it
+        // now that one is free. A release with no skipped frame must
+        // not draw again, or the loop would never stop.
+        if s.frame_pending && s.popup.is_some() {
+            s.frame_pending = false;
+            s.events.push(PresenterEvent::Redraw);
         }
     }
 }

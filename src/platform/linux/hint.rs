@@ -58,8 +58,7 @@ impl Hint {
             return String::new();
         }
         if self.child.is_some() {
-            self.tick = Some(now + TICK);
-            return frame(self.step).to_owned();
+            return self.loading(now);
         }
         self.start(now)
     }
@@ -116,8 +115,15 @@ impl Hint {
             Ok(run) => {
                 self.child = Some(run);
                 self.step = 0;
-                self.tick = Some(now + TICK);
-                frame(0).to_owned()
+                // A refresh keeps the previous line. Dots would flash
+                // over it and back when the new line arrives.
+                if self.last.is_empty() {
+                    self.tick = Some(now + TICK);
+                    frame(0).to_owned()
+                } else {
+                    self.tick = None;
+                    self.last.clone()
+                }
             }
             Err(e) => {
                 log::warn!("cannot start hint command: {e}");
@@ -180,9 +186,25 @@ impl Hint {
         })
     }
 
-    /// Arms the animation only while the popup shows an empty query.
+    /// The string to draw while a command is already running.
+    fn loading(&mut self, now: Instant) -> String {
+        if self.last.is_empty() {
+            self.tick = Some(now + TICK);
+            frame(self.step).to_owned()
+        } else {
+            self.tick = None;
+            self.last.clone()
+        }
+    }
+
+    /// Arms the animation only for the first result, while the query
+    /// is empty. A later run keeps the previous text, so it has no tick.
     fn arm_tick(&mut self, now: Instant, open: bool, query_empty: bool) {
-        if self.child.is_none() || !open || !query_empty {
+        if self.child.is_none()
+            || !self.last.is_empty()
+            || !open
+            || !query_empty
+        {
             self.tick = None;
             return;
         }
