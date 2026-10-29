@@ -42,6 +42,7 @@ pub enum Event {
     Show,
     Key(Key),
     Click(Click),
+    Hover(Click),
     Hide,
     Quit,
 }
@@ -58,6 +59,8 @@ pub enum Action {
 
 `Click` is where a pointer press landed: `Icon(index)` on the strip,
 `Menu(index)` on an open dropdown, or `Elsewhere` in the popup.
+`Hover` carries the same place while the pointer moves. The icon
+under the pointer becomes selected.
 
 `AppInfo` is `id`, `name`, `icon`. `Exec` stays on the platform.
 A `Row` has a `RowTarget`: `Window` or `Launch`. `State` keeps open
@@ -97,6 +100,7 @@ pub trait Presenter {
 pub trait Mode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action;
     fn on_click(&mut self, click: Click, s: &mut State) -> Action;
+    fn on_hover(&mut self, click: Click, s: &mut State) -> Action;
     /// Recomputes output rows and highlights; default does nothing.
     fn refresh(&mut self, s: &mut State) {}
 }

@@ -37,6 +37,7 @@ pub enum Event {
     Show,
     Key(Key),
     Click(Click),
+    Hover(Click), // Pointer move; same places as a click
     Hide,
     Quit,
 }

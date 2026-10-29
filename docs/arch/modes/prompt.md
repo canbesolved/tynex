@@ -48,12 +48,14 @@ them; clearing the query shows them again (see
 ## Icon bar
 
 While `[icon_bar] enabled` is set and the query is empty, `Left` and
-`Right` move along the icons and close an open dropdown. `Enter` and
-`Space` activate the selected title when that bar is on. With it
-off, they activate one window, open the dropdown, or launch. An
-open dropdown still takes `Enter` and `Space`. `Up` and `Down` move
-inside an open dropdown; otherwise they still move the list above.
-`Tab` steps that dropdown while it is open. With the title bar off,
-`Tab` moves to the next icon. `Esc` closes the dropdown first, then
-clears the query or closes the popup. A typed character hides the
-strip, and `Left` and `Right` move the cursor again.
+`Right` move along the icons and close an open dropdown. The pointer
+does the same to the icon under it, and leaves the selection when
+it moves off the icons. `Enter` and `Space` activate the selected
+title when that bar is on. With it off, they activate one window,
+open the dropdown, or launch. An open dropdown still takes `Enter`
+and `Space`. `Up` and `Down` move inside an open dropdown;
+otherwise they still move the list above. `Tab` steps that
+dropdown while it is open. With the title bar off, `Tab` moves to
+the next icon. `Esc` closes the dropdown first, then clears the
+query or closes the popup. A typed character hides the strip, and
+`Left` and `Right` move the cursor again.

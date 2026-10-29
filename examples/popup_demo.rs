@@ -142,7 +142,10 @@ fn session(
                 }
                 PresenterEvent::Key(key) => app.handle(Event::Key(key)),
                 PresenterEvent::Click { x, y } => {
-                    click(presenter, app, painter, x, y)
+                    click(presenter, app, painter, x, y, false)
+                }
+                PresenterEvent::Hover { x, y } => {
+                    click(presenter, app, painter, x, y, true)
                 }
                 PresenterEvent::Scale(_)
                 | PresenterEvent::Configured
@@ -167,20 +170,28 @@ fn session(
     close(presenter)
 }
 
-/// Returns the action for a left click at surface `(x, y)`.
+/// Returns the action for a pointer event at surface `(x, y)`.
 fn click(
     presenter: &WaylandPresenter,
     app: &mut App,
     painter: &Painter,
     x: f64,
     y: f64,
+    hover: bool,
 ) -> Action {
     let scale = presenter.scale();
     let hit = app
         .view()
         .map(|view| painter.hit(&view, scale, px(x, scale), px(y, scale)));
+    let event = |hit| {
+        if hover {
+            Event::Hover(hit)
+        } else {
+            Event::Click(hit)
+        }
+    };
 
-    hit.map_or(Action::None, |hit| app.handle(Event::Click(hit)))
+    hit.map_or(Action::None, |hit| app.handle(event(hit)))
 }
 
 /// Converts a surface coordinate to physical pixels.

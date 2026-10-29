@@ -15,7 +15,7 @@ platform/linux/
     surface.rs    Layer-shell surface setup, commit and teardown
     buffer.rs     wl_shm double buffer on a memfd
     input.rs      wl_seat, wl_keyboard and wl_pointer
-    pointer.rs    Left click while the popup is shown
+    pointer.rs    Motion and the left click
     keyboard.rs   xkb keymap, compose, repeat, native key -> core Key
     error.rs      PresenterError
   dbus.rs         Shared D-Bus connection, dispatch, calls
@@ -137,10 +137,12 @@ installs `libxkbcommon-dev`.
 
 ## Pointer
 
-`wl_pointer` is bound with the keyboard. A left press while the popup
-is shown becomes a click in surface coordinates. The event loop
-multiplies those by the output scale and hit-tests the drawn icons
-and dropdown. The right button is ignored.
+`wl_pointer` is bound with the keyboard. Motion and enter, while the
+popup is shown, select the icon under the pointer. A left press
+becomes a click in surface coordinates. The event loop multiplies
+those by the output scale and hit-tests the drawn icons and
+dropdown. The right button is ignored. Moving off the icons leaves
+the selection where it is.
 
 ## Event loop
 

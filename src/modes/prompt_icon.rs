@@ -79,6 +79,24 @@ pub(super) fn click(click: Click, s: &mut State, cap: usize) -> Action {
     }
 }
 
+/// Selects the icon under the pointer.
+///
+/// Leaving the icons keeps the current selection. Moving to another
+/// icon closes an open dropdown.
+pub(super) fn hover(click: Click, s: &mut State) -> Action {
+    let Click::Icon(index) = click else {
+        return Action::None;
+    };
+    if index >= s.icons.len() || index == s.icon {
+        return Action::None;
+    }
+    let app = s.icons[index].app_id.clone();
+
+    s.select_icon(Some(&app));
+    s.close_dropdown();
+    Action::Redraw
+}
+
 /// Moves the dropdown selection one step.
 fn step(s: &mut State, cap: usize, forward: bool) -> Action {
     s.step_dropdown(cap, forward);

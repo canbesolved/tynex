@@ -39,6 +39,7 @@ pub enum PresenterEvent {
     Closed,    // The compositor closed the popup
     FocusLost, // Keyboard focus left the open popup
     Click { x: f64, y: f64 }, // Surface coordinates of a left click
+    Hover { x: f64, y: f64 }, // Surface coordinates while moving
 }
 
 /// The open popup surface.

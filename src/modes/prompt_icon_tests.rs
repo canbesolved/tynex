@@ -197,3 +197,17 @@ fn tab_keeps_the_title_list_when_that_bar_is_on() {
     assert_eq!(state.icon, 0);
     assert_eq!(state.selected, 1);
 }
+
+#[test]
+fn hovering_an_icon_moves_the_selection() {
+    let (mut mode, mut state) = opened();
+
+    state.open_dropdown();
+    assert_eq!(mode.on_hover(Click::Icon(1), &mut state), Action::Redraw);
+    assert_eq!(state.icon, 1);
+    assert_eq!(state.dropdown, None);
+    assert_eq!(mode.on_hover(Click::Icon(1), &mut state), Action::None);
+    assert_eq!(mode.on_hover(Click::Menu(0), &mut state), Action::None);
+    assert_eq!(mode.on_hover(Click::Elsewhere, &mut state), Action::None);
+    assert_eq!(state.icon, 1);
+}

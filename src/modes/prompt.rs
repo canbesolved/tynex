@@ -142,6 +142,14 @@ impl Mode for PromptMode {
             Action::None
         }
     }
+
+    fn on_hover(&mut self, click: Click, s: &mut State) -> Action {
+        if self.strip(s) {
+            prompt_icon::hover(click, s)
+        } else {
+            Action::None
+        }
+    }
 }
 
 /// Activates or launches the selected row.

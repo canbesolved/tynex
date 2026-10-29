@@ -55,4 +55,9 @@ pub trait Mode {
     fn on_click(&mut self, _click: Click, _s: &mut State) -> Action {
         Action::None
     }
+
+    /// Handles one pointer move while the popup is open.
+    fn on_hover(&mut self, _click: Click, _s: &mut State) -> Action {
+        Action::None
+    }
 }

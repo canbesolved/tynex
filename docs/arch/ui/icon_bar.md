@@ -91,6 +91,8 @@ dropdown; otherwise they still move the title or output list.
 A left click on an icon selects it and opens the dropdown, or
 activates its one window. A left click on a dropdown row activates
 that window. A left click elsewhere in the popup closes the
-dropdown. The right button is ignored.
+dropdown. The right button is ignored. Moving the pointer onto an
+icon selects it and closes an open dropdown. Moving off the icons
+leaves the selection where it is.
 
 See [input_bar.md](input_bar.md) and [title_bar.md](title_bar.md).

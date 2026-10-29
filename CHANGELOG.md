@@ -32,6 +32,8 @@ project adheres to
 - `Tab` moves to the next icon while the strip is showing and the
   title bar is off. An open dropdown still takes `Tab` first
   (ADR-0063).
+- Moving the pointer onto an icon selects it and closes an open
+  dropdown. Moving off the icons leaves the selection where it is.
 
 ### Fixed
 

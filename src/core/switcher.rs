@@ -66,6 +66,7 @@ impl<M: Mode> Switcher<M> {
             Event::Show => self.show(),
             Event::Key(key) => self.key(key),
             Event::Click(click) => self.click(click),
+            Event::Hover(click) => self.hover(click),
             Event::Hide | Event::Quit => self.close(),
         }
     }
@@ -147,6 +148,16 @@ impl<M: Mode> Switcher<M> {
             return Action::None;
         };
         let action = self.mode.on_click(click, &mut state);
+
+        self.keep(action, state)
+    }
+
+    /// Routes one pointer move to the mode. Same lifetime rules as `key`.
+    fn hover(&mut self, click: Click) -> Action {
+        let Some(mut state) = self.state.take() else {
+            return Action::None;
+        };
+        let action = self.mode.on_hover(click, &mut state);
 
         self.keep(action, state)
     }

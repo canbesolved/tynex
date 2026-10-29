@@ -33,6 +33,12 @@ impl Dispatch<WlPointer, ()> for Wl {
             } => {
                 s.pointer_x = surface_x;
                 s.pointer_y = surface_y;
+                if s.popup.is_some() {
+                    s.events.push(PresenterEvent::Hover {
+                        x: surface_x,
+                        y: surface_y,
+                    });
+                }
             }
             wl_pointer::Event::Button { button, state, .. }
                 if button == BTN_LEFT
