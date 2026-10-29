@@ -20,7 +20,14 @@ pub enum Key {
     Tab,
     Up,
     Down,
+    Left,
+    Right,
+    Home,
+    End,
     Backspace,
+    Delete,
+    WordLeft,  // Ctrl+Left
+    WordRight, // Ctrl+Right
 }
 
 /// Inputs to the core.

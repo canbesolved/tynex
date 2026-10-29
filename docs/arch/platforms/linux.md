@@ -95,8 +95,10 @@ closes, and without input it closes after ten seconds.
   (`Keymap::new_from_string`, default features off).
 - Key events become keysyms and UTF-8 text with the current layout, so
   non-QWERTY layouts work, then `core::Key`: `Enter` (also keypad),
-  `Esc`, `Tab`, arrows, `Backspace`, or `Char` when the text is one
-  printable character. Ctrl combinations produce no `Char`.
+  `Esc`, `Tab`, arrows, `Home`, `End`, `Backspace`, `Delete`, or
+  `Char` when the text is one printable character. `Ctrl+Left` and
+  `Ctrl+Right` are `WordLeft` and `WordRight`. Other Ctrl
+  combinations produce no `Char`.
 - Dead keys and compose sequences (`´` then `e` gives `é`) use the
   `xkbcommon` compose table for the locale in `LC_ALL`, `LC_CTYPE` or
   `LANG`.
@@ -104,9 +106,10 @@ closes, and without input it closes after ten seconds.
   from the first layout where it is an ASCII letter
   (`key_get_syms_by_level`). No mode uses it since hotkey mode was
   removed.
-- Key repeat, for arrows and `Backspace` only, uses the rate and delay
-  sent by the compositor. `next_deadline` gives the poll timeout and
-  `dispatch` reports due repeats; leaving focus or hiding stops it.
+- Key repeat, for arrows, `Backspace` and `Delete`, uses the rate
+  and delay the compositor sends. `next_deadline` gives the poll
+  timeout and `dispatch` reports due repeats; leaving focus or
+  hiding stops it.
 
 Tests use real keymaps from the system's XKB data (`us,gr`), so CI
 installs `libxkbcommon-dev`.

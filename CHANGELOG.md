@@ -9,6 +9,20 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-10-29
+
+The input bar shows a beam cursor.
+
+### Added
+
+- A row gap and one space separate `>` from the query.
+- The input bar draws a 1 px beam at the cursor, 10% shorter than
+  the text, in the text color. `Left` and `Right` move it by one
+  character, `Home` and `End` jump, and `Ctrl+Left` and
+  `Ctrl+Right` move by word. Typing inserts at the cursor.
+  `Backspace` and `Delete` remove the character before it and at
+  it. The beam stays while the query is empty and does not blink.
+
 ## [0.2.5] - 2026-10-29
 
 The input bar prompt is `>`.
@@ -277,7 +291,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.5...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.6...HEAD
+[0.2.6]: https://github.com/canbesolved/tynex/releases/tag/v0.2.6
 [0.2.5]: https://github.com/canbesolved/tynex/releases/tag/v0.2.5
 [0.2.4]: https://github.com/canbesolved/tynex/releases/tag/v0.2.4
 [0.2.3]: https://github.com/canbesolved/tynex/releases/tag/v0.2.3
