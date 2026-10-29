@@ -10,7 +10,7 @@ use crate::core::view::View;
 use crate::ui::draw::{self, Grid, Metrics, Paint};
 use crate::ui::render::canvas::Area;
 use crate::ui::render::text::Text;
-use crate::ui::{icon_bar, input_bar};
+use crate::ui::{frames, icon_bar};
 
 /// Longest title, in logical pixels, before the ellipsis.
 const TITLE_CAP: f32 = 450.0;
@@ -62,10 +62,7 @@ pub(crate) fn panel(
     let w = (text_w + 2.0 * grid.gap).clamp(placed.size, limit);
     let icon_x = placed.x + view.icon as f32 * (placed.size + placed.gap);
     let x = icon_x.clamp(grid.pad, (popup - grid.pad - w).max(grid.pad));
-    let y = grid.pad
-        + input_bar::height(grid)
-        + icon_bar::strip_height(view, metrics, grid)
-        + grid.pad;
+    let y = frames::icon_bottom(view, metrics, grid);
 
     Some(Panel {
         x,

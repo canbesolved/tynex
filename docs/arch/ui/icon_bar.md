@@ -11,6 +11,9 @@ Grouping lives in `src/core/icons.rs`
 icon_bar.enabled = true (default), query empty
 ╭──────────────────────────────────────╮
 │ /                                    │
+╰──────────────────────────────────────╯
+
+╭──────────────────────────────────────╮
 │   ▣    ▣    ▣                        │
 │        2                             │
 ╰──────────────────────────────────────╯
@@ -18,6 +21,9 @@ icon_bar.enabled = true (default), query empty
 title bar on, and some app has several windows
 ╭──────────────────────────────────────╮
 │ /                                    │
+╰──────────────────────────────────────╯
+
+╭──────────────────────────────────────╮
 │   ▣    ▣                             │
 │        2                             │
 ╰──────────────────────────────────────╯
@@ -27,10 +33,14 @@ title bar on, and some app has several windows
 ╰──────────────────────────────────────╯
 ```
 
-The band between the two frames is empty. The desktop shows through
-it until the dropdown slides in under the selected icon. When every
-running app has one window, that band is zero and the title list
-stays in the same frame, under a separator.
+The blank line between the input frame and the icon frame is a gap
+of 5 logical pixels. It scales with the display, and the desktop
+shows through.
+
+The spare band between the icon frame and the title frame is empty.
+The desktop shows through it until the dropdown slides in under the
+selected icon. When every running app has one window, that band is
+zero and the title list stays in the icon frame, under a separator.
 
 Typing hides the strip, the band and the dropdown. Matches stay in
 the output bar. `icon_bar.enabled = false` leaves the popup as it is
@@ -78,5 +88,4 @@ left click on a dropdown row activates that window. A left click
 elsewhere in the popup closes the dropdown. The right button is
 ignored.
 
-The input bar and the strip share one rounded frame. See
-[input_bar.md](input_bar.md) and [title_bar.md](title_bar.md).
+See [input_bar.md](input_bar.md) and [title_bar.md](title_bar.md).

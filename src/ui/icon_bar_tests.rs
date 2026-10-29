@@ -83,7 +83,7 @@ fn a_wide_row_shrinks_and_stays_clickable() {
 
     assert!(placed.size < 24.0);
 
-    let y = grid.pad + grid.row_h + placed.size / 2.0;
+    let y = frames::icon_top(&grid, &metrics) + placed.size / 2.0;
     let hit = hit(
         &state.view(),
         &metrics,
@@ -161,15 +161,10 @@ fn pixel(data: &[u8], width: u32, x: f32, y: f32) -> [u8; 4] {
     [data[i], data[i + 1], data[i + 2], data[i + 3]]
 }
 
-#[test]
-fn selection_is_a_border_around_the_icon() {
-    let metrics = metrics(300.0);
+/// Draws the popup and returns the pixels and the surface size.
+fn drawn(state: &State, metrics: &Metrics) -> (Vec<u8>, u32) {
     let theme = Theme::default();
-    let grid = Grid::new(&metrics, &theme);
-    let state = state(vec![icon("kate", &["w"])], &[("w", "File")]);
-    let placed = layout(&state.view(), &metrics, &grid);
-    let top = grid.pad + grid.row_h;
-    let size = frames::measured(&state.view(), &metrics, &theme);
+    let size = frames::measured(&state.view(), metrics, &theme);
     let mut data = vec![0; (size.width * size.height * 4) as usize];
     let mut canvas = Canvas::new(&mut data, size.width, size.height).unwrap();
     let mut text = Text::new(Face::new(FONT, 0).unwrap());
@@ -181,11 +176,21 @@ fn selection_is_a_border_around_the_icon() {
         theme: &theme,
     };
 
-    frames::draw_popup(&state.view(), &metrics, &mut paint);
+    frames::draw_popup(&state.view(), metrics, &mut paint);
+    (data, size.width)
+}
 
+#[test]
+fn selection_is_a_border_around_the_icon() {
+    let metrics = metrics(300.0);
+    let grid = Grid::new(&metrics, &Theme::default());
+    let state = state(vec![icon("kate", &["w"])], &[("w", "File")]);
+    let placed = layout(&state.view(), &metrics, &grid);
+    let top = frames::icon_top(&grid, &metrics);
+    let (data, width) = drawn(&state, &metrics);
     let mid_y = top + placed.size / 2.0;
-    let center = pixel(&data, size.width, placed.x + placed.size / 2.0, mid_y);
-    let edge = pixel(&data, size.width, placed.x - 2.0, mid_y);
+    let center = pixel(&data, width, placed.x + placed.size / 2.0, mid_y);
+    let edge = pixel(&data, width, placed.x - 2.0, mid_y);
 
     assert!(edge[2] > center[2], "edge {edge:?} center {center:?}");
     assert!(center[2] < 40, "center was filled: {center:?}");
@@ -222,4 +227,19 @@ fn last_dropdown_title_survives_a_short_reveal() {
     let sample = pixel(&data, 200, 40.0, 10.0 + 2.5 * grid.row_h);
 
     assert!(sample[2] > sample[0], "last row was skipped: {sample:?}");
+}
+
+#[test]
+fn a_clear_gap_separates_the_icon_frame() {
+    let metrics = metrics(300.0);
+    let grid = Grid::new(&metrics, &Theme::default());
+    let state = state(vec![icon("kate", &["w"])], &[("w", "File")]);
+    let (data, width) = drawn(&state, &metrics);
+    let mid = width as f32 / 2.0;
+    let frame = 2.0 * grid.pad + grid.row_h;
+    let gap = pixel(&data, width, mid, frame + 2.0);
+    let body = pixel(&data, width, mid, frame + 8.0);
+
+    assert_eq!(gap[3], 0, "{gap:?}");
+    assert!(body[3] > 0, "{body:?}");
 }

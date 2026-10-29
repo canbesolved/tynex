@@ -15,7 +15,7 @@ use crate::core::view::View;
 use crate::ui::draw::{Grid, Metrics, Paint};
 use crate::ui::render::canvas::Area;
 use crate::ui::render::text::{Style, Text};
-use crate::ui::{icon_menu, input_bar};
+use crate::ui::{frames, icon_menu};
 
 /// Gap between icons, as a fraction of the icon side.
 const GAP_RATIO: f32 = 0.35;
@@ -181,7 +181,7 @@ pub(crate) fn hit(
         return Click::Elsewhere;
     }
     let placed = layout(view, metrics, grid);
-    let top = grid.pad + input_bar::height(grid);
+    let top = frames::icon_top(grid, metrics);
     let icons = view.icons().len();
 
     for index in 0..icons {
