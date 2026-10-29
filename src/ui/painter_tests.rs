@@ -8,7 +8,7 @@ use crate::core::state::State;
 use crate::core::view::Row;
 use crate::core::window::WindowId;
 use crate::ui::draw::{Grid, Metrics, Paint, Size};
-use crate::ui::render::canvas::Canvas;
+use crate::ui::render::canvas::{Canvas, Rgba};
 use crate::ui::render::glyphs::Face;
 use crate::ui::render::icons::{Icons, NoIcons};
 use crate::ui::render::text::Text;
@@ -22,6 +22,7 @@ const M: Metrics = Metrics {
     scale: 1.0,
     title_bar: true,
     show_icons: true,
+    hint_color: Rgba(0x8d, 0xa7, 0x87, 0xff),
 };
 
 fn state(n: usize) -> State {

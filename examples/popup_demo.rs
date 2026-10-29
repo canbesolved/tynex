@@ -12,8 +12,10 @@ use std::time::{Duration, Instant};
 
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use tynex::adapters::mock::MockSource;
-use tynex::config::{Font, MainConfig, OutputBarConfig, TitleBarConfig};
-use tynex::config::{LauncherConfig, LauncherMode};
+use tynex::config::{Font, HintConfig, MainConfig};
+use tynex::config::{
+    LauncherConfig, LauncherMode, OutputBarConfig, TitleBarConfig,
+};
 use tynex::core::event::{Action, Event};
 use tynex::core::order::SortBy;
 use tynex::core::queue::channel;
@@ -41,10 +43,7 @@ fn redraw(presenter: &mut WaylandPresenter, app: &App, painter: &mut Painter) {
     presenter.draw(|canvas| painter.draw(canvas, &view, scale));
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut presenter = WaylandPresenter::connect()?;
-    let text = Text::new(default_face(&Font::Auto)?);
-    let icons = Icons::new(Box::new(IconTheme::default()));
+fn painter(text: Text, icons: Icons) -> Painter {
     let main = MainConfig {
         desktop: tynex::config::Desktop::Mock,
         font: Font::Auto,
@@ -58,7 +57,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         show_icons: true,
         strip_app_name: false,
     };
-    let mut painter = Painter::new(text, icons, &main, &output, &title);
+
+    Painter::new(text, icons, &main, &output, &title, &HintConfig::default())
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut presenter = WaylandPresenter::connect()?;
+    let mut painter = painter(
+        Text::new(default_face(&Font::Auto)?),
+        Icons::new(Box::new(IconTheme::default())),
+    );
     let (tx, rx) = channel();
     let mut source = MockSource::new();
     let mut app = Switcher::new(
@@ -103,9 +111,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Action::Close
                 }
                 PresenterEvent::Key(key) => app.handle(Event::Key(key)),
-                PresenterEvent::Scale(_) | PresenterEvent::Configured => {
-                    Action::Redraw
-                }
+                PresenterEvent::Scale(_)
+                | PresenterEvent::Configured
+                | PresenterEvent::Redraw => Action::Redraw,
             };
 
             match action {

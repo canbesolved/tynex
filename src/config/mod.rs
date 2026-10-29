@@ -67,6 +67,12 @@ pub(crate) const NEW_WINDOW_TEXT: &str = " +  New window";
 /// Default color of that title, `#8da787`.
 pub(crate) const NEW_WINDOW_COLOR: Rgb = Rgb::new(0x8d, 0xa7, 0x87);
 
+/// Default hint command. Its stdout is the date and time.
+pub(crate) const HINT_TEXT: &str = "date +\"%A %b %-d %T %Y\"";
+
+/// Default hint color, `#8da787`.
+pub(crate) const HINT_COLOR: Rgb = Rgb::new(0x8d, 0xa7, 0x87);
+
 /// Installed apps in the output bar, and the extra new-window row.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LauncherConfig {
@@ -101,10 +107,31 @@ impl Default for NewWindowConfig {
     }
 }
 
+/// Hint text in the empty input bar. `text` is a shell command.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HintConfig {
+    pub enabled: bool,
+    pub font_color: Rgb,
+    pub text: String,
+    pub update: u32, // Seconds after exit; 0 runs once per open
+}
+
+impl Default for HintConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            font_color: HINT_COLOR,
+            text: HINT_TEXT.into(),
+            update: 0,
+        }
+    }
+}
+
 /// The `[input_bar]` table.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct InputBarConfig {
     pub launcher: LauncherConfig,
+    pub hint: HintConfig,
 }
 
 /// The `[output_bar]` table.
@@ -144,9 +171,7 @@ impl Default for Config {
             hotkeys: HotkeysConfig {
                 action: HotkeyAction::Last,
             },
-            input_bar: InputBarConfig {
-                launcher: LauncherConfig::default(),
-            },
+            input_bar: InputBarConfig::default(),
             output_bar: OutputBarConfig { max_rows: 19 },
             title_bar: TitleBarConfig {
                 enabled: false,
@@ -197,3 +222,7 @@ mod tests;
 #[cfg(test)]
 #[path = "new_window_tests.rs"]
 mod new_window_tests;
+
+#[cfg(test)]
+#[path = "hint_tests.rs"]
+mod hint_tests;

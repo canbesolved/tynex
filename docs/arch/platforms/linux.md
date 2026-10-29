@@ -20,6 +20,8 @@ platform/linux/
   dbus.rs         Shared D-Bus connection, dispatch, calls
   dbus_ipc.rs     DbusIpc: impl IpcServer, IpcClient
   fonts.rs        The font: configured path or fc-match, mapped once
+  hint.rs         Hint command: spawn, animation, repeat wait
+  hint_proc.rs    Spawn `sh -c` and read stdout without blocking
   key_file.rs     Reader for desktop entries, theme indexes, kdeglobals
   desktop_files.rs  App names and icons from desktop files
   apps/           Launcher catalog: scan `.desktop`, spawn Exec
@@ -40,6 +42,24 @@ or URL are dropped; `%%`, `%c`, `%k` and `%i` are expanded.
 `Terminal=true` starts through `xdg-terminal-exec` when it is on
 `PATH`. The child is its own session; the event loop reaps it.
 
+## Hint command
+
+When `input_bar.hint.enabled` is set, opening the popup spawns
+`sh -c` with `hint.text` and draws before that process exits
+([ADR-0060](../../adr/0060_input_hint.md)). Stdout is a
+non-blocking pipe in the same poll set as Wayland and D-Bus. The
+first line becomes the hint. Until that first line, the hint
+steps through `.`, `..`, `...`, and blank every 400 ms, and only
+while the query is empty. A later run keeps the previous line
+until the new one is ready. `hint.update` arms the next run
+from the exit time, and only while the popup is open.
+Hiding the popup drops that wait and leaves the child
+running. A later open does not spawn another
+command until it exits. Stdout that arrives while hidden is
+discarded. The animation tick and the update wait are cleared when
+the popup is hidden, so an idle daemon still has no timeout once
+the child has exited.
+
 ## Wayland presenter
 
 Built directly on `wayland-client` (pure Rust backend, no
@@ -59,8 +79,8 @@ protocol. No client toolkit.
   is that divided by the scale, rounded up.
 - `show`: create the surface, wait for `configure`, draw, commit.
 - `draw`: returns false until the surface is configured or while both
-  buffers are held by the compositor; the caller draws again on the
-  next event.
+  buffers are held by the compositor. A skipped frame is drawn when
+  a buffer is released.
 - `hide`: destroy the surface and free the buffers, so an idle daemon
   holds no pixel memory. The connection, keymap and caches stay.
 - Fractional scale: with `wp_fractional_scale_v1` the buffer is drawn

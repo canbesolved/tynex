@@ -62,6 +62,7 @@ pub struct Row {
 #[derive(Debug, Clone, Copy)]
 pub struct View<'a> {
     pub query: &'a str,
+    pub hint: &'a str,   // Shown while `query` is empty
     pub cursor: usize,   // Byte index in `query`
     pub selected: usize, // Index into the output rows
     windows: &'a [Row],
@@ -71,6 +72,7 @@ pub struct View<'a> {
 impl<'a> View<'a> {
     pub(crate) fn new(
         query: &'a str,
+        hint: &'a str,
         cursor: usize,
         selected: usize,
         windows: &'a [Row],
@@ -78,6 +80,7 @@ impl<'a> View<'a> {
     ) -> Self {
         Self {
             query,
+            hint,
             cursor,
             selected,
             windows,

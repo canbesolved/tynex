@@ -78,6 +78,7 @@ fn start(config: &Config) -> Result<(), String> {
         &config.main,
         &config.output_bar,
         &config.title_bar,
+        &config.input_bar.hint,
     );
 
     painter.prepare_icons(
@@ -103,6 +104,7 @@ fn start(config: &Config) -> Result<(), String> {
         bus,
         painter,
         apps,
+        hint: crate::platform::linux::hint::Hint::new(&config.input_bar.hint),
         rx,
     };
 
