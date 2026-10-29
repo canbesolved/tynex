@@ -17,7 +17,8 @@ ui/render/
 
 - Wraps `tiny_skia::PixmapMut` over the presenter's buffer, so drawing
   goes straight into shared memory.
-- Primitives: rounded rect, filled rect, glyph coverage, image.
+- Primitives: filled and stroked rounded rects, filled rect, glyph
+  coverage, image.
 - CPU only. A full redraw of a 480 x 600 popup takes well under 1 ms.
 
 ## Text

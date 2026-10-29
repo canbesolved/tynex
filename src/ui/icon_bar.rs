@@ -57,7 +57,8 @@ pub(crate) fn layout(
     let mut gap = base * GAP_RATIO;
 
     if count_icons > 0 {
-        let row = row_width(count_icons, size, gap);
+        let n = count_icons as f32;
+        let row = n * size + (n - 1.0).max(0.0) * gap;
 
         if row > inner && row > 0.0 {
             let factor = inner / row;
@@ -67,7 +68,8 @@ pub(crate) fn layout(
         }
     }
 
-    let row = row_width(count_icons, size, gap);
+    let n = count_icons as f32;
+    let row = n * size + (n - 1.0).max(0.0) * gap;
 
     Layout {
         size,
@@ -131,17 +133,12 @@ pub(crate) fn draw(
         return;
     }
     let placed = layout(view, metrics, grid);
-    let radius = (placed.size / 4.0).max(1.0);
 
     for (index, icon) in view.icons().iter().enumerate() {
         let x = placed.x + index as f32 * (placed.size + placed.gap);
 
         if index == view.icon {
-            paint.canvas.fill_rounded_rect(
-                Area::new(x, top, placed.size, placed.size),
-                radius,
-                paint.theme.selected,
-            );
+            selection(paint, x, top, placed.size);
         }
         if let Some(name) = &icon.icon {
             let side = placed.size.round().max(1.0) as u32;
@@ -157,6 +154,17 @@ pub(crate) fn draw(
             count(paint, &placed, x, top, icon.windows.len());
         }
     }
+}
+
+/// Draws the selection in the 2 px outside the icon.
+fn selection(paint: &mut Paint<'_, '_>, x: f32, y: f32, size: f32) {
+    let out = 2.0;
+    paint.canvas.stroke_rounded_rect(
+        Area::new(x - out / 2.0, y - out / 2.0, size + out, size + out),
+        (size / 4.0).max(1.0) + out / 2.0,
+        out,
+        paint.theme.selected,
+    );
 }
 
 /// Returns what a click at `(x, y)` hits. `reveal` is 0 to 1.
@@ -209,14 +217,6 @@ pub(crate) fn hit(
         }
     }
     Click::Elsewhere
-}
-
-fn row_width(count: usize, size: f32, gap: f32) -> f32 {
-    if count == 0 {
-        0.0
-    } else {
-        count as f32 * size + (count - 1) as f32 * gap
-    }
 }
 
 fn count(

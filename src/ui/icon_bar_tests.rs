@@ -8,10 +8,11 @@ use crate::core::event::Click;
 use crate::core::state::State;
 use crate::core::view::{AppIcon, Row, RowTarget};
 use crate::core::window::WindowId;
-use crate::ui::draw::{Grid, Metrics};
+use crate::ui::draw::{Grid, Metrics, Paint};
 use crate::ui::icon_bar::hit;
-use crate::ui::render::canvas::Rgba;
+use crate::ui::render::canvas::{Canvas, Rgba};
 use crate::ui::render::glyphs::Face;
+use crate::ui::render::icons::{Icons, NoIcons};
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
 use crate::ui::{frames, icon_menu};
@@ -151,4 +152,40 @@ fn a_long_title_is_capped() {
 /// Returns the uncapped title width plus the row padding.
 fn icon_bar_width(text: &Text, title: &str) -> f32 {
     text.width(title, 14.0) + 2.0 * 8.0
+}
+
+fn pixel(data: &[u8], width: u32, x: f32, y: f32) -> [u8; 4] {
+    let i = ((y as u32 * width + x as u32) * 4) as usize;
+
+    [data[i], data[i + 1], data[i + 2], data[i + 3]]
+}
+
+#[test]
+fn selection_is_a_border_around_the_icon() {
+    let metrics = metrics(300.0);
+    let theme = Theme::default();
+    let grid = Grid::new(&metrics, &theme);
+    let state = state(vec![icon("kate", &["w"])], &[("w", "File")]);
+    let placed = layout(&state.view(), &metrics, &grid);
+    let top = grid.pad + grid.row_h;
+    let size = frames::measured(&state.view(), &metrics, &theme);
+    let mut data = vec![0; (size.width * size.height * 4) as usize];
+    let mut canvas = Canvas::new(&mut data, size.width, size.height).unwrap();
+    let mut text = Text::new(Face::new(FONT, 0).unwrap());
+    let mut icons = Icons::new(Box::new(NoIcons));
+    let mut paint = Paint {
+        canvas: &mut canvas,
+        text: &mut text,
+        icons: &mut icons,
+        theme: &theme,
+    };
+
+    frames::draw_popup(&state.view(), &metrics, &mut paint);
+
+    let mid_y = top + placed.size / 2.0;
+    let center = pixel(&data, size.width, placed.x + placed.size / 2.0, mid_y);
+    let edge = pixel(&data, size.width, placed.x - 1.0, mid_y);
+
+    assert!(edge[2] > center[2], "edge {edge:?} center {center:?}");
+    assert!(center[2] < 40, "center was filled: {center:?}");
 }

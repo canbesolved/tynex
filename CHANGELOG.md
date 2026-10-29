@@ -20,6 +20,10 @@ project adheres to
   `Space` and a left click activate one window, open the dropdown,
   or launch. The dropdown slides over 150 ms (ADR-0062).
 
+### Fixed
+
+- The selected icon is outlined by a border 2 px outside the icon.
+
 ## [0.2.8] - 2026-10-29
 
 `Space` confirms the selected match, and `Tab` walks the visible list.
