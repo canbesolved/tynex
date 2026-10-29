@@ -23,29 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.9
-
-- [ ] Icon bar: running apps shown as a row of app icons, one per app,
-  to replace KDE's "Icons-only Task Manager" widget. It shows only
-  with the popup, on demand.
-  - An app with several windows shows their count under its icon.
-  - A mouse click on an icon launches the app if it is not running,
-    activates its window if it has one, or opens a dropdown list of
-    its window titles if it has several.
-  - The dropdown:
-    - opens under the selected app;
-    - lists windows alphabetically by title;
-    - fits the longest title, up to 450 px wide, scaled with the
-      display scale; longer titles end with an ellipsis (`…`);
-    - slides in and out smoothly at about 120 frames per second.
-  - The strip stays in place when the dropdown opens: the popup keeps
-    a fixed size with transparent spare room.
-  - Config: `[icon_bar]` with `enabled = true` (default) shows the
-    strip with the input bar; with `false`, only the input bar shows
-    until you type. Matches appear in the output bar.
-  - `Left` and `Right` move along the strip.
-  - Launching uses the launcher sub-module of the input bar.
-
 ### 0.2.10
 
 - [ ] Each UI module is its own block: a small gap separates the bars
