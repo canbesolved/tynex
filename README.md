@@ -31,8 +31,8 @@ Press a hotkey, type a few letters of a window, press `Enter`, and you
 are there. Or press `Enter` right away to go back to the previous
 window. No mouse, no scrolling, no waiting.
 
-> Status: 0.2.3, for KDE Plasma 6 on Wayland. The icon bar follows
-> in 0.2.x (see the [roadmap](ROADMAP.md)).
+> Status: 0.2.3 — MVP with KDE Plasma 6 on Wayland support. The icon
+> bar follows in 0.2.x (see the [roadmap](ROADMAP.md)).
 
 ## Features
 

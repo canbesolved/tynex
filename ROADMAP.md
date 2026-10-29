@@ -6,11 +6,11 @@ Later to Next to Now as they are scheduled, and leave this file once
 released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md),
 dropped items in [DEPRECATIONS.md](DEPRECATIONS.md).
 
-| Horizon | Release               | Meaning                              |
-| ------- | --------------------- | ------------------------------------ |
-| Now     | 0.2.x                 | Patch releases, in the order below   |
-| Next    | 0.8.x - 1.0.0         | Committed for the following releases |
-| Later   | Unplanned             | Accepted ideas, not scheduled yet    |
+| Horizon | Release               | Meaning                                  |
+| ------- | --------------------- | ---------------------------------------- |
+| Now     | 0.2.x                 | MVP with KDE Plasma 6 on Wayland support |
+| Next    | 0.8.x - 1.0.0         | Committed for the following releases     |
+| Later   | Unplanned             | Accepted ideas, not scheduled yet        |
 
 Rules:
 
@@ -21,7 +21,7 @@ Rules:
 
 ## Now
 
-Target: KDE Plasma 6 on Wayland.
+Target: MVP with KDE Plasma 6 on Wayland support.
 
 ### 0.2.4
 
