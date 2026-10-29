@@ -90,6 +90,25 @@ pub(super) struct RawInputBar {
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawLauncher {
     pub mode: RawLauncherMode,
+    pub new_window: RawNewWindow,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub(super) struct RawNewWindow {
+    pub enabled: bool,
+    pub font_color: Spanned<String>,
+    pub text: Spanned<String>,
+}
+
+impl Default for RawNewWindow {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            font_color: unspanned("#A8B3BD".into()),
+            text: unspanned("  +  New window".into()),
+        }
+    }
 }
 
 #[derive(Deserialize)]

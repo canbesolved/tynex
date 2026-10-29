@@ -14,6 +14,13 @@ action = "last"              # hide | last
 # terminal apps, "gui_only" skips Terminal=true.
 launcher.mode = "off"        # off | all | gui_only
 
+[input_bar.launcher.new_window]
+# Extra row under a running app. false hides that row.
+enabled = true
+# A little dimmer than the other row text.
+font_color = "#A8B3BD"       # #RRGGBB
+text = "  +  New window"
+
 [output_bar]
 # Cap for the output bar and the title bar.
 max_rows = 19

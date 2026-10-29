@@ -9,6 +9,14 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `input_bar.launcher.new_window` turns the extra launch row under a
+  running app on or off (`enabled`), and sets its `text` and
+  `font_color` (`#RRGGBB`). The default title is two spaces, `+`,
+  two spaces, then `New window`. The default color `#A8B3BD` is a
+  little dimmer than the other row text (ADR-0059).
+
 ### Changed
 
 - A launch row for a running app reads `+  New window`, with two

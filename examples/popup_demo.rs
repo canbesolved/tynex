@@ -12,8 +12,8 @@ use std::time::{Duration, Instant};
 
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use tynex::adapters::mock::MockSource;
-use tynex::config::LauncherMode;
 use tynex::config::{Font, MainConfig, OutputBarConfig, TitleBarConfig};
+use tynex::config::{LauncherConfig, LauncherMode};
 use tynex::core::event::{Action, Event};
 use tynex::core::order::SortBy;
 use tynex::core::queue::channel;
@@ -65,7 +65,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         HotkeyAction::Hide,
         true,
         SortBy::Recently,
-        PromptMode::new(Input::new(LauncherMode::Off, Vec::new())),
+        PromptMode::new(Input::new(
+            LauncherConfig {
+                mode: LauncherMode::Off,
+                ..LauncherConfig::default()
+            },
+            Vec::new(),
+        )),
     );
 
     source.start(tx)?;

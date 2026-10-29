@@ -6,22 +6,26 @@
 use std::cmp::Reverse;
 use std::collections::{HashMap, HashSet};
 
+use crate::config::NewWindowConfig;
 use crate::core::app::AppInfo;
 use crate::core::title::short_app_id;
 use crate::core::view::{Row, RowTarget};
 use crate::modules::search::app_haystack;
 use crate::modules::search::fuzzy::{Hit, rank};
 
-const LAUNCH_TITLE: &str = "  +  New window";
-
 /// Builds the output list for a non-empty query with the launcher on.
 ///
 /// A running app whose name or id matches lists all of its windows,
-/// then a launch row. A title-only match lists those windows, then a
-/// launch row when the app is installed. An app that is not running
-/// and matches is one launch row.
+/// then a new-window row when that row is enabled. A title-only match
+/// lists those windows, then the row when the app is installed. An
+/// app that is not running and matches is one launch row.
 #[must_use]
-pub fn merge(query: &str, windows: &[Row], apps: &[AppInfo]) -> Vec<Row> {
+pub fn merge(
+    query: &str,
+    windows: &[Row],
+    apps: &[AppInfo],
+    new_window: &NewWindowConfig,
+) -> Vec<Row> {
     let win_apps: Vec<String> = windows
         .iter()
         .map(|r| app_haystack(&r.app_name, &r.app_id))
@@ -39,7 +43,7 @@ pub fn merge(query: &str, windows: &[Row], apps: &[AppInfo]) -> Vec<Row> {
     let app_hits = rank(query, &app_items);
     let groups = collect_groups(windows, apps, &win_hits, &app_hits);
 
-    emit(windows, apps, &win_hits, &app_hits, groups)
+    emit(windows, apps, &win_hits, &app_hits, groups, new_window)
 }
 
 fn collect_groups<'a>(
@@ -88,6 +92,7 @@ fn emit(
     win_hits: &[Hit],
     app_hits: &[Hit],
     groups: Vec<(String, Group<'_>)>,
+    new_window: &NewWindowConfig,
 ) -> Vec<Row> {
     let app_matched: HashSet<&str> =
         app_hits.iter().map(|h| apps[h.index].id.as_str()).collect();
@@ -119,10 +124,11 @@ fn emit(
             }
         }
         if let Some(app) = catalog.get(app_id.as_str()).copied() {
-            output.push(launch_row(
-                app,
-                windows.iter().any(|r| r.app_id == app.id),
-            ));
+            let running = windows.iter().any(|r| r.app_id == app.id);
+
+            if !running || new_window.enabled {
+                output.push(launch_row(app, running, new_window));
+            }
         }
     }
     for hit in win_hits {
@@ -165,17 +171,22 @@ fn push_window(
     output.push(row);
 }
 
-fn launch_row(app: &AppInfo, running: bool) -> Row {
+fn launch_row(
+    app: &AppInfo,
+    running: bool,
+    new_window: &NewWindowConfig,
+) -> Row {
     Row {
         target: RowTarget::Launch(app.id.clone()),
         app_id: app.id.clone(),
         app_name: app.name.clone(),
         icon: app.icon.clone(),
         title: if running {
-            LAUNCH_TITLE.into()
+            new_window.text.clone()
         } else {
             app.name.clone()
         },
+        title_color: running.then_some(new_window.font_color),
         highlights: Vec::new(),
     }
 }

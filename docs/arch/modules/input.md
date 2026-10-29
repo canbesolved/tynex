@@ -26,8 +26,9 @@ installed apps join the output list
 ([ADR-0056](../../adr/0056_launcher_input.md)):
 
 - A running app whose name or id matches: all of its open windows,
-  then a row titled `+  New window`, with two spaces before the
-  plus and two after it.
+  then a new-window row when `new_window.enabled` is set. Its title
+  and color come from that table. The default title is two spaces,
+  `+`, two spaces, then `New window`, in `#A8B3BD`.
 - A title-only match: those windows, then the launch row when the
   app is installed.
 - An app that is not running and matches: one launch row (title =

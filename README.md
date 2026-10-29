@@ -144,6 +144,11 @@ action = "last"              # hide | last
 [input_bar]
 launcher.mode = "off"        # off | all | gui_only
 
+[input_bar.launcher.new_window]
+enabled = true               # false hides the extra row
+font_color = "#A8B3BD"       # #RRGGBB, a little dimmer
+text = "  +  New window"
+
 [output_bar]
 max_rows = 19
 

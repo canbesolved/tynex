@@ -142,8 +142,10 @@ refilter.
 
 `View` borrows the open `State`: query, selected index, the open
 windows, and the output rows in display order. Each `Row` has an id,
-icon, row text (`title`), highlight byte ranges, and the app name and
-id for search. `windows` is every open window, for the title bar.
+icon, row text (`title`), an optional title color, highlight byte
+ranges, and the app name and id for search. A row with no title
+color uses the theme text color. `windows` is every open window,
+for the title bar.
 `rows` is the current result, for the output bar: the matches while
 a query is typed. The title bar is shown when `title_bar.enabled`
 is set and the query is empty. Popup modules read the `View`, never

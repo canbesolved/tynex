@@ -70,7 +70,7 @@ fn start(config: &Config) -> Result<(), String> {
     let face = fonts::default_face(&config.main.font)
         .map_err(|e| format!("cannot load the font: {e}"))?;
     let text = Text::new(face);
-    let apps = Apps::scan(config.input_bar.launcher);
+    let apps = Apps::scan(config.input_bar.launcher.mode);
     let app_list = apps.list();
     let mut painter = Painter::new(
         text,
@@ -93,7 +93,10 @@ fn start(config: &Config) -> Result<(), String> {
             config.hotkeys.action,
             config.title_bar.strip_app_name,
             config.title_bar.sort_by,
-            PromptMode::new(Input::new(config.input_bar.launcher, app_list)),
+            PromptMode::new(Input::new(
+                config.input_bar.launcher.clone(),
+                app_list,
+            )),
         ),
         source,
         presenter,

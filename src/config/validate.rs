@@ -10,14 +10,15 @@ use toml::Spanned;
 
 use crate::config::error::ConfigError;
 use crate::config::raw::{
-    RawConfig, RawHotkeyAction, RawLauncherMode, RawSortBy,
+    RawConfig, RawHotkeyAction, RawLauncherMode, RawNewWindow, RawSortBy,
 };
 use crate::config::{
-    Config, Font, HotkeysConfig, InputBarConfig, LauncherMode, MainConfig,
-    OutputBarConfig, TitleBarConfig,
+    Config, Font, HotkeysConfig, InputBarConfig, LauncherConfig, LauncherMode,
+    MainConfig, NewWindowConfig, OutputBarConfig, TitleBarConfig,
 };
 use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
+use crate::core::view::Rgb;
 
 /// Checks `raw` from `text`; `font_exists` tells if a font path exists.
 pub(super) fn validate(
@@ -54,6 +55,8 @@ pub(super) fn validate(
         1..=50,
         &mut err,
     );
+    let new_window =
+        check_new_window(&raw.input_bar.launcher.new_window, &mut err);
 
     if !errors.is_empty() {
         return Err(errors);
@@ -73,10 +76,13 @@ pub(super) fn validate(
             },
         },
         input_bar: InputBarConfig {
-            launcher: match raw.input_bar.launcher.mode {
-                RawLauncherMode::Off => LauncherMode::Off,
-                RawLauncherMode::All => LauncherMode::All,
-                RawLauncherMode::GuiOnly => LauncherMode::GuiOnly,
+            launcher: LauncherConfig {
+                mode: match raw.input_bar.launcher.mode {
+                    RawLauncherMode::Off => LauncherMode::Off,
+                    RawLauncherMode::All => LauncherMode::All,
+                    RawLauncherMode::GuiOnly => LauncherMode::GuiOnly,
+                },
+                new_window,
             },
         },
         output_bar: OutputBarConfig {
@@ -92,6 +98,41 @@ pub(super) fn validate(
             strip_app_name: raw.title_bar.strip_app_name,
         },
     })
+}
+
+/// Checks the new-window row. A bad color or an empty title is an
+/// error; the returned value is then unused.
+fn check_new_window(
+    raw: &RawNewWindow,
+    err: &mut impl FnMut(std::ops::Range<usize>, String),
+) -> NewWindowConfig {
+    let color = raw.font_color.get_ref();
+    let font_color = Rgb::parse(color).unwrap_or_else(|| {
+        err(
+            raw.font_color.span(),
+            format!(
+                "`input_bar.launcher.new_window.font_color` = {color:?} \
+                 is not a color, expected \"#RRGGBB\""
+            ),
+        );
+        NewWindowConfig::default().font_color
+    });
+    let text = raw.text.get_ref();
+
+    if text.is_empty() {
+        err(
+            raw.text.span(),
+            "`input_bar.launcher.new_window.text` is empty, expected \
+             a title"
+                .into(),
+        );
+    }
+
+    NewWindowConfig {
+        enabled: raw.enabled,
+        font_color,
+        text: text.clone(),
+    }
 }
 
 /// Reports `<name>` when its value is outside `range`.

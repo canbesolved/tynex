@@ -4,18 +4,25 @@
 //! Prompt mode key tests.
 
 use super::*;
-use crate::config::LauncherMode;
+use crate::config::{LauncherConfig, LauncherMode};
 use crate::core::app::AppInfo;
 use crate::core::view::{Row, RowTarget};
 use crate::core::window::WindowId;
 use crate::modules::input::Input;
 
+fn launcher(mode: LauncherMode) -> LauncherConfig {
+    LauncherConfig {
+        mode,
+        ..LauncherConfig::default()
+    }
+}
+
 fn mode() -> PromptMode {
-    PromptMode::new(Input::new(LauncherMode::Off, Vec::new()))
+    PromptMode::new(Input::new(launcher(LauncherMode::Off), Vec::new()))
 }
 
 fn mode_with_apps(apps: Vec<AppInfo>) -> PromptMode {
-    PromptMode::new(Input::new(LauncherMode::All, apps))
+    PromptMode::new(Input::new(launcher(LauncherMode::All), apps))
 }
 
 fn state() -> State {
@@ -27,6 +34,7 @@ fn state() -> State {
             app_name: String::new(),
             icon: None,
             title: title.into(),
+            title_color: None,
             highlights: Vec::new(),
         })
         .collect();

@@ -158,6 +158,7 @@ fn row(window: &WindowInfo) -> Row {
         app_name: window.app_name.clone(),
         icon: window.icon.clone(),
         title: window.title.clone(),
+        title_color: None,
         highlights: Vec::new(),
     }
 }

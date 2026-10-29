@@ -95,17 +95,12 @@ fn removed_show_app_icon_is_an_unknown_key() {
 fn empty_input_bar_uses_launcher_off() {
     let config = parse("[input_bar]\n", &no_font).expect("valid config");
 
-    assert_eq!(
-        config.input_bar,
-        InputBarConfig {
-            launcher: LauncherMode::Off,
-        }
-    );
+    assert_eq!(config.input_bar.launcher.mode, LauncherMode::Off);
 }
 
 #[test]
 fn launcher_mode_values() {
-    let mode = |text| parse(text, &no_font).map(|c| c.input_bar.launcher);
+    let mode = |text| parse(text, &no_font).map(|c| c.input_bar.launcher.mode);
 
     assert_eq!(mode(""), Ok(LauncherMode::Off));
     assert_eq!(

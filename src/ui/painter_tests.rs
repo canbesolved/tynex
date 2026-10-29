@@ -34,6 +34,7 @@ fn state(n: usize) -> State {
             app_name: String::new(),
             icon: None,
             title: format!("Window {i}"),
+            title_color: None,
             highlights: Vec::new(),
         })
         .collect();

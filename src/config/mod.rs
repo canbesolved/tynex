@@ -16,6 +16,7 @@ pub use crate::config::error::ConfigError;
 pub use crate::config::file::{Loaded, load_or_create};
 use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
+use crate::core::view::Rgb;
 
 /// The default config file, written on first start.
 pub const DEFAULT_TOML: &str = include_str!("default.toml");
@@ -60,10 +61,44 @@ pub enum LauncherMode {
     GuiOnly, // Skip Terminal=true
 }
 
+/// Installed apps in the output bar, and the extra new-window row.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LauncherConfig {
+    pub mode: LauncherMode,
+    pub new_window: NewWindowConfig,
+}
+
+impl Default for LauncherConfig {
+    fn default() -> Self {
+        Self {
+            mode: LauncherMode::Off,
+            new_window: NewWindowConfig::default(),
+        }
+    }
+}
+
+/// The extra row under a running app.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NewWindowConfig {
+    pub enabled: bool,
+    pub font_color: Rgb,
+    pub text: String,
+}
+
+impl Default for NewWindowConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            font_color: Rgb::new(0xA8, 0xB3, 0xBD),
+            text: "  +  New window".into(),
+        }
+    }
+}
+
 /// The `[input_bar]` table.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct InputBarConfig {
-    pub launcher: LauncherMode,
+    pub launcher: LauncherConfig,
 }
 
 /// The `[output_bar]` table.
@@ -104,7 +139,7 @@ impl Default for Config {
                 action: HotkeyAction::Last,
             },
             input_bar: InputBarConfig {
-                launcher: LauncherMode::Off,
+                launcher: LauncherConfig::default(),
             },
             output_bar: OutputBarConfig { max_rows: 19 },
             title_bar: TitleBarConfig {
@@ -152,3 +187,7 @@ fn message(raw: &str) -> String {
 #[cfg(test)]
 #[path = "tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "new_window_tests.rs"]
+mod new_window_tests;
