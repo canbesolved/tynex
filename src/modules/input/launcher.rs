@@ -12,7 +12,7 @@ use crate::core::view::{Row, RowTarget};
 use crate::modules::search::app_haystack;
 use crate::modules::search::fuzzy::{Hit, rank};
 
-const LAUNCH_TITLE: &str = "+ New window";
+const LAUNCH_TITLE: &str = "+ new window";
 
 /// Builds the output list for a non-empty query with the launcher on.
 ///
