@@ -16,7 +16,7 @@ use crate::ui::render::canvas::{Area, Rgba};
 use crate::ui::{icon_bar, input_bar, output_bar, title_bar};
 
 /// Gap between the input frame and the icon frame, logical pixels.
-const FRAME_GAP: f32 = 5.0;
+const FRAME_GAP: f32 = 3.0;
 
 /// Gap under the icon frame, logical pixels.
 ///

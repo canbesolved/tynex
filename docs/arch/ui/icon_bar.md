@@ -34,7 +34,7 @@ title bar on, and some app has several windows
 ```
 
 The blank line between the input frame and the icon frame is a gap
-of 5 logical pixels. It scales with the display, and the desktop
+of 3 logical pixels. It scales with the display, and the desktop
 shows through.
 
 The spare band between the icon frame and the title frame is empty.

@@ -24,7 +24,7 @@ project adheres to
 
 - `icon_bar.border` sets the selection outline in logical pixels,
   scaled with the display. The default is `4`, from 1 to 32.
-- The icon bar is its own rounded frame, 5 logical pixels below the
+- The icon bar is its own rounded frame, 3 logical pixels below the
   input bar. The gap scales with the display and shows the desktop.
 - A gap of 3 logical pixels separates the icon bar from the title
   bar, and the dropdown from the icon bar. Both scale with the
