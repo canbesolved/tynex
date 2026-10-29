@@ -43,7 +43,7 @@ fn running_app_lists_windows_then_launch() {
     let apps = vec![app("firefox", "Firefox"), app("kate", "Kate")];
     let out = merge("fire", &windows, &apps);
 
-    assert_eq!(titles(&out), ["Release notes", "Café", "+ new window"]);
+    assert_eq!(titles(&out), ["Release notes", "Café", "  + New window"]);
     assert!(matches!(
         out.last().map(|r| &r.target),
         Some(RowTarget::Launch(id)) if id == "firefox"
