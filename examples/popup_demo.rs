@@ -73,13 +73,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         HotkeyAction::Hide,
         true,
         SortBy::Recently,
-        PromptMode::new(Input::new(
-            LauncherConfig {
-                mode: LauncherMode::Off,
-                ..LauncherConfig::default()
-            },
-            Vec::new(),
-        )),
+        PromptMode::new(
+            Input::new(
+                LauncherConfig {
+                    mode: LauncherMode::Off,
+                    ..LauncherConfig::default()
+                },
+                Vec::new(),
+            ),
+            true,
+        ),
     );
 
     source.start(tx)?;

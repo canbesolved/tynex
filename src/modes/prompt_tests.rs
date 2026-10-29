@@ -18,11 +18,19 @@ fn launcher(mode: LauncherMode) -> LauncherConfig {
 }
 
 fn mode() -> PromptMode {
-    PromptMode::new(Input::new(launcher(LauncherMode::Off), Vec::new()))
+    prompt(false, launcher(LauncherMode::Off), Vec::new())
 }
 
 fn mode_with_apps(apps: Vec<AppInfo>) -> PromptMode {
-    PromptMode::new(Input::new(launcher(LauncherMode::All), apps))
+    prompt(false, launcher(LauncherMode::All), apps)
+}
+
+fn prompt(
+    title_bar: bool,
+    launcher: LauncherConfig,
+    apps: Vec<AppInfo>,
+) -> PromptMode {
+    PromptMode::new(Input::new(launcher, apps), title_bar)
 }
 
 fn state() -> State {
@@ -146,7 +154,8 @@ fn cursor_edits_at_its_position() {
     mode.on_key(Key::Left, &mut s);
     assert_eq!(s.cursor, 0);
     mode.on_key(Key::Right, &mut s);
-    typed(&mut mode, &mut s, " xx");
+    s.query = "é xx".into();
+    s.cursor = s.query.len();
     mode.on_key(Key::WordLeft, &mut s);
     assert_eq!(s.cursor, "é ".len());
     mode.on_key(Key::Home, &mut s);

@@ -9,6 +9,15 @@ project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- `Space` picks the selected match, the same as `Enter`. A search
+  query no longer contains spaces (ADR-0061).
+- `Tab` moves the selection through the list on screen: open windows
+  in the title bar while the query is empty and `title_bar.enabled`
+  is set, and matches in the output bar while a query is typed. With
+  neither list showing, `Tab` does nothing (ADR-0061).
+
 ## [0.2.7] - 2026-10-29
 
 The input bar shows a hint while the query is empty.

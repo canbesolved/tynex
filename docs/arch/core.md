@@ -213,4 +213,5 @@ stably from there:
 - `app`: by app name, ignoring case, then by recent use.
 
 The popup opens with the previous window selected in every order, so
-`Enter` switches back like Alt+Tab.
+`Enter` or `Space` switches back like Alt+Tab
+([ADR-0061](../adr/0061_prompt_keys.md)).
