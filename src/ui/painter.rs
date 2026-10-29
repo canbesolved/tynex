@@ -42,6 +42,7 @@ pub struct Painter {
     hint_color: Rgba,
     icon_bar: bool,
     icon_size: f32,
+    border: f32,
     slide: Slide,
     drawn: f32, // Reveal of the last drawn frame
 }
@@ -71,6 +72,7 @@ impl Painter {
             hint_color: Rgba(color.r, color.g, color.b, 0xff),
             icon_bar: icon.enabled,
             icon_size: f32::from(icon.icon_size),
+            border: f32::from(icon.border),
             slide: Slide::default(),
             drawn: 0.0,
         }
@@ -188,6 +190,7 @@ impl Painter {
             hint_color: self.hint_color,
             icon_bar: self.icon_bar,
             icon_size: self.icon_size,
+            border: self.border,
         }
     }
 }

@@ -20,9 +20,14 @@ project adheres to
   `Space` and a left click activate one window, open the dropdown,
   or launch. The dropdown slides over 150 ms (ADR-0062).
 
+### Changed
+
+- `icon_bar.border` sets the selection outline in logical pixels,
+  scaled with the display. The default is `4`, from 1 to 32.
+
 ### Fixed
 
-- The selected icon is outlined by a border 2 px outside the icon.
+- The selected icon is outlined by a border outside the icon.
 
 ## [0.2.8] - 2026-10-29
 

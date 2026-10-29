@@ -31,6 +31,7 @@ pub(crate) struct Metrics {
     pub hint_color: Rgba, // Hint text while the query is empty
     pub icon_bar: bool,   // Running-app strip
     pub icon_size: f32,   // Logical pixels
+    pub border: f32,      // Selection outline, logical pixels
 }
 
 /// Surface size in pixels.

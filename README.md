@@ -164,6 +164,7 @@ strip_app_name = false       # true: "Café — Firefox" becomes "Café"
 [icon_bar]
 enabled = true               # App icons under the input bar
 icon_size = 24               # Logical pixels, 8 to 128
+border = 4                   # Selection outline, 1 to 32
 ```
 
 On first start `tynex daemon` writes this file with defaults. Keys

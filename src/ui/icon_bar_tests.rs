@@ -30,6 +30,7 @@ fn metrics(width: f32) -> Metrics {
         hint_color: Rgba(0x8d, 0xa7, 0x87, 0xff),
         icon_bar: true,
         icon_size: 24.0,
+        border: 4.0,
     }
 }
 
@@ -184,7 +185,7 @@ fn selection_is_a_border_around_the_icon() {
 
     let mid_y = top + placed.size / 2.0;
     let center = pixel(&data, size.width, placed.x + placed.size / 2.0, mid_y);
-    let edge = pixel(&data, size.width, placed.x - 1.0, mid_y);
+    let edge = pixel(&data, size.width, placed.x - 2.0, mid_y);
 
     assert!(edge[2] > center[2], "edge {edge:?} center {center:?}");
     assert!(center[2] < 40, "center was filled: {center:?}");

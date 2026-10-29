@@ -41,8 +41,10 @@ without this module.
 - Shown when `icon_bar.enabled` is set and the query is empty.
 - One icon per `app_id`, most recently used app first. That order
   does not follow `title_bar.sort_by`.
-- The selected icon starts as the app of the previous window. A
-  border in the selection color sits in the 2 px outside that icon.
+- The selected icon starts as the app of the previous window.
+  `icon_bar.border` outlines it in the selection color, outside the
+  icon. The default is 4 logical pixels, from 1 to 32, scaled like
+  `icon_size`.
 - An app with several windows draws the count under its icon. The
   strip is always tall enough for that line.
 - `icon_bar.icon_size` is the icon side in logical pixels, default

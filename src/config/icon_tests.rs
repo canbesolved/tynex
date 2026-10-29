@@ -23,6 +23,7 @@ fn icon_bar_defaults() {
 
     assert!(config.icon_bar.enabled);
     assert_eq!(config.icon_bar.icon_size, 24);
+    assert_eq!(config.icon_bar.border, 4);
 }
 
 #[test]
@@ -39,4 +40,20 @@ fn icon_size_range() {
 
     assert!(!config.icon_bar.enabled);
     assert_eq!(config.icon_bar.icon_size, 32);
+}
+
+#[test]
+fn border_range() {
+    let small = &errors("[icon_bar]\nborder = 0\n")[0];
+    let large = &errors("[icon_bar]\nborder = 33\n")[0];
+
+    assert!(small.contains("out of range"), "{small}");
+    assert!(large.contains("out of range"), "{large}");
+    assert_eq!(
+        parse("[icon_bar]\nborder = 8\n", &no_font)
+            .expect("valid config")
+            .icon_bar
+            .border,
+        8
+    );
 }

@@ -25,6 +25,7 @@ fn metrics(color: Rgba) -> Metrics {
         hint_color: color,
         icon_bar: false,
         icon_size: 24.0,
+        border: 4.0,
     }
 }
 

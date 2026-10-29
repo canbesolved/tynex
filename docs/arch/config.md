@@ -85,6 +85,8 @@ strip_app_name = false
 enabled = true
 # Icon side in logical pixels, scaled with the display.
 icon_size = 24
+# Selection border outside the icon, in logical pixels.
+border = 4
 ```
 
 `main.desktop` selects the window source adapter. `auto` picks `kde`
@@ -172,8 +174,9 @@ bar while the query is empty (default `true`)
 `false` leaves the popup as it is without the strip.
 `icon_bar.icon_size` is the icon side in logical pixels, default
 `24`, from 8 to 128. It is multiplied by the output scale, like
-`main.font_size`. A value outside that range stops the daemon. A
-missing key uses the default.
+`main.font_size`. A value outside that range stops the daemon.
+`icon_bar.border` is the selection outline in the same units,
+default `4`, from 1 to 32. A missing key uses the default.
 
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
 
@@ -217,6 +220,7 @@ The config is read once, when `tynex daemon` starts
 | `title_bar.strip_app_name`       | `true` or `false`                         |
 | `icon_bar.enabled`               | `true` or `false`                         |
 | `icon_bar.icon_size`             | 8 to 128                                  |
+| `icon_bar.border`                | 1 to 32                                   |
 
 Syntax and type errors stop at the first error, as reported by `toml`.
 Value checks run on the parsed file and report every invalid key at

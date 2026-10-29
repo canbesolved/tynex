@@ -72,6 +72,10 @@ fn default_icon_size() -> Spanned<u16> {
     unspanned(24)
 }
 
+fn default_icon_border() -> Spanned<u16> {
+    unspanned(4)
+}
+
 #[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawConfig {
@@ -212,6 +216,8 @@ pub(super) struct RawIconBar {
     pub enabled: bool,
     #[serde(default = "default_icon_size")]
     pub icon_size: Spanned<u16>,
+    #[serde(default = "default_icon_border")]
+    pub border: Spanned<u16>,
 }
 
 impl Default for RawIconBar {
@@ -219,6 +225,7 @@ impl Default for RawIconBar {
         Self {
             enabled: default_icon_enabled(),
             icon_size: default_icon_size(),
+            border: default_icon_border(),
         }
     }
 }

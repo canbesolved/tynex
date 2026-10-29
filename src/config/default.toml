@@ -47,3 +47,5 @@ strip_app_name = false
 enabled = true
 # Icon side in logical pixels, scaled with the display.
 icon_size = 24
+# Selection border outside the icon, in logical pixels.
+border = 4

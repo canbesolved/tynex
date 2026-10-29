@@ -134,7 +134,6 @@ pub struct InputBarConfig {
     pub hint: HintConfig,
 }
 
-/// The `[output_bar]` table.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OutputBarConfig {
     pub max_rows: u16, // Cap for the output bar and the title bar
@@ -149,11 +148,11 @@ pub struct TitleBarConfig {
     pub strip_app_name: bool, // Drop the app name from titles
 }
 
-/// The `[icon_bar]` table.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IconBarConfig {
     pub enabled: bool,  // Running-app strip under the input bar
     pub icon_size: u16, // Logical pixels, scaled with the display
+    pub border: u16,    // Selection outline, logical pixels
 }
 
 impl Default for IconBarConfig {
@@ -161,6 +160,7 @@ impl Default for IconBarConfig {
         Self {
             enabled: true,
             icon_size: 24,
+            border: 4,
         }
     }
 }
@@ -201,10 +201,9 @@ impl Default for Config {
     }
 }
 
-/// Parses and validates config `text`.
-///
-/// Syntax and type errors stop at the first error; value errors are all
-/// reported. `font_exists` tells whether a font path exists.
+/// Parses and validates config `text`. Syntax and type errors stop at
+/// the first error; value errors are all reported. `font_exists` tells
+/// whether a font path exists.
 ///
 /// # Errors
 ///

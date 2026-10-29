@@ -26,6 +26,7 @@ pub(in crate::ui) const M: Metrics = Metrics {
     hint_color: Rgba(0x8d, 0xa7, 0x87, 0xff),
     icon_bar: false,
     icon_size: 24.0,
+    border: 4.0,
 };
 
 pub(in crate::ui) fn state(n: usize) -> State {

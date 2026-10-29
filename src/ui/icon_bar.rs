@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Icon bar: one icon per running app, under the input bar.
-//!
-//! The strip hides while the query is non-empty. A transparent band
-//! under it is tall enough for the largest dropdown.
+//! Icon bar: one icon per running app, under the input bar. It hides
+//! while the query is non-empty. A spare band fits the largest dropdown.
 
 #![allow(
     clippy::cast_possible_truncation,
@@ -30,8 +28,9 @@ const COUNT_RATIO: f32 = 0.45;
 pub(crate) struct Layout {
     pub size: f32,
     pub gap: f32,
-    pub x: f32,     // Left edge of the first icon
-    pub count: f32, // Height of the line under the icons
+    pub x: f32,      // Left edge of the first icon
+    pub count: f32,  // Height of the line under the icons
+    pub border: f32, // Selection outline
 }
 
 /// Returns true while the strip is on screen.
@@ -76,6 +75,7 @@ pub(crate) fn layout(
         gap,
         x: grid.pad + (inner - row).max(0.0) / 2.0,
         count: size * COUNT_RATIO,
+        border: metrics.border * metrics.scale,
     }
 }
 
@@ -138,7 +138,7 @@ pub(crate) fn draw(
         let x = placed.x + index as f32 * (placed.size + placed.gap);
 
         if index == view.icon {
-            selection(paint, x, top, placed.size);
+            selection(paint, x, top, &placed);
         }
         if let Some(name) = &icon.icon {
             let side = placed.size.round().max(1.0) as u32;
@@ -156,9 +156,9 @@ pub(crate) fn draw(
     }
 }
 
-/// Draws the selection in the 2 px outside the icon.
-fn selection(paint: &mut Paint<'_, '_>, x: f32, y: f32, size: f32) {
-    let out = 2.0;
+/// Draws the selection border outside the icon.
+fn selection(paint: &mut Paint<'_, '_>, x: f32, y: f32, placed: &Layout) {
+    let (size, out) = (placed.size, placed.border);
     paint.canvas.stroke_rounded_rect(
         Area::new(x - out / 2.0, y - out / 2.0, size + out, size + out),
         (size / 4.0).max(1.0) + out / 2.0,
