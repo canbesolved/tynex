@@ -10,7 +10,7 @@ use crate::core::view::{AppIcon, Row, RowTarget};
 use crate::core::window::WindowId;
 use crate::modules::input::Input;
 
-fn mode() -> PromptMode {
+fn mode(title_bar: bool) -> PromptMode {
     PromptMode::new(
         Input::new(
             LauncherConfig {
@@ -19,7 +19,7 @@ fn mode() -> PromptMode {
             },
             Vec::new(),
         ),
-        false,
+        title_bar,
         true,
         19,
     )
@@ -38,6 +38,10 @@ fn row(id: &str, app: &str, title: &str) -> Row {
 }
 
 fn opened() -> (PromptMode, State) {
+    session(false)
+}
+
+fn session(title_bar: bool) -> (PromptMode, State) {
     let rows = vec![
         row("w1", "firefox", "Notes"),
         row("w2", "firefox", "Mail"),
@@ -58,7 +62,7 @@ fn opened() -> (PromptMode, State) {
         },
     ];
     state.select_icon(Some("firefox"));
-    (mode(), state)
+    (mode(title_bar), state)
 }
 
 #[test]
@@ -124,4 +128,34 @@ fn one_window_activates_and_a_click_matches_enter() {
         mode.on_click(Click::Menu(1), &mut state),
         Action::Activate(WindowId("w1".into()))
     );
+}
+
+#[test]
+fn tab_moves_the_next_icon_without_a_title_bar() {
+    let (mut mode, mut state) = opened();
+
+    assert_eq!(mode.on_key(Key::Tab, &mut state), Action::Redraw);
+    assert_eq!(state.icon, 1);
+    assert_eq!(state.selected, 0);
+    mode.on_key(Key::Tab, &mut state);
+    assert_eq!(state.icon, 0);
+}
+
+#[test]
+fn tab_steps_an_open_dropdown_before_the_icons() {
+    let (mut mode, mut state) = opened();
+
+    mode.on_key(Key::Enter, &mut state);
+    assert_eq!(mode.on_key(Key::Tab, &mut state), Action::Redraw);
+    assert_eq!(state.dropdown, Some(1));
+    assert_eq!(state.icon, 0);
+}
+
+#[test]
+fn tab_keeps_the_title_list_when_that_bar_is_on() {
+    let (mut mode, mut state) = session(true);
+
+    assert_eq!(mode.on_key(Key::Tab, &mut state), Action::Redraw);
+    assert_eq!(state.icon, 0);
+    assert_eq!(state.selected, 1);
 }

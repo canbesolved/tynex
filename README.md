@@ -129,8 +129,8 @@ query is empty, app icons sit under the input bar. `Left` and
 `Right` move along them. `Enter` or `Space` switches when that app
 has one window, and opens its windows when it has several. The
 selected icon starts as the previous window's app. Typing hides the
-icons. `Tab` walks the open windows when the title bar is on, and
-the matches while you type.
+icons. `Tab` walks the open windows when the title bar is on, moves
+along the icons when it is off, and walks matches while you type.
 
 ## Configuration
 

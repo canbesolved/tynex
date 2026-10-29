@@ -9,8 +9,14 @@ use crate::core::view::RowTarget;
 
 /// Handles a key while the strip is showing.
 ///
-/// `None` means the key belongs to the query or the title list.
-pub(super) fn key(key: Key, s: &mut State, cap: usize) -> Option<Action> {
+/// `None` means the key belongs to the query or the title list. With
+/// the title bar off, `Tab` moves to the next icon.
+pub(super) fn key(
+    key: Key,
+    s: &mut State,
+    cap: usize,
+    title_bar: bool,
+) -> Option<Action> {
     match key {
         Key::Left => {
             s.icon_prev();
@@ -26,6 +32,10 @@ pub(super) fn key(key: Key, s: &mut State, cap: usize) -> Option<Action> {
         Key::Up if s.dropdown.is_some() => Some(step(s, cap, false)),
         Key::Down | Key::Tab if s.dropdown.is_some() => {
             Some(step(s, cap, true))
+        }
+        Key::Tab if !title_bar => {
+            s.icon_next();
+            Some(Action::Redraw)
         }
         Key::Esc if s.dropdown.is_some() => {
             s.close_dropdown();

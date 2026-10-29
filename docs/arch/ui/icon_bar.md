@@ -79,9 +79,10 @@ without this module.
 While the strip is showing, `Left` and `Right` move the selection
 and close an open dropdown. `Enter` and `Space` match a left click
 on the selected icon: one window activates, several open the
-dropdown, and none launches that app. `Up`, `Down` and `Tab` move
-inside an open dropdown. Otherwise they still move the title or
-output list. `Esc` closes the dropdown first.
+dropdown, and none launches that app. `Up` and `Down` move inside
+an open dropdown; otherwise they still move the title or output
+list. `Tab` steps the dropdown while it is open. With the title bar
+off, `Tab` moves to the next icon. `Esc` closes the dropdown first.
 
 A left click on an icon selects it and does the same as `Enter`. A
 left click on a dropdown row activates that window. A left click

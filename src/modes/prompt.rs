@@ -4,7 +4,7 @@
 //! Prompt mode: typing filters windows with fuzzy matching.
 //!
 //! `Space` confirms the selected row, the same as `Enter`. `Tab`
-//! walks the list that is on screen.
+//! walks the list on screen, or the icons when the title bar is off.
 
 use crate::core::event::{Action, Click, Key};
 use crate::core::state::State;
@@ -53,7 +53,8 @@ impl PromptMode {
 impl Mode for PromptMode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
         if self.strip(s)
-            && let Some(action) = prompt_icon::key(key, s, self.max_rows)
+            && let Some(action) =
+                prompt_icon::key(key, s, self.max_rows, self.title_bar)
         {
             return action;
         }
