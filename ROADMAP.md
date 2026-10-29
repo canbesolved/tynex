@@ -25,8 +25,8 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 
 ### 0.2.4
 
-- [ ] A launch row reads `<app name>: New window` instead of
-  `Launch new window`.
+- [ ] A launch row reads `+  New window`, with two spaces before
+  the plus and two after it, instead of `Launch new window`.
 
 ### 0.2.5
 
