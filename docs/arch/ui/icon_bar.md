@@ -38,9 +38,11 @@ of 5 logical pixels. It scales with the display, and the desktop
 shows through.
 
 The spare band between the icon frame and the title frame is empty.
-The desktop shows through it until the dropdown slides in under the
-selected icon. When every running app has one window, that band is
-zero and the title list stays in the icon frame, under a separator.
+The desktop shows through it until the dropdown slides in. The
+dropdown starts 3 logical pixels under the icon frame. The title
+list is its own frame, another 3 logical pixels below that room.
+Both gaps scale with the display. When every running app has one
+window, the spare room is zero and only that 3 pixel gap remains.
 
 Typing hides the strip, the band and the dropdown. Matches stay in
 the output bar. `icon_bar.enabled = false` leaves the popup as it is

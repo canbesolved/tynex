@@ -61,10 +61,10 @@ again when it is enabled. The selected row is highlighted.
 - Titles are truncated with an ellipsis (see [render.md](render.md)).
 - At most `output_bar.max_rows` rows. The list scrolls so the
   selected window stays visible.
-- A separator line divides this list from whatever is above it when
-  the icon bar reserves no spare room. When that room is taller than
-  zero, this list is its own rounded frame under the room, with no
-  separator ([icon_bar.md](icon_bar.md)).
+- With the icon strip showing, this list is its own rounded frame,
+  3 logical pixels under the spare room, with no separator. Without
+  the strip, a separator divides it from the bar above
+  ([icon_bar.md](icon_bar.md)).
 
 The painter draws this module under the icon bar when that strip is
 showing, and under the output bar while a query is typed. A query

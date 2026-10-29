@@ -145,6 +145,9 @@ fn a_long_title_is_capped() {
         icon_menu::panel(&state.view(), &metrics, &grid, &text).unwrap();
 
     assert!(panel.w <= 450.0 + 2.0 * grid.gap + 0.5);
+    let under = frames::icon_bottom(&state.view(), &metrics, &grid);
+
+    assert!((panel.y - under - 3.0).abs() < 0.1);
     assert!(
         panel.w < icon_bar_width(&text, &state.view().window_rows()[1].title)
     );
@@ -161,7 +164,6 @@ fn pixel(data: &[u8], width: u32, x: f32, y: f32) -> [u8; 4] {
     [data[i], data[i + 1], data[i + 2], data[i + 3]]
 }
 
-/// Draws the popup and returns the pixels and the surface size.
 fn drawn(state: &State, metrics: &Metrics) -> (Vec<u8>, u32) {
     let theme = Theme::default();
     let size = frames::measured(&state.view(), metrics, &theme);
@@ -239,7 +241,10 @@ fn a_clear_gap_separates_the_icon_frame() {
     let frame = 2.0 * grid.pad + grid.row_h;
     let gap = pixel(&data, width, mid, frame + 2.0);
     let body = pixel(&data, width, mid, frame + 8.0);
+    let under = frames::icon_bottom(&state.view(), &metrics, &grid);
+    let split = pixel(&data, width, mid, under + 2.0);
 
     assert_eq!(gap[3], 0, "{gap:?}");
     assert!(body[3] > 0, "{body:?}");
+    assert_eq!(split[3], 0, "{split:?}");
 }

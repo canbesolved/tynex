@@ -45,6 +45,6 @@ it exits.
 - The painter in `src/ui/painter.rs` draws this bar in its own
   rounded frame. While the query is empty and the icon bar is on,
   the [icon bar](icon_bar.md) is a second frame 5 logical pixels
-  below, then a spare room, then the [title bar](title_bar.md) when
-  that is enabled. A non-empty query hides the icon frame and shows
-  the output bar in this frame.
+  below, then a spare room, then the [title bar](title_bar.md) 3
+  logical pixels under that room. A non-empty query hides the icon
+  frame and shows the output bar in this frame.

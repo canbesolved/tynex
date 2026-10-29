@@ -62,7 +62,7 @@ pub(crate) fn panel(
     let w = (text_w + 2.0 * grid.gap).clamp(placed.size, limit);
     let icon_x = placed.x + view.icon as f32 * (placed.size + placed.gap);
     let x = icon_x.clamp(grid.pad, (popup - grid.pad - w).max(grid.pad));
-    let y = frames::icon_bottom(view, metrics, grid);
+    let y = frames::menu_top(view, metrics, grid);
 
     Some(Panel {
         x,
