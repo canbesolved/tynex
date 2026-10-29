@@ -92,6 +92,11 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 - [ ] Update the default theme to the Endgame color palette. Exact
   color values will be added when the palette is finalized.
 
+### 0.2.13
+
+- [ ] `Tab` moves the selection through open windows in the title bar
+  when `title_bar.enabled` is set.
+
 ## Next
 
 ### 0.8.x: performance
