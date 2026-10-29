@@ -23,15 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.8
-
-- [ ] `Space` works as `Enter`: it picks the selected match, so a
-  search query no longer contains spaces.
-- [ ] `Tab` moves the selection through the list on screen: open
-  windows in the title bar when `title_bar.enabled` is set and the
-  query is empty, and matches in the output bar while the query is
-  not.
-
 ### 0.2.9
 
 - [ ] Icon bar: running apps shown as a row of app icons, one per app,

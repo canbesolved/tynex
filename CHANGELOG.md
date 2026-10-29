@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-10-29
+
+`Space` confirms the selected match, and `Tab` walks the visible list.
+
 ### Changed
 
 - `Space` picks the selected match, the same as `Enter`. A search
@@ -324,7 +328,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.7...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.8...HEAD
+[0.2.8]: https://github.com/canbesolved/tynex/releases/tag/v0.2.8
 [0.2.7]: https://github.com/canbesolved/tynex/releases/tag/v0.2.7
 [0.2.6]: https://github.com/canbesolved/tynex/releases/tag/v0.2.6
 [0.2.5]: https://github.com/canbesolved/tynex/releases/tag/v0.2.5
