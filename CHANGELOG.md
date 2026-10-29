@@ -11,8 +11,8 @@ project adheres to
 
 ### Changed
 
-- A launch row for a running app reads `  + New window` instead of
-  `Launch new window`.
+- A launch row for a running app reads `↳  New window`, with one
+  space before the arrow, instead of `Launch new window`.
 
 ## [0.2.3] - 2026-10-29
 
