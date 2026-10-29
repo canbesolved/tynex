@@ -23,10 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.5
-
-- [ ] The input bar prompt is `>` instead of `/`.
-
 ### 0.2.6
 
 - [ ] The input bar shows a line cursor.

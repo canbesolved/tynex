@@ -12,7 +12,7 @@ pub(crate) fn height(grid: &Grid) -> f32 {
     grid.row_h
 }
 
-/// Draws `/ query` at `top`.
+/// Draws `> query` at `top`.
 pub(crate) fn draw(
     view: &View<'_>,
     grid: &Grid,
@@ -22,7 +22,7 @@ pub(crate) fn draw(
 ) {
     let bar =
         Area::new(grid.pad + grid.gap, top, inner - 2.0 * grid.gap, grid.row_h);
-    let query = format!("/ {}", view.query);
+    let query = format!("> {}", view.query);
 
     draw_text(paint, grid, (&query, &[]), bar, paint.theme.text);
 }
