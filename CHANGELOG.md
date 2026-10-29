@@ -9,6 +9,11 @@ project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- A launch row for a running app reads `<app name>: New window`
+  instead of `Launch new window`.
+
 ## [0.2.3] - 2026-10-29
 
 The title bar row is the app icon and the window title. Breaking:
