@@ -23,11 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.4
-
-- [ ] A launch row reads `+  New window`, with two spaces before
-  the plus and two after it, instead of `Launch new window`.
-
 ### 0.2.5
 
 - [ ] The input bar prompt is `>` instead of `/`.
@@ -91,6 +86,11 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 
 - [ ] Update the default theme to the Endgame color palette. Exact
   color values will be added when the palette is finalized.
+
+### 0.2.13
+
+- [ ] `Tab` moves the selection through open windows in the title bar
+  when `title_bar.enabled` is set.
 
 ## Next
 
