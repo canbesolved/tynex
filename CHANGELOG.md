@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-10-29
+
+The launcher is on by default. A running app gets a new-window row.
+
 ### Added
 
 - `launcher.new_window` under `[input_bar]` turns the extra launch
@@ -265,7 +269,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/canbesolved/tynex/releases/tag/v0.2.4
 [0.2.3]: https://github.com/canbesolved/tynex/releases/tag/v0.2.3
 [0.2.2]: https://github.com/canbesolved/tynex/releases/tag/v0.2.2
 [0.2.0]: https://github.com/canbesolved/tynex/releases/tag/v0.2.0
