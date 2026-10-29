@@ -39,7 +39,8 @@ window. No mouse, no scrolling, no waiting.
 - Centered popup with an input bar: start typing at once; accents
   and small typos are forgiven.
 - Optional list of open windows (`title_bar.enabled`) while the query
-  is empty, most recently used first or grouped by app
+  is empty; the list hides as soon as you type and returns when you
+  clear the query. Order is most recently used first or grouped by app
   (`title_bar.sort_by`).
 - Matches appear in the output bar as you type; with
   `input_bar.launcher.mode` set, installed apps appear there too.
@@ -85,7 +86,7 @@ with their ports (see the [roadmap](ROADMAP.md)).
 Requirements:
 
 - Linux with a Wayland compositor that supports layer-shell (KDE
-  Plasma 6 for 0.1.0), a D-Bus session bus and fontconfig.
+  Plasma 6 for the current release), a D-Bus session bus and fontconfig.
 - Rust 1.89 or newer ([rustup](https://rustup.rs)).
 - `gcc`, `pkg-config`, Wayland, xkbcommon and D-Bus development
   headers, for example on Fedora:

@@ -21,6 +21,8 @@ Rules:
 
 ## Now
 
+Target: KDE Plasma 6 on Wayland.
+
 ### 0.2.4
 
 - [ ] A launch row reads `<app name>: New window` instead of
