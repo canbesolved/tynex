@@ -23,16 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.7
-
-- [ ] Hint text inside the input bar while the query is empty. It hides
-  as soon as you type. Config under `[input_bar]`:
-  - `hint.enabled`: `true` or `false`.
-  - `hint.font_size`: hint text size.
-  - `hint.font_color`: `"#RRGGBB"`.
-  - `hint.string`: a shell command. On every launch its stdout is the
-    hint text, for example `bash -c 'date'` or `cat /tmp/weather.txt`.
-
 ### 0.2.8
 
 - [ ] `Space` works as `Enter`: it picks the selected match, so a

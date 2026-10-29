@@ -10,6 +10,7 @@ use crate::core::window::WindowId;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct State {
     pub query: String,
+    pub hint: String,     // Input-bar hint, hidden while typing
     pub cursor: usize,    // Byte index in `query`
     pub rows: Vec<Row>,   // Open windows, for the title bar
     pub output: Vec<Row>, // Result list, for the output bar
@@ -24,6 +25,7 @@ impl State {
 
         Self {
             query: String::new(),
+            hint: String::new(),
             cursor: 0,
             rows,
             output,
@@ -100,6 +102,7 @@ impl State {
     pub fn view(&self) -> View<'_> {
         View::new(
             &self.query,
+            &self.hint,
             self.cursor,
             self.selected,
             &self.rows,

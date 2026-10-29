@@ -24,6 +24,7 @@ pub struct Switcher<M> {
     on_hotkey: HotkeyAction,  // For `Show` while open
     strip_app_name: bool,     // Drop the app name from titles
     sort: SortBy,             // Row order
+    hint: String,             // Latest hint, including the loading dots
     windows: Vec<WindowInfo>, // Cached list, MRU first, row titles
     state: Option<State>,     // Some while the popup is open
     mode: M,
@@ -42,10 +43,19 @@ impl<M: Mode> Switcher<M> {
             on_hotkey,
             strip_app_name,
             sort,
+            hint: String::new(),
             windows: Vec::new(),
             state: None,
             mode,
         }
+    }
+
+    /// Sets the hint drawn while the query is empty.
+    pub fn set_hint(&mut self, text: String) {
+        if let Some(state) = &mut self.state {
+            state.hint.clone_from(&text);
+        }
+        self.hint = text;
     }
 
     /// Handles one event and returns what the platform must do.
@@ -89,6 +99,7 @@ impl<M: Mode> Switcher<M> {
 
         state.query = old.query;
         state.cursor = old.cursor;
+        state.hint = old.hint;
         self.mode.refresh(&mut state);
         state.select_id(selected.as_ref());
         self.state = Some(state);
@@ -102,6 +113,7 @@ impl<M: Mode> Switcher<M> {
 
         let mut state = State::new(self.rows());
 
+        state.hint.clone_from(&self.hint);
         self.mode.refresh(&mut state);
         // The previous window is selected in any order, like Alt+Tab.
         state.select_id(self.windows.get(1).map(|w| &w.id));

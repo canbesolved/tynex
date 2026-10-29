@@ -48,6 +48,22 @@ fn default_new_window_color() -> Spanned<String> {
     unspanned("#8da787".into())
 }
 
+fn default_hint_enabled() -> bool {
+    true
+}
+
+fn default_hint_color() -> Spanned<String> {
+    unspanned("#8da787".into())
+}
+
+fn default_hint_text() -> Spanned<String> {
+    unspanned(super::HINT_TEXT.into())
+}
+
+fn default_hint_update() -> Spanned<u32> {
+    unspanned(0)
+}
+
 #[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawConfig {
@@ -96,6 +112,31 @@ impl Default for RawHotkeys {
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawInputBar {
     pub launcher: RawLauncher,
+    pub hint: RawHint,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub(super) struct RawHint {
+    #[serde(default = "default_hint_enabled")]
+    pub enabled: bool,
+    #[serde(default = "default_hint_color")]
+    pub font_color: Spanned<String>,
+    #[serde(default = "default_hint_text")]
+    pub text: Spanned<String>,
+    #[serde(default = "default_hint_update")]
+    pub update: Spanned<u32>,
+}
+
+impl Default for RawHint {
+    fn default() -> Self {
+        Self {
+            enabled: default_hint_enabled(),
+            font_color: default_hint_color(),
+            text: default_hint_text(),
+            update: default_hint_update(),
+        }
+    }
 }
 
 #[derive(Deserialize)]

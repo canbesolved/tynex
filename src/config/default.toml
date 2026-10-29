@@ -18,6 +18,13 @@ launcher.new_window = true
 # One space, a plus, two spaces, then "New window".
 launcher.new_window_text = " +  New window"
 launcher.new_window_text_color = "#8da787" # #RRGGBB
+# Hint in the empty input bar. false hides it.
+hint.enabled = true
+hint.font_color = "#8da787" # #RRGGBB
+# Shell command. Its first stdout line is the hint.
+hint.text = 'date +"%A %b %-d %T %Y"'
+# Seconds after the previous exit. 0 runs once per open.
+hint.update = 0
 
 [output_bar]
 # Cap for the output bar and the title bar.

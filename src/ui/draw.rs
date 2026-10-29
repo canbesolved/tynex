@@ -28,6 +28,7 @@ pub(crate) struct Metrics {
     pub scale: f32,       // Output scale factor, 1.0 or more
     pub title_bar: bool,  // Open window list
     pub show_icons: bool, // Title-bar icon slot
+    pub hint_color: Rgba, // Hint text while the query is empty
 }
 
 /// Surface size in pixels.

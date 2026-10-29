@@ -10,11 +10,12 @@ use toml::Spanned;
 
 use crate::config::error::ConfigError;
 use crate::config::raw::{
-    RawConfig, RawHotkeyAction, RawLauncher, RawLauncherMode, RawSortBy,
+    RawConfig, RawHint, RawHotkeyAction, RawLauncher, RawLauncherMode,
+    RawSortBy,
 };
 use crate::config::{
-    Config, Font, HotkeysConfig, InputBarConfig, LauncherConfig, LauncherMode,
-    MainConfig, NewWindowConfig, OutputBarConfig, TitleBarConfig,
+    Config, Font, HintConfig, HotkeysConfig, InputBarConfig, LauncherConfig,
+    LauncherMode, MainConfig, NewWindowConfig, OutputBarConfig, TitleBarConfig,
 };
 use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
@@ -56,6 +57,7 @@ pub(super) fn validate(
         &mut err,
     );
     let new_window = check_new_window(&raw.input_bar.launcher, &mut err);
+    let hint = check_hint(&raw.input_bar.hint, &mut err);
 
     if !errors.is_empty() {
         return Err(errors);
@@ -83,6 +85,7 @@ pub(super) fn validate(
                 },
                 new_window,
             },
+            hint,
         },
         output_bar: OutputBarConfig {
             max_rows: raw.output_bar.max_rows.into_inner(),
@@ -131,6 +134,43 @@ fn check_new_window(
         enabled: raw.new_window,
         text_color,
         text: text.clone(),
+    }
+}
+
+/// Checks the hint. A bad color or an out-of-range wait is an error;
+/// the returned value is then unused. An empty command is allowed.
+fn check_hint(
+    raw: &RawHint,
+    err: &mut impl FnMut(std::ops::Range<usize>, String),
+) -> HintConfig {
+    let color = raw.font_color.get_ref();
+    let font_color = Rgb::parse(color).unwrap_or_else(|| {
+        err(
+            raw.font_color.span(),
+            format!(
+                "`input_bar.hint.font_color` = {color:?} is not a color, \
+                 expected \"#RRGGBB\""
+            ),
+        );
+        HintConfig::default().font_color
+    });
+    let update = *raw.update.get_ref();
+
+    if update > 86_400 {
+        err(
+            raw.update.span(),
+            format!(
+                "`input_bar.hint.update` = {update} is out of range, \
+                 expected 0 to 86400"
+            ),
+        );
+    }
+
+    HintConfig {
+        enabled: raw.enabled,
+        font_color,
+        text: raw.text.get_ref().clone(),
+        update,
     }
 }
 

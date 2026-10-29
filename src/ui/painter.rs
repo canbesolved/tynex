@@ -12,7 +12,7 @@
     clippy::cast_sign_loss
 )]
 
-use crate::config::{MainConfig, OutputBarConfig, TitleBarConfig};
+use crate::config::{HintConfig, MainConfig, OutputBarConfig, TitleBarConfig};
 use crate::core::view::View;
 use crate::core::window::WindowInfo;
 use crate::ui::draw::{self, Grid, Metrics, Paint, Size};
@@ -33,6 +33,7 @@ pub struct Painter {
     max_rows: u16,
     title_bar: bool,
     show_icons: bool,
+    hint_color: Rgba,
 }
 
 impl Painter {
@@ -43,7 +44,10 @@ impl Painter {
         main: &MainConfig,
         output: &OutputBarConfig,
         title: &TitleBarConfig,
+        hint: &HintConfig,
     ) -> Self {
+        let color = hint.font_color;
+
         Self {
             text,
             icons,
@@ -53,6 +57,7 @@ impl Painter {
             max_rows: output.max_rows,
             title_bar: title.enabled,
             show_icons: title.show_icons,
+            hint_color: Rgba(color.r, color.g, color.b, 0xff),
         }
     }
 
@@ -110,6 +115,7 @@ impl Painter {
             scale,
             title_bar: self.title_bar,
             show_icons: self.show_icons,
+            hint_color: self.hint_color,
         }
     }
 }
@@ -158,7 +164,7 @@ pub(crate) fn draw_popup(
 
     let mut top = grid.pad;
 
-    input_bar::draw(view, &grid, paint, top, inner);
+    input_bar::draw(view, &grid, paint, top, inner, metrics.hint_color);
     top += input_bar::height(&grid);
     output_bar::draw(view, metrics, &grid, paint, top, inner);
     top += output_bar::height(view, metrics, &grid);
@@ -168,3 +174,7 @@ pub(crate) fn draw_popup(
 #[cfg(test)]
 #[path = "painter_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "hint_draw_tests.rs"]
+mod hint_draw_tests;

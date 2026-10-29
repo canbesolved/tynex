@@ -5,7 +5,7 @@
 
 use crate::core::view::View;
 use crate::ui::draw::{Grid, Paint, baseline, draw_text};
-use crate::ui::render::canvas::Area;
+use crate::ui::render::canvas::{Area, Rgba};
 
 /// Beam thickness in pixels.
 const BEAM_WIDTH: f32 = 1.0;
@@ -20,13 +20,15 @@ pub(crate) fn height(grid: &Grid) -> f32 {
 
 /// Draws `>` and the query at `top`, with a beam at the cursor.
 ///
-/// The gap after `>` is the row gap plus one space.
+/// The gap after `>` is the row gap plus one space. An empty query
+/// shows `hint` in `hint_color` instead.
 pub(crate) fn draw(
     view: &View<'_>,
     grid: &Grid,
     paint: &mut Paint<'_, '_>,
     top: f32,
     inner: f32,
+    hint_color: Rgba,
 ) {
     let bar =
         Area::new(grid.pad + grid.gap, top, inner - 2.0 * grid.gap, grid.row_h);
@@ -34,6 +36,11 @@ pub(crate) fn draw(
     let gap = grid.gap + paint.text.width(" ", grid.font);
     let query_x = bar.x + mark_w + gap;
     let room = bar.x + bar.w - query_x;
+    let (text, color) = if view.query.is_empty() {
+        (view.hint, hint_color)
+    } else {
+        (view.query, paint.theme.text)
+    };
 
     draw_text(
         paint,
@@ -42,13 +49,13 @@ pub(crate) fn draw(
         Area::new(bar.x, bar.y, mark_w, bar.h),
         paint.theme.text,
     );
-    if room > 0.0 {
+    if room > 0.0 && !text.is_empty() {
         draw_text(
             paint,
             grid,
-            (view.query, &[]),
+            (text, &[]),
             Area::new(query_x, bar.y, room, bar.h),
-            paint.theme.text,
+            color,
         );
     }
 

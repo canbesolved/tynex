@@ -56,6 +56,13 @@ launcher.new_window = true
 # One space, a plus, two spaces, then "New window".
 launcher.new_window_text = " +  New window"
 launcher.new_window_text_color = "#8da787" # #RRGGBB
+# Hint in the empty input bar. false hides it.
+hint.enabled = true
+hint.font_color = "#8da787" # #RRGGBB
+# Shell command. Its first stdout line is the hint.
+hint.text = 'date +"%A %b %-d %T %Y"'
+# Seconds after the previous exit. 0 runs once per open.
+hint.update = 0
 
 [output_bar]
 # Cap for the output bar and the title bar.
@@ -95,6 +102,18 @@ title. The default is one space, `+`, two spaces, then `New window`.
 `#8da787` is a little dimmer than the theme text. A missing key
 uses the default. An empty title or a color that is not `#RRGGBB`
 stops the daemon.
+
+`input_bar.hint` is the text in the empty input bar
+([ADR-0060](../adr/0060_input_hint.md)). `hint.enabled` defaults to
+`true`. `hint.text` is a shell command. The default is
+`date +"%A %b %-d %T %Y"`. Its first stdout line is the hint. An
+empty command shows nothing. `hint.font_color` is `#RRGGBB`. The
+default `#8da787` matches the new-window row. The hint uses
+`main.font_size`. `hint.update` is seconds from 0 to 86400. `0`
+runs the command once each time the popup opens. A larger value
+runs it again while the popup stays open, waiting that long after
+the previous command exits. A bad color or a wait outside that
+range stops the daemon.
 
 `output_bar.max_rows` caps both the output bar and the title bar.
 
@@ -173,6 +192,9 @@ The config is read once, when `tynex daemon` starts
 | `launcher.new_window`            | `true` or `false`                         |
 | `launcher.new_window_text`       | a non-empty string                        |
 | `launcher.new_window_text_color` | `#RRGGBB`                                 |
+| `input_bar.hint.enabled`         | `true` or `false`                         |
+| `input_bar.hint.font_color`      | `#RRGGBB`                                 |
+| `input_bar.hint.update`          | 0 to 86400                                |
 | `output_bar.max_rows`            | 1 to 50                                   |
 | `title_bar.enabled`              | `true` or `false`                         |
 | `title_bar.sort_by`              | `recently` or `app`                       |

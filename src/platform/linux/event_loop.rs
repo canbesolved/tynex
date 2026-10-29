@@ -17,6 +17,7 @@ use crate::core::traits::WindowSource;
 use crate::modes::prompt::PromptMode;
 use crate::platform::linux::apps::Apps;
 use crate::platform::linux::dbus::Bus;
+use crate::platform::linux::hint::Hint;
 use crate::platform::linux::wayland::{PresenterEvent, WaylandPresenter};
 use crate::ui::painter::Painter;
 
@@ -31,6 +32,7 @@ pub struct Parts {
     pub bus: Bus,
     pub painter: Painter,
     pub apps: Apps,
+    pub hint: Hint,
     pub rx: EventRx,
 }
 
@@ -48,6 +50,7 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
             }
         }
 
+        drive_hint(p);
         p.presenter.flush().map_err(|e| e.to_string())?;
         p.bus.flush(); // Calls such as an activation
         p.apps.reap();
@@ -72,23 +75,36 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
 
 /// Blocks until a fd is readable or the next key repeat is due.
 fn wait(p: &Parts) -> Result<(), String> {
-    let timeout = p
-        .presenter
-        .next_deadline()
+    let deadline = earliest(p.presenter.next_deadline(), p.hint.deadline());
+    let timeout = deadline
         .map(|at| {
             Timespec::try_from(at.saturating_duration_since(Instant::now()))
         })
         .transpose()
         .map_err(|e| e.to_string())?;
-    let (wayland, dbus) = (p.presenter.fd(), p.bus.fd());
+    let wayland = p.presenter.fd();
+    let dbus = p.bus.fd();
+    let hint = p.hint.stdout_fd();
+    let n = 2 + usize::from(hint.is_some());
+    let extra = hint.unwrap_or(wayland);
     let mut fds = [
         PollFd::new(&wayland, PollFlags::IN),
         PollFd::new(&dbus, PollFlags::IN),
+        PollFd::new(&extra, PollFlags::IN),
     ];
 
-    match poll(&mut fds, timeout.as_ref()) {
+    match poll(&mut fds[..n], timeout.as_ref()) {
         Ok(_) | Err(rustix::io::Errno::INTR) => Ok(()),
         Err(e) => Err(e.to_string()),
+    }
+}
+
+/// Returns the sooner of two optional deadlines.
+fn earliest(a: Option<Instant>, b: Option<Instant>) -> Option<Instant> {
+    match (a, b) {
+        (Some(a), Some(b)) => Some(a.min(b)),
+        (Some(a), None) => Some(a),
+        (None, b) => b,
     }
 }
 
@@ -97,7 +113,19 @@ fn wait(p: &Parts) -> Result<(), String> {
 fn handle(p: &mut Parts, event: Event) -> bool {
     let quit = event == Event::Quit;
     let windows = matches!(event, Event::Windows(_));
+    let open = p.app.view().is_some();
+
+    if matches!(event, Event::Show) && !open {
+        let text = p.hint.on_show(Instant::now());
+
+        p.app.set_hint(text);
+    }
+
     let action = p.app.handle(event);
+
+    if open && p.app.view().is_none() {
+        p.hint.on_hide();
+    }
 
     if windows {
         let list = p.app.windows(); // Titles are row texts now
@@ -125,6 +153,21 @@ fn handle(p: &mut Parts, event: Event) -> bool {
         Action::None => {}
     }
     !quit
+}
+
+/// Applies a finished command or the next dot frame, then redraws.
+fn drive_hint(p: &mut Parts) {
+    let open = p.app.view().is_some();
+    let query_empty = p.app.view().is_some_and(|v| v.query.is_empty());
+    let Some(text) = p.hint.poll(Instant::now(), open, query_empty) else {
+        return;
+    };
+    let same = p.app.view().is_some_and(|v| v.hint == text);
+
+    p.app.set_hint(text);
+    if open && query_empty && !same {
+        redraw(p);
+    }
 }
 
 /// Sizes the popup for the current view and draws it, if it is open.

@@ -9,6 +9,21 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-10-29
+
+The input bar shows a hint while the query is empty.
+
+### Added
+
+- `hint.enabled`, `hint.text`, `hint.font_color` and `hint.update`
+  live under `[input_bar]`. `hint.text` is a shell command. Its
+  first stdout line is the hint, drawn at `main.font_size`. The
+  popup opens before the command exits. Until then the hint steps
+  through `.`, `..`, `...` and blank. `hint.update` is the wait in
+  seconds after the command exits; `0` runs once per open. The
+  default command is `date +"%A %b %-d %T %Y"` and the default color
+  is `#8da787` (ADR-0060).
+
 ## [0.2.6] - 2026-10-29
 
 The input bar shows a beam cursor.
@@ -291,7 +306,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.6...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.7...HEAD
+[0.2.7]: https://github.com/canbesolved/tynex/releases/tag/v0.2.7
 [0.2.6]: https://github.com/canbesolved/tynex/releases/tag/v0.2.6
 [0.2.5]: https://github.com/canbesolved/tynex/releases/tag/v0.2.5
 [0.2.4]: https://github.com/canbesolved/tynex/releases/tag/v0.2.4

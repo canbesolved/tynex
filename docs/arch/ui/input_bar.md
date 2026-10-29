@@ -23,10 +23,20 @@ sections follow the modules
 ```
 
 `>` is fixed. A row gap and one space separate it from the query.
-The rest is the query, empty until you type. A 1 px beam in the
-text color stands at the cursor, 10% shorter than the text,
-including while the query is empty. `Left` and `Right` move it.
-It does not blink.
+The rest is the query, empty until you type. While it is empty, the
+hint is drawn there in `hint.font_color`, at the same size as the
+query. Typing hides the hint. A 1 px beam in the text color stands
+at the cursor, 10% shorter than the text, including while the query
+is empty. `Left` and `Right` move it. It does not blink.
+
+The hint text is the first line of `hint.text`, a shell command run
+when the popup opens ([ADR-0060](../../adr/0060_input_hint.md)).
+Until that command exits, the hint steps every 400 ms through `.`,
+`..`, `...`, and blank. The popup is drawn before the command
+finishes. `hint.update` is the wait, in seconds, from that exit
+until the next run. `0` runs once per open. Hiding the popup leaves
+a running command alone; the next open does not start another until
+it exits.
 
 ## Rules
 
