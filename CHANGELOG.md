@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-10-29
+
+One icon per running app, under the input bar.
+
 ### Added
 
 - `[icon_bar]` draws one icon per running app under the input bar
@@ -362,7 +366,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.8...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.9...HEAD
+[0.2.9]: https://github.com/canbesolved/tynex/releases/tag/v0.2.9
 [0.2.8]: https://github.com/canbesolved/tynex/releases/tag/v0.2.8
 [0.2.7]: https://github.com/canbesolved/tynex/releases/tag/v0.2.7
 [0.2.6]: https://github.com/canbesolved/tynex/releases/tag/v0.2.6
