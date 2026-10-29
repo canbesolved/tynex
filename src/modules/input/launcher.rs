@@ -12,6 +12,8 @@ use crate::core::view::{Row, RowTarget};
 use crate::modules::search::app_haystack;
 use crate::modules::search::fuzzy::{Hit, rank};
 
+const LAUNCH_TITLE: &str = "+ New window";
+
 /// Builds the output list for a non-empty query with the launcher on.
 ///
 /// A running app whose name or id matches lists all of its windows,
@@ -170,7 +172,7 @@ fn launch_row(app: &AppInfo, running: bool) -> Row {
         app_name: app.name.clone(),
         icon: app.icon.clone(),
         title: if running {
-            format!("{}: New window", app.name)
+            LAUNCH_TITLE.into()
         } else {
             app.name.clone()
         },
