@@ -20,22 +20,42 @@ Source: `src/modes/prompt.rs`. The
 | `Delete`                   | Delete the character after it  |
 | `Up` / `Down`              | Move the selection             |
 | `Space` / `Enter`          | Activate or launch, then close |
-| `Tab`                      | Walk the list on screen        |
+| `Tab`                      | Walk the list or the icons     |
 | `Esc`                      | Clear query; close if empty    |
 
 `Space` is not inserted
-([ADR-0061](../../adr/0061_prompt_keys.md)). `Tab` walks open windows
+([ADR-0061](../../adr/0061_prompt_keys.md), amended by
+[ADR-0063](../../adr/0063_tab_icons.md)). `Tab` walks open windows
 while the title bar is showing, and matches while the output bar is
-showing. With neither list on screen, `Tab` does nothing.
-`Shift+Tab` steps forward too.
+showing. With the title bar off and the icon strip showing, `Tab`
+moves to the next icon. With neither a list nor the strip, `Tab`
+does nothing. `Shift+Tab` steps forward too.
 
-The popup opens with the previous window selected, so `Space` or
-`Enter` right after the hotkey switches back like Alt+Tab. Typing
-starts at once; the best match is selected after every change of
-the query. The bar on screen is the
+The popup opens with the previous window selected. `Space` or
+`Enter` switches back like Alt+Tab when the title bar is on, the
+icon bar is off, or that app has one window. With the title bar
+off, the icon bar on, and several windows, those keys open its
+dropdown (see [icon_bar.md](../ui/icon_bar.md)). Typing starts at
+once; the best match is selected after every change of the query.
+The bar on screen is the
 [input bar](../ui/input_bar.md). Matches are drawn
 in the [output bar](../ui/output_bar.md). Open windows show when
 `title_bar.enabled` is set and the query is empty. Typing hides
 them; clearing the query shows them again (see
 [config.md](../config.md#format) and
 [title_bar.md](../ui/title_bar.md)).
+
+## Icon bar
+
+While `[icon_bar] enabled` is set and the query is empty, `Left` and
+`Right` move along the icons and close an open dropdown. The pointer
+does the same to the icon under it, and leaves the selection when
+it moves off the icons. `Enter` and `Space` activate the selected
+title when that bar is on. With it off, they activate one window,
+open the dropdown, or launch. An open dropdown still takes `Enter`
+and `Space`. `Up` and `Down` move inside an open dropdown;
+otherwise they still move the list above. `Tab` steps that
+dropdown while it is open. With the title bar off, `Tab` moves to
+the next icon. `Esc` closes the dropdown first, then clears the
+query or closes the popup. A typed character hides the strip, and
+`Left` and `Right` move the cursor again.

@@ -134,7 +134,6 @@ pub struct InputBarConfig {
     pub hint: HintConfig,
 }
 
-/// The `[output_bar]` table.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OutputBarConfig {
     pub max_rows: u16, // Cap for the output bar and the title bar
@@ -149,6 +148,23 @@ pub struct TitleBarConfig {
     pub strip_app_name: bool, // Drop the app name from titles
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct IconBarConfig {
+    pub enabled: bool,  // Running-app strip under the input bar
+    pub icon_size: u16, // Logical pixels, scaled with the display
+    pub border: u16,    // Selection outline, logical pixels
+}
+
+impl Default for IconBarConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            icon_size: 24,
+            border: 4,
+        }
+    }
+}
+
 /// The whole config file, validated.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Config {
@@ -157,6 +173,7 @@ pub struct Config {
     pub input_bar: InputBarConfig,
     pub output_bar: OutputBarConfig,
     pub title_bar: TitleBarConfig,
+    pub icon_bar: IconBarConfig,
 }
 
 impl Default for Config {
@@ -179,14 +196,14 @@ impl Default for Config {
                 show_icons: true,
                 strip_app_name: false,
             },
+            icon_bar: IconBarConfig::default(),
         }
     }
 }
 
-/// Parses and validates config `text`.
-///
-/// Syntax and type errors stop at the first error; value errors are all
-/// reported. `font_exists` tells whether a font path exists.
+/// Parses and validates config `text`. Syntax and type errors stop at
+/// the first error; value errors are all reported. `font_exists` tells
+/// whether a font path exists.
 ///
 /// # Errors
 ///
@@ -226,3 +243,7 @@ mod new_window_tests;
 #[cfg(test)]
 #[path = "hint_tests.rs"]
 mod hint_tests;
+
+#[cfg(test)]
+#[path = "icon_tests.rs"]
+mod icon_tests;

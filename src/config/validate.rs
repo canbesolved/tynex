@@ -10,12 +10,13 @@ use toml::Spanned;
 
 use crate::config::error::ConfigError;
 use crate::config::raw::{
-    RawConfig, RawHint, RawHotkeyAction, RawLauncher, RawLauncherMode,
-    RawSortBy,
+    RawConfig, RawHint, RawHotkeyAction, RawIconBar, RawLauncher,
+    RawLauncherMode, RawSortBy,
 };
 use crate::config::{
-    Config, Font, HintConfig, HotkeysConfig, InputBarConfig, LauncherConfig,
-    LauncherMode, MainConfig, NewWindowConfig, OutputBarConfig, TitleBarConfig,
+    Config, Font, HintConfig, HotkeysConfig, IconBarConfig, InputBarConfig,
+    LauncherConfig, LauncherMode, MainConfig, NewWindowConfig, OutputBarConfig,
+    TitleBarConfig,
 };
 use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
@@ -56,6 +57,7 @@ pub(super) fn validate(
         1..=50,
         &mut err,
     );
+    check_icon(&raw.icon_bar, &mut err);
     let new_window = check_new_window(&raw.input_bar.launcher, &mut err);
     let hint = check_hint(&raw.input_bar.hint, &mut err);
 
@@ -98,6 +100,11 @@ pub(super) fn validate(
             },
             show_icons: raw.title_bar.show_icons,
             strip_app_name: raw.title_bar.strip_app_name,
+        },
+        icon_bar: IconBarConfig {
+            enabled: raw.icon_bar.enabled,
+            icon_size: raw.icon_bar.icon_size.into_inner(),
+            border: raw.icon_bar.border.into_inner(),
         },
     })
 }
@@ -172,6 +179,15 @@ fn check_hint(
         text: raw.text.get_ref().clone(),
         update,
     }
+}
+
+/// Checks the icon size and the selection border.
+fn check_icon(
+    raw: &RawIconBar,
+    err: &mut impl FnMut(std::ops::Range<usize>, String),
+) {
+    check_range("icon_bar.icon_size", &raw.icon_size, 8..=128, err);
+    check_range("icon_bar.border", &raw.border, 1..=32, err);
 }
 
 /// Reports `<name>` when its value is outside `range`.

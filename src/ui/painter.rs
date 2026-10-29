@@ -12,15 +12,21 @@
     clippy::cast_sign_loss
 )]
 
-use crate::config::{HintConfig, MainConfig, OutputBarConfig, TitleBarConfig};
+use std::time::Instant;
+
+use crate::config::{
+    HintConfig, IconBarConfig, MainConfig, OutputBarConfig, TitleBarConfig,
+};
+use crate::core::event::Click;
 use crate::core::view::View;
 use crate::core::window::WindowInfo;
 use crate::ui::draw::{self, Grid, Metrics, Paint, Size};
-use crate::ui::render::canvas::{Area, Canvas, Rgba};
+pub(crate) use crate::ui::frames::{draw_popup, measured};
+use crate::ui::render::canvas::{Canvas, Rgba};
 use crate::ui::render::icons::Icons;
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
-use crate::ui::{input_bar, output_bar, title_bar};
+use crate::ui::{icon_bar, icon_menu, slide::Slide};
 
 /// Draws views with the configured look. Built once at start, so fonts
 /// and glyph caches stay warm between shows.
@@ -34,6 +40,11 @@ pub struct Painter {
     title_bar: bool,
     show_icons: bool,
     hint_color: Rgba,
+    icon_bar: bool,
+    icon_size: f32,
+    border: f32,
+    slide: Slide,
+    drawn: f32, // Reveal of the last drawn frame
 }
 
 impl Painter {
@@ -45,6 +56,7 @@ impl Painter {
         output: &OutputBarConfig,
         title: &TitleBarConfig,
         hint: &HintConfig,
+        icon: &IconBarConfig,
     ) -> Self {
         let color = hint.font_color;
 
@@ -58,6 +70,11 @@ impl Painter {
             title_bar: title.enabled,
             show_icons: title.show_icons,
             hint_color: Rgba(color.r, color.g, color.b, 0xff),
+            icon_bar: icon.enabled,
+            icon_size: f32::from(icon.icon_size),
+            border: f32::from(icon.border),
+            slide: Slide::default(),
+            drawn: 0.0,
         }
     }
 
@@ -77,9 +94,13 @@ impl Painter {
         scale: f32,
     ) {
         let size = draw::icon_size(&self.metrics(scale), &self.theme);
+        let strip = (self.icon_size * scale).round().max(1.0) as u32;
 
         for icon in icons {
             self.icons.prepare(icon, size);
+            if self.icon_bar {
+                self.icons.prepare(icon, strip);
+            }
         }
     }
 
@@ -96,7 +117,23 @@ impl Painter {
         view: &View<'_>,
         scale: f32,
     ) {
+        let now = Instant::now();
         let metrics = self.metrics(scale);
+        let grid = Grid::new(&metrics, &self.theme);
+        let open = icon_bar::shows(view, &metrics) && view.dropdown.is_some();
+        let panel = icon_menu::panel(view, &metrics, &grid, &self.text);
+
+        if icon_bar::shows(view, &metrics) {
+            self.slide.sync(open, panel, now);
+        } else {
+            self.slide.cancel();
+        }
+        self.slide.finish(now);
+
+        let reveal = self.slide.reveal(now);
+
+        self.drawn = reveal;
+
         let mut paint = Paint {
             canvas,
             text: &mut self.text,
@@ -105,6 +142,47 @@ impl Painter {
         };
 
         draw_popup(view, &metrics, &mut paint);
+        if reveal > 0.0
+            && let Some(panel) = self.slide.panel()
+        {
+            icon_menu::draw(&mut paint, &grid, panel, reveal, scale);
+        }
+    }
+
+    /// Returns what a click at physical `(x, y)` hits.
+    #[must_use]
+    pub fn hit(&self, view: &View<'_>, scale: f32, x: f32, y: f32) -> Click {
+        let metrics = self.metrics(scale);
+        let grid = Grid::new(&metrics, &self.theme);
+
+        icon_bar::hit(
+            view,
+            &metrics,
+            &grid,
+            &self.text,
+            x,
+            y,
+            self.slide.reveal(Instant::now()),
+        )
+    }
+
+    /// Returns true when the dropdown slide needs another frame.
+    #[must_use]
+    pub fn needs_frame(&self, now: Instant) -> bool {
+        self.slide.active()
+            && (self.slide.reveal(now) - self.drawn).abs() > 0.000_1
+    }
+
+    /// Returns when the next slide frame is due.
+    ///
+    /// A slide that has reached its end still wakes once, so the frame
+    /// drawn just before the deadline can settle.
+    #[must_use]
+    pub fn next_frame(&self, now: Instant) -> Option<Instant> {
+        if self.needs_frame(now) {
+            return Some(self.slide.next(now).unwrap_or(now));
+        }
+        self.slide.next(now)
     }
 
     fn metrics(&self, scale: f32) -> Metrics {
@@ -116,59 +194,11 @@ impl Painter {
             title_bar: self.title_bar,
             show_icons: self.show_icons,
             hint_color: self.hint_color,
+            icon_bar: self.icon_bar,
+            icon_size: self.icon_size,
+            border: self.border,
         }
     }
-}
-
-/// Returns the surface size for `view`.
-pub(crate) fn measured(
-    view: &View<'_>,
-    metrics: &Metrics,
-    theme: &Theme,
-) -> Size {
-    let grid = Grid::new(metrics, theme);
-    let height = 2.0 * grid.pad
-        + input_bar::height(&grid)
-        + output_bar::height(view, metrics, &grid)
-        + title_bar::height(view, metrics, &grid);
-
-    Size {
-        width: (metrics.width * metrics.scale).round() as u32,
-        height: height.round() as u32,
-    }
-}
-
-/// Draws the frame, the input bar, the output bar and the title bar.
-pub(crate) fn draw_popup(
-    view: &View<'_>,
-    metrics: &Metrics,
-    paint: &mut Paint<'_, '_>,
-) {
-    let grid = Grid::new(metrics, paint.theme);
-    let width = paint.canvas.width() as f32;
-    let height = paint.canvas.height() as f32;
-    let radius = paint.theme.radius * metrics.scale;
-    let inner = width - 2.0 * grid.pad;
-
-    paint.canvas.clear(Rgba(0, 0, 0, 0));
-    paint.canvas.fill_rounded_rect(
-        Area::new(0.0, 0.0, width, height),
-        radius,
-        paint.theme.border,
-    );
-    paint.canvas.fill_rounded_rect(
-        Area::new(1.0, 1.0, width - 2.0, height - 2.0),
-        radius - 1.0,
-        paint.theme.background,
-    );
-
-    let mut top = grid.pad;
-
-    input_bar::draw(view, &grid, paint, top, inner, metrics.hint_color);
-    top += input_bar::height(&grid);
-    output_bar::draw(view, metrics, &grid, paint, top, inner);
-    top += output_bar::height(view, metrics, &grid);
-    title_bar::draw(view, metrics, &grid, paint, top, inner);
 }
 
 #[cfg(test)]
@@ -178,3 +208,7 @@ mod tests;
 #[cfg(test)]
 #[path = "hint_draw_tests.rs"]
 mod hint_draw_tests;
+
+#[cfg(test)]
+#[path = "caret_tests.rs"]
+mod caret_tests;

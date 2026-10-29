@@ -58,15 +58,34 @@ pub struct Row {
     pub highlights: Vec<Range<usize>>, // Byte ranges in `title`
 }
 
+/// One running app in the icon bar.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AppIcon {
+    pub app_id: String,
+    pub icon: Option<String>,
+    /// Windows of this app, most recently used first.
+    pub windows: Vec<WindowId>,
+}
+
+/// The icon strip, borrowed for one frame.
+pub(crate) struct Strip<'a> {
+    pub icon: usize,
+    pub dropdown: Option<usize>,
+    pub icons: &'a [AppIcon],
+}
+
 /// Read-only snapshot of the popup, borrowed from the switcher state.
 #[derive(Debug, Clone, Copy)]
 pub struct View<'a> {
     pub query: &'a str,
-    pub hint: &'a str,   // Shown while `query` is empty
-    pub cursor: usize,   // Byte index in `query`
-    pub selected: usize, // Index into the output rows
+    pub hint: &'a str,           // Shown while `query` is empty
+    pub cursor: usize,           // Byte index in `query`
+    pub selected: usize,         // Index into the output rows
+    pub icon: usize,             // Index into `icons`
+    pub dropdown: Option<usize>, // Selected title while open
     windows: &'a [Row],
     output: &'a [Row],
+    icons: &'a [AppIcon],
 }
 
 impl<'a> View<'a> {
@@ -77,14 +96,18 @@ impl<'a> View<'a> {
         selected: usize,
         windows: &'a [Row],
         output: &'a [Row],
+        strip: &Strip<'a>,
     ) -> Self {
         Self {
             query,
             hint,
             cursor,
             selected,
+            icon: strip.icon,
+            dropdown: strip.dropdown,
             windows,
             output,
+            icons: strip.icons,
         }
     }
 
@@ -116,5 +139,17 @@ impl<'a> View<'a> {
     #[must_use]
     pub fn is_empty(&self) -> bool {
         self.output.is_empty()
+    }
+
+    /// Returns the open windows as a slice.
+    #[must_use]
+    pub fn window_rows(&self) -> &'a [Row] {
+        self.windows
+    }
+
+    /// Returns the running apps, most recently used first.
+    #[must_use]
+    pub fn icons(&self) -> &'a [AppIcon] {
+        self.icons
     }
 }

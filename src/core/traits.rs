@@ -5,7 +5,7 @@
 
 use std::fmt;
 
-use crate::core::event::{Action, Key};
+use crate::core::event::{Action, Click, Key};
 use crate::core::queue::EventTx;
 use crate::core::state::State;
 use crate::core::window::WindowId;
@@ -50,4 +50,14 @@ pub trait Mode {
     /// Recomputes `output` and highlights after the rows or mode
     /// changed.
     fn refresh(&mut self, _s: &mut State) {}
+
+    /// Handles one click while the popup is open.
+    fn on_click(&mut self, _click: Click, _s: &mut State) -> Action {
+        Action::None
+    }
+
+    /// Handles one pointer move while the popup is open.
+    fn on_hover(&mut self, _click: Click, _s: &mut State) -> Action {
+        Action::None
+    }
 }

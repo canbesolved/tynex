@@ -29,6 +29,9 @@ pub(crate) struct Metrics {
     pub title_bar: bool,  // Open window list
     pub show_icons: bool, // Title-bar icon slot
     pub hint_color: Rgba, // Hint text while the query is empty
+    pub icon_bar: bool,   // Running-app strip
+    pub icon_size: f32,   // Logical pixels
+    pub border: f32,      // Selection outline, logical pixels
 }
 
 /// Surface size in pixels.

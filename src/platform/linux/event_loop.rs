@@ -51,6 +51,9 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
         }
 
         drive_hint(p);
+        if p.painter.needs_frame(Instant::now()) {
+            redraw(p);
+        }
         p.presenter.flush().map_err(|e| e.to_string())?;
         p.bus.flush(); // Calls such as an activation
         p.apps.reap();
@@ -61,6 +64,8 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
                 PresenterEvent::Key(key) => {
                     handle(p, Event::Key(key));
                 }
+                PresenterEvent::Click { x, y } => point(p, x, y, false),
+                PresenterEvent::Hover { x, y } => point(p, x, y, true),
                 PresenterEvent::Configured
                 | PresenterEvent::Scale(_)
                 | PresenterEvent::Redraw => {
@@ -75,9 +80,39 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
     }
 }
 
-/// Blocks until a fd is readable or the next key repeat is due.
+/// Converts a surface coordinate to physical pixels.
+fn px(value: f64, scale: f32) -> f32 {
+    #[allow(clippy::cast_possible_truncation)]
+    let value = value as f32;
+
+    value * scale
+}
+
+/// Hit-tests a pointer event and feeds it to the switcher.
+fn point(p: &mut Parts, x: f64, y: f64, hover: bool) {
+    let scale = p.presenter.scale();
+    let hit = p
+        .app
+        .view()
+        .map(|view| p.painter.hit(&view, scale, px(x, scale), px(y, scale)));
+
+    if let Some(hit) = hit {
+        let event = if hover {
+            Event::Hover(hit)
+        } else {
+            Event::Click(hit)
+        };
+
+        handle(p, event);
+    }
+}
+
+/// Blocks until a fd is readable or the next deadline is due.
 fn wait(p: &Parts) -> Result<(), String> {
-    let deadline = earliest(p.presenter.next_deadline(), p.hint.deadline());
+    let deadline = earliest(
+        earliest(p.presenter.next_deadline(), p.hint.deadline()),
+        p.painter.next_frame(Instant::now()),
+    );
     let timeout = deadline
         .map(|at| {
             Timespec::try_from(at.saturating_duration_since(Instant::now()))

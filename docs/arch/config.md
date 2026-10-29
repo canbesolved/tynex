@@ -32,7 +32,7 @@ The default file. It is kept in `default.toml` and embedded with
 this). Every key is optional: a missing key takes the value shown here.
 
 Sections stay in this order: `[main]`, `[hotkeys]`, `[input_bar]`,
-`[output_bar]`, then the other modules
+`[output_bar]`, `[title_bar]`, then `[icon_bar]`
 ([ADR-0055](../adr/0055_config_sections.md)).
 
 ```toml
@@ -65,7 +65,7 @@ hint.text = 'date +"%A %b %-d %T %Y"'
 hint.update = 0
 
 [output_bar]
-# Cap for the output bar and the title bar.
+# Cap for the output bar, the title bar and an icon dropdown.
 max_rows = 19
 
 [title_bar]
@@ -79,6 +79,14 @@ sort_by = "recently"         # recently | app
 show_icons = true
 # Drop " — <app name>" from the end of window titles.
 strip_app_name = false
+
+[icon_bar]
+# Row of running apps under the input bar. false hides it.
+enabled = true
+# Icon side in logical pixels, scaled with the display.
+icon_size = 24
+# Selection border outside the icon, in logical pixels.
+border = 4
 ```
 
 `main.desktop` selects the window source adapter. `auto` picks `kde`
@@ -160,6 +168,16 @@ by last use, `app` by app name. The popup always opens with the
 previous window selected (see [core.md](core.md#row-order)). `key`,
 the letter order, was removed in 0.1.6 and is rejected.
 
+`icon_bar.enabled` shows one icon per running app under the input
+bar while the query is empty (default `true`)
+([ADR-0062](../adr/0062_icon_bar.md)). Typing hides the strip.
+`false` leaves the popup as it is without the strip.
+`icon_bar.icon_size` is the icon side in logical pixels, default
+`24`, from 8 to 128. It is multiplied by the output scale, like
+`main.font_size`. A value outside that range stops the daemon.
+`icon_bar.border` is the selection outline in the same units,
+default `4`, from 1 to 32. A missing key uses the default.
+
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
 
 ## Loading rules
@@ -200,6 +218,9 @@ The config is read once, when `tynex daemon` starts
 | `title_bar.sort_by`              | `recently` or `app`                       |
 | `title_bar.show_icons`           | `true` or `false`                         |
 | `title_bar.strip_app_name`       | `true` or `false`                         |
+| `icon_bar.enabled`               | `true` or `false`                         |
+| `icon_bar.icon_size`             | 8 to 128                                  |
+| `icon_bar.border`                | 1 to 32                                   |
 
 Syntax and type errors stop at the first error, as reported by `toml`.
 Value checks run on the parsed file and report every invalid key at
@@ -216,7 +237,7 @@ messages.
 ```text
 tynex: error: ~/.config/tynex/tynex.toml:1:1: unknown key `adaptr`,
   expected one of `main`, `hotkeys`, `input_bar`, `output_bar`,
-  `title_bar`
+  `title_bar`, `icon_bar`
 tynex: error: ~/.config/tynex/tynex.toml:4:13: `main.font_size`
   = 120 is out of range, expected 8 to 72
 ```

@@ -5,7 +5,7 @@
 
 use tiny_skia::{
     Color, FillRule, Paint, Path, PathBuilder, Pixmap, PixmapMut, PixmapPaint,
-    PremultipliedColorU8, Rect, Transform,
+    PremultipliedColorU8, Rect, Stroke, Transform,
 };
 
 /// Color with straight (not premultiplied) alpha.
@@ -74,6 +74,30 @@ impl<'a> Canvas<'a> {
                 &path,
                 &paint(color),
                 FillRule::Winding,
+                Transform::identity(),
+                None,
+            );
+        }
+    }
+
+    /// Strokes `area` with a line of `width` and corners of `radius`.
+    pub fn stroke_rounded_rect(
+        &mut self,
+        area: Area,
+        radius: f32,
+        width: f32,
+        color: Rgba,
+    ) {
+        let stroke = Stroke {
+            width,
+            ..Stroke::default()
+        };
+
+        if let Some(path) = rounded(area, radius) {
+            self.pixmap.stroke_path(
+                &path,
+                &paint(color),
+                &stroke,
                 Transform::identity(),
                 None,
             );
@@ -172,68 +196,5 @@ fn over(
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    const BG: Rgba = Rgba(0, 0, 0, 255);
-    const FG: Rgba = Rgba(200, 100, 50, 255);
-
-    fn pixel(data: &[u8], width: usize, x: usize, y: usize) -> [u8; 4] {
-        let i = (y * width + x) * 4;
-
-        [data[i], data[i + 1], data[i + 2], data[i + 3]]
-    }
-
-    #[test]
-    fn rect_and_clear() {
-        let mut data = vec![0; 4 * 4 * 4];
-        let mut canvas = Canvas::new(&mut data, 4, 4).unwrap();
-
-        canvas.clear(BG);
-        canvas.fill_rect(
-            Area {
-                x: 1.0,
-                y: 1.0,
-                w: 2.0,
-                h: 2.0,
-            },
-            FG,
-        );
-        assert_eq!(pixel(&data, 4, 0, 0), [0, 0, 0, 255]);
-        assert_eq!(pixel(&data, 4, 1, 1), [200, 100, 50, 255]);
-    }
-
-    #[test]
-    fn rounded_corners_stay_clear() {
-        let mut data = vec![0; 20 * 20 * 4];
-        let mut canvas = Canvas::new(&mut data, 20, 20).unwrap();
-        let area = Area {
-            x: 0.0,
-            y: 0.0,
-            w: 20.0,
-            h: 20.0,
-        };
-
-        canvas.clear(BG);
-        canvas.fill_rounded_rect(area, 8.0, FG);
-        assert_eq!(pixel(&data, 20, 0, 0), [0, 0, 0, 255]);
-        assert_eq!(pixel(&data, 20, 10, 10), [200, 100, 50, 255]);
-    }
-
-    #[test]
-    fn coverage_blends_and_clips() {
-        let mut data = vec![0; 2 * 2 * 4];
-        let mut canvas = Canvas::new(&mut data, 2, 2).unwrap();
-
-        canvas.clear(BG);
-        canvas.blend_coverage((1, 0), 2, &[255, 255, 128, 0], FG);
-        assert_eq!(pixel(&data, 2, 1, 0), [200, 100, 50, 255]);
-        assert_eq!(pixel(&data, 2, 0, 1), [0, 0, 0, 255]); // Clipped at x = 2
-        assert_eq!(pixel(&data, 2, 1, 1), [100, 50, 25, 255]);
-    }
-
-    #[test]
-    fn wrong_buffer_size_is_rejected() {
-        assert!(Canvas::new(&mut [0; 15], 2, 2).is_none());
-    }
-}
+#[path = "canvas_tests.rs"]
+mod tests;

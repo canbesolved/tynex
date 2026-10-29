@@ -42,7 +42,9 @@ it exits.
 ## Rules
 
 - One row high: 2 x font size, times the output scale.
-- The painter in `src/ui/painter.rs` draws the frame and the padding
-  around this bar, then the output bar when the query is non-empty,
-  then the [title bar](title_bar.md) when it is enabled and the query
-  is empty.
+- The painter in `src/ui/painter.rs` draws this bar in its own
+  rounded frame. While the query is empty and the icon bar is on,
+  the [icon bar](icon_bar.md) is a second frame 3 logical pixels
+  below, then a spare room, then the [title bar](title_bar.md) 3
+  logical pixels under that room. A non-empty query hides the icon
+  frame and shows the output bar in this frame.

@@ -4,7 +4,7 @@
 //! Tests for the switcher, with a minimal stand-in mode.
 
 use super::*;
-use crate::core::window::WindowId;
+use crate::core::window::{WindowId, WindowInfo};
 
 /// Typing filters titles by substring; `Enter` activates; `Esc` closes;
 /// arrows move.
@@ -178,6 +178,37 @@ fn hide_and_quit_close_only_when_open() {
     sw.handle(Event::Show);
     assert_eq!(sw.handle(Event::Quit), Action::Close);
     assert!(sw.view().is_none());
+}
+
+#[test]
+fn show_selects_the_previous_apps_icon() {
+    let mut sw = build(HotkeyAction::Hide);
+
+    sw.handle(Event::Windows(vec![
+        WindowInfo {
+            id: WindowId("a".into()),
+            app_id: "firefox".into(),
+            app_name: String::new(),
+            title: "A".into(),
+            icon: None,
+        },
+        window("b", "", "B"),
+        WindowInfo {
+            id: WindowId("c".into()),
+            app_id: "firefox".into(),
+            app_name: String::new(),
+            title: "C".into(),
+            icon: None,
+        },
+    ]));
+    sw.handle(Event::Show);
+
+    let view = sw.view().unwrap();
+
+    assert_eq!(view.icons().len(), 2);
+    assert_eq!(view.icons()[0].windows.len(), 2);
+    assert_eq!(view.icon, 1);
+    assert_eq!(view.icons()[1].app_id, "b");
 }
 
 #[test]

@@ -124,10 +124,15 @@ the popup with `hotkeys.action = "hide"`. The popup also closes when
 it loses keyboard focus.
 
 In the popup, type to filter, `Enter` or `Space` to switch, `Tab` or
-the arrows to move, and `Esc` to clear the query or close. `Enter` or
-`Space` right after opening switches to the previous window, like
-Alt+Tab. `Tab` walks the open windows when the title bar is on, and
-the matches while you type.
+the arrows to move, and `Esc` to clear the query or close. While the
+query is empty, app icons sit under the input bar. `Left` and
+`Right` move along them, and so does the pointer. With the title
+bar on, `Enter` or `Space` switches to the window selected there.
+With it off, they switch when that app has one window, and open its
+windows when it has several. The selected icon starts as the previous
+window's app. Typing hides the icons. `Tab` walks the open windows
+when the title bar is on, moves along the icons when it is off, and
+walks matches while you type.
 
 ## Configuration
 
@@ -157,6 +162,11 @@ enabled = false              # Window list before typing
 sort_by = "recently"         # recently | app
 show_icons = true            # false: titles only
 strip_app_name = false       # true: "Café — Firefox" becomes "Café"
+
+[icon_bar]
+enabled = true               # App icons under the input bar
+icon_size = 24               # Logical pixels, 8 to 128
+border = 4                   # Selection outline, 1 to 32
 ```
 
 On first start `tynex daemon` writes this file with defaults. Keys

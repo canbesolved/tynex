@@ -61,10 +61,14 @@ again when it is enabled. The selected row is highlighted.
 - Titles are truncated with an ellipsis (see [render.md](render.md)).
 - At most `output_bar.max_rows` rows. The list scrolls so the
   selected window stays visible.
-- A separator line divides this list from whatever is above it.
+- With the icon strip showing, this list is its own rounded frame,
+  3 logical pixels under the spare room, with no separator. Without
+  the strip, a separator divides it from the bar above
+  ([icon_bar.md](icon_bar.md)).
 
-The painter draws this module under the output bar. A query hides
-it, so the two lists are not on screen together
+The painter draws this module under the icon bar when that strip is
+showing, and under the output bar while a query is typed. A query
+hides it, so the two lists are not on screen together
 ([ADR-0057](../../adr/0057_title_bar_query.md)). Its code and config
 are separate from the input bar and the output bar
 ([ADR-0053](../../adr/0053_ui_module_toggles.md),

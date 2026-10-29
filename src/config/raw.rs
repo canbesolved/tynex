@@ -64,6 +64,18 @@ fn default_hint_update() -> Spanned<u32> {
     unspanned(0)
 }
 
+fn default_icon_enabled() -> bool {
+    true
+}
+
+fn default_icon_size() -> Spanned<u16> {
+    unspanned(24)
+}
+
+fn default_icon_border() -> Spanned<u16> {
+    unspanned(4)
+}
+
 #[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawConfig {
@@ -72,6 +84,7 @@ pub(super) struct RawConfig {
     pub input_bar: RawInputBar,
     pub output_bar: RawOutputBar,
     pub title_bar: RawTitleBar,
+    pub icon_bar: RawIconBar,
 }
 
 #[derive(Deserialize)]
@@ -192,6 +205,27 @@ impl Default for RawTitleBar {
             sort_by: RawSortBy::Recently,
             show_icons: true,
             strip_app_name: false,
+        }
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub(super) struct RawIconBar {
+    #[serde(default = "default_icon_enabled")]
+    pub enabled: bool,
+    #[serde(default = "default_icon_size")]
+    pub icon_size: Spanned<u16>,
+    #[serde(default = "default_icon_border")]
+    pub border: Spanned<u16>,
+}
+
+impl Default for RawIconBar {
+    fn default() -> Self {
+        Self {
+            enabled: default_icon_enabled(),
+            icon_size: default_icon_size(),
+            border: default_icon_border(),
         }
     }
 }

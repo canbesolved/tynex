@@ -9,6 +9,40 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `[icon_bar]` draws one icon per running app under the input bar
+  while the query is empty. `enabled` defaults to `true`.
+  `icon_size` defaults to `24` logical pixels (8 to 128) and scales
+  with the display. The row is centered, or shrunk until it fits.
+  An app with several windows shows a count and opens a dropdown
+  of its titles. `Left` and `Right` move along the strip. `Enter`,
+  `Space` and a left click activate one window, open the dropdown,
+  or launch. The dropdown slides over 150 ms (ADR-0062).
+
+### Changed
+
+- `icon_bar.border` sets the selection outline in logical pixels,
+  scaled with the display. The default is `4`, from 1 to 32.
+- The icon bar is its own rounded frame, 3 logical pixels below the
+  input bar. The gap scales with the display and shows the desktop.
+- A gap of 3 logical pixels separates the icon bar from the title
+  bar, and the dropdown from the icon bar. Both scale with the
+  display.
+- `Tab` moves to the next icon while the strip is showing and the
+  title bar is off. An open dropdown still takes `Tab` first
+  (ADR-0063).
+- Moving the pointer onto an icon selects it and closes an open
+  dropdown. Moving off the icons leaves the selection where it is.
+
+### Fixed
+
+- The selected icon is outlined by a border outside the icon.
+- The last title in an icon dropdown stays on screen when the slide
+  ends.
+- With the title bar on, `Enter` and `Space` activate the selected
+  window instead of opening the icon dropdown (ADR-0064).
+
 ## [0.2.8] - 2026-10-29
 
 `Space` confirms the selected match, and `Tab` walks the visible list.

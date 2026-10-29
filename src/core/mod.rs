@@ -5,6 +5,8 @@
 
 pub mod app;
 pub mod event;
+pub mod icon_nav;
+pub mod icons;
 pub mod order;
 pub mod queue;
 pub mod state;

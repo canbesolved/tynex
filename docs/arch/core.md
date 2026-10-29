@@ -15,6 +15,7 @@ core/
   switcher.rs   State machine (tests in switcher_tests.rs)
   view.rs       View, Row, RowTarget: what the presenter must draw
   order.rs      SortBy: row order (recently, app)
+  icons.rs      One icon per running app, dropdown title order
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
   title.rs      Row titles: sanitizing and app name stripping
@@ -40,6 +41,8 @@ pub enum Event {
     Windows(Vec<WindowInfo>), // Full list, most recently used first
     Show,
     Key(Key),
+    Click(Click),
+    Hover(Click),
     Hide,
     Quit,
 }
@@ -53,6 +56,11 @@ pub enum Action {
     Close,
 }
 ```
+
+`Click` is where a pointer press landed: `Icon(index)` on the strip,
+`Menu(index)` on an open dropdown, or `Elsewhere` in the popup.
+`Hover` carries the same place while the pointer moves. The icon
+under the pointer becomes selected.
 
 `AppInfo` is `id`, `name`, `icon`. `Exec` stays on the platform.
 A `Row` has a `RowTarget`: `Window` or `Launch`. `State` keeps open
@@ -91,6 +99,8 @@ pub trait Presenter {
 /// Turns key presses into switcher actions.
 pub trait Mode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action;
+    fn on_click(&mut self, click: Click, s: &mut State) -> Action;
+    fn on_hover(&mut self, click: Click, s: &mut State) -> Action;
     /// Recomputes output rows and highlights; default does nothing.
     fn refresh(&mut self, s: &mut State) {}
 }
@@ -142,8 +152,8 @@ refilter.
 ## View
 
 `View` borrows the open `State`: query, cursor, selected index, the
-open windows, and the output rows in display order. Each `Row` has
-an id,
+open windows, the output rows, the running-app icons, the selected
+icon, and whether a dropdown is open. Each `Row` has an id, an
 icon, row text (`title`), an optional title color, highlight byte
 ranges, and the app name and id for search. A row with no title
 color uses the theme text color. `windows` is every open window,
@@ -213,5 +223,10 @@ stably from there:
 - `app`: by app name, ignoring case, then by recent use.
 
 The popup opens with the previous window selected in every order, so
-`Enter` or `Space` switches back like Alt+Tab
-([ADR-0061](../adr/0061_prompt_keys.md)).
+`Enter` or `Space` switches back like Alt+Tab when the title bar is
+on, the icon bar is off, or that app has one window
+([ADR-0061](../adr/0061_prompt_keys.md),
+[ADR-0064](../adr/0064_title_priority.md)). The icon strip uses most
+recently used order on its own, not `sort_by`. With the title bar
+off and the strip showing, `Enter` on an app that has several
+windows opens its dropdown ([ADR-0062](../adr/0062_icon_bar.md)).
