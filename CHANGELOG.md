@@ -28,6 +28,8 @@ project adheres to
 ### Fixed
 
 - The selected icon is outlined by a border outside the icon.
+- The last title in an icon dropdown stays on screen when the slide
+  ends.
 
 ## [0.2.8] - 2026-10-29
 

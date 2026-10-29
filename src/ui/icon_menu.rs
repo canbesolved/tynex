@@ -111,7 +111,8 @@ pub(crate) fn draw(
     for (index, title) in panel.titles.iter().enumerate() {
         let y = panel.y + index as f32 * panel.row_h;
 
-        if y + panel.row_h > panel.y + shown {
+        // A subpixel shortfall used to hide the last title.
+        if y + panel.row_h > panel.y + shown + 1.0 {
             break;
         }
         let row = Area::new(panel.x, y, panel.w, panel.row_h);

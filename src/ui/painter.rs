@@ -174,8 +174,14 @@ impl Painter {
     }
 
     /// Returns when the next slide frame is due.
+    ///
+    /// A slide that has reached its end still wakes once, so the frame
+    /// drawn just before the deadline can settle.
     #[must_use]
     pub fn next_frame(&self, now: Instant) -> Option<Instant> {
+        if self.needs_frame(now) {
+            return Some(self.slide.next(now).unwrap_or(now));
+        }
         self.slide.next(now)
     }
 
