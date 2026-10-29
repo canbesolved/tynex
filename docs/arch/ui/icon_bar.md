@@ -79,16 +79,18 @@ without this module.
 ## Keys and clicks
 
 While the strip is showing, `Left` and `Right` move the selection
-and close an open dropdown. `Enter` and `Space` match a left click
-on the selected icon: one window activates, several open the
-dropdown, and none launches that app. `Up` and `Down` move inside
-an open dropdown; otherwise they still move the title or output
-list. `Tab` steps the dropdown while it is open. With the title bar
-off, `Tab` moves to the next icon. `Esc` closes the dropdown first.
+and close an open dropdown. With the title bar off, `Enter` and
+`Space` match a left click on the selected icon: one window
+activates, several open the dropdown, and none launches that app.
+With the title bar on, those keys activate the selected title. An
+open dropdown still takes them. `Up` and `Down` move inside an open
+dropdown; otherwise they still move the title or output list.
+`Tab` steps the dropdown while it is open. With the title bar off,
+`Tab` moves to the next icon. `Esc` closes the dropdown first.
 
-A left click on an icon selects it and does the same as `Enter`. A
-left click on a dropdown row activates that window. A left click
-elsewhere in the popup closes the dropdown. The right button is
-ignored.
+A left click on an icon selects it and opens the dropdown, or
+activates its one window. A left click on a dropdown row activates
+that window. A left click elsewhere in the popup closes the
+dropdown. The right button is ignored.
 
 See [input_bar.md](input_bar.md) and [title_bar.md](title_bar.md).

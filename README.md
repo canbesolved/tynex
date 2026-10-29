@@ -126,11 +126,13 @@ it loses keyboard focus.
 In the popup, type to filter, `Enter` or `Space` to switch, `Tab` or
 the arrows to move, and `Esc` to clear the query or close. While the
 query is empty, app icons sit under the input bar. `Left` and
-`Right` move along them. `Enter` or `Space` switches when that app
-has one window, and opens its windows when it has several. The
-selected icon starts as the previous window's app. Typing hides the
-icons. `Tab` walks the open windows when the title bar is on, moves
-along the icons when it is off, and walks matches while you type.
+`Right` move along them. With the title bar on, `Enter` or `Space`
+switches to the window selected there. With it off, they switch
+when that app has one window, and open its windows when it has
+several. The selected icon starts as the previous window's app.
+Typing hides the icons. `Tab` walks the open windows when the title
+bar is on, moves along the icons when it is off, and walks matches
+while you type.
 
 ## Configuration
 

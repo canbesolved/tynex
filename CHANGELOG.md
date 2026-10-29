@@ -38,6 +38,8 @@ project adheres to
 - The selected icon is outlined by a border outside the icon.
 - The last title in an icon dropdown stays on screen when the slide
   ends.
+- With the title bar on, `Enter` and `Space` activate the selected
+  window instead of opening the icon dropdown (ADR-0064).
 
 ## [0.2.8] - 2026-10-29
 

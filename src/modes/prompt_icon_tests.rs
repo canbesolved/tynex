@@ -106,6 +106,44 @@ fn enter_opens_then_activates_and_esc_closes() {
 }
 
 #[test]
+fn the_title_bar_wins_confirm_over_the_icon() {
+    let (mut mode, mut state) = session(true);
+
+    assert_eq!(
+        mode.on_key(Key::Enter, &mut state),
+        Action::Activate(WindowId("w1".into()))
+    );
+    assert_eq!(state.dropdown, None);
+
+    let (mut mode, mut state) = session(true);
+
+    mode.on_key(Key::Down, &mut state);
+    assert_eq!(
+        mode.on_key(
+            Key::Char {
+                text: ' ',
+                latin: None,
+            },
+            &mut state,
+        ),
+        Action::Activate(WindowId("w2".into()))
+    );
+    assert_eq!(state.dropdown, None);
+}
+
+#[test]
+fn an_open_dropdown_still_takes_enter_with_the_title_bar() {
+    let (mut mode, mut state) = session(true);
+
+    assert_eq!(mode.on_click(Click::Icon(0), &mut state), Action::Redraw);
+    assert_eq!(state.dropdown, Some(0));
+    assert_eq!(
+        mode.on_key(Key::Enter, &mut state),
+        Action::Activate(WindowId("w2".into()))
+    );
+}
+
+#[test]
 fn one_window_activates_and_a_click_matches_enter() {
     let (mut mode, mut state) = opened();
 

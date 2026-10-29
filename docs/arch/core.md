@@ -219,9 +219,10 @@ stably from there:
 - `app`: by app name, ignoring case, then by recent use.
 
 The popup opens with the previous window selected in every order, so
-`Enter` or `Space` switches back like Alt+Tab when the icon bar is
-off or that app has one window
-([ADR-0061](../adr/0061_prompt_keys.md)). The icon strip uses most
-recently used order on its own, not `sort_by`. With the strip
-showing, `Enter` on an app that has several windows opens its
-dropdown ([ADR-0062](../adr/0062_icon_bar.md)).
+`Enter` or `Space` switches back like Alt+Tab when the title bar is
+on, the icon bar is off, or that app has one window
+([ADR-0061](../adr/0061_prompt_keys.md),
+[ADR-0064](../adr/0064_title_priority.md)). The icon strip uses most
+recently used order on its own, not `sort_by`. With the title bar
+off and the strip showing, `Enter` on an app that has several
+windows opens its dropdown ([ADR-0062](../adr/0062_icon_bar.md)).

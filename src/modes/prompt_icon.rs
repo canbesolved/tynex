@@ -10,7 +10,8 @@ use crate::core::view::RowTarget;
 /// Handles a key while the strip is showing.
 ///
 /// `None` means the key belongs to the query or the title list. With
-/// the title bar off, `Tab` moves to the next icon.
+/// the title bar off, `Tab` moves to the next icon. With it on,
+/// `Enter` and `Space` confirm that list unless a dropdown is open.
 pub(super) fn key(
     key: Key,
     s: &mut State,
@@ -28,7 +29,11 @@ pub(super) fn key(
             s.close_dropdown();
             Some(Action::Redraw)
         }
-        Key::Char { text: ' ', .. } | Key::Enter => Some(confirm(s, cap)),
+        Key::Char { text: ' ', .. } | Key::Enter
+            if !title_bar || s.dropdown.is_some() =>
+        {
+            Some(confirm(s, cap))
+        }
         Key::Up if s.dropdown.is_some() => Some(step(s, cap, false)),
         Key::Down | Key::Tab if s.dropdown.is_some() => {
             Some(step(s, cap, true))
