@@ -19,10 +19,10 @@ sections follow the modules
 ([ADR-0055](../../adr/0055_config_sections.md)).
 
 ```text
-/ firef
+> firef
 ```
 
-`/` is fixed. The rest is the query, empty until you type.
+`>` is fixed. The rest is the query, empty until you type.
 
 ## Rules
 

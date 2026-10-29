@@ -15,7 +15,7 @@ model answer in this same module.
 ```text
 After typing
 ╭──────────────────────────────────────╮
-│ / firef                              │
+│ > firef                              │
 ├──────────────────────────────────────┤
 │ ▣  Firefox   Release notes           │
 │ ▣  Firefox   Café                    │
