@@ -24,7 +24,6 @@ mode = "iconbar" (default)
 
 ╭──────────────────────────────────────╮
 │   ▣    ▣    ▣                        │
-│        2                             │
 ╰──────────────────────────────────────╯
 
 mode = "titlebar", show_icons = true (default)
@@ -43,7 +42,6 @@ mode = "both", and some app has several windows
 
 ╭──────────────────────────────────────╮
 │   ▣    ▣                             │
-│        2                             │
 ╰──────────────────────────────────────╯
 
 ╭──────────────────────────────────────╮
@@ -80,8 +78,11 @@ until you type.
   `taskbar.iconbar.border` outlines it in the selection color,
   outside the icon. The default is 4 logical pixels, from 1 to 32,
   scaled like `taskbar.iconbar.size`.
-- An app with several windows draws the count under its icon. The
-  strip is always tall enough for that line.
+- An app with several windows draws the count in a badge on the
+  bottom center of its icon: the number in a pill of the frame border
+  color, 0.4 of the icon side, inside the icon
+  ([ADR-0067](../../adr/0067_count_badge.md)). The strip is one icon
+  tall.
 - `taskbar.iconbar.size` is the icon side in logical pixels, default
   `24`, from 8 to 128. It is multiplied by the output scale, like
   `main.font_size`. A value outside that range stops the daemon.
@@ -137,7 +138,9 @@ With the title list on, those keys activate the selected title. An
 open dropdown still takes them. `Up` and `Down` move inside an open
 dropdown; otherwise they still move the title or output list.
 `Tab` steps the dropdown while it is open. With the title list off,
-`Tab` moves to the next icon. `Esc` closes the dropdown first.
+`Tab` moves to the next icon. `Shift+Tab` steps back in the same
+places, in the title list too, and wraps the same way. `Esc` closes
+the dropdown first.
 
 A left click on an icon selects it and opens the dropdown, or
 activates its one window. A left click on a dropdown row activates
@@ -152,7 +155,7 @@ leaves the selection where it is.
   query is empty.
 - `titles::shows`: `taskbar.mode` is `titlebar` or `both`, and the
   query is empty.
-- Strip height is the icons and the count line, or zero when hidden.
+- Strip height is one icon side, or zero when hidden.
 - Title height is the separator and the windows, or the framed list
   under the spare room, or zero when hidden. Pure.
 - Drawing reads only `View` (`icons`, `windows`).

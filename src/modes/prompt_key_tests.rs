@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! `Space` confirms the selected row. `Tab` walks the visible list.
+//! `Space` confirms the selected row. `Tab` walks the visible list,
+//! `Shift+Tab` walks it back.
 
 use super::*;
 use crate::config::{LauncherConfig, LauncherMode, TaskbarMode};
@@ -137,6 +138,21 @@ fn tab_walks_the_title_bar_and_wraps() {
 }
 
 #[test]
+fn shift_tab_walks_the_title_bar_back_and_wraps() {
+    let mut mode = prompt(
+        TaskbarMode::Titlebar,
+        launcher(LauncherMode::Off),
+        Vec::new(),
+    );
+    let mut s = state();
+
+    assert_eq!(mode.on_key(Key::BackTab, &mut s), Action::Redraw);
+    assert_eq!(s.selected, 2);
+    mode.on_key(Key::BackTab, &mut s);
+    assert_eq!(s.selected, 1);
+}
+
+#[test]
 fn tab_walks_output_matches() {
     let apps = vec![
         AppInfo {
@@ -162,6 +178,8 @@ fn tab_walks_output_matches() {
         assert_eq!(s.selected, 1);
         mode.on_key(Key::Tab, &mut s);
         assert_eq!(s.selected, 0);
+        assert_eq!(mode.on_key(Key::BackTab, &mut s), Action::Redraw);
+        assert_eq!(s.selected, 1);
     }
 }
 
@@ -172,5 +190,6 @@ fn tab_does_nothing_without_a_visible_list() {
     let mut s = state();
 
     assert_eq!(mode.on_key(Key::Tab, &mut s), Action::None);
+    assert_eq!(mode.on_key(Key::BackTab, &mut s), Action::None);
     assert_eq!(s.selected, 0);
 }

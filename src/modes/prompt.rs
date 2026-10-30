@@ -5,6 +5,7 @@
 //!
 //! `Space` confirms the selected row, the same as `Enter`. `Tab`
 //! walks the list on screen, or the icons when the title list is off.
+//! `Shift+Tab` walks it back.
 
 use crate::config::TaskbarMode;
 use crate::core::event::{Action, Click, Key};
@@ -112,11 +113,17 @@ impl Mode for PromptMode {
                 Action::Redraw
             }
             // The title bar or the output bar is showing.
-            Key::Tab if !s.query.is_empty() || self.taskbar.titlebar() => {
-                s.select_next();
+            Key::Tab | Key::BackTab
+                if !s.query.is_empty() || self.taskbar.titlebar() =>
+            {
+                if key == Key::Tab {
+                    s.select_next();
+                } else {
+                    s.select_prev();
+                }
                 Action::Redraw
             }
-            Key::Tab => Action::None,
+            Key::Tab | Key::BackTab => Action::None,
         }
     }
 

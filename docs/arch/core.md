@@ -68,8 +68,9 @@ windows in `rows` (title bar) and the result list in `output`
 (output bar and selection).
 
 `Key` is a portable enum (`Char { text, latin }`, `Enter`, `Esc`,
-`Tab`, `Up`, `Down`, `Left`, `Right`, `Home`, `End`, `Backspace`,
-`Delete`, `WordLeft`, `WordRight`). Each platform maps native key
+`Tab`, `BackTab`, `Up`, `Down`, `Left`, `Right`, `Home`, `End`,
+`Backspace`, `Delete`, `WordLeft`, `WordRight`). `BackTab` is
+`Shift+Tab`. Each platform maps native key
 events to it:
 
 - `text`: the character the active layout produces, after dead keys

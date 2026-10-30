@@ -20,7 +20,7 @@ Source: `src/modes/prompt.rs`. The
 | `Delete`                   | Delete the character after it  |
 | `Up` / `Down`              | Move the selection             |
 | `Space` / `Enter`          | Activate or launch, then close |
-| `Tab`                      | Walk the list or the icons     |
+| `Tab` / `Shift+Tab`        | Walk the list or the icons     |
 | `Esc`                      | Clear query; close if empty    |
 
 `Space` is not inserted
@@ -29,7 +29,9 @@ Source: `src/modes/prompt.rs`. The
 while the title list is showing, and matches while the output bar is
 showing. With the title list off and the icon strip showing, `Tab`
 moves to the next icon. With neither a list nor the strip, `Tab`
-does nothing. `Shift+Tab` steps forward too.
+does nothing. `Shift+Tab` does the same one step back, and wraps
+from the first entry to the last
+([ADR-0068](../../adr/0068_back_tab.md)).
 
 The popup opens with the previous window selected. `Space` or
 `Enter` switches back like Alt+Tab when the title list is on, the
@@ -56,6 +58,7 @@ one window, open the dropdown, or launch. An open dropdown still
 takes `Enter` and `Space`. `Up` and `Down` move inside an open
 dropdown; otherwise they still move the list above. `Tab` steps that
 dropdown while it is open. With the title list off, `Tab` moves to
-the next icon. `Esc` closes the dropdown first, then clears the
+the next icon. `Shift+Tab` steps back in the same places. `Esc`
+closes the dropdown first, then clears the
 query or closes the popup. A typed character hides the strip, and
 `Left` and `Right` move the cursor again.

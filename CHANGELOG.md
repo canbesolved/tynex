@@ -9,6 +9,18 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `Shift+Tab` moves the selection back, the reverse of `Tab`: in the
+  icon strip, an open dropdown, the title list and the output bar. It
+  wraps the same way (ADR-0068).
+
+### Changed
+
+- The window count of an app is a badge on the bottom center of its
+  icon, not a line under it. The icon strip is one icon tall
+  (ADR-0067).
+
 ## [0.2.11] - 2026-10-30
 
 Config sections are `[input]`, `[output]` and `[taskbar]`.

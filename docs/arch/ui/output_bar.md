@@ -40,7 +40,7 @@ windows again when `taskbar.mode` is `titlebar` or `both`. See
   A new-window row uses its configured title color
   ([ADR-0059](../../adr/0059_new_window_row.md)).
 - `Enter` and `Space` activate a window row or launch an app row.
-  `Tab`, up and down move that selection
+  `Tab`, `Shift+Tab`, up and down move that selection
   ([ADR-0061](../../adr/0061_prompt_keys.md)). Prompt mode owns the
   keys; this module only draws.
 

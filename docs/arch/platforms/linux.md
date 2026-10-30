@@ -116,8 +116,9 @@ closes, and without input it closes after ten seconds.
   (`Keymap::new_from_string`, default features off).
 - Key events become keysyms and UTF-8 text with the current layout, so
   non-QWERTY layouts work, then `core::Key`: `Enter` (also keypad),
-  `Esc`, `Tab`, arrows, `Home`, `End`, `Backspace`, `Delete`, or
-  `Char` when the text is one printable character. `Ctrl+Left` and
+  `Esc`, `Tab`, `BackTab` (`ISO_Left_Tab`, which `Shift+Tab` gives),
+  arrows, `Home`, `End`, `Backspace`, `Delete`, or `Char` when the
+  text is one printable character. `Ctrl+Left` and
   `Ctrl+Right` are `WordLeft` and `WordRight`. Other Ctrl
   combinations produce no `Char`.
 - Dead keys and compose sequences (`´` then `e` gives `é`) use the

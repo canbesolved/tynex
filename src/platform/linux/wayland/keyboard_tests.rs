@@ -8,6 +8,7 @@ use super::*;
 const KEY_A: u32 = 30; // evdev codes
 const KEY_DOWN: u32 = 108;
 const KEY_ENTER: u32 = 28;
+const KEY_TAB: u32 = 15;
 
 /// A keyboard with `layouts` (for example "us,gr") and no compose.
 fn keyboard(layouts: &str) -> Keyboard {
@@ -39,9 +40,10 @@ fn special_keys_map_by_keysym() {
         to_key(keysyms::KEY_Escape, Some("\u{1b}"), None),
         Some(Key::Esc)
     );
+    assert_eq!(to_key(keysyms::KEY_Tab, None, None), Some(Key::Tab));
     assert_eq!(
         to_key(keysyms::KEY_ISO_Left_Tab, None, None),
-        Some(Key::Tab)
+        Some(Key::BackTab)
     );
     assert_eq!(to_key(keysyms::KEY_KP_Down, None, None), Some(Key::Down));
     assert_eq!(to_key(keysyms::KEY_Left, None, None), Some(Key::Left));
@@ -91,6 +93,16 @@ fn latin_key_with_greek_layout_active() {
         })
     );
     assert_eq!(kb.press(KEY_ENTER, now), Some(Key::Enter));
+}
+
+#[test]
+fn shift_tab_is_back_tab() {
+    let mut kb = keyboard("us");
+    let now = Instant::now();
+
+    assert_eq!(kb.press(KEY_TAB, now), Some(Key::Tab));
+    kb.modifiers(1, 0, 0, 0); // Shift
+    assert_eq!(kb.press(KEY_TAB, now), Some(Key::BackTab));
 }
 
 #[test]

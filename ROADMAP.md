@@ -23,14 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.12
-
-- [ ] `Shift+Tab` moves the selection back, the reverse of `Tab`: in
-  the icon strip, an open dropdown and the title list. It wraps the
-  same way.
-- [ ] The window count of an app is a badge on the bottom center of
-  its icon, not a line under it, so the icon strip is one icon tall.
-
 ### 0.2.13
 
 - [ ] The popup stays in place: it no longer moves when the output bar

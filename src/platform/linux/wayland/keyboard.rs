@@ -200,7 +200,8 @@ fn to_key(sym: u32, text: Option<&str>, latin: Option<char>) -> Option<Key> {
     match sym {
         keysyms::KEY_Return | keysyms::KEY_KP_Enter => Some(Key::Enter),
         keysyms::KEY_Escape => Some(Key::Esc),
-        keysyms::KEY_Tab | keysyms::KEY_ISO_Left_Tab => Some(Key::Tab),
+        keysyms::KEY_Tab => Some(Key::Tab),
+        keysyms::KEY_ISO_Left_Tab => Some(Key::BackTab), // Shift+Tab
         keysyms::KEY_Up | keysyms::KEY_KP_Up => Some(Key::Up),
         keysyms::KEY_Down | keysyms::KEY_KP_Down => Some(Key::Down),
         keysyms::KEY_Left | keysyms::KEY_KP_Left => Some(Key::Left),
