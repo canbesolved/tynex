@@ -25,16 +25,44 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 
 ### 0.2.10
 
+- [ ] `taskbar` module: the icon bar and the title bar become one
+  module with three modes: `icons`, `titles` and `both`.
+
+### 0.2.11
+
+- [ ] Simpler config sections: `[main]`, `[hotkeys]`, `[input]`,
+  `[output]` and `[taskbar]`. `[input_bar]` becomes `[input]`,
+  `[output_bar]` becomes `[output]`, and `[icon_bar]` and
+  `[title_bar]` merge into `[taskbar]` (**Breaking**).
+
+### 0.2.12
+
+- [ ] The popup stays in place: it no longer moves when the output bar
+  appears.
+- [ ] Config option for the vertical position of the popup: `center`
+  or `top`.
+
+### 0.2.13
+
+- [ ] `titles` mode of the taskbar can hide the app icons in the list.
+
+### 0.2.14
+
+- [ ] Mouse hover highlights a row of the title list, and a click
+  activates it.
+
+### 0.2.15
+
 - [ ] Each UI module is its own block: a small gap separates the bars
   (for example the input bar and the title bar), and every block uses
   the same rounded border and theme colors.
 
-### 0.2.11
+### 0.2.16
 
 - [ ] When you search, the output bar lists open windows first, then
   installed apps from the launcher.
 
-### 0.2.12
+### 0.2.17
 
 - [ ] Update the default theme to the Endgame color palette. Exact
   color values will be added when the palette is finalized.
