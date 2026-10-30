@@ -18,17 +18,17 @@ pub(crate) fn shows(view: &View<'_>) -> bool {
     !view.query.is_empty()
 }
 
-/// Returns the extra popup height for the separator and the results.
-pub(crate) fn height(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
+/// Returns the height of the result rows, or zero when hidden.
+pub(crate) fn body(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
     if !shows(view) {
         return 0.0;
     }
     let rows = view.len().clamp(1, metrics.list_rows.max(1)) as f32;
 
-    1.0 + rows * grid.row_h
+    rows * grid.row_h
 }
 
-/// Draws the separator and the current results, starting at `top`.
+/// Draws the current results, starting at `top`.
 pub(crate) fn draw(
     view: &View<'_>,
     metrics: &Metrics,
@@ -40,10 +40,6 @@ pub(crate) fn draw(
     if !shows(view) {
         return;
     }
-    paint
-        .canvas
-        .fill_rect(Area::new(grid.pad, top, inner, 1.0), paint.theme.border);
-    top += 1.0;
 
     let len = view.len();
     let max = metrics.list_rows.max(1);

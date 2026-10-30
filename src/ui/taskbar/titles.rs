@@ -20,7 +20,7 @@ pub(crate) fn shows(view: &View<'_>, metrics: &Metrics) -> bool {
     metrics.taskbar.titlebar() && view.query.is_empty()
 }
 
-/// Returns the height of the window rows, without the separator.
+/// Returns the height of the window rows, or zero when hidden.
 pub(crate) fn body(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
     if !shows(view, metrics) {
         return 0.0;
@@ -30,17 +30,7 @@ pub(crate) fn body(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
     rows * grid.row_h
 }
 
-/// Returns the extra popup height for the separator and the windows.
-pub(crate) fn height(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
-    let rows = body(view, metrics, grid);
-
-    if rows == 0.0 { 0.0 } else { rows + 1.0 }
-}
-
 /// Draws the open windows, starting at `top`.
-///
-/// `separator` draws the line above the rows. A detached title bar
-/// omits it.
 pub(crate) fn draw(
     view: &View<'_>,
     metrics: &Metrics,
@@ -48,17 +38,9 @@ pub(crate) fn draw(
     paint: &mut Paint<'_, '_>,
     mut top: f32,
     inner: f32,
-    separator: bool,
 ) {
     if !shows(view, metrics) {
         return;
-    }
-    if separator {
-        paint.canvas.fill_rect(
-            Area::new(grid.pad, top, inner, 1.0),
-            paint.theme.border,
-        );
-        top += 1.0;
     }
 
     // Drawn only while the query is empty, so the selection is here.

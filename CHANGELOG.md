@@ -9,6 +9,17 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.14] - 2026-10-30
+
+Each bar is its own rounded block.
+
+### Added
+
+- Each visible bar is its own rounded block: the input bar, the icon
+  strip, the title list and the output bar. A gap of 3 logical
+  pixels separates them. Every block uses the same rounded border
+  and theme colors (ADR-0075).
+
 ## [0.2.13] - 2026-10-30
 
 The popup stays where it opened. `main.position` chooses `center` or

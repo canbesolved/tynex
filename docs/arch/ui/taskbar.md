@@ -29,7 +29,9 @@ mode = "iconbar" (default)
 mode = "titlebar", show_icons = true (default)
 ╭──────────────────────────────────────╮
 │ >                                    │
-├──────────────────────────────────────┤
+╰──────────────────────────────────────╯
+
+╭──────────────────────────────────────╮
 │ ▣  ~/projects/demo                   │
 │ ▣  Release notes                     │
 │ ▣  Downloads                         │
@@ -53,20 +55,21 @@ With `taskbar.titlebar.show_icons = false` the title list drops
 the icon slot. A window without an icon keeps an empty slot
 when icons are on, so titles stay aligned.
 
-The blank line between the input frame and the icon frame is a gap
-of 3 logical pixels. It scales with the display, and the desktop
-shows through.
+The blank line between blocks is a gap of 3 logical pixels. It
+scales with the display, and the desktop shows through. The input
+bar, the icon strip, the title list and the output bar are each
+their own block, with the same rounded border and theme colors
+([ADR-0075](../../adr/0075_bar_blocks.md)).
 
-The title list is its own frame, 3 logical pixels under the icon
-frame. The dropdown starts at the same place and slides in over the
-title list ([ADR-0071](../../adr/0071_dropdown_overlay.md)). With
+The title list sits 3 logical pixels under the block above it: the
+icon frame in `both` mode, the input frame in `titlebar` mode. The
+dropdown starts at the same place and slides in over the title list
+([ADR-0071](../../adr/0071_dropdown_overlay.md)). With
 `mode = "iconbar"` there is no list to cover: a spare band under the
 icon frame holds the dropdown, and the desktop shows through it until
 the dropdown slides in. The gaps scale with the display.
 
-`mode = "titlebar"` keeps the title list in the input frame, divided
-by a separator. `mode = "off"` leaves the popup as the input bar
-until you type.
+`mode = "off"` leaves the popup as the input bar until you type.
 
 ## Icon strip
 
@@ -112,9 +115,9 @@ The list does not show search matches. Those are the
 - Shown when `taskbar.mode` is `titlebar` or `both`, and the query is
   empty. Typing hides it. `Backspace` that empties the query, or
   `Esc`, shows it again.
-- Width from `main.width`. Height is the input bar plus padding, the
-  output bar when it is shown, and, when this list is shown, a
-  separator or its own frame, and at least one row.
+- Width from `main.width`. Height is the input frame, the gap under
+  it, the output frame when it is shown, and, when this list is
+  shown, its own frame of at least one row.
 - Sizes follow the font: row height 2 x font size, icon slot 1.5 x,
   gaps 0.6 x; all multiplied by the output scale.
 - Row in columns: app icon (with `taskbar.titlebar.show_icons`)
@@ -162,8 +165,8 @@ leaves the selection where it is.
 - `titles::shows`: `taskbar.mode` is `titlebar` or `both`, and the
   query is empty.
 - Strip height is one icon side, or zero when hidden.
-- Title height is the separator and the windows, or the framed list
-  under the icon frame, or zero when hidden. Pure.
+- Title body is the window rows, or zero when hidden. The frame
+  around that body is padding above and below. Pure.
 - `frames::overlays`: the dropdown covers the title list.
 - `menu::Panel.first` is the dropdown index of its top row; a click
   on row `n` picks `first + n`.

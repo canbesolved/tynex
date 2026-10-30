@@ -218,3 +218,32 @@ fn a_clear_gap_separates_the_icon_frame() {
     assert!(body[3] > 0, "{body:?}");
     assert_eq!(split[3], 0, "{split:?}");
 }
+
+#[test]
+fn a_clear_gap_separates_the_lower_block() {
+    let theme = Theme::default();
+    let border = theme.border;
+    let open = state(vec![], &[("w", "File")]);
+    let mut typed = open.clone();
+
+    typed.query = "f".into();
+
+    for (mode, state) in
+        [(TaskbarMode::Titlebar, &open), (TaskbarMode::Off, &typed)]
+    {
+        let metrics = Metrics {
+            taskbar: mode,
+            ..metrics(300.0)
+        };
+        let grid = Grid::new(&metrics, &theme);
+        let (data, width) = drawn(state, &metrics);
+        let mid = width as f32 / 2.0;
+        let y = 2.0 * grid.pad + grid.row_h;
+
+        assert_eq!(pixel(&data, width, mid, y + 1.0)[3], 0);
+        assert_eq!(
+            pixel(&data, width, mid, y + 3.0),
+            [border.0, border.1, border.2, border.3]
+        );
+    }
+}
