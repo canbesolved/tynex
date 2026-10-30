@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.12] - 2026-10-30
+
+Count badge, `Shift+Tab`, screen fit, list scroll and cursor fix.
+
 ### Added
 
 - `Shift+Tab` moves the selection back, the reverse of `Tab`: in the
@@ -436,7 +440,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.11...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.12...HEAD
+[0.2.12]: https://github.com/canbesolved/tynex/releases/tag/v0.2.12
 [0.2.11]: https://github.com/canbesolved/tynex/releases/tag/v0.2.11
 [0.2.10]: https://github.com/canbesolved/tynex/releases/tag/v0.2.10
 [0.2.9]: https://github.com/canbesolved/tynex/releases/tag/v0.2.9
