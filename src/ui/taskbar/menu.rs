@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Dropdown of one app's window titles, under its icon.
+//! Dropdown of one app's window titles, under its icon. With the title
+//! list on, it opens over that list.
 
 #![allow(clippy::cast_precision_loss)]
 
@@ -24,8 +25,9 @@ pub(crate) struct Panel {
     pub w: f32,
     pub h: f32,
     pub row_h: f32,
-    pub titles: Vec<String>,
-    pub selected: usize,
+    pub titles: Vec<String>, // The rows shown
+    pub selected: usize,     // Among the rows shown
+    pub first: usize,        // Dropdown index of the first row shown
 }
 
 /// Returns the open dropdown, or `None` when it is closed.
@@ -40,19 +42,21 @@ pub(crate) fn panel(
     }
     let index = view.dropdown?;
     let icon = view.icons().get(view.icon)?;
-    let cap = metrics.max_rows.max(1);
-    let titles: Vec<String> = icons::ordered(icon, view.window_rows())
+    let all: Vec<String> = icons::ordered(icon, view.window_rows())
         .into_iter()
-        .take(cap)
         .map(|row| row.title.clone())
         .collect();
 
-    if titles.is_empty() {
+    if all.is_empty() {
         return None;
     }
 
+    let index = index.min(all.len() - 1);
+    let rows = rows(view, metrics).min(all.len());
+    let first = (index + 1).saturating_sub(rows); // Keep the selection shown
+    let titles = all[first..first + rows].to_vec();
     let font = grid.font;
-    let longest = titles
+    let longest = all
         .iter()
         .map(|title| text.width(title, font))
         .fold(0.0, f32::max);
@@ -71,9 +75,22 @@ pub(crate) fn panel(
         w,
         h: titles.len() as f32 * grid.row_h,
         row_h: grid.row_h,
-        selected: index.min(titles.len() - 1),
+        selected: index - first,
         titles,
+        first,
     })
+}
+
+/// Returns how many titles the dropdown shows. Over the title list it
+/// stops at that list's bottom edge, so the popup does not grow.
+fn rows(view: &View<'_>, metrics: &Metrics) -> usize {
+    let cap = metrics.max_rows.max(1);
+
+    if frames::overlays(view, metrics) {
+        cap.min(view.window_count().clamp(1, metrics.list_rows.max(1)))
+    } else {
+        cap
+    }
 }
 
 /// Draws `panel` slid in by `reveal` (0 hidden, 1 open).
@@ -136,3 +153,7 @@ pub(crate) fn draw(
         );
     }
 }
+
+#[cfg(test)]
+#[path = "menu_tests.rs"]
+mod tests;

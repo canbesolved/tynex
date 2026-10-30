@@ -137,7 +137,8 @@ With it off, they switch when that app has one window, and open its
 windows when it has several. The selected icon starts as the previous
 window's app. Typing hides the icons. `Tab` walks the open windows
 when the title bar is on, moves along the icons when it is off, and
-walks matches while you type.
+walks matches while you type. `Shift+Tab` does the same backward.
+A long list scrolls with the mouse wheel or the touchpad.
 
 ## Configuration
 

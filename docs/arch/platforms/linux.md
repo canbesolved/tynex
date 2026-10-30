@@ -15,7 +15,9 @@ platform/linux/
     surface.rs    Layer-shell surface setup, commit and teardown
     buffer.rs     wl_shm double buffer on a memfd
     input.rs      wl_seat, wl_keyboard and wl_pointer
-    pointer.rs    Motion and the left click
+    pointer.rs    Motion, the left click and vertical scrolling
+    cursor.rs     The default arrow over the popup, by shape name
+    output.rs     wl_output modes, for the screen height
     keyboard.rs   xkb keymap, compose, repeat, native key -> core Key
     error.rs      PresenterError
   dbus.rs         Shared D-Bus connection, dispatch, calls
@@ -70,15 +72,21 @@ protocol. No client toolkit.
 - Protocol: `wlr-layer-shell-unstable-v1` (supported by KWin, wlroots
   compositors, Hyprland, niri).
 - Globals bound once at start: `wl_compositor`, `wl_shm`,
-  `zwlr_layer_shell_v1` (required), `wp_viewporter` and
-  `wp_fractional_scale_manager_v1` (optional). `wl_seat` comes with the
-  keyboard.
+  `zwlr_layer_shell_v1` (required), `wp_viewporter`,
+  `wp_fractional_scale_manager_v1` and `wp_cursor_shape_manager_v1`
+  (optional). `wl_seat` comes with the
+  keyboard. Every `wl_output` present at start is bound for its
+  current mode and rotation; outputs plugged in later are not tracked.
 - Layer `overlay`, no anchors, so the compositor centers the surface.
 - Keyboard interactivity `exclusive`: all keys go to the popup while it
   is shown. No global key grabbing.
 - Size comes from `Painter::size` in physical pixels; the surface size
-  is that divided by the scale, rounded up.
-- `show`: create the surface, wait for `configure`, draw, commit.
+  is that divided by the scale, rounded up. Before each redraw the
+  painter gets the shortest output height, so the popup fits the
+  screen (see [fit.md](../ui/fit.md)).
+- `show`: create the surface, wait for `configure`, draw, commit. The
+  size is sent only when it changes: each new size makes the
+  compositor configure again, and each configure redraws.
 - `draw`: returns false until the surface is configured or while both
   buffers are held by the compositor. A skipped frame is drawn when
   a buffer is released.
@@ -116,8 +124,9 @@ closes, and without input it closes after ten seconds.
   (`Keymap::new_from_string`, default features off).
 - Key events become keysyms and UTF-8 text with the current layout, so
   non-QWERTY layouts work, then `core::Key`: `Enter` (also keypad),
-  `Esc`, `Tab`, arrows, `Home`, `End`, `Backspace`, `Delete`, or
-  `Char` when the text is one printable character. `Ctrl+Left` and
+  `Esc`, `Tab`, `BackTab` (`ISO_Left_Tab`, which `Shift+Tab` gives),
+  arrows, `Home`, `End`, `Backspace`, `Delete`, or `Char` when the
+  text is one printable character. `Ctrl+Left` and
   `Ctrl+Right` are `WordLeft` and `WordRight`. Other Ctrl
   combinations produce no `Char`.
 - Dead keys and compose sequences (`´` then `e` gives `é`) use the
@@ -143,6 +152,19 @@ becomes a click in surface coordinates. The event loop multiplies
 those by the output scale and hit-tests the drawn icons and
 dropdown. The right button is ignored. Moving off the icons leaves
 the selection where it is.
+
+On each `enter` the popup sets the `default` cursor shape with
+`wp_cursor_shape_device_v1`, one device per pointer
+([ADR-0072](../../adr/0072_cursor_shape.md)). Without it, a popup
+that opens under the pointer shows no cursor. A compositor without
+`cursor-shape-v1` keeps that old behavior; no cursor theme is loaded.
+
+Vertical `axis` and `axis_discrete` events are summed until the
+pointer `frame`, then reported as one `Scroll`: wheel notches, or
+touchpad pixels when there are no notches. Before `wl_pointer`
+version 5 there are no frames, so each `axis` is reported at once.
+The event loop hands it to the painter, which scrolls the list on
+screen (see [scroll.md](../ui/scroll.md)).
 
 ## Event loop
 

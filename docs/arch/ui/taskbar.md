@@ -24,7 +24,6 @@ mode = "iconbar" (default)
 
 ╭──────────────────────────────────────╮
 │   ▣    ▣    ▣                        │
-│        2                             │
 ╰──────────────────────────────────────╯
 
 mode = "titlebar", show_icons = true (default)
@@ -43,7 +42,6 @@ mode = "both", and some app has several windows
 
 ╭──────────────────────────────────────╮
 │   ▣    ▣                             │
-│        2                             │
 ╰──────────────────────────────────────╯
 
 ╭──────────────────────────────────────╮
@@ -59,12 +57,12 @@ The blank line between the input frame and the icon frame is a gap
 of 3 logical pixels. It scales with the display, and the desktop
 shows through.
 
-The spare band between the icon frame and the title frame is empty.
-The desktop shows through it until the dropdown slides in. The
-dropdown starts 3 logical pixels under the icon frame. The title
-list is its own frame, another 3 logical pixels below that room.
-Both gaps scale with the display. When every running app has one
-window, the spare room is zero and only that 3 pixel gap remains.
+The title list is its own frame, 3 logical pixels under the icon
+frame. The dropdown starts at the same place and slides in over the
+title list ([ADR-0071](../../adr/0071_dropdown_overlay.md)). With
+`mode = "iconbar"` there is no list to cover: a spare band under the
+icon frame holds the dropdown, and the desktop shows through it until
+the dropdown slides in. The gaps scale with the display.
 
 `mode = "titlebar"` keeps the title list in the input frame, divided
 by a separator. `mode = "off"` leaves the popup as the input bar
@@ -80,21 +78,28 @@ until you type.
   `taskbar.iconbar.border` outlines it in the selection color,
   outside the icon. The default is 4 logical pixels, from 1 to 32,
   scaled like `taskbar.iconbar.size`.
-- An app with several windows draws the count under its icon. The
-  strip is always tall enough for that line.
+- An app with several windows draws the count in a badge on the
+  bottom center of its icon: the number, 0.3 of the icon side, in a
+  rounded square of the frame border color, inside the icon. More
+  digits widen the square
+  ([ADR-0067](../../adr/0067_count_badge.md)). The strip is one icon
+  tall.
 - `taskbar.iconbar.size` is the icon side in logical pixels, default
   `24`, from 8 to 128. It is multiplied by the output scale, like
   `main.font_size`. A value outside that range stops the daemon.
 - The gap is 0.35 of the drawn side. If the row is wider than the
   inner width, every icon and the gap shrink by the same factor
   until the row fits. A shorter row is centered.
-- The spare room is as tall as the dropdown of the app with the most
-  windows, capped at `output.max_rows`. It is zero when every
-  app has one window. It stays that tall while the strip is showing,
-  so opening the dropdown does not resize the popup.
+- In `iconbar` mode the spare room is as tall as the dropdown of the
+  app with the most windows, capped at `output.max_rows`. It is zero
+  when every app has one window. It stays that tall while the strip
+  is showing, so opening the dropdown does not resize the popup.
 - The dropdown lists titles alphabetically, ignoring case, at most
-  `output.max_rows`. Its width fits the longest title, capped at
-  450 logical pixels times the scale, then clamped inside the popup.
+  `output.max_rows`. In `both` mode it also shows no more rows than
+  the title list, so the popup does not grow. A longer dropdown
+  scrolls so the selected title stays visible. Its width fits the
+  longest title, capped at 450 logical pixels times the scale, then
+  clamped inside the popup.
   A longer title ends with `…`.
 - The dropdown slides in and out over 150 ms. The poll loop wakes
   about every 1/120 s only while a slide is running.
@@ -121,8 +126,10 @@ The list does not show search matches. Those are the
   is no app name column
   ([ADR-0058](../../adr/0058_title_bar_row.md)).
 - Titles are truncated with an ellipsis (see [render.md](render.md)).
-- At most `output.max_rows` rows. The list scrolls so the
-  selected window stays visible.
+- At most `output.max_rows` rows, fewer on a short screen
+  ([fit.md](fit.md)). A longer list scrolls: with the wheel or the
+  touchpad, and to keep a newly selected window visible. A scrollbar
+  shows while it scrolls ([scroll.md](scroll.md)).
 - The selected row is highlighted. `Tab` moves that highlight one
   row forward and wraps. `Up` and `Down` move it too
   ([ADR-0061](../../adr/0061_prompt_keys.md)).
@@ -137,7 +144,9 @@ With the title list on, those keys activate the selected title. An
 open dropdown still takes them. `Up` and `Down` move inside an open
 dropdown; otherwise they still move the title or output list.
 `Tab` steps the dropdown while it is open. With the title list off,
-`Tab` moves to the next icon. `Esc` closes the dropdown first.
+`Tab` moves to the next icon. `Shift+Tab` steps back in the same
+places, in the title list too, and wraps the same way. `Esc` closes
+the dropdown first.
 
 A left click on an icon selects it and opens the dropdown, or
 activates its one window. A left click on a dropdown row activates
@@ -152,9 +161,12 @@ leaves the selection where it is.
   query is empty.
 - `titles::shows`: `taskbar.mode` is `titlebar` or `both`, and the
   query is empty.
-- Strip height is the icons and the count line, or zero when hidden.
+- Strip height is one icon side, or zero when hidden.
 - Title height is the separator and the windows, or the framed list
-  under the spare room, or zero when hidden. Pure.
+  under the icon frame, or zero when hidden. Pure.
+- `frames::overlays`: the dropdown covers the title list.
+- `menu::Panel.first` is the dropdown index of its top row; a click
+  on row `n` picks `first + n`.
 - Drawing reads only `View` (`icons`, `windows`).
 
 Shared row drawing lives in `src/ui/draw.rs`. See

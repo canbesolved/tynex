@@ -11,6 +11,7 @@
 use crate::core::view::View;
 use crate::ui::draw::{self, Grid, Metrics, Paint};
 use crate::ui::render::canvas::Area;
+use crate::ui::scroll;
 
 /// Returns true when the input has produced something to show.
 pub(crate) fn shows(view: &View<'_>) -> bool {
@@ -22,7 +23,7 @@ pub(crate) fn height(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
     if !shows(view) {
         return 0.0;
     }
-    let rows = view.len().clamp(1, metrics.max_rows.max(1)) as f32;
+    let rows = view.len().clamp(1, metrics.list_rows.max(1)) as f32;
 
     1.0 + rows * grid.row_h
 }
@@ -44,13 +45,16 @@ pub(crate) fn draw(
         .fill_rect(Area::new(grid.pad, top, inner, 1.0), paint.theme.border);
     top += 1.0;
 
-    // Scroll so the selected result stays visible.
-    let max = metrics.max_rows.max(1);
-    let first = (view.selected + 1).saturating_sub(max);
+    let len = view.len();
+    let max = metrics.list_rows.max(1);
+    let first = scroll::first_row(metrics, view.selected, len);
+    let width = inner - scroll::reserve(metrics, len);
     let radius = paint.theme.radius * metrics.scale;
+    let shown = len.clamp(1, max) as f32 * grid.row_h;
+    let rows = Area::new(grid.pad, top, inner, shown);
 
     for (index, row) in view.rows().enumerate().skip(first).take(max) {
-        let area = Area::new(grid.pad, top, inner, grid.row_h);
+        let area = Area::new(grid.pad, top, width, grid.row_h);
 
         if index == view.selected {
             paint.canvas.fill_rounded_rect(
@@ -62,4 +66,5 @@ pub(crate) fn draw(
         draw::draw_row(paint, grid, row, area, &row.highlights, true);
         top += grid.row_h;
     }
+    scroll::bar(paint, metrics, rows, first, len);
 }

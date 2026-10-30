@@ -141,6 +141,14 @@ fn session(
                 PresenterEvent::Hover { x, y } => {
                     click(presenter, app, painter, x, y, true)
                 }
+                PresenterEvent::Scroll { notches, dy } => {
+                    let scale = presenter.scale();
+                    let moved = app.view().is_some_and(|view| {
+                        painter.scroll(&view, scale, notches, dy)
+                    });
+
+                    if moved { Action::Redraw } else { Action::None }
+                }
                 PresenterEvent::Scale(_)
                 | PresenterEvent::Configured
                 | PresenterEvent::Redraw => Action::Redraw,

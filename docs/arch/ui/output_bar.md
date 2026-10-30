@@ -33,14 +33,16 @@ windows again when `taskbar.mode` is `titlebar` or `both`. See
   hide it.
 - An empty match list still keeps one row of height, so the popup
   does not collapse.
-- At most `output.max_rows` rows. The list scrolls so the
-  selected match stays visible.
+- At most `output.max_rows` rows, fewer on a short screen
+  ([fit.md](fit.md)). More matches scroll: with the wheel or the
+  touchpad, and to keep a newly selected match visible. A scrollbar
+  shows while it scrolls ([scroll.md](scroll.md)).
 - Rows are icon and title. The icon slot is always reserved here.
   Matched letters use the highlight color (see [render.md](render.md)).
   A new-window row uses its configured title color
   ([ADR-0059](../../adr/0059_new_window_row.md)).
 - `Enter` and `Space` activate a window row or launch an app row.
-  `Tab`, up and down move that selection
+  `Tab`, `Shift+Tab`, up and down move that selection
   ([ADR-0061](../../adr/0061_prompt_keys.md)). Prompt mode owns the
   keys; this module only draws.
 

@@ -24,6 +24,8 @@ fn metrics(width: f32) -> Metrics {
         font_size: 14.0,
         width,
         max_rows: 3,
+        list_rows: 3,
+        first_row: None,
         scale: 1.0,
         taskbar: TaskbarMode::Both,
         show_icons: false,
@@ -98,7 +100,10 @@ fn a_wide_row_shrinks_and_stays_clickable() {
 
 #[test]
 fn spare_height_stays_when_the_dropdown_opens() {
-    let metrics = metrics(300.0);
+    let metrics = Metrics {
+        taskbar: TaskbarMode::Iconbar,
+        ..metrics(300.0)
+    };
     let theme = Theme::default();
     let grid = Grid::new(&metrics, &theme);
     let mut state = state(
@@ -159,7 +164,6 @@ fn icon_bar_width(text: &Text, title: &str) -> f32 {
 
 fn pixel(data: &[u8], width: u32, x: f32, y: f32) -> [u8; 4] {
     let i = ((y as u32 * width + x as u32) * 4) as usize;
-
     [data[i], data[i + 1], data[i + 2], data[i + 3]]
 }
 
@@ -195,39 +199,6 @@ fn selection_is_a_border_around_the_icon() {
 
     assert!(edge[2] > center[2], "edge {edge:?} center {center:?}");
     assert!(center[2] < 40, "center was filled: {center:?}");
-}
-
-#[test]
-fn last_dropdown_title_survives_a_short_reveal() {
-    let metrics = metrics(300.0);
-    let theme = Theme::default();
-    let grid = Grid::new(&metrics, &theme);
-    let h = 3.0 * grid.row_h;
-    let panel = icon_menu::Panel {
-        x: 10.0,
-        y: 10.0,
-        w: 120.0,
-        h,
-        row_h: grid.row_h,
-        titles: vec!["one".into(), "two".into(), "three".into()],
-        selected: 2,
-    };
-    let mut data = vec![0; 200 * 200 * 4];
-    let mut canvas = Canvas::new(&mut data, 200, 200).unwrap();
-    let mut text = Text::new(Face::new(FONT, 0).unwrap());
-    let mut icons = Icons::new(Box::new(NoIcons));
-    let mut paint = Paint {
-        canvas: &mut canvas,
-        text: &mut text,
-        icons: &mut icons,
-        theme: &theme,
-    };
-
-    icon_menu::draw(&mut paint, &grid, &panel, (h - 0.5) / h, 1.0);
-
-    let sample = pixel(&data, 200, 40.0, 10.0 + 2.5 * grid.row_h);
-
-    assert!(sample[2] > sample[0], "last row was skipped: {sample:?}");
 }
 
 #[test]

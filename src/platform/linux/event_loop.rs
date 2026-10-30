@@ -66,6 +66,9 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
                 }
                 PresenterEvent::Click { x, y } => point(p, x, y, false),
                 PresenterEvent::Hover { x, y } => point(p, x, y, true),
+                PresenterEvent::Scroll { notches, dy } => {
+                    scroll(p, notches, dy);
+                }
                 PresenterEvent::Configured
                 | PresenterEvent::Scale(_)
                 | PresenterEvent::Redraw => {
@@ -104,6 +107,19 @@ fn point(p: &mut Parts, x: f64, y: f64, hover: bool) {
         };
 
         handle(p, event);
+    }
+}
+
+/// Scrolls the list on screen and redraws when it moved.
+fn scroll(p: &mut Parts, notches: i32, dy: f64) {
+    let scale = p.presenter.scale();
+    let moved = p
+        .app
+        .view()
+        .is_some_and(|view| p.painter.scroll(&view, scale, notches, dy));
+
+    if moved {
+        redraw(p);
     }
 }
 
@@ -162,6 +178,7 @@ fn handle(p: &mut Parts, event: Event) -> bool {
 
     if open && p.app.view().is_none() {
         p.hint.on_hide();
+        p.painter.hidden();
     }
 
     if windows {
@@ -213,6 +230,7 @@ fn redraw(p: &mut Parts) {
     let scale = p.presenter.scale();
     let painter = &mut p.painter;
 
+    painter.set_screen(p.presenter.screen_height());
     p.presenter.show(painter.size(&view, scale));
     p.presenter
         .draw(|canvas| painter.draw(canvas, &view, scale));

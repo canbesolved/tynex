@@ -20,8 +20,8 @@ use crate::ui::render::text::{Style, Text};
 /// Gap between icons, as a fraction of the icon side.
 const GAP_RATIO: f32 = 0.35;
 
-/// Count line under each icon, as a fraction of the icon side.
-const COUNT_RATIO: f32 = 0.45;
+/// Window count font size, as a fraction of the icon side.
+const BADGE_RATIO: f32 = 0.3;
 
 /// Placed icons for one frame.
 #[derive(Debug, Clone, Copy)]
@@ -29,7 +29,6 @@ pub(crate) struct Layout {
     pub size: f32,
     pub gap: f32,
     pub x: f32,      // Left edge of the first icon
-    pub count: f32,  // Height of the line under the icons
     pub border: f32, // Selection outline
 }
 
@@ -74,12 +73,11 @@ pub(crate) fn layout(
         size,
         gap,
         x: grid.pad + (inner - row).max(0.0) / 2.0,
-        count: size * COUNT_RATIO,
         border: metrics.border * metrics.scale,
     }
 }
 
-/// Returns the strip height, including the count line.
+/// Returns the strip height: one icon side, or zero when hidden.
 pub(crate) fn strip_height(
     view: &View<'_>,
     metrics: &Metrics,
@@ -88,9 +86,7 @@ pub(crate) fn strip_height(
     if !shows(view, metrics) {
         return 0.0;
     }
-    let placed = layout(view, metrics, grid);
-
-    placed.size + placed.count
+    layout(view, metrics, grid).size
 }
 
 /// Returns how many dropdown rows the spare room holds.
@@ -121,7 +117,7 @@ pub(crate) fn spare_height(
     spare_rows(view, metrics) as f32 * grid.row_h
 }
 
-/// Draws the icons and their counts at `top`.
+/// Draws the icons and their count badges at `top`.
 pub(crate) fn draw(
     view: &View<'_>,
     metrics: &Metrics,
@@ -151,7 +147,7 @@ pub(crate) fn draw(
             );
         }
         if icon.windows.len() > 1 {
-            count(paint, &placed, x, top, icon.windows.len());
+            badge(paint, &placed, x, top, icon.windows.len());
         }
     }
 }
@@ -192,11 +188,7 @@ pub(crate) fn hit(
             placed.size + placed.gap
         };
 
-        if x >= left
-            && x < left + width
-            && y >= top
-            && y < top + placed.size + placed.count
-        {
+        if x >= left && x < left + width && y >= top && y < top + placed.size {
             return Click::Icon(index);
         }
     }
@@ -212,14 +204,15 @@ pub(crate) fn hit(
             let row = ((y - panel.y) / panel.row_h) as usize;
 
             if row < panel.titles.len() {
-                return Click::Menu(row);
+                return Click::Menu(panel.first + row);
             }
         }
     }
     Click::Elsewhere
 }
 
-fn count(
+/// Draws the window count in a rounded square at the icon's bottom.
+fn badge(
     paint: &mut Paint<'_, '_>,
     placed: &Layout,
     x: f32,
@@ -227,8 +220,12 @@ fn count(
     n: usize,
 ) {
     let label = n.to_string();
-    let size = (placed.count * 0.85).max(1.0);
+    let size = (placed.size * BADGE_RATIO).max(1.0);
     let width = paint.text.width(&label, size);
+    let h = (size * 1.25).min(placed.size);
+    let w = (width + h * 0.4).clamp(h, placed.size);
+    let back =
+        Area::new(x + (placed.size - w) / 2.0, top + placed.size - h, w, h);
     let style = Style {
         size,
         color: paint.theme.text,
@@ -236,10 +233,12 @@ fn count(
         highlights: &[],
     };
     let (ascent, descent) = paint.text.metrics(size);
-    let center = top + placed.size + placed.count / 2.0;
-    let base = (center + f32::midpoint(ascent, descent)).round();
+    let base = (back.y + h / 2.0 + f32::midpoint(ascent, descent)).round();
     let left = x + (placed.size - width) / 2.0;
 
+    paint
+        .canvas
+        .fill_rounded_rect(back, h / 4.0, paint.theme.border);
     paint
         .text
         .draw(paint.canvas, &label, (left, base), width.max(1.0), &style);

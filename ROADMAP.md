@@ -23,29 +23,12 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.12
-
-- [ ] `Shift+Tab` moves the selection back, the reverse of `Tab`: in
-  the icon strip, an open dropdown and the title list. It wraps the
-  same way.
-- [ ] The window count of an app is a badge on the bottom center of
-  its icon, not a line under it, so the icon strip is one icon tall.
-
 ### 0.2.13
 
 - [ ] The popup stays in place: it no longer moves when the output bar
   appears.
 - [ ] Config option for the vertical position of the popup: `center`
   or `top`.
-
-### 0.2.14
-
-- [ ] With `taskbar.mode = "both"`, the title list sits 3 logical
-  pixels under the icon strip, with no spare room between them. The
-  dropdown opens over the title list, like an overlay.
-  - A dropdown taller than the title list stops at its bottom edge and
-    scrolls so the selected title stays visible. The popup does not
-    grow.
 
 ### 0.2.15
 

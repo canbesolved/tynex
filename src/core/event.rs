@@ -18,6 +18,7 @@ pub enum Key {
     Enter,
     Esc,
     Tab,
+    BackTab, // Shift+Tab
     Up,
     Down,
     Left,

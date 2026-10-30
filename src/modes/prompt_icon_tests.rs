@@ -176,6 +176,8 @@ fn tab_moves_the_next_icon_without_a_title_bar() {
     assert_eq!(state.selected, 0);
     mode.on_key(Key::Tab, &mut state);
     assert_eq!(state.icon, 0);
+    assert_eq!(mode.on_key(Key::BackTab, &mut state), Action::Redraw);
+    assert_eq!(state.icon, 1);
 }
 
 #[test]
@@ -185,6 +187,9 @@ fn tab_steps_an_open_dropdown_before_the_icons() {
     mode.on_key(Key::Enter, &mut state);
     assert_eq!(mode.on_key(Key::Tab, &mut state), Action::Redraw);
     assert_eq!(state.dropdown, Some(1));
+    assert_eq!(mode.on_key(Key::BackTab, &mut state), Action::Redraw);
+    assert_eq!(mode.on_key(Key::BackTab, &mut state), Action::Redraw);
+    assert_eq!(state.dropdown, Some(1)); // Wrapped
     assert_eq!(state.icon, 0);
 }
 
@@ -193,8 +198,11 @@ fn tab_keeps_the_title_list_when_that_bar_is_on() {
     let (mut mode, mut state) = session(TaskbarMode::Both);
 
     assert_eq!(mode.on_key(Key::Tab, &mut state), Action::Redraw);
-    assert_eq!(state.icon, 0);
     assert_eq!(state.selected, 1);
+    assert_eq!(mode.on_key(Key::BackTab, &mut state), Action::Redraw);
+    assert_eq!(mode.on_key(Key::BackTab, &mut state), Action::Redraw);
+    assert_eq!(state.icon, 0);
+    assert_eq!(state.selected, 2);
 }
 
 #[test]

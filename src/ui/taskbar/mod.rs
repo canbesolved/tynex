@@ -10,3 +10,7 @@
 pub(crate) mod icons;
 pub(crate) mod menu;
 pub(crate) mod titles;
+
+#[cfg(test)]
+#[path = "icons_badge_tests.rs"]
+mod icons_badge_tests;

@@ -13,9 +13,11 @@
 )]
 
 mod buffer;
+mod cursor;
 mod error;
 mod input;
 mod keyboard;
+mod output;
 mod pointer;
 mod state;
 mod surface;
@@ -70,9 +72,11 @@ impl WaylandPresenter {
             keyboard_proxy: None,
             keyboard: Keyboard::new(),
             pointer_proxy: None,
-            pointer_x: 0.0,
-            pointer_y: 0.0,
+            cursor: cursor::Cursor::bind(&globals, &qh),
+            pointer_at: (0.0, 0.0),
+            wheel: (0, 0.0),
             formats: Vec::new(),
+            outputs: output::bind_all(&globals, &qh),
             scale: 1.0,
             popup: None,
             buffers: None,
@@ -91,10 +95,7 @@ impl WaylandPresenter {
             conn,
             queue,
             wl,
-            size: Size {
-                width: 0,
-                height: 0,
-            },
+            size: Size::default(),
         })
     }
 
@@ -110,15 +111,23 @@ impl WaylandPresenter {
         self.wl.scale
     }
 
+    /// Returns the shortest output height in physical pixels, once known.
+    #[must_use]
+    pub fn screen_height(&self) -> Option<u32> {
+        output::shortest(&self.wl.outputs)
+    }
+
     /// Returns true while the popup surface exists.
     #[must_use]
     pub fn is_shown(&self) -> bool {
         self.wl.popup.is_some()
     }
 
-    /// Shows the popup at `size` physical pixels, or resizes it.
+    /// Shows the popup at `size` physical pixels. A new size is sent only
+    /// when it changes, since each one makes the compositor configure.
     pub fn show(&mut self, size: Size) {
         let qh = self.queue.handle();
+        let resized = self.wl.popup.is_none() || size != self.size;
 
         self.size = size;
         if self.wl.popup.is_none() {
@@ -127,7 +136,9 @@ impl WaylandPresenter {
         if let Some(popup) = &self.wl.popup {
             let (w, h) = surface::logical(size, self.wl.scale);
 
-            popup.layer.set_size(w, h);
+            if resized {
+                popup.layer.set_size(w, h);
+            }
             if !popup.configured {
                 popup.surface.commit();
             }
@@ -136,8 +147,7 @@ impl WaylandPresenter {
 
     /// Draws a frame with `paint` and commits it.
     ///
-    /// Returns false when the popup is not configured yet or both buffers
-    /// are still held by the compositor; draw again after the next event.
+    /// Returns false before configure or while both buffers are busy.
     pub fn draw(&mut self, paint: impl FnOnce(&mut Canvas<'_>)) -> bool {
         let Some(popup) = self.wl.popup.as_ref().filter(|p| p.configured)
         else {

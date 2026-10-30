@@ -124,7 +124,10 @@ the previous command exits. A bad color or a wait outside that
 range stops the daemon.
 
 `output.max_rows` caps the output bar, the title list and an
-icon dropdown.
+icon dropdown. On a short screen fewer rows are drawn, so the popup
+fits (see [fit.md](ui/fit.md)). A title list or output bar longer
+than its rows scrolls, with a scrollbar (see
+[scroll.md](ui/scroll.md)).
 
 `taskbar.mode` chooses the taskbar while the query is empty
 ([ADR-0065](../adr/0065_taskbar.md), amended by
