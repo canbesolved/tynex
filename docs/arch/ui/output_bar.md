@@ -16,16 +16,18 @@ model answer in this same module.
 After typing
 ╭──────────────────────────────────────╮
 │ > firef                              │
-├──────────────────────────────────────┤
+╰──────────────────────────────────────╯
+
+╭──────────────────────────────────────╮
 │ ▣  Firefox   Release notes           │
 │ ▣  Firefox   Café                    │
 ╰──────────────────────────────────────╯
 ```
 
-The list under the input is the output bar. The title list is hidden
-while the query is non-empty. Clearing the query shows the open
-windows again when `taskbar.mode` is `titlebar` or `both`. See
-[taskbar.md](taskbar.md).
+The list under the input is the output bar, in its own frame. The
+title list is hidden while the query is non-empty. Clearing the
+query shows the open windows again when `taskbar.mode` is
+`titlebar` or `both`. See [taskbar.md](taskbar.md).
 
 ## Rules
 
@@ -49,7 +51,7 @@ windows again when `taskbar.mode` is `titlebar` or `both`. See
 ## Contract
 
 - `shows`: the query is non-empty.
-- `height`: the separator and the result rows, or zero when hidden.
-  Pure.
-- `draw`: draws the separator, the selection and the columns. Reads
-  only `View` (`rows`, the output list).
+- `body`: the result rows, or zero when hidden. The frame around
+  them is drawn with the other blocks. Pure.
+- `draw`: draws the selection and the columns. Reads only `View`
+  (`rows`, the output list).

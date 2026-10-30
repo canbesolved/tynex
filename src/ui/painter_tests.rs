@@ -79,11 +79,12 @@ pub(in crate::ui) fn pixel(data: &[u8], size: Size, x: f32, y: f32) -> [u8; 4] {
     [data[i], data[i + 1], data[i + 2], data[i + 3]]
 }
 
-/// Center of row `n` of the list, below the input bar.
+/// Center of row `n` of the list, in the block under the input bar.
 fn row_center(n: usize) -> f32 {
     let g = Grid::new(&M, &Theme::default());
+    let input = 2.0 * g.pad + g.row_h;
 
-    g.pad + g.row_h + 1.0 + g.row_h * (n as f32 + 0.5)
+    input + 3.0 + g.pad + g.row_h * (n as f32 + 0.5)
 }
 
 #[test]
@@ -93,7 +94,7 @@ fn height_follows_rows_up_to_max() {
     let g = Grid::new(&M, &theme);
 
     assert_eq!(size(2).width, 300);
-    assert_eq!(size(2).height, (2.0 * g.pad + 3.0 * g.row_h + 1.0) as u32);
+    assert_eq!(size(2).height, (4.0 * g.pad + 3.0 * g.row_h + 3.0) as u32);
     assert_eq!(size(9).height, size(3).height); // Capped at max_rows
     assert_eq!(size(0).height, size(1).height); // Never collapses
 }

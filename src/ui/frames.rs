@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Frames of the popup. The input bar and the icon strip are separate
-//! rounded blocks, with a transparent gap between them.
+//! Frames of the popup. Each visible bar is its own rounded block,
+//! with a transparent gap between blocks.
 
 #![allow(
     clippy::cast_possible_truncation,
@@ -16,7 +16,7 @@ use crate::ui::render::canvas::{Area, Rgba};
 use crate::ui::taskbar::{icons, titles};
 use crate::ui::{input_bar, output_bar};
 
-/// Gap between the input frame and the icon frame, logical pixels.
+/// Gap between the input frame and the next frame, logical pixels.
 const FRAME_GAP: f32 = 3.0;
 
 /// Gap under the icon frame, logical pixels.
@@ -111,6 +111,7 @@ pub(crate) fn draw_popup(
     let radius = paint.theme.radius * metrics.scale;
     let inner = width - 2.0 * grid.pad;
     let icons_y = bands.input + bands.gap;
+    let lower_y = icons_y + bands.icons + bands.spare + bands.split;
 
     paint.canvas.clear(Rgba(0, 0, 0, 0));
     frame(paint, 0.0, bands.input, width, radius);
@@ -118,98 +119,62 @@ pub(crate) fn draw_popup(
         frame(paint, icons_y, bands.icons, width, radius);
     }
     if bands.lower > 0.0 {
-        frame(
-            paint,
-            icons_y + bands.icons + bands.spare + bands.split,
-            bands.lower,
-            width,
-            radius,
-        );
+        frame(paint, lower_y, bands.lower, width, radius);
     }
 
     input_bar::draw(view, &grid, paint, grid.pad, inner, metrics.hint_color);
     if bands.icons > 0.0 {
-        draw_icons(view, metrics, &grid, paint, inner, &bands, icons_y);
-    } else {
-        let below = grid.pad + input_bar::height(&grid);
-
-        draw_results(view, metrics, &grid, paint, inner, below);
+        icons::draw(view, metrics, &grid, paint, icon_top(&grid, metrics));
     }
-}
-
-/// Draws the strip, and the title list in its own frame.
-fn draw_icons(
-    view: &View<'_>,
-    metrics: &Metrics,
-    grid: &Grid,
-    paint: &mut Paint<'_, '_>,
-    inner: f32,
-    bands: &Bands,
-    icons_y: f32,
-) {
-    icons::draw(view, metrics, grid, paint, icon_top(grid, metrics));
     if bands.lower > 0.0 {
-        titles::draw(
-            view,
-            metrics,
-            grid,
-            paint,
-            icons_y + bands.icons + bands.spare + bands.split + grid.pad,
-            inner,
-            false,
-        );
+        let top = lower_y + grid.pad;
+
+        output_bar::draw(view, metrics, &grid, paint, top, inner);
+        titles::draw(view, metrics, &grid, paint, top, inner);
     }
 }
 
-/// Draws the output bar and the title bar under `top` plus the strip.
-fn draw_results(
-    view: &View<'_>,
-    metrics: &Metrics,
-    grid: &Grid,
-    paint: &mut Paint<'_, '_>,
-    inner: f32,
-    top: f32,
-) {
-    let mut row = top + icons::strip_height(view, metrics, grid);
-
-    output_bar::draw(view, metrics, grid, paint, row, inner);
-    row += output_bar::height(view, metrics, grid);
-    titles::draw(view, metrics, grid, paint, row, inner, true);
-}
-
-/// Splits the popup. The icon frame is absent while the strip is hidden.
+/// Splits the popup into the input block and whatever sits under it.
 fn bands(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> Bands {
     let strip = icons::strip_height(view, metrics, grid);
     let menu = spare(view, metrics, grid);
     let menu_gap = if menu > 0.0 { bar_gap(metrics) } else { 0.0 };
+    let rows = lower_body(view, metrics, grid);
+    let lower = if rows > 0.0 {
+        2.0 * grid.pad + rows
+    } else {
+        0.0
+    };
+    let icons_h = if strip > 0.0 {
+        2.0 * grid.pad + strip
+    } else {
+        0.0
+    };
 
-    if strip > 0.0 {
-        let lower = if titles::shows(view, metrics) {
-            2.0 * grid.pad + titles::body(view, metrics, grid)
+    Bands {
+        input: input_height(grid),
+        gap: if icons_h > 0.0 || lower > 0.0 {
+            gap(metrics)
         } else {
             0.0
-        };
+        },
+        icons: icons_h,
+        spare: menu_gap + menu,
+        split: if icons_h > 0.0 && lower > 0.0 {
+            bar_gap(metrics)
+        } else {
+            0.0
+        },
+        lower,
+    }
+}
 
-        Bands {
-            input: input_height(grid),
-            gap: gap(metrics),
-            icons: 2.0 * grid.pad + strip,
-            spare: menu_gap + menu,
-            split: if lower > 0.0 { bar_gap(metrics) } else { 0.0 },
-            lower,
-        }
+/// Height of the title rows or the output rows, whichever is shown.
+fn lower_body(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
+    if titles::shows(view, metrics) {
+        titles::body(view, metrics, grid)
     } else {
-        let below = output_bar::height(view, metrics, grid)
-            + titles::height(view, metrics, grid);
-
-        Bands {
-            input: input_height(grid) + below,
-            gap: 0.0,
-            icons: 0.0,
-            spare: 0.0,
-            split: 0.0,
-            lower: 0.0,
-        }
+        output_bar::body(view, metrics, grid)
     }
 }
 

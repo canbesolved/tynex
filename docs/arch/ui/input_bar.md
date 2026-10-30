@@ -44,8 +44,11 @@ it exits.
 
 - One row high: 2 x font size, times the output scale.
 - The painter in `src/ui/painter.rs` draws this bar in its own
-  rounded frame. While the query is empty and the icon strip is on,
-  the [taskbar](taskbar.md) icon frame sits 3 logical pixels
-  below, then a spare room, then the title list 3 logical pixels
-  under that room. A non-empty query hides the icon frame and shows
-  the output bar in this frame.
+  rounded frame. The next bar, when there is one, sits 3 logical
+  pixels below in the same kind of frame
+  ([ADR-0075](../../adr/0075_bar_blocks.md)). While the query is
+  empty and the icon strip is on, that bar is the
+  [taskbar](taskbar.md) icon frame, then a spare room, then the
+  title list 3 logical pixels under that room. In `titlebar` mode
+  the title list is the next frame. A non-empty query hides the
+  taskbar and shows the output bar in its own frame.

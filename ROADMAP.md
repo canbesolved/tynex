@@ -23,12 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.14
-
-- [ ] Each UI module is its own block: a small gap separates the bars
-  (for example the input bar and the title bar), and every block uses
-  the same rounded border and theme colors.
-
 ### 0.2.15
 
 - [ ] `taskbar.iconbar.size = "auto"`: the icon side follows the
