@@ -57,12 +57,12 @@ The blank line between the input frame and the icon frame is a gap
 of 3 logical pixels. It scales with the display, and the desktop
 shows through.
 
-The spare band between the icon frame and the title frame is empty.
-The desktop shows through it until the dropdown slides in. The
-dropdown starts 3 logical pixels under the icon frame. The title
-list is its own frame, another 3 logical pixels below that room.
-Both gaps scale with the display. When every running app has one
-window, the spare room is zero and only that 3 pixel gap remains.
+The title list is its own frame, 3 logical pixels under the icon
+frame. The dropdown starts at the same place and slides in over the
+title list ([ADR-0071](../../adr/0071_dropdown_overlay.md)). With
+`mode = "iconbar"` there is no list to cover: a spare band under the
+icon frame holds the dropdown, and the desktop shows through it until
+the dropdown slides in. The gaps scale with the display.
 
 `mode = "titlebar"` keeps the title list in the input frame, divided
 by a separator. `mode = "off"` leaves the popup as the input bar
@@ -90,13 +90,16 @@ until you type.
 - The gap is 0.35 of the drawn side. If the row is wider than the
   inner width, every icon and the gap shrink by the same factor
   until the row fits. A shorter row is centered.
-- The spare room is as tall as the dropdown of the app with the most
-  windows, capped at `output.max_rows`. It is zero when every
-  app has one window. It stays that tall while the strip is showing,
-  so opening the dropdown does not resize the popup.
+- In `iconbar` mode the spare room is as tall as the dropdown of the
+  app with the most windows, capped at `output.max_rows`. It is zero
+  when every app has one window. It stays that tall while the strip
+  is showing, so opening the dropdown does not resize the popup.
 - The dropdown lists titles alphabetically, ignoring case, at most
-  `output.max_rows`. Its width fits the longest title, capped at
-  450 logical pixels times the scale, then clamped inside the popup.
+  `output.max_rows`. In `both` mode it also shows no more rows than
+  the title list, so the popup does not grow. A longer dropdown
+  scrolls so the selected title stays visible. Its width fits the
+  longest title, capped at 450 logical pixels times the scale, then
+  clamped inside the popup.
   A longer title ends with `…`.
 - The dropdown slides in and out over 150 ms. The poll loop wakes
   about every 1/120 s only while a slide is running.
@@ -160,7 +163,10 @@ leaves the selection where it is.
   query is empty.
 - Strip height is one icon side, or zero when hidden.
 - Title height is the separator and the windows, or the framed list
-  under the spare room, or zero when hidden. Pure.
+  under the icon frame, or zero when hidden. Pure.
+- `frames::overlays`: the dropdown covers the title list.
+- `menu::Panel.first` is the dropdown index of its top row; a click
+  on row `n` picks `first + n`.
 - Drawing reads only `View` (`icons`, `windows`).
 
 Shared row drawing lives in `src/ui/draw.rs`. See

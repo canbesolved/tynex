@@ -83,6 +83,21 @@ pub(crate) fn menu_top(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
     icon_bottom(view, metrics, grid) + drop
 }
 
+/// Returns true when an open dropdown is drawn over the title list.
+pub(crate) fn overlays(view: &View<'_>, metrics: &Metrics) -> bool {
+    titles::shows(view, metrics)
+}
+
+/// Transparent room under the icon frame for the dropdown. The title
+/// list holds the dropdown instead when it is shown.
+fn spare(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
+    if overlays(view, metrics) {
+        0.0
+    } else {
+        icons::spare_height(view, metrics, grid)
+    }
+}
+
 /// Draws the frames, the input bar, the icon strip, the output bar and
 /// the title bar. The dropdown is drawn by the painter.
 pub(crate) fn draw_popup(
@@ -165,7 +180,7 @@ fn draw_results(
 /// Splits the popup. The icon frame is absent while the strip is hidden.
 fn bands(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> Bands {
     let strip = icons::strip_height(view, metrics, grid);
-    let menu = icons::spare_height(view, metrics, grid);
+    let menu = spare(view, metrics, grid);
     let menu_gap = if menu > 0.0 { bar_gap(metrics) } else { 0.0 };
 
     if strip > 0.0 {

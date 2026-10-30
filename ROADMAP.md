@@ -30,15 +30,6 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 - [ ] Config option for the vertical position of the popup: `center`
   or `top`.
 
-### 0.2.14
-
-- [ ] With `taskbar.mode = "both"`, the title list sits 3 logical
-  pixels under the icon strip, with no spare room between them. The
-  dropdown opens over the title list, like an overlay.
-  - A dropdown taller than the title list stops at its bottom edge and
-    scrolls so the selected title stays visible. The popup does not
-    grow.
-
 ### 0.2.15
 
 - [ ] Each UI module is its own block: a small gap separates the bars

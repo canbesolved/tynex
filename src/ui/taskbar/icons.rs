@@ -204,7 +204,7 @@ pub(crate) fn hit(
             let row = ((y - panel.y) / panel.row_h) as usize;
 
             if row < panel.titles.len() {
-                return Click::Menu(row);
+                return Click::Menu(panel.first + row);
             }
         }
     }

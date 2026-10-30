@@ -57,7 +57,7 @@ fn many_windows_shrink_the_title_list_to_the_screen() {
     let theme = Theme::default();
     let state = state(31, 12);
     let full = metrics();
-    let screen = 1080;
+    let screen = 600;
 
     assert!(measured(&state.view(), &full, &theme).height > screen);
 
@@ -66,7 +66,7 @@ fn many_windows_shrink_the_title_list_to_the_screen() {
 
     assert!(height <= screen - 60, "{height}");
     assert!(fitted.list_rows < 19);
-    assert_eq!(fitted.max_rows, 19); // The dropdown room is kept
+    assert_eq!(fitted.max_rows, 19); // The dropdown overlays the list
 }
 
 #[test]
@@ -82,8 +82,11 @@ fn a_popup_that_fits_is_unchanged() {
 fn a_tiny_screen_shrinks_the_dropdown_room_too() {
     let theme = Theme::default();
     let state = state(31, 19);
-    let fitted = fit(&state.view(), metrics(), &theme, Some(600));
+    let iconbar = Metrics {
+        taskbar: TaskbarMode::Iconbar,
+        ..metrics()
+    };
+    let fitted = fit(&state.view(), iconbar, &theme, Some(600));
 
-    assert_eq!(fitted.list_rows, 1);
     assert!(fitted.max_rows < 19);
 }

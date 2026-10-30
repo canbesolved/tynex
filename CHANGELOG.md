@@ -24,6 +24,9 @@ project adheres to
 - The window count of an app is a badge on the bottom center of its
   icon, not a line under it. The icon strip is one icon tall
   (ADR-0067).
+- With `taskbar.mode = "both"`, the title list sits 3 pixels under
+  the icon strip, without the empty band. The dropdown opens over the
+  title list and scrolls when it is longer (ADR-0071).
 
 ### Fixed
 

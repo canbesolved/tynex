@@ -10,7 +10,9 @@ Source: `src/ui/fit.rs`. The popup is never taller than the screen
 - Rows go one at a time until the popup fits:
   1. The title list and the output bar, down to one row. They scroll,
      so the selection stays visible.
-  2. Then the dropdown and its spare room, down to one row.
+  2. Then the dropdown and its spare room, down to one row. Only
+     `iconbar` mode has that room; in `both` mode the dropdown
+     overlays the title list.
 - Until the presenter knows an output height, nothing shrinks.
 - `output.max_rows` stays the upper bound. A popup that already fits
   is drawn as configured.
