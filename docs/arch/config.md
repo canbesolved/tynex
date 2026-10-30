@@ -44,6 +44,7 @@ font = "auto"                # Font file path, or auto
 font_size = 14
 width = 480
 position = "center"          # center | top
+theme = "dark"               # dark | light
 
 [hotkeys]
 # Hotkey pressed again while the popup is open: "hide" closes the
@@ -101,6 +102,12 @@ it opens, then keeps that top edge while the output bar or a dropdown
 grows downward. `top` keeps it 24 logical pixels from the top of the
 screen. A missing key stays centered. Any other value stops the
 daemon.
+
+`main.theme` chooses the built-in colors
+([ADR-0076](../adr/0076_light_theme.md)): `dark` (default) or
+`light`. `dark` is the near-black popup. `light` is near-white.
+Radius, padding and the selection color are shared. A missing key
+stays dark. Any other value stops the daemon.
 
 `hotkeys.action` sets what pressing the hotkey (or `tynex show`) does
 while the popup is open: `hide` closes it, `last` switches to the
@@ -234,6 +241,7 @@ The config is read once, when `tynex daemon` starts
 | `main.font_size`                  | 8 to 72                                |
 | `main.width`                      | 200 to 2000                            |
 | `main.position`                   | `center` or `top`                      |
+| `main.theme`                      | `dark` or `light`                      |
 | `hotkeys.action`                  | `hide` or `last`                       |
 | `input.launcher.mode`             | `off`, `all` or `gui_only`             |
 | `launcher.new_window`             | `true` or `false`                      |

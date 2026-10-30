@@ -9,6 +9,11 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `main.theme`: `dark` (default) or `light`. `light` is a near-white
+  popup. `dark` keeps the current colors (ADR-0076).
+
 ## [0.2.14] - 2026-10-30
 
 Each bar is its own rounded block.

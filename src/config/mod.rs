@@ -7,6 +7,7 @@ mod error;
 mod file;
 mod raw;
 mod taskbar;
+mod theme;
 mod validate;
 
 use std::path::{Path, PathBuf};
@@ -18,6 +19,7 @@ pub use crate::config::file::{Loaded, load_or_create};
 pub use crate::config::taskbar::{
     IconBarConfig, TaskbarConfig, TaskbarMode, TitleBarConfig,
 };
+pub use crate::config::theme::Theme;
 use crate::core::switcher::HotkeyAction;
 use crate::core::view::Rgb;
 
@@ -57,6 +59,7 @@ pub struct MainConfig {
     pub font_size: u16,
     pub width: u16,
     pub position: Position,
+    pub theme: Theme,
 }
 
 /// The `[hotkeys]` table.
@@ -172,6 +175,7 @@ impl Default for Config {
                 font_size: 14,
                 width: 480,
                 position: Position::Center,
+                theme: Theme::Dark,
             },
             hotkeys: HotkeysConfig {
                 action: HotkeyAction::Last,

@@ -16,6 +16,7 @@ use std::time::Instant;
 
 use crate::config::{
     HintConfig, MainConfig, OutputConfig, Position, TaskbarConfig,
+    Theme as Scheme,
 };
 use crate::core::event::Click;
 use crate::core::view::View;
@@ -60,7 +61,10 @@ impl Painter {
         Self {
             text,
             icons,
-            theme: Theme::default(),
+            theme: match main.theme {
+                Scheme::Dark => Theme::dark(),
+                Scheme::Light => Theme::light(),
+            },
             look: Look::new(main, output, hint, taskbar),
             position: main.position,
             slide: Slide::default(),
