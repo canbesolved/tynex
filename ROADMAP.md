@@ -25,20 +25,27 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 
 ### 0.2.12
 
+- [ ] `Shift+Tab` moves the selection back, the reverse of `Tab`: in
+  the icon strip, an open dropdown and the title list. It wraps the
+  same way.
+- [ ] The window count of an app is a badge on the bottom center of
+  its icon, not a line under it, so the icon strip is one icon tall.
+
+### 0.2.13
+
 - [ ] The popup stays in place: it no longer moves when the output bar
   appears.
 - [ ] Config option for the vertical position of the popup: `center`
   or `top`.
 
-### 0.2.13
-
-- [ ] `titlebar` mode of the taskbar can hide the app icons in the
-  list.
-
 ### 0.2.14
 
-- [ ] Mouse hover highlights a row of the title list, and a click
-  activates it.
+- [ ] With `taskbar.mode = "both"`, the title list sits 3 logical
+  pixels under the icon strip, with no spare room between them. The
+  dropdown opens over the title list, like an overlay.
+  - A dropdown taller than the title list stops at its bottom edge and
+    scrolls so the selected title stays visible. The popup does not
+    grow.
 
 ### 0.2.15
 
@@ -48,13 +55,26 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 
 ### 0.2.16
 
-- [ ] When you search, the output bar lists open windows first, then
-  installed apps from the launcher.
+- [ ] `taskbar.iconbar.size = "auto"`: the icon side follows the
+  screen size, `main.width` and the number of running apps, within
+  the usual 8 to 128 logical pixels. A number still sets a fixed
+  size.
 
 ### 0.2.17
 
-- [ ] Update the default theme to the Endgame color palette. Exact
-  color values will be added when the palette is finalized.
+- [ ] Mouse in the title list: hover highlights a row and moves the
+  selection to it, and a click activates it.
+- [ ] Mouse in the dropdown: hover highlights a title and moves the
+  selection to it, and a click activates it.
+
+### 0.2.18
+
+- [ ] When you search, the output bar lists open windows first, then
+  installed apps from the launcher.
+
+### 0.2.19
+
+- [ ] Light theme next to the default dark one, chosen in the config.
 
 ## Next
 
@@ -109,6 +129,21 @@ Launcher:
   `Firefox = "Web Browser"`. A query that matches the alias suggests
   launching that app.
 
+Modes:
+
+- [ ] Mode indicator: the sign at the start of the input bar (`>`
+  today) shows the current mode and changes when you switch mode:
+  prompt, AI, files and others. It comes with the second mode.
+
+Browser tabs:
+
+- [ ] Search open browser tabs by title and URL, and switch to one
+  with `Enter`. A browser extension sends tab changes to `tynex`
+  through a local bridge, with no polling. Tab data stays on the
+  machine.
+  - Chrome and other Chromium browsers first, then Firefox.
+  - Needs an ADR for the bridge protocol before work starts.
+
 Info bar:
 
 - [ ] `info_bar` module: a status bar inside the popup that can replace
@@ -130,9 +165,10 @@ Configuration:
 
 Themes:
 
+- [ ] Update the default theme to the Endgame color palette. Exact
+  color values will be added when the palette is finalized.
 - [ ] Theme options: opacity, background, selection, search highlight
   and text colors, border width and color, font size and style.
-- [ ] Light theme next to the default dark one.
 - [ ] Custom themes in `~/.config/tynex/tynex.theme`, chosen with
   `dark_theme = "tynex.theme"` and `light_theme = "tynex.theme"`; one
   file may hold both a dark and a light variant.
