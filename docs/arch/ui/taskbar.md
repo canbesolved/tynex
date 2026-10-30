@@ -100,7 +100,8 @@ the dropdown slides in. The gaps scale with the display.
 - The dropdown lists titles alphabetically, ignoring case, at most
   `output.max_rows`. In `both` mode it also shows no more rows than
   the title list, so the popup does not grow. A longer dropdown
-  scrolls so the selected title stays visible. Its width fits the
+  keeps the selected title visible, and moves only when that title
+  would leave the window. Its width fits the
   longest title, capped at 450 logical pixels times the scale, then
   clamped inside the popup.
   A longer title ends with `…`.
@@ -145,18 +146,26 @@ and close an open dropdown. With the title list off, `Enter` and
 activates, several open the dropdown, and none launches that app.
 With the title list on, those keys activate the selected title. An
 open dropdown still takes them. `Up` and `Down` move inside an open
-dropdown; otherwise they still move the title or output list.
+dropdown, and the window moves only to keep that title on screen.
+Otherwise they still move the title or output list.
 `Tab` steps the dropdown while it is open. With the title list off,
 `Tab` moves to the next icon. `Shift+Tab` steps back in the same
 places, in the title list too, and wraps the same way. `Esc` closes
 the dropdown first.
 
 A left click on an icon selects it and opens the dropdown, or
-activates its one window. A left click on a dropdown row activates
-that window. A left click elsewhere in the popup closes the
-dropdown. The right button is ignored. Moving the pointer onto an
-icon selects it and closes an open dropdown. Moving off the icons
-leaves the selection where it is.
+activates its one window. A left click on that same icon while its
+dropdown is open closes the menu and leaves the icon selected.
+`Enter` and `Space` still activate the highlighted title. A left
+click on a dropdown row activates that window. Hovering a dropdown
+title selects it and does not activate. A left click elsewhere in
+the popup closes the dropdown. The right button is ignored. Moving
+the pointer onto an icon selects it and closes an open dropdown.
+Moving off the icons leaves the selection where it is.
+
+Hovering a title-list row selects that window. A click activates
+it. Moving off the rows leaves the selection. The scrollbar is not
+a row. The output bar has no pointer selection.
 
 ## Contract
 
@@ -168,8 +177,9 @@ leaves the selection where it is.
 - Title body is the window rows, or zero when hidden. The frame
   around that body is padding above and below. Pure.
 - `frames::overlays`: the dropdown covers the title list.
-- `menu::Panel.first` is the dropdown index of its top row; a click
-  on row `n` picks `first + n`.
+- `menu::Place` keeps the dropdown's first row and moves it only
+  when the selection would leave the window. A click on shown row
+  `n` picks `first + n`.
 - Drawing reads only `View` (`icons`, `windows`).
 
 Shared row drawing lives in `src/ui/draw.rs`. See

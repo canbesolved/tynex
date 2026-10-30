@@ -5,10 +5,17 @@
 //!
 //! Search matches are not drawn here. They belong to the output bar.
 
-#![allow(clippy::cast_precision_loss)]
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss
+)]
 
+use super::icons;
+use crate::core::event::Click;
 use crate::core::view::View;
 use crate::ui::draw::{self, Grid, Metrics, Paint};
+use crate::ui::frames;
 use crate::ui::render::canvas::Area;
 use crate::ui::scroll;
 
@@ -66,3 +73,46 @@ pub(crate) fn draw(
     }
     scroll::bar(paint, metrics, rows, first, len);
 }
+
+/// Returns the window under `(x, y)`, or `Elsewhere`.
+///
+/// The scrollbar is not a row. `metrics.first_row` is the row at the
+/// top of the list.
+pub(crate) fn hit(
+    view: &View<'_>,
+    metrics: &Metrics,
+    grid: &Grid,
+    x: f32,
+    y: f32,
+) -> Click {
+    if !shows(view, metrics) {
+        return Click::Elsewhere;
+    }
+    let len = view.window_count();
+
+    if len == 0 {
+        return Click::Elsewhere;
+    }
+    let max = metrics.list_rows.max(1);
+    let first = scroll::first_row(metrics, view.selected, len);
+    let top = frames::list_top(view, metrics, grid);
+    let inner = icons::popup_width(metrics) - 2.0 * grid.pad;
+    let width = inner - scroll::reserve(metrics, len);
+    let rows = body(view, metrics, grid);
+
+    if x < grid.pad || x >= grid.pad + width || y < top || y >= top + rows {
+        return Click::Elsewhere;
+    }
+    let row = ((y - top) / grid.row_h) as usize;
+    let index = first + row;
+
+    if row < len.min(max) && index < len {
+        Click::Row(index)
+    } else {
+        Click::Elsewhere
+    }
+}
+
+#[cfg(test)]
+#[path = "titles_tests.rs"]
+mod tests;

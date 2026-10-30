@@ -58,5 +58,6 @@ pub enum Action {
 pub enum Click {
     Icon(usize), // Index into the running apps
     Menu(usize), // Index into the open dropdown
-    Elsewhere,   // Inside the popup, not on an icon or title
+    Row(usize),  // Index into the open windows
+    Elsewhere,   // Inside the popup, not on an icon or row
 }

@@ -30,8 +30,7 @@ use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
 use crate::ui::scroll::Viewport;
 use crate::ui::slide::Slide;
-use crate::ui::taskbar::icons as strip;
-use crate::ui::taskbar::menu;
+use crate::ui::taskbar::{icons as strip, menu, titles};
 
 /// Draws views with the configured look. Built once at start, so fonts
 /// and glyph caches stay warm between shows.
@@ -46,6 +45,7 @@ pub struct Painter {
     screen: Option<u32>, // Shortest output height, physical pixels
     anchor: Option<u32>, // Logical height locked while shown
     list: Viewport,      // First row of the list on screen
+    menu: menu::Place,   // First row of the open dropdown
 }
 
 impl Painter {
@@ -72,6 +72,7 @@ impl Painter {
             screen: None,
             anchor: None,
             list: Viewport::default(),
+            menu: menu::Place::default(),
         }
     }
 
@@ -102,6 +103,7 @@ impl Painter {
     /// Forgets the list position; the next show starts at the top.
     pub fn hidden(&mut self) {
         self.list.reset();
+        self.menu.reset();
     }
 
     /// Loads the icons of new windows at output `scale`, so files are
@@ -148,7 +150,8 @@ impl Painter {
         let metrics = self.list.place(view, self.fitted(view, scale));
         let grid = Grid::new(&metrics, &self.theme);
         let open = strip::shows(view, &metrics) && view.dropdown.is_some();
-        let panel = menu::panel(view, &metrics, &grid, &self.text);
+        let panel =
+            menu::open(&mut self.menu, view, &metrics, &grid, &self.text);
 
         if strip::shows(view, &metrics) {
             self.slide.sync(open, panel, now);
@@ -179,18 +182,25 @@ impl Painter {
     /// Returns what a click at physical `(x, y)` hits.
     #[must_use]
     pub fn hit(&self, view: &View<'_>, scale: f32, x: f32, y: f32) -> Click {
-        let metrics = self.fitted(view, scale);
+        let mut metrics = self.fitted(view, scale);
+        metrics.first_row = Some(self.list.first());
         let grid = Grid::new(&metrics, &self.theme);
-
-        strip::hit(
+        let origin = self.menu.first();
+        let dropdown = menu::panel(view, &metrics, &grid, &self.text, origin);
+        let hit = strip::hit(
             view,
             &metrics,
             &grid,
-            &self.text,
             x,
             y,
             self.slide.reveal(Instant::now()),
-        )
+            dropdown.as_ref(),
+        );
+        if hit == Click::Elsewhere {
+            titles::hit(view, &metrics, &grid, x, y)
+        } else {
+            hit
+        }
     }
 
     /// Returns true when the dropdown slide needs another frame.

@@ -137,6 +137,9 @@ impl Mode for PromptMode {
     }
 
     fn on_click(&mut self, click: Click, s: &mut State) -> Action {
+        if let Click::Row(index) = click {
+            return click_row(self, s, index);
+        }
         if self.strip(s) {
             prompt_icon::click(click, s, self.max_rows)
         } else {
@@ -145,12 +148,41 @@ impl Mode for PromptMode {
     }
 
     fn on_hover(&mut self, click: Click, s: &mut State) -> Action {
+        if let Click::Row(index) = click {
+            return hover_row(self, s, index);
+        }
         if self.strip(s) {
-            prompt_icon::hover(click, s)
+            prompt_icon::hover(click, s, self.max_rows)
         } else {
             Action::None
         }
     }
+}
+
+/// Selects a title-list row. The output bar is left alone.
+fn hover_row(mode: &PromptMode, s: &mut State, index: usize) -> Action {
+    if !list_on(mode, s) || index >= s.rows.len() || index == s.selected {
+        return Action::None;
+    }
+    s.selected = index;
+    Action::Redraw
+}
+
+/// Activates the title-list row under the pointer.
+fn click_row(mode: &PromptMode, s: &mut State, index: usize) -> Action {
+    if !list_on(mode, s) || index >= s.rows.len() {
+        return Action::None;
+    }
+    s.selected = index;
+    match &s.rows[index].target {
+        RowTarget::Window(id) => Action::Activate(id.clone()),
+        RowTarget::Launch(id) => Action::Launch(id.clone()),
+    }
+}
+
+/// Returns true while the title list is on screen.
+fn list_on(mode: &PromptMode, s: &State) -> bool {
+    mode.taskbar.titlebar() && s.query.is_empty()
 }
 
 /// Activates or launches the selected row.
@@ -173,3 +205,7 @@ mod key_tests;
 #[cfg(test)]
 #[path = "prompt_icon_tests.rs"]
 mod icon_tests;
+
+#[cfg(test)]
+#[path = "prompt_pointer_tests.rs"]
+mod pointer_tests;

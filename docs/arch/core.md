@@ -58,9 +58,10 @@ pub enum Action {
 ```
 
 `Click` is where a pointer press landed: `Icon(index)` on the strip,
-`Menu(index)` on an open dropdown, or `Elsewhere` in the popup.
-`Hover` carries the same place while the pointer moves. The icon
-under the pointer becomes selected.
+`Menu(index)` on an open dropdown, `Row(index)` on a title-list
+row, or `Elsewhere` in the popup. `Hover` carries the same place
+while the pointer moves. The icon, title, or dropdown row under
+the pointer becomes selected.
 
 `AppInfo` is `id`, `name`, `icon`. `Exec` stays on the platform.
 A `Row` has a `RowTarget`: `Window` or `Launch`. `State` keeps open

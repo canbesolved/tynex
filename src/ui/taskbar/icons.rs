@@ -15,7 +15,7 @@ use crate::core::view::View;
 use crate::ui::draw::{Grid, Metrics, Paint};
 use crate::ui::frames;
 use crate::ui::render::canvas::Area;
-use crate::ui::render::text::{Style, Text};
+use crate::ui::render::text::Style;
 
 /// Gap between icons, as a fraction of the icon side.
 const GAP_RATIO: f32 = 0.35;
@@ -168,10 +168,10 @@ pub(crate) fn hit(
     view: &View<'_>,
     metrics: &Metrics,
     grid: &Grid,
-    text: &Text,
     x: f32,
     y: f32,
     reveal: f32,
+    dropdown: Option<&menu::Panel>,
 ) -> Click {
     if !shows(view, metrics) {
         return Click::Elsewhere;
@@ -193,7 +193,7 @@ pub(crate) fn hit(
         }
     }
 
-    if let Some(panel) = menu::panel(view, metrics, grid, text) {
+    if let Some(panel) = dropdown {
         let shown = panel.h * reveal.clamp(0.0, 1.0);
 
         if x >= panel.x

@@ -72,6 +72,13 @@ pub(crate) fn icon_bottom(
         + grid.pad
 }
 
+/// Top of the first title or output row, inside its frame.
+pub(crate) fn list_top(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
+    let bands = bands(view, metrics, grid);
+
+    bands.input + bands.gap + bands.icons + bands.spare + bands.split + grid.pad
+}
+
 /// Top of the dropdown, one gap below the icon frame.
 pub(crate) fn menu_top(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
     let drop = if icons::spare_height(view, metrics, grid) > 0.0 {
@@ -111,7 +118,7 @@ pub(crate) fn draw_popup(
     let radius = paint.theme.radius * metrics.scale;
     let inner = width - 2.0 * grid.pad;
     let icons_y = bands.input + bands.gap;
-    let lower_y = icons_y + bands.icons + bands.spare + bands.split;
+    let lower_y = list_top(view, metrics, &grid) - grid.pad;
 
     paint.canvas.clear(Rgba(0, 0, 0, 0));
     frame(paint, 0.0, bands.input, width, radius);

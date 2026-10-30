@@ -9,6 +9,27 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.16] - 2026-10-30
+
+The pointer selects rows in the title list and the dropdown.
+
+### Added
+
+- Hovering a title-list row or a dropdown title selects it. A click
+  activates it (ADR-0077).
+- A left click on the icon whose dropdown is already open closes
+  that menu (ADR-0077).
+
+### Changed
+
+- A scrolled dropdown moves only far enough to keep the selected
+  title visible. `Up` and `Down` move the highlight inside that
+  window (ADR-0077).
+
+## [0.2.15] - 2026-10-30
+
+A light theme next to the default dark one.
+
 ### Added
 
 - `main.theme`: `dark` (default) or `light`. `light` is a near-white
@@ -473,7 +494,11 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.12...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.16...HEAD
+[0.2.16]: https://github.com/canbesolved/tynex/releases/tag/v0.2.16
+[0.2.15]: https://github.com/canbesolved/tynex/releases/tag/v0.2.15
+[0.2.14]: https://github.com/canbesolved/tynex/releases/tag/v0.2.14
+[0.2.13]: https://github.com/canbesolved/tynex/releases/tag/v0.2.13
 [0.2.12]: https://github.com/canbesolved/tynex/releases/tag/v0.2.12
 [0.2.11]: https://github.com/canbesolved/tynex/releases/tag/v0.2.11
 [0.2.10]: https://github.com/canbesolved/tynex/releases/tag/v0.2.10

@@ -83,13 +83,20 @@ fn the_dropdown_stays_over_the_title_list_and_scrolls() {
     state.open_dropdown();
     state.dropdown = Some(10);
 
-    let open = panel(&state.view(), &M, &grid, &text()).unwrap();
+    let mut place = super::Place::default();
+
+    place.align(10, 4, 19);
+
+    let open = panel(&state.view(), &M, &grid, &text(), place.first()).unwrap();
     let height = frames::measured(&state.view(), &M, &theme).height;
 
     assert_eq!(open.titles.len(), 4);
     assert_eq!((open.first, open.selected), (7, 3));
     assert_eq!(open.titles[3], "w10");
     assert!(open.y + open.h <= height as f32);
+
+    place.align(8, 4, 19);
+    assert_eq!(place.first(), 7);
 }
 
 #[test]
@@ -101,15 +108,19 @@ fn a_click_on_a_scrolled_dropdown_picks_that_window() {
     state.open_dropdown();
     state.dropdown = Some(10);
 
-    let open = panel(&state.view(), &M, &grid, &text()).unwrap();
+    let mut place = super::Place::default();
+
+    place.align(10, 4, 19);
+
+    let open = panel(&state.view(), &M, &grid, &text(), place.first()).unwrap();
     let click = hit(
         &state.view(),
         &M,
         &grid,
-        &text(),
         open.x + 5.0,
         open.y + 1.5 * open.row_h,
         1.0,
+        Some(&open),
     );
 
     assert_eq!(click, Click::Menu(8));
