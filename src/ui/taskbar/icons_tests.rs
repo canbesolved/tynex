@@ -3,21 +3,21 @@
 
 //! Icon strip placement, spare room and hit testing.
 
-use super::{layout, shows, spare_height, strip_height};
+use super::{hit, layout, shows, spare_height, strip_height};
+use crate::config::TaskbarMode;
 use crate::core::event::Click;
 use crate::core::state::State;
 use crate::core::view::{AppIcon, Row, RowTarget};
 use crate::core::window::WindowId;
 use crate::ui::draw::{Grid, Metrics, Paint};
-use crate::ui::icon_bar::hit;
 use crate::ui::render::canvas::{Canvas, Rgba};
 use crate::ui::render::glyphs::Face;
 use crate::ui::render::icons::{Icons, NoIcons};
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
-use crate::ui::{frames, icon_menu};
+use crate::ui::{frames, taskbar::menu as icon_menu};
 
-const FONT: &[u8] = include_bytes!("../../tests/fonts/dejavu_sans.ttf");
+const FONT: &[u8] = include_bytes!("../../../tests/fonts/dejavu_sans.ttf");
 
 fn metrics(width: f32) -> Metrics {
     Metrics {
@@ -25,10 +25,9 @@ fn metrics(width: f32) -> Metrics {
         width,
         max_rows: 3,
         scale: 1.0,
-        title_bar: true,
+        taskbar: TaskbarMode::Both,
         show_icons: false,
         hint_color: Rgba(0x8d, 0xa7, 0x87, 0xff),
-        icon_bar: true,
         icon_size: 24.0,
         border: 4.0,
     }

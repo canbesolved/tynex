@@ -77,9 +77,8 @@ fn start(config: &Config) -> Result<(), String> {
         Icons::new(Box::new(IconTheme::default())),
         &config.main,
         &config.output_bar,
-        &config.title_bar,
         &config.input_bar.hint,
-        &config.icon_bar,
+        &config.taskbar,
     );
 
     painter.prepare_icons(
@@ -93,12 +92,11 @@ fn start(config: &Config) -> Result<(), String> {
     let mut parts = Parts {
         app: Switcher::new(
             config.hotkeys.action,
-            config.title_bar.strip_app_name,
-            config.title_bar.sort_by,
+            config.taskbar.titles.strip_app_name,
+            config.taskbar.titles.sort_by,
             PromptMode::new(
                 Input::new(config.input_bar.launcher.clone(), app_list),
-                config.title_bar.enabled,
-                config.icon_bar.enabled,
+                config.taskbar.mode,
                 config.output_bar.max_rows,
             ),
         ),

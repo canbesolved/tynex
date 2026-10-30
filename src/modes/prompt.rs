@@ -4,8 +4,9 @@
 //! Prompt mode: typing filters windows with fuzzy matching.
 //!
 //! `Space` confirms the selected row, the same as `Enter`. `Tab`
-//! walks the list on screen, or the icons when the title bar is off.
+//! walks the list on screen, or the icons when the title list is off.
 
+use crate::config::TaskbarMode;
 use crate::core::event::{Action, Click, Key};
 use crate::core::state::State;
 use crate::core::traits::Mode;
@@ -19,34 +20,27 @@ mod prompt_icon;
 #[derive(Debug)]
 pub struct PromptMode {
     input: Input,
-    title_bar: bool, // `title_bar.enabled` from the config
-    icon_bar: bool,  // `icon_bar.enabled` from the config
+    taskbar: TaskbarMode,
     max_rows: usize, // Cap for the dropdown
 }
 
 impl PromptMode {
     /// Creates a prompt mode.
     ///
-    /// `title_bar` and `icon_bar` are the module switches. `max_rows`
-    /// caps the dropdown.
+    /// `taskbar` picks the strip, the title list, both or neither.
+    /// `max_rows` caps the dropdown.
     #[must_use]
-    pub fn new(
-        input: Input,
-        title_bar: bool,
-        icon_bar: bool,
-        max_rows: u16,
-    ) -> Self {
+    pub fn new(input: Input, taskbar: TaskbarMode, max_rows: u16) -> Self {
         Self {
             input,
-            title_bar,
-            icon_bar,
+            taskbar,
             max_rows: usize::from(max_rows).max(1),
         }
     }
 
     /// Returns true while the icon strip is on screen.
     fn strip(&self, s: &State) -> bool {
-        self.icon_bar && s.query.is_empty()
+        self.taskbar.icons() && s.query.is_empty()
     }
 }
 
@@ -54,7 +48,7 @@ impl Mode for PromptMode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
         if self.strip(s)
             && let Some(action) =
-                prompt_icon::key(key, s, self.max_rows, self.title_bar)
+                prompt_icon::key(key, s, self.max_rows, self.taskbar.titles())
         {
             return action;
         }
@@ -118,7 +112,7 @@ impl Mode for PromptMode {
                 Action::Redraw
             }
             // The title bar or the output bar is showing.
-            Key::Tab if !s.query.is_empty() || self.title_bar => {
+            Key::Tab if !s.query.is_empty() || self.taskbar.titles() => {
                 s.select_next();
                 Action::Redraw
             }

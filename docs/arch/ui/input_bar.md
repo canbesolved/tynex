@@ -13,9 +13,10 @@ windows; the launcher matches installed apps. Neither draws.
 
 The input bar is always on. It cannot be disabled. The
 [output bar](output_bar.md) shows the result of what is typed here.
-The title bar, the info bar and the icon bar can be turned off on
-their own ([ADR-0053](../../adr/0053_ui_module_toggles.md)). Config
-sections follow the modules
+The [taskbar](taskbar.md) shows running apps, open windows, both, or
+neither ([ADR-0053](../../adr/0053_ui_module_toggles.md), amended by
+[ADR-0065](../../adr/0065_taskbar.md)). The info bar is planned.
+Config sections follow the modules
 ([ADR-0055](../../adr/0055_config_sections.md)).
 
 ```text
@@ -43,8 +44,8 @@ it exits.
 
 - One row high: 2 x font size, times the output scale.
 - The painter in `src/ui/painter.rs` draws this bar in its own
-  rounded frame. While the query is empty and the icon bar is on,
-  the [icon bar](icon_bar.md) is a second frame 3 logical pixels
-  below, then a spare room, then the [title bar](title_bar.md) 3
-  logical pixels under that room. A non-empty query hides the icon
-  frame and shows the output bar in this frame.
+  rounded frame. While the query is empty and the icon strip is on,
+  the [taskbar](taskbar.md) icon frame sits 3 logical pixels
+  below, then a spare room, then the title list 3 logical pixels
+  under that room. A non-empty query hides the icon frame and shows
+  the output bar in this frame.

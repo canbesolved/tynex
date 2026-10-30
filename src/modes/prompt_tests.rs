@@ -4,7 +4,7 @@
 //! Prompt mode key tests.
 
 use super::*;
-use crate::config::{LauncherConfig, LauncherMode};
+use crate::config::{LauncherConfig, LauncherMode, TaskbarMode};
 use crate::core::app::AppInfo;
 use crate::core::view::{Row, RowTarget};
 use crate::core::window::WindowId;
@@ -18,19 +18,19 @@ fn launcher(mode: LauncherMode) -> LauncherConfig {
 }
 
 fn mode() -> PromptMode {
-    prompt(false, launcher(LauncherMode::Off), Vec::new())
+    prompt(TaskbarMode::Off, launcher(LauncherMode::Off), Vec::new())
 }
 
 fn mode_with_apps(apps: Vec<AppInfo>) -> PromptMode {
-    prompt(false, launcher(LauncherMode::All), apps)
+    prompt(TaskbarMode::Off, launcher(LauncherMode::All), apps)
 }
 
 fn prompt(
-    title_bar: bool,
+    taskbar: TaskbarMode,
     launcher: LauncherConfig,
     apps: Vec<AppInfo>,
 ) -> PromptMode {
-    PromptMode::new(Input::new(launcher, apps), title_bar, false, 19)
+    PromptMode::new(Input::new(launcher, apps), taskbar, 19)
 }
 
 fn state() -> State {

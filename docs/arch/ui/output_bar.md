@@ -22,10 +22,10 @@ After typing
 ╰──────────────────────────────────────╯
 ```
 
-The list under the input is the output bar. The title bar is hidden
+The list under the input is the output bar. The title list is hidden
 while the query is non-empty. Clearing the query shows the open
-windows again when `title_bar.enabled` is set. See
-[title_bar.md](title_bar.md).
+windows again when `taskbar.mode` is `titles` or `both`. See
+[taskbar.md](taskbar.md).
 
 ## Rules
 

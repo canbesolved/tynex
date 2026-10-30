@@ -115,7 +115,7 @@ message for the log.
 
 `WindowSource` and `Mode` live in `core/traits.rs`. The popup is drawn
 by UI modules in `ui/` ([input bar](ui/input_bar.md),
-[title bar](ui/title_bar.md)), which read a `View` and never the
+[taskbar](ui/taskbar.md)), which read a `View` and never the
 switcher. The core depends on nothing else in the crate. `Presenter`
 is added with its module.
 
@@ -157,10 +157,10 @@ icon, and whether a dropdown is open. Each `Row` has an id, an
 icon, row text (`title`), an optional title color, highlight byte
 ranges, and the app name and id for search. A row with no title
 color uses the theme text color. `windows` is every open window,
-for the title bar.
+for the title list.
 `rows` is the current result, for the output bar: the matches while
-a query is typed. The title bar is shown when `title_bar.enabled`
-is set and the query is empty. Popup modules read the `View`, never
+a query is typed. The title list is shown when `taskbar.mode` is
+`titles` or `both` and the query is empty. Popup modules read the `View`, never
 the switcher state, which keeps rendering replaceable. Building a
 `View` allocates nothing.
 
@@ -176,8 +176,8 @@ with `title_bar.strip_app_name` from the config
    part of the app id, ignoring case; never down to an empty title.
 
 The switcher applies it on each `Windows` event. The app name stays a
-separate field of `Row` for search. The title bar draws the icon when
-`show_icons` is set, then the title. The output bar always draws the
+separate field of `Row` for search. The title list draws the icon
+when `show_icons` is set, then the title. The output bar always draws the
 icon and the title.
 
 ## Text and languages
@@ -223,10 +223,10 @@ stably from there:
 - `app`: by app name, ignoring case, then by recent use.
 
 The popup opens with the previous window selected in every order, so
-`Enter` or `Space` switches back like Alt+Tab when the title bar is
-on, the icon bar is off, or that app has one window
+`Enter` or `Space` switches back like Alt+Tab when the title list is
+on, the icon strip is off, or that app has one window
 ([ADR-0061](../adr/0061_prompt_keys.md),
 [ADR-0064](../adr/0064_title_priority.md)). The icon strip uses most
-recently used order on its own, not `sort_by`. With the title bar
+recently used order on its own, not `sort_by`. With the title list
 off and the strip showing, `Enter` on an app that has several
 windows opens its dropdown ([ADR-0062](../adr/0062_icon_bar.md)).

@@ -4,7 +4,7 @@
 //! `Space` confirms the selected row. `Tab` walks the visible list.
 
 use super::*;
-use crate::config::{LauncherConfig, LauncherMode};
+use crate::config::{LauncherConfig, LauncherMode, TaskbarMode};
 use crate::core::app::AppInfo;
 use crate::core::view::{Row, RowTarget};
 use crate::core::window::WindowId;
@@ -18,11 +18,11 @@ fn launcher(mode: LauncherMode) -> LauncherConfig {
 }
 
 fn prompt(
-    title_bar: bool,
+    taskbar: TaskbarMode,
     launcher: LauncherConfig,
     apps: Vec<AppInfo>,
 ) -> PromptMode {
-    PromptMode::new(Input::new(launcher, apps), title_bar, false, 19)
+    PromptMode::new(Input::new(launcher, apps), taskbar, 19)
 }
 
 fn space() -> Key {
@@ -47,7 +47,8 @@ fn state() -> State {
         .collect();
     let mut s = State::new(rows);
 
-    prompt(false, launcher(LauncherMode::Off), Vec::new()).refresh(&mut s);
+    prompt(TaskbarMode::Off, launcher(LauncherMode::Off), Vec::new())
+        .refresh(&mut s);
     s
 }
 
@@ -65,7 +66,8 @@ fn typed(mode: &mut PromptMode, s: &mut State, text: &str) {
 
 #[test]
 fn space_activates_the_selected_window() {
-    let mut mode = prompt(false, launcher(LauncherMode::Off), Vec::new());
+    let mut mode =
+        prompt(TaskbarMode::Off, launcher(LauncherMode::Off), Vec::new());
     let mut s = state();
 
     typed(&mut mode, &mut s, "cafe");
@@ -78,7 +80,8 @@ fn space_activates_the_selected_window() {
 
 #[test]
 fn space_on_an_empty_query_activates_the_selection() {
-    let mut mode = prompt(false, launcher(LauncherMode::Off), Vec::new());
+    let mut mode =
+        prompt(TaskbarMode::Off, launcher(LauncherMode::Off), Vec::new());
     let mut s = state();
 
     assert_eq!(
@@ -95,7 +98,7 @@ fn space_launches_the_selected_app() {
         name: "Firefox".into(),
         icon: None,
     }];
-    let mut mode = prompt(false, launcher(LauncherMode::All), apps);
+    let mut mode = prompt(TaskbarMode::Off, launcher(LauncherMode::All), apps);
     let mut s = State::new(Vec::new());
 
     typed(&mut mode, &mut s, "fire");
@@ -108,7 +111,8 @@ fn space_launches_the_selected_app() {
 
 #[test]
 fn space_without_matches_leaves_the_query() {
-    let mut mode = prompt(false, launcher(LauncherMode::Off), Vec::new());
+    let mut mode =
+        prompt(TaskbarMode::Off, launcher(LauncherMode::Off), Vec::new());
     let mut s = state();
 
     typed(&mut mode, &mut s, "zzzz");
@@ -118,7 +122,8 @@ fn space_without_matches_leaves_the_query() {
 
 #[test]
 fn tab_walks_the_title_bar_and_wraps() {
-    let mut mode = prompt(true, launcher(LauncherMode::Off), Vec::new());
+    let mut mode =
+        prompt(TaskbarMode::Titles, launcher(LauncherMode::Off), Vec::new());
     let mut s = state();
 
     assert_eq!(mode.on_key(Key::Tab, &mut s), Action::Redraw);
@@ -143,9 +148,9 @@ fn tab_walks_output_matches() {
         },
     ];
 
-    for title_bar in [false, true] {
+    for taskbar in [TaskbarMode::Off, TaskbarMode::Titles] {
         let mut mode =
-            prompt(title_bar, launcher(LauncherMode::All), apps.clone());
+            prompt(taskbar, launcher(LauncherMode::All), apps.clone());
         let mut s = State::new(Vec::new());
 
         typed(&mut mode, &mut s, "f");
@@ -159,7 +164,8 @@ fn tab_walks_output_matches() {
 
 #[test]
 fn tab_does_nothing_without_a_visible_list() {
-    let mut mode = prompt(false, launcher(LauncherMode::Off), Vec::new());
+    let mut mode =
+        prompt(TaskbarMode::Off, launcher(LauncherMode::Off), Vec::new());
     let mut s = state();
 
     assert_eq!(mode.on_key(Key::Tab, &mut s), Action::None);

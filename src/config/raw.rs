@@ -29,6 +29,16 @@ pub(super) enum RawSortBy {
 
 #[derive(Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
+pub(super) enum RawTaskbarMode {
+    Off,
+    #[default]
+    Icons,
+    Titles,
+    Both,
+}
+
+#[derive(Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
 pub(super) enum RawLauncherMode {
     Off,
     All,
@@ -64,10 +74,6 @@ fn default_hint_update() -> Spanned<u32> {
     unspanned(0)
 }
 
-fn default_icon_enabled() -> bool {
-    true
-}
-
 fn default_icon_size() -> Spanned<u16> {
     unspanned(24)
 }
@@ -83,6 +89,7 @@ pub(super) struct RawConfig {
     pub hotkeys: RawHotkeys,
     pub input_bar: RawInputBar,
     pub output_bar: RawOutputBar,
+    pub taskbar: RawTaskbar,
     pub title_bar: RawTitleBar,
     pub icon_bar: RawIconBar,
 }
@@ -189,10 +196,15 @@ impl Default for RawOutputBar {
     }
 }
 
+#[derive(Deserialize, Default)]
+#[serde(deny_unknown_fields, default)]
+pub(super) struct RawTaskbar {
+    pub mode: RawTaskbarMode,
+}
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawTitleBar {
-    pub enabled: bool,
     pub sort_by: RawSortBy,
     pub show_icons: bool,
     pub strip_app_name: bool,
@@ -201,7 +213,6 @@ pub(super) struct RawTitleBar {
 impl Default for RawTitleBar {
     fn default() -> Self {
         Self {
-            enabled: false,
             sort_by: RawSortBy::Recently,
             show_icons: true,
             strip_app_name: false,
@@ -212,8 +223,6 @@ impl Default for RawTitleBar {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawIconBar {
-    #[serde(default = "default_icon_enabled")]
-    pub enabled: bool,
     #[serde(default = "default_icon_size")]
     pub icon_size: Spanned<u16>,
     #[serde(default = "default_icon_border")]
@@ -223,7 +232,6 @@ pub(super) struct RawIconBar {
 impl Default for RawIconBar {
     fn default() -> Self {
         Self {
-            enabled: default_icon_enabled(),
             icon_size: default_icon_size(),
             border: default_icon_border(),
         }

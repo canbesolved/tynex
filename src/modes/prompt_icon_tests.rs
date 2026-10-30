@@ -4,13 +4,13 @@
 //! Icon strip keys: move, open the dropdown, confirm, then type.
 
 use super::*;
-use crate::config::{LauncherConfig, LauncherMode};
+use crate::config::{LauncherConfig, LauncherMode, TaskbarMode};
 use crate::core::event::Click;
 use crate::core::view::{AppIcon, Row, RowTarget};
 use crate::core::window::WindowId;
 use crate::modules::input::Input;
 
-fn mode(title_bar: bool) -> PromptMode {
+fn mode(taskbar: TaskbarMode) -> PromptMode {
     PromptMode::new(
         Input::new(
             LauncherConfig {
@@ -19,8 +19,7 @@ fn mode(title_bar: bool) -> PromptMode {
             },
             Vec::new(),
         ),
-        title_bar,
-        true,
+        taskbar,
         19,
     )
 }
@@ -38,10 +37,10 @@ fn row(id: &str, app: &str, title: &str) -> Row {
 }
 
 fn opened() -> (PromptMode, State) {
-    session(false)
+    session(TaskbarMode::Icons)
 }
 
-fn session(title_bar: bool) -> (PromptMode, State) {
+fn session(taskbar: TaskbarMode) -> (PromptMode, State) {
     let rows = vec![
         row("w1", "firefox", "Notes"),
         row("w2", "firefox", "Mail"),
@@ -62,7 +61,7 @@ fn session(title_bar: bool) -> (PromptMode, State) {
         },
     ];
     state.select_icon(Some("firefox"));
-    (mode(title_bar), state)
+    (mode(taskbar), state)
 }
 
 #[test]
@@ -107,7 +106,7 @@ fn enter_opens_then_activates_and_esc_closes() {
 
 #[test]
 fn the_title_bar_wins_confirm_over_the_icon() {
-    let (mut mode, mut state) = session(true);
+    let (mut mode, mut state) = session(TaskbarMode::Both);
 
     assert_eq!(
         mode.on_key(Key::Enter, &mut state),
@@ -115,7 +114,7 @@ fn the_title_bar_wins_confirm_over_the_icon() {
     );
     assert_eq!(state.dropdown, None);
 
-    let (mut mode, mut state) = session(true);
+    let (mut mode, mut state) = session(TaskbarMode::Both);
 
     mode.on_key(Key::Down, &mut state);
     assert_eq!(
@@ -133,7 +132,7 @@ fn the_title_bar_wins_confirm_over_the_icon() {
 
 #[test]
 fn an_open_dropdown_still_takes_enter_with_the_title_bar() {
-    let (mut mode, mut state) = session(true);
+    let (mut mode, mut state) = session(TaskbarMode::Both);
 
     assert_eq!(mode.on_click(Click::Icon(0), &mut state), Action::Redraw);
     assert_eq!(state.dropdown, Some(0));
@@ -191,7 +190,7 @@ fn tab_steps_an_open_dropdown_before_the_icons() {
 
 #[test]
 fn tab_keeps_the_title_list_when_that_bar_is_on() {
-    let (mut mode, mut state) = session(true);
+    let (mut mode, mut state) = session(TaskbarMode::Both);
 
     assert_eq!(mode.on_key(Key::Tab, &mut state), Action::Redraw);
     assert_eq!(state.icon, 0);

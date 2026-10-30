@@ -11,12 +11,12 @@ use toml::Spanned;
 use crate::config::error::ConfigError;
 use crate::config::raw::{
     RawConfig, RawHint, RawHotkeyAction, RawIconBar, RawLauncher,
-    RawLauncherMode, RawSortBy,
+    RawLauncherMode, RawSortBy, RawTaskbarMode,
 };
 use crate::config::{
     Config, Font, HintConfig, HotkeysConfig, IconBarConfig, InputBarConfig,
     LauncherConfig, LauncherMode, MainConfig, NewWindowConfig, OutputBarConfig,
-    TitleBarConfig,
+    TaskbarConfig, TaskbarMode, TitleBarConfig,
 };
 use crate::core::order::SortBy;
 use crate::core::switcher::HotkeyAction;
@@ -92,21 +92,32 @@ pub(super) fn validate(
         output_bar: OutputBarConfig {
             max_rows: raw.output_bar.max_rows.into_inner(),
         },
-        title_bar: TitleBarConfig {
-            enabled: raw.title_bar.enabled,
-            sort_by: match raw.title_bar.sort_by {
-                RawSortBy::App => SortBy::App,
-                RawSortBy::Recently => SortBy::Recently,
+        taskbar: TaskbarConfig {
+            mode: taskbar_mode(&raw.taskbar.mode),
+            titles: TitleBarConfig {
+                sort_by: match raw.title_bar.sort_by {
+                    RawSortBy::App => SortBy::App,
+                    RawSortBy::Recently => SortBy::Recently,
+                },
+                show_icons: raw.title_bar.show_icons,
+                strip_app_name: raw.title_bar.strip_app_name,
             },
-            show_icons: raw.title_bar.show_icons,
-            strip_app_name: raw.title_bar.strip_app_name,
-        },
-        icon_bar: IconBarConfig {
-            enabled: raw.icon_bar.enabled,
-            icon_size: raw.icon_bar.icon_size.into_inner(),
-            border: raw.icon_bar.border.into_inner(),
+            icons: IconBarConfig {
+                icon_size: raw.icon_bar.icon_size.into_inner(),
+                border: raw.icon_bar.border.into_inner(),
+            },
         },
     })
+}
+
+/// Maps the file's mode onto `TaskbarMode`.
+fn taskbar_mode(mode: &RawTaskbarMode) -> TaskbarMode {
+    match mode {
+        RawTaskbarMode::Off => TaskbarMode::Off,
+        RawTaskbarMode::Icons => TaskbarMode::Icons,
+        RawTaskbarMode::Titles => TaskbarMode::Titles,
+        RawTaskbarMode::Both => TaskbarMode::Both,
+    }
 }
 
 /// Checks the new-window row. A bad color or an empty title is an

@@ -28,12 +28,11 @@ fn start(config: &Config) -> (App, Source, EventRx) {
     let (tx, rx) = channel();
     let mut sw = Switcher::new(
         config.hotkeys.action,
-        config.title_bar.strip_app_name,
-        config.title_bar.sort_by,
+        config.taskbar.titles.strip_app_name,
+        config.taskbar.titles.sort_by,
         PromptMode::new(
             Input::new(config.input_bar.launcher.clone(), Vec::new()),
-            config.title_bar.enabled,
-            config.icon_bar.enabled,
+            config.taskbar.mode,
             config.output_bar.max_rows,
         ),
     );

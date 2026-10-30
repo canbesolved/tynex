@@ -4,6 +4,7 @@
 //! Hint text in the input bar.
 
 use super::{draw_popup, measured};
+use crate::config::TaskbarMode;
 use crate::core::state::State;
 use crate::ui::draw::{Metrics, Paint};
 use crate::ui::render::canvas::{Canvas, Rgba};
@@ -20,10 +21,9 @@ fn metrics(color: Rgba) -> Metrics {
         width: 300.0,
         max_rows: 3,
         scale: 1.0,
-        title_bar: false,
+        taskbar: TaskbarMode::Off,
         show_icons: false,
         hint_color: color,
-        icon_bar: false,
         icon_size: 24.0,
         border: 4.0,
     }

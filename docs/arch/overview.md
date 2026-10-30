@@ -17,9 +17,8 @@ The reasons behind each choice are in the
 - [platforms/portability.md](platforms/portability.md): macOS, Windows.
 - [ui/render.md](ui/render.md): canvas, text and icons.
 - [ui/input_bar.md](ui/input_bar.md): input bar.
-- [ui/icon_bar.md](ui/icon_bar.md): running apps under the input bar.
 - [ui/output_bar.md](ui/output_bar.md): results of the input.
-- [ui/title_bar.md](ui/title_bar.md): open windows.
+- [ui/taskbar.md](ui/taskbar.md): running apps and open windows.
 - [modes/prompt.md](modes/prompt.md): prompt mode, the only mode.
 - [modules/input.md](modules/input.md): input sub-modules (search,
   launcher).
@@ -36,17 +35,18 @@ The reasons behind each choice are in the
 
 ## UI modules
 
-The popup is five modules: the input bar, the output bar, the title
-bar, the info bar and the icon bar
-([ADR-0053](../adr/0053_ui_module_toggles.md),
+The popup is four modules: the input bar, the output bar, the
+taskbar and the info bar
+([ADR-0053](../adr/0053_ui_module_toggles.md), amended by
+[ADR-0065](../adr/0065_taskbar.md),
 [ADR-0054](../adr/0054_output_bar.md),
 [ADR-0062](../adr/0062_icon_bar.md)). The painter stacks the ones
-that are enabled. Each module can be changed on its own.
+that are on. Each module can be changed on its own.
 
 The input bar is always on. The output bar shows the result of the
-input, and only when there is one. The title bar, the info bar and
-the icon bar can each be turned on or off. The input bar, the output
-bar, the title bar and the icon bar exist. The info bar is planned
+input, and only when there is one. The taskbar shows running apps,
+open windows, both, or neither (`taskbar.mode`). The input bar, the
+output bar and the taskbar exist. The info bar is planned
 ([ROADMAP.md](../../ROADMAP.md)).
 
 ## Process model
@@ -86,12 +86,10 @@ src/
     render/            Canvas, text, icons
     draw.rs            Shared sizes and text drawing
     input_bar.rs       Input bar
-    icon_bar.rs        Running apps under the input bar
-    icon_menu.rs       Dropdown of one app's windows
+    taskbar/           Icon strip, title list, dropdown
     frames.rs          Rounded frames and the spare room
     slide.rs           Dropdown slide clock
     output_bar.rs      Result of the input
-    title_bar.rs       Open windows
     painter.rs         Stacks the bars and owns the slide
   modes/               prompt
   modules/

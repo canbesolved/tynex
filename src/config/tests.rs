@@ -6,6 +6,7 @@
 use std::fs;
 
 use super::*;
+use crate::core::order::SortBy;
 
 fn no_font(_: &Path) -> bool {
     false
@@ -51,7 +52,7 @@ fn hotkey_action_values() {
 
 #[test]
 fn sort_by_values() {
-    let sort = |text| parse(text, &no_font).map(|c| c.title_bar.sort_by);
+    let sort = |text| parse(text, &no_font).map(|c| c.taskbar.titles.sort_by);
 
     assert_eq!(sort(""), Ok(SortBy::Recently));
     assert_eq!(sort("[title_bar]\nsort_by = \"app\"\n"), Ok(SortBy::App));
@@ -67,20 +68,18 @@ fn sort_by_values() {
 
 #[test]
 fn title_bar_icons_and_strip_values() {
-    let text = "[title_bar]\nenabled = true\nshow_icons = false\n\
-                strip_app_name = true\n";
+    let text = "[title_bar]\nshow_icons = false\nstrip_app_name = true\n";
     let config = parse(text, &no_font).expect("valid config");
 
-    assert!(config.title_bar.enabled);
-    assert!(!config.title_bar.show_icons);
-    assert!(config.title_bar.strip_app_name);
+    assert!(!config.taskbar.titles.show_icons);
+    assert!(config.taskbar.titles.strip_app_name);
 }
 
 #[test]
 fn show_icons_defaults_to_true() {
     let config = parse("[title_bar]\n", &no_font).expect("valid config");
 
-    assert!(config.title_bar.show_icons);
+    assert!(config.taskbar.titles.show_icons);
 }
 
 #[test]

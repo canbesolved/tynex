@@ -13,6 +13,7 @@
 
 use std::ops::Range;
 
+use crate::config::TaskbarMode;
 use crate::core::view::Row;
 use crate::ui::render::canvas::{Area, Canvas, Rgba};
 use crate::ui::render::icons::Icons;
@@ -25,13 +26,12 @@ pub(crate) struct Metrics {
     pub font_size: f32, // Title size
     pub width: f32,     // Popup width
     pub max_rows: usize,
-    pub scale: f32,       // Output scale factor, 1.0 or more
-    pub title_bar: bool,  // Open window list
-    pub show_icons: bool, // Title-bar icon slot
-    pub hint_color: Rgba, // Hint text while the query is empty
-    pub icon_bar: bool,   // Running-app strip
-    pub icon_size: f32,   // Logical pixels
-    pub border: f32,      // Selection outline, logical pixels
+    pub scale: f32,           // Output scale factor, 1.0 or more
+    pub taskbar: TaskbarMode, // Strip, titles, both or off
+    pub show_icons: bool,     // Title-list icon slot
+    pub hint_color: Rgba,     // Hint text while the query is empty
+    pub icon_size: f32,       // Logical pixels
+    pub border: f32,          // Selection outline, logical pixels
 }
 
 /// Surface size in pixels.
