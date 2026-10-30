@@ -94,6 +94,28 @@ fn code_does_not_rank_rustdesk_above_code() {
 }
 
 #[test]
+fn a_leading_window_stays_above_a_later_match() {
+    let windows = vec![
+        window("w1", "chrome", "Google Chrome", "Google Chrome"),
+        window("w2", "cursor", "Cursor", "Cursor Agents"),
+    ];
+    let apps = vec![app("chrome", "Google Chrome"), app("cursor", "Cursor")];
+    let out = merge("c", &windows, &apps, &label());
+
+    assert_eq!(
+        titles(&out),
+        [
+            "Cursor Agents",
+            "Google Chrome",
+            " +  New window",
+            " +  New window",
+        ]
+    );
+    assert_eq!(out[0].app_id, "cursor");
+    assert_eq!(out[1].app_id, "chrome");
+}
+
+#[test]
 fn windows_stay_ahead_of_a_stronger_idle_app() {
     let windows = vec![window("w1", "browser", "Browser", "firefox notes")];
     let apps = vec![app("browser", "Browser"), app("firefox", "Firefox")];

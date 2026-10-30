@@ -8,8 +8,10 @@ matched, then, with the launcher on, launch rows for installed apps
 ([ADR-0054](../../adr/0054_output_bar.md),
 [ADR-0056](../../adr/0056_launcher_input.md),
 [ADR-0078](../../adr/0078_windows_before_apps.md),
-[modules/input.md](../modules/input.md)). Later requests can show a
-model answer in this same module.
+[ADR-0079](../../adr/0079_leading_match.md),
+[modules/input.md](../modules/input.md)). A window whose title or
+app name starts with the query comes before the other windows.
+Later requests can show a model answer in this same module.
 
 ## Look
 

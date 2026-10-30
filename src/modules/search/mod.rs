@@ -6,6 +6,8 @@
 pub mod fold;
 pub mod fuzzy;
 
+use fold::Folded;
+
 use crate::core::title::short_app_id;
 
 /// Text matched against the query for the app column: the display
@@ -24,6 +26,36 @@ pub fn app_haystack(app_name: &str, app_id: &str) -> String {
         name.to_owned()
     } else {
         format!("{name} {short}")
+    }
+}
+
+/// Whether `text` starts with `query`, using the same case and accent
+/// rules as ranking. An empty query matches nothing.
+#[must_use]
+pub fn starts_with_query(text: &str, query: &str) -> bool {
+    if query.is_empty() {
+        return false;
+    }
+
+    let folded = if query.is_ascii() {
+        Folded::new(text).text
+    } else {
+        text.to_owned()
+    };
+
+    if query.chars().any(char::is_uppercase) {
+        folded.starts_with(query)
+    } else if query.is_ascii() {
+        folded.len() >= query.len()
+            && folded.as_bytes()[..query.len()]
+                .eq_ignore_ascii_case(query.as_bytes())
+    } else {
+        let mut hay = folded.chars().flat_map(char::to_lowercase);
+
+        query
+            .chars()
+            .flat_map(char::to_lowercase)
+            .all(|letter| hay.next() == Some(letter))
     }
 }
 
@@ -49,5 +81,15 @@ mod tests {
             app_haystack("VS Code", "com.visualstudio.code"),
             "VS Code code"
         );
+    }
+
+    #[test]
+    fn a_leading_match_is_the_start_of_the_text() {
+        assert!(starts_with_query("Cursor Agents", "c"));
+        assert!(starts_with_query("Café", "c"));
+        assert!(!starts_with_query("Google Chrome", "c"));
+        assert!(starts_with_query("Cursor", "C"));
+        assert!(!starts_with_query("cursor", "C"));
+        assert!(!starts_with_query("Cursor", ""));
     }
 }
