@@ -40,7 +40,7 @@ impl PromptMode {
 
     /// Returns true while the icon strip is on screen.
     fn strip(&self, s: &State) -> bool {
-        self.taskbar.icons() && s.query.is_empty()
+        self.taskbar.iconbar() && s.query.is_empty()
     }
 }
 
@@ -48,7 +48,7 @@ impl Mode for PromptMode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
         if self.strip(s)
             && let Some(action) =
-                prompt_icon::key(key, s, self.max_rows, self.taskbar.titles())
+                prompt_icon::key(key, s, self.max_rows, self.taskbar.titlebar())
         {
             return action;
         }
@@ -112,7 +112,7 @@ impl Mode for PromptMode {
                 Action::Redraw
             }
             // The title bar or the output bar is showing.
-            Key::Tab if !s.query.is_empty() || self.taskbar.titles() => {
+            Key::Tab if !s.query.is_empty() || self.taskbar.titlebar() => {
                 s.select_next();
                 Action::Redraw
             }

@@ -160,14 +160,15 @@ color uses the theme text color. `windows` is every open window,
 for the title list.
 `rows` is the current result, for the output bar: the matches while
 a query is typed. The title list is shown when `taskbar.mode` is
-`titles` or `both` and the query is empty. Popup modules read the `View`, never
-the switcher state, which keeps rendering replaceable. Building a
+`titlebar` or `both` and the query is empty. Popup modules read the
+`View`, never the switcher state, which keeps rendering
+replaceable. Building a
 `View` allocates nothing.
 
 ## Row title
 
 `row_title` in `title.rs` gives each window the title its row shows,
-with `title_bar.strip_app_name` from the config
+with `taskbar.titlebar.strip_app_name` from the config
 ([config.md](config.md#format)):
 
 1. Sanitize the title and the app name (see below).
@@ -211,8 +212,8 @@ Prompt mode ([prompt.md](modes/prompt.md)), search
 
 ## Row order
 
-`order` in `order.rs` arranges the rows by `title_bar.sort_by` from
-the config
+`order` in `order.rs` arranges the rows by
+`taskbar.titlebar.sort_by` from the config
 ([ADR-0048](../adr/0048_row_order.md), amended by
 [ADR-0050](../adr/0050_search_only.md)). Every order starts from the
 most recently used order with the active window last, and sorts

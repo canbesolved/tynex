@@ -19,9 +19,9 @@ fn errors(text: &str) -> Vec<String> {
 
 #[test]
 fn missing_keys_keep_the_hint_on() {
-    let hint = parse("[input_bar]\n", &no_font)
+    let hint = parse("[input]\n", &no_font)
         .expect("valid config")
-        .input_bar
+        .input
         .hint;
 
     assert!(hint.enabled);
@@ -33,12 +33,12 @@ fn missing_keys_keep_the_hint_on() {
 #[test]
 fn hint_values() {
     let text = "\
-[input_bar]\n\
+[input]\n\
 hint.enabled = false\n\
 hint.font_color = \"#112233\"\n\
 hint.text = \"printf hi\"\n\
 hint.update = 15\n";
-    let hint = parse(text, &no_font).expect("valid config").input_bar.hint;
+    let hint = parse(text, &no_font).expect("valid config").input.hint;
 
     assert!(!hint.enabled);
     assert_eq!(hint.font_color, Rgb::new(0x11, 0x22, 0x33));
@@ -48,8 +48,8 @@ hint.update = 15\n";
 
 #[test]
 fn bad_hint_color_and_update_fail() {
-    let color = &errors("[input_bar]\nhint.font_color = \"blue\"\n")[0];
-    let update = &errors("[input_bar]\nhint.update = 86401\n")[0];
+    let color = &errors("[input]\nhint.font_color = \"blue\"\n")[0];
+    let update = &errors("[input]\nhint.update = 86401\n")[0];
 
     assert!(color.contains("hint.font_color"), "{color}");
     assert!(color.contains("#RRGGBB"), "{color}");

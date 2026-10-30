@@ -16,7 +16,7 @@ change ([modes/prompt.md](../modes/prompt.md)).
 ## Search
 
 Open windows are ranked with the
-[search](search.md) module. With `input_bar.launcher.mode = "off"`,
+[search](search.md) module. With `input.launcher.mode = "off"`,
 the output list is only those matches. The default mode is
 `"gui_only"`.
 

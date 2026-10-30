@@ -21,36 +21,36 @@ fn errors(text: &str) -> Vec<String> {
 fn icon_bar_defaults() {
     let config = parse("", &no_font).expect("valid config");
 
-    assert_eq!(config.taskbar.icons.icon_size, 24);
-    assert_eq!(config.taskbar.icons.border, 4);
+    assert_eq!(config.taskbar.iconbar.size, 24);
+    assert_eq!(config.taskbar.iconbar.border, 4);
 }
 
 #[test]
 fn icon_size_range() {
-    let small = &errors("[icon_bar]\nicon_size = 7\n")[0];
-    let large = &errors("[icon_bar]\nicon_size = 129\n")[0];
+    let small = &errors("[taskbar]\niconbar.size = 7\n")[0];
+    let large = &errors("[taskbar]\niconbar.size = 129\n")[0];
 
     assert!(small.contains("out of range"), "{small}");
     assert!(large.contains("out of range"), "{large}");
 
-    let config =
-        parse("[icon_bar]\nicon_size = 32\n", &no_font).expect("valid config");
+    let config = parse("[taskbar]\niconbar.size = 32\n", &no_font)
+        .expect("valid config");
 
-    assert_eq!(config.taskbar.icons.icon_size, 32);
+    assert_eq!(config.taskbar.iconbar.size, 32);
 }
 
 #[test]
 fn border_range() {
-    let small = &errors("[icon_bar]\nborder = 0\n")[0];
-    let large = &errors("[icon_bar]\nborder = 33\n")[0];
+    let small = &errors("[taskbar]\niconbar.border = 0\n")[0];
+    let large = &errors("[taskbar]\niconbar.border = 33\n")[0];
 
     assert!(small.contains("out of range"), "{small}");
     assert!(large.contains("out of range"), "{large}");
     assert_eq!(
-        parse("[icon_bar]\nborder = 8\n", &no_font)
+        parse("[taskbar]\niconbar.border = 8\n", &no_font)
             .expect("valid config")
             .taskbar
-            .icons
+            .iconbar
             .border,
         8
     );

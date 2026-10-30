@@ -4,6 +4,7 @@
 //! Taskbar mode.
 
 use super::*;
+use crate::core::order::SortBy;
 
 fn no_font(_: &Path) -> bool {
     false
@@ -18,10 +19,10 @@ fn errors(text: &str) -> Vec<String> {
 }
 
 #[test]
-fn taskbar_defaults_to_icons() {
+fn taskbar_defaults_to_iconbar() {
     let config = parse("", &no_font).expect("valid config");
 
-    assert_eq!(config.taskbar.mode, TaskbarMode::Icons);
+    assert_eq!(config.taskbar.mode, TaskbarMode::Iconbar);
 }
 
 #[test]
@@ -30,12 +31,12 @@ fn taskbar_mode_values() {
 
     assert_eq!(mode("[taskbar]\nmode = \"off\"\n"), Ok(TaskbarMode::Off));
     assert_eq!(
-        mode("[taskbar]\nmode = \"icons\"\n"),
-        Ok(TaskbarMode::Icons)
+        mode("[taskbar]\nmode = \"iconbar\"\n"),
+        Ok(TaskbarMode::Iconbar)
     );
     assert_eq!(
-        mode("[taskbar]\nmode = \"titles\"\n"),
-        Ok(TaskbarMode::Titles)
+        mode("[taskbar]\nmode = \"titlebar\"\n"),
+        Ok(TaskbarMode::Titlebar)
     );
     assert_eq!(mode("[taskbar]\nmode = \"both\"\n"), Ok(TaskbarMode::Both));
     assert!(
@@ -44,9 +45,28 @@ fn taskbar_mode_values() {
 }
 
 #[test]
+fn sort_by_values() {
+    let sort = |text| parse(text, &no_font).map(|c| c.taskbar.titlebar.sort_by);
+
+    assert_eq!(sort(""), Ok(SortBy::Recently));
+    assert_eq!(
+        sort("[taskbar]\ntitlebar.sort_by = \"app\"\n"),
+        Ok(SortBy::App)
+    );
+    assert!(
+        errors("[taskbar]\ntitlebar.sort_by = \"name\"\n")[0]
+            .contains("unknown variant")
+    );
+    assert!(
+        errors("[taskbar]\ntitlebar.sort_by = \"key\"\n")[0]
+            .contains("unknown variant")
+    );
+}
+
+#[test]
 fn removed_enabled_keys_are_unknown() {
-    let title = &errors("[title_bar]\nenabled = true\n")[0];
-    let icon = &errors("[icon_bar]\nenabled = false\n")[0];
+    let title = &errors("[taskbar]\ntitlebar.enabled = true\n")[0];
+    let icon = &errors("[taskbar]\niconbar.enabled = false\n")[0];
 
     assert!(title.contains("unknown key `enabled`"), "{title}");
     assert!(title.contains("release notes"), "{title}");

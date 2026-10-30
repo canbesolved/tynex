@@ -35,7 +35,7 @@ pub(crate) struct Layout {
 
 /// Returns true while the strip is on screen.
 pub(crate) fn shows(view: &View<'_>, metrics: &Metrics) -> bool {
-    metrics.taskbar.icons() && view.query.is_empty()
+    metrics.taskbar.iconbar() && view.query.is_empty()
 }
 
 /// Returns the surface width in physical pixels.

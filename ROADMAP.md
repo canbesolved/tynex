@@ -39,7 +39,8 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 
 ### 0.2.13
 
-- [ ] `titles` mode of the taskbar can hide the app icons in the list.
+- [ ] `titlebar` mode of the taskbar can hide the app icons in the
+  list.
 
 ### 0.2.14
 

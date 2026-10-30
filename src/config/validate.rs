@@ -14,8 +14,8 @@ use crate::config::raw::{
     RawLauncherMode, RawSortBy, RawTaskbarMode,
 };
 use crate::config::{
-    Config, Font, HintConfig, HotkeysConfig, IconBarConfig, InputBarConfig,
-    LauncherConfig, LauncherMode, MainConfig, NewWindowConfig, OutputBarConfig,
+    Config, Font, HintConfig, HotkeysConfig, IconBarConfig, InputConfig,
+    LauncherConfig, LauncherMode, MainConfig, NewWindowConfig, OutputConfig,
     TaskbarConfig, TaskbarMode, TitleBarConfig,
 };
 use crate::core::order::SortBy;
@@ -51,15 +51,10 @@ pub(super) fn validate(
 
     check_range("main.font_size", &main.font_size, 8..=72, &mut err);
     check_range("main.width", &main.width, 200..=2000, &mut err);
-    check_range(
-        "output_bar.max_rows",
-        &raw.output_bar.max_rows,
-        1..=50,
-        &mut err,
-    );
-    check_icon(&raw.icon_bar, &mut err);
-    let new_window = check_new_window(&raw.input_bar.launcher, &mut err);
-    let hint = check_hint(&raw.input_bar.hint, &mut err);
+    check_range("output.max_rows", &raw.output.max_rows, 1..=50, &mut err);
+    check_icon(&raw.taskbar.iconbar, &mut err);
+    let new_window = check_new_window(&raw.input.launcher, &mut err);
+    let hint = check_hint(&raw.input.hint, &mut err);
 
     if !errors.is_empty() {
         return Err(errors);
@@ -78,9 +73,9 @@ pub(super) fn validate(
                 RawHotkeyAction::Last => HotkeyAction::Last,
             },
         },
-        input_bar: InputBarConfig {
+        input: InputConfig {
             launcher: LauncherConfig {
-                mode: match raw.input_bar.launcher.mode {
+                mode: match raw.input.launcher.mode {
                     RawLauncherMode::Off => LauncherMode::Off,
                     RawLauncherMode::All => LauncherMode::All,
                     RawLauncherMode::GuiOnly => LauncherMode::GuiOnly,
@@ -89,22 +84,22 @@ pub(super) fn validate(
             },
             hint,
         },
-        output_bar: OutputBarConfig {
-            max_rows: raw.output_bar.max_rows.into_inner(),
+        output: OutputConfig {
+            max_rows: raw.output.max_rows.into_inner(),
         },
         taskbar: TaskbarConfig {
             mode: taskbar_mode(&raw.taskbar.mode),
-            titles: TitleBarConfig {
-                sort_by: match raw.title_bar.sort_by {
+            titlebar: TitleBarConfig {
+                sort_by: match raw.taskbar.titlebar.sort_by {
                     RawSortBy::App => SortBy::App,
                     RawSortBy::Recently => SortBy::Recently,
                 },
-                show_icons: raw.title_bar.show_icons,
-                strip_app_name: raw.title_bar.strip_app_name,
+                show_icons: raw.taskbar.titlebar.show_icons,
+                strip_app_name: raw.taskbar.titlebar.strip_app_name,
             },
-            icons: IconBarConfig {
-                icon_size: raw.icon_bar.icon_size.into_inner(),
-                border: raw.icon_bar.border.into_inner(),
+            iconbar: IconBarConfig {
+                size: raw.taskbar.iconbar.size.into_inner(),
+                border: raw.taskbar.iconbar.border.into_inner(),
             },
         },
     })
@@ -114,8 +109,8 @@ pub(super) fn validate(
 fn taskbar_mode(mode: &RawTaskbarMode) -> TaskbarMode {
     match mode {
         RawTaskbarMode::Off => TaskbarMode::Off,
-        RawTaskbarMode::Icons => TaskbarMode::Icons,
-        RawTaskbarMode::Titles => TaskbarMode::Titles,
+        RawTaskbarMode::Iconbar => TaskbarMode::Iconbar,
+        RawTaskbarMode::Titlebar => TaskbarMode::Titlebar,
         RawTaskbarMode::Both => TaskbarMode::Both,
     }
 }
@@ -131,7 +126,7 @@ fn check_new_window(
         err(
             raw.new_window_text_color.span(),
             format!(
-                "`input_bar.launcher.new_window_text_color` = {color:?} \
+                "`input.launcher.new_window_text_color` = {color:?} \
                  is not a color, expected \"#RRGGBB\""
             ),
         );
@@ -142,8 +137,7 @@ fn check_new_window(
     if text.is_empty() {
         err(
             raw.new_window_text.span(),
-            "`input_bar.launcher.new_window_text` is empty, expected \
-             a title"
+            "`input.launcher.new_window_text` is empty, expected a title"
                 .into(),
         );
     }
@@ -166,7 +160,7 @@ fn check_hint(
         err(
             raw.font_color.span(),
             format!(
-                "`input_bar.hint.font_color` = {color:?} is not a color, \
+                "`input.hint.font_color` = {color:?} is not a color, \
                  expected \"#RRGGBB\""
             ),
         );
@@ -178,7 +172,7 @@ fn check_hint(
         err(
             raw.update.span(),
             format!(
-                "`input_bar.hint.update` = {update} is out of range, \
+                "`input.hint.update` = {update} is out of range, \
                  expected 0 to 86400"
             ),
         );
@@ -197,8 +191,8 @@ fn check_icon(
     raw: &RawIconBar,
     err: &mut impl FnMut(std::ops::Range<usize>, String),
 ) {
-    check_range("icon_bar.icon_size", &raw.icon_size, 8..=128, err);
-    check_range("icon_bar.border", &raw.border, 1..=32, err);
+    check_range("taskbar.iconbar.size", &raw.size, 8..=128, err);
+    check_range("taskbar.iconbar.border", &raw.border, 1..=32, err);
 }
 
 /// Reports `<name>` when its value is outside `range`.

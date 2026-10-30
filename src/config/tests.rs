@@ -6,7 +6,6 @@
 use std::fs;
 
 use super::*;
-use crate::core::order::SortBy;
 
 fn no_font(_: &Path) -> bool {
     false
@@ -51,40 +50,25 @@ fn hotkey_action_values() {
 }
 
 #[test]
-fn sort_by_values() {
-    let sort = |text| parse(text, &no_font).map(|c| c.taskbar.titles.sort_by);
-
-    assert_eq!(sort(""), Ok(SortBy::Recently));
-    assert_eq!(sort("[title_bar]\nsort_by = \"app\"\n"), Ok(SortBy::App));
-    assert!(
-        errors("[title_bar]\nsort_by = \"name\"\n")[0]
-            .contains("unknown variant")
-    );
-    assert!(
-        errors("[title_bar]\nsort_by = \"key\"\n")[0]
-            .contains("unknown variant")
-    );
-}
-
-#[test]
 fn title_bar_icons_and_strip_values() {
-    let text = "[title_bar]\nshow_icons = false\nstrip_app_name = true\n";
+    let text = "[taskbar]\ntitlebar.show_icons = false\n\
+                titlebar.strip_app_name = true\n";
     let config = parse(text, &no_font).expect("valid config");
 
-    assert!(!config.taskbar.titles.show_icons);
-    assert!(config.taskbar.titles.strip_app_name);
+    assert!(!config.taskbar.titlebar.show_icons);
+    assert!(config.taskbar.titlebar.strip_app_name);
 }
 
 #[test]
 fn show_icons_defaults_to_true() {
-    let config = parse("[title_bar]\n", &no_font).expect("valid config");
+    let config = parse("[taskbar]\n", &no_font).expect("valid config");
 
-    assert!(config.taskbar.titles.show_icons);
+    assert!(config.taskbar.titlebar.show_icons);
 }
 
 #[test]
 fn removed_show_app_icon_is_an_unknown_key() {
-    let msg = &errors("[title_bar]\nshow_app_icon = true\n")[0];
+    let msg = &errors("[taskbar]\ntitlebar.show_app_icon = true\n")[0];
 
     assert!(msg.contains("unknown key `show_app_icon`"), "{msg}");
     assert!(msg.contains("release notes"), "{msg}");
@@ -92,26 +76,26 @@ fn removed_show_app_icon_is_an_unknown_key() {
 
 #[test]
 fn empty_input_bar_uses_launcher_gui_only() {
-    let config = parse("[input_bar]\n", &no_font).expect("valid config");
+    let config = parse("[input]\n", &no_font).expect("valid config");
 
-    assert_eq!(config.input_bar.launcher.mode, LauncherMode::GuiOnly);
+    assert_eq!(config.input.launcher.mode, LauncherMode::GuiOnly);
 }
 
 #[test]
 fn launcher_mode_values() {
-    let mode = |text| parse(text, &no_font).map(|c| c.input_bar.launcher.mode);
+    let mode = |text| parse(text, &no_font).map(|c| c.input.launcher.mode);
 
     assert_eq!(mode(""), Ok(LauncherMode::GuiOnly));
     assert_eq!(
-        mode("[input_bar]\nlauncher.mode = \"all\"\n"),
+        mode("[input]\nlauncher.mode = \"all\"\n"),
         Ok(LauncherMode::All)
     );
     assert_eq!(
-        mode("[input_bar]\nlauncher.mode = \"gui_only\"\n"),
+        mode("[input]\nlauncher.mode = \"gui_only\"\n"),
         Ok(LauncherMode::GuiOnly)
     );
     assert!(
-        errors("[input_bar]\nlauncher.mode = \"yes\"\n")[0]
+        errors("[input]\nlauncher.mode = \"yes\"\n")[0]
             .contains("unknown variant")
     );
 }
@@ -146,14 +130,14 @@ fn old_appearance_keys_are_unknown_in_main() {
 
 #[test]
 fn old_title_bar_key_is_unknown_in_appearance_path() {
-    let msg = &errors("[title_bar]\ntitle_bar = true\n")[0];
+    let msg = &errors("[taskbar]\ntitlebar.title_bar = true\n")[0];
 
     assert!(msg.contains("unknown key `title_bar`"), "{msg}");
 }
 
 #[test]
 fn removed_show_app_is_an_unknown_key() {
-    let msg = &errors("[title_bar]\nshow_app = true\n")[0];
+    let msg = &errors("[taskbar]\ntitlebar.show_app = true\n")[0];
 
     assert!(msg.contains("unknown key `show_app`"), "{msg}");
     assert!(msg.contains("release notes"), "{msg}");
@@ -161,7 +145,7 @@ fn removed_show_app_is_an_unknown_key() {
 
 #[test]
 fn removed_title_format_is_an_unknown_key() {
-    let msg = &errors("[title_bar]\ntitle_format = \"{title}\"\n")[0];
+    let msg = &errors("[taskbar]\ntitlebar.title_format = \"{title}\"\n")[0];
 
     assert!(msg.contains("unknown key `title_format`"), "{msg}");
     assert!(msg.contains("release notes"), "{msg}");
@@ -194,7 +178,7 @@ fn removed_layout_is_an_unknown_key() {
 
 #[test]
 fn syntax_and_type_errors_stop_at_first() {
-    assert_eq!(errors("[title_bar]\nsort_by = \n").len(), 1);
+    assert_eq!(errors("[taskbar]\ntitlebar.sort_by = \n").len(), 1);
     assert!(
         errors("[main]\ndesktop = \"gnome\"\n")[0].contains("unknown variant")
     );
@@ -205,7 +189,7 @@ fn syntax_and_type_errors_stop_at_first() {
 fn value_errors_are_all_reported() {
     let text = "[main]\nfont = \"/nope.ttf\"\n\
                 font_size = 120\nwidth = 100\n\
-                [output_bar]\nmax_rows = 0\n";
+                [output]\nmax_rows = 0\n";
     let all = errors(text);
 
     assert_eq!(all.len(), 4, "{all:?}");
@@ -217,7 +201,7 @@ fn value_errors_are_all_reported() {
         "{all:?}"
     );
     assert!(
-        all.iter().any(|m| m.contains("`output_bar.max_rows`")),
+        all.iter().any(|m| m.contains("`output.max_rows`")),
         "{all:?}"
     );
 }

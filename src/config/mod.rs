@@ -130,16 +130,17 @@ impl Default for HintConfig {
     }
 }
 
-/// The `[input_bar]` table.
+/// The `[input]` table.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub struct InputBarConfig {
+pub struct InputConfig {
     pub launcher: LauncherConfig,
     pub hint: HintConfig,
 }
 
+/// The `[output]` table.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct OutputBarConfig {
-    pub max_rows: u16, // Cap for the output bar and the title bar
+pub struct OutputConfig {
+    pub max_rows: u16, // Cap for the output bar and the title list
 }
 
 /// The whole config file, validated.
@@ -147,8 +148,8 @@ pub struct OutputBarConfig {
 pub struct Config {
     pub main: MainConfig,
     pub hotkeys: HotkeysConfig,
-    pub input_bar: InputBarConfig,
-    pub output_bar: OutputBarConfig,
+    pub input: InputConfig,
+    pub output: OutputConfig,
     pub taskbar: TaskbarConfig,
 }
 
@@ -164,8 +165,8 @@ impl Default for Config {
             hotkeys: HotkeysConfig {
                 action: HotkeyAction::Last,
             },
-            input_bar: InputBarConfig::default(),
-            output_bar: OutputBarConfig { max_rows: 19 },
+            input: InputConfig::default(),
+            output: OutputConfig { max_rows: 19 },
             taskbar: TaskbarConfig::default(),
         }
     }
@@ -221,3 +222,7 @@ mod icon_tests;
 #[cfg(test)]
 #[path = "taskbar_tests.rs"]
 mod taskbar_tests;
+
+#[cfg(test)]
+#[path = "sections_tests.rs"]
+mod sections_tests;

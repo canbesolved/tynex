@@ -37,6 +37,14 @@ Features that shipped in a release and were removed later.
 - `title_bar.enabled` (added in 0.2.0) and `icon_bar.enabled` (added
   in 0.2.9): removed in 0.2.10 (**Breaking**). Replaced by
   `taskbar.mode` ([ADR-0065](docs/adr/0065_taskbar.md)).
+- `[input_bar]` and `[output_bar]` (added in 0.2.0), `[title_bar]`
+  (added in 0.2.0) and `[icon_bar]` (added in 0.2.9): removed in
+  0.2.11 (**Breaking**). Replaced by `[input]`, `[output]` and
+  `taskbar.titlebar` / `taskbar.iconbar`
+  ([ADR-0066](docs/adr/0066_short_sections.md)).
+- `taskbar.mode` values `icons` and `titles`: added in 0.2.10,
+  removed in 0.2.11 (**Breaking**). Replaced by `iconbar` and
+  `titlebar` ([ADR-0066](docs/adr/0066_short_sections.md)).
 
 ## Never shipped
 

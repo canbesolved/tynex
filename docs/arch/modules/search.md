@@ -23,7 +23,7 @@ Source: `src/modules/search/fuzzy.rs` and `src/modules/search/fold.rs`.
   characters. Shorter queries (`code`, `c`) allow no typo, so weak
   near-matches stay out.
 - Results are sorted by the better score of title and app; ties
-  keep the row order from `title_bar.sort_by` (see
+  keep the row order from `taskbar.titlebar.sort_by` (see
   [core.md](../core.md#row-order)).
 - Match indices go into `View` so the output bar can highlight them, for
   the title only. `frizbee` returns byte offsets of matched

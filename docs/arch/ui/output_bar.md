@@ -24,7 +24,7 @@ After typing
 
 The list under the input is the output bar. The title list is hidden
 while the query is non-empty. Clearing the query shows the open
-windows again when `taskbar.mode` is `titles` or `both`. See
+windows again when `taskbar.mode` is `titlebar` or `both`. See
 [taskbar.md](taskbar.md).
 
 ## Rules
@@ -33,7 +33,7 @@ windows again when `taskbar.mode` is `titles` or `both`. See
   hide it.
 - An empty match list still keeps one row of height, so the popup
   does not collapse.
-- At most `output_bar.max_rows` rows. The list scrolls so the
+- At most `output.max_rows` rows. The list scrolls so the
   selected match stays visible.
 - Rows are icon and title. The icon slot is always reserved here.
   Matched letters use the highlight color (see [render.md](render.md)).

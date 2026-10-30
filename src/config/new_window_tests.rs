@@ -19,9 +19,9 @@ fn errors(text: &str) -> Vec<String> {
 
 #[test]
 fn missing_keys_keep_the_row_on() {
-    let row = parse("[input_bar]\nlauncher.mode = \"all\"\n", &no_font)
+    let row = parse("[input]\nlauncher.mode = \"all\"\n", &no_font)
         .expect("valid config")
-        .input_bar
+        .input
         .launcher
         .new_window;
 
@@ -33,13 +33,13 @@ fn missing_keys_keep_the_row_on() {
 #[test]
 fn new_window_values() {
     let text = "\
-[input_bar]\n\
+[input]\n\
 launcher.new_window = false\n\
 launcher.new_window_text_color = \"#112233\"\n\
 launcher.new_window_text = \" +  Open\"\n";
     let row = parse(text, &no_font)
         .expect("valid config")
-        .input_bar
+        .input
         .launcher
         .new_window;
 
@@ -51,7 +51,7 @@ launcher.new_window_text = \" +  Open\"\n";
 #[test]
 fn bad_color_and_empty_text_are_reported() {
     let text = "\
-[input_bar]\n\
+[input]\n\
 launcher.new_window_text_color = \"##112233\"\n\
 launcher.new_window_text = \"\"\n";
     let all = errors(text);
@@ -67,7 +67,7 @@ launcher.new_window_text = \"\"\n";
 
 #[test]
 fn nested_new_window_table_is_unknown() {
-    let msg = &errors("[input_bar.launcher.new_window]\nenabled = true\n")[0];
+    let msg = &errors("[input.launcher.new_window]\nenabled = true\n")[0];
 
     assert!(
         msg.contains("new_window") || msg.contains("invalid type"),

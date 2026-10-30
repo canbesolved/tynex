@@ -15,7 +15,7 @@
 use std::time::Instant;
 
 use crate::config::{
-    HintConfig, MainConfig, OutputBarConfig, TaskbarConfig, TaskbarMode,
+    HintConfig, MainConfig, OutputConfig, TaskbarConfig, TaskbarMode,
 };
 use crate::core::event::Click;
 use crate::core::view::View;
@@ -54,7 +54,7 @@ impl Painter {
         text: Text,
         icons: Icons,
         main: &MainConfig,
-        output: &OutputBarConfig,
+        output: &OutputConfig,
         hint: &HintConfig,
         taskbar: &TaskbarConfig,
     ) -> Self {
@@ -68,10 +68,10 @@ impl Painter {
             width: main.width,
             max_rows: output.max_rows,
             taskbar: taskbar.mode,
-            show_icons: taskbar.titles.show_icons,
+            show_icons: taskbar.titlebar.show_icons,
             hint_color: Rgba(color.r, color.g, color.b, 0xff),
-            icon_size: f32::from(taskbar.icons.icon_size),
-            border: f32::from(taskbar.icons.border),
+            icon_size: f32::from(taskbar.iconbar.size),
+            border: f32::from(taskbar.iconbar.border),
             slide: Slide::default(),
             drawn: 0.0,
         }
@@ -97,7 +97,7 @@ impl Painter {
 
         for icon in icons {
             self.icons.prepare(icon, size);
-            if self.taskbar.icons() {
+            if self.taskbar.iconbar() {
                 self.icons.prepare(icon, strip);
             }
         }

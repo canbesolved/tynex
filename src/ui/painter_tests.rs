@@ -22,7 +22,7 @@ pub(in crate::ui) const M: Metrics = Metrics {
     width: 300.0,
     max_rows: 3,
     scale: 1.0,
-    taskbar: TaskbarMode::Titles,
+    taskbar: TaskbarMode::Titlebar,
     show_icons: true,
     hint_color: Rgba(0x8d, 0xa7, 0x87, 0xff),
     icon_size: 24.0,
