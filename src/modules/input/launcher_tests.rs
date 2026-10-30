@@ -7,6 +7,7 @@ use super::*;
 use crate::config::NewWindowConfig;
 use crate::core::view::Rgb;
 use crate::core::window::WindowId;
+use crate::modules::search::fuzzy::rank;
 
 fn window(id: &str, app_id: &str, app_name: &str, title: &str) -> Row {
     Row {
@@ -90,6 +91,21 @@ fn code_does_not_rank_rustdesk_above_code() {
 
     assert_eq!(titles(&out), ["Code - OSS"]);
     assert_eq!(targets(&out), [RowTarget::Launch("code".into())]);
+}
+
+#[test]
+fn windows_stay_ahead_of_a_stronger_idle_app() {
+    let windows = vec![window("w1", "browser", "Browser", "firefox notes")];
+    let apps = vec![app("browser", "Browser"), app("firefox", "Firefox")];
+    let window_score =
+        rank("firefox", &[("firefox notes", "Browser")])[0].score;
+    let idle_score = rank("firefox", &[("Firefox", "firefox")])[0].score;
+
+    assert!(idle_score > window_score);
+    assert_eq!(
+        titles(&merge("firefox", &windows, &apps, &label())),
+        ["firefox notes", " +  New window", "Firefox"]
+    );
 }
 
 #[test]

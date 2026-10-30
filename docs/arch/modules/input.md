@@ -36,8 +36,10 @@ installed apps join the output list
 - An app that is not running and matches: one launch row (title =
   name).
 - A matching window with no desktop entry stays a window row.
-- Groups are ordered by match score; on a tie, a running app beats
-  an idle one (so `c` prefers an open Cursor over Calf).
+- Open windows come first, best score first. Installed apps that
+  are not running follow. A new-window row stays under its app, so
+  `c` still lists an open Cursor before Calf even when Calf scores
+  higher ([ADR-0078](../../adr/0078_windows_before_apps.md)).
 
 `gui_only` skips `Terminal=true` apps. The platform catalog supplies
 `AppInfo` values; `Exec` stays on the platform

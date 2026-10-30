@@ -15,10 +15,10 @@ use crate::modules::search::fuzzy::{Hit, rank};
 
 /// Builds the output list for a non-empty query with the launcher on.
 ///
-/// A running app whose name or id matches lists all of its windows,
-/// then a new-window row when that row is enabled. A title-only match
-/// lists those windows, then the row when the app is installed. An
-/// app that is not running and matches is one launch row.
+/// Matching open windows come first. A running app lists its windows,
+/// then a new-window row when that row is enabled. Installed apps that
+/// are not running follow, one launch row each. A title-only match
+/// lists those windows, then the row when the app is installed.
 #[must_use]
 pub fn merge(
     query: &str,
@@ -74,13 +74,15 @@ fn collect_groups<'a>(
 
     let mut groups: Vec<_> = by_app.into_iter().collect();
 
-    // Better score first; on a tie, running apps before launch-only,
-    // then app id for stability.
+    // Open windows first, then launch-only apps. Inside each band,
+    // a better score comes first, then app id.
     groups.sort_by(|(id_a, a), (id_b, b)| {
-        Reverse(a.score).cmp(&Reverse(b.score)).then_with(|| {
-            let run = |id: &str| windows.iter().any(|w| w.app_id == id);
+        let open = |id: &str| windows.iter().any(|w| w.app_id == id);
 
-            run(id_b).cmp(&run(id_a)).then_with(|| id_a.cmp(id_b))
+        open(id_b).cmp(&open(id_a)).then_with(|| {
+            Reverse(a.score)
+                .cmp(&Reverse(b.score))
+                .then_with(|| id_a.cmp(id_b))
         })
     });
     groups

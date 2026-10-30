@@ -9,6 +9,16 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.17] - 2026-10-31
+
+A search lists open windows before installed apps.
+
+### Changed
+
+- Matching open windows come before installed apps in the output
+  bar. A stronger idle app no longer jumps above an open window.
+  The new-window row stays under its app (ADR-0078).
+
 ## [0.2.16] - 2026-10-30
 
 The pointer selects rows in the title list and the dropdown.
@@ -494,7 +504,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.16...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.17...HEAD
+[0.2.17]: https://github.com/canbesolved/tynex/releases/tag/v0.2.17
 [0.2.16]: https://github.com/canbesolved/tynex/releases/tag/v0.2.16
 [0.2.15]: https://github.com/canbesolved/tynex/releases/tag/v0.2.15
 [0.2.14]: https://github.com/canbesolved/tynex/releases/tag/v0.2.14

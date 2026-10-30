@@ -4,9 +4,10 @@ Source: `src/ui/output_bar.rs`. The result of what was typed in the
 [input bar](input_bar.md).
 
 The result depends on the request. A query shows the windows it
-matched, and with the launcher on, launch rows for installed apps
+matched, then, with the launcher on, launch rows for installed apps
 ([ADR-0054](../../adr/0054_output_bar.md),
 [ADR-0056](../../adr/0056_launcher_input.md),
+[ADR-0078](../../adr/0078_windows_before_apps.md),
 [modules/input.md](../modules/input.md)). Later requests can show a
 model answer in this same module.
 
