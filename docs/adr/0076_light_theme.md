@@ -75,6 +75,6 @@ shares radius, padding and the selection color with `Theme::dark`.
 
 ## More Information
 
-The item is 0.2.18 in [ROADMAP.md](../../ROADMAP.md). Custom theme
+The item is 0.2.15 in [ROADMAP.md](../../ROADMAP.md). Custom theme
 files, per-color options and following the desktop scheme stay
 later. Colors live in [render.md](../arch/ui/render.md).
