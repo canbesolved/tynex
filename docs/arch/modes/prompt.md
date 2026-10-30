@@ -52,11 +52,15 @@ Typing hides them; clearing the query shows them again (see
 While `taskbar.mode` is `iconbar` or `both` and the query is empty,
 `Left` and `Right` move along the icons and close an open dropdown.
 The pointer does the same to the icon under it, and leaves the
-selection when it moves off the icons. `Enter` and `Space` activate
-the selected title when that list is on. With it off, they activate
+selection when it moves off the icons. A left click on the icon
+whose dropdown is open closes that menu. Hovering a title-list row
+or a dropdown title selects it, and a click on a title-list row or
+a dropdown title activates it. `Enter` and `Space` activate the
+selected title when that list is on. With it off, they activate
 one window, open the dropdown, or launch. An open dropdown still
 takes `Enter` and `Space`. `Up` and `Down` move inside an open
-dropdown; otherwise they still move the list above. `Tab` steps that
+dropdown, scrolling only to keep the title on screen; otherwise
+they still move the list above. `Tab` steps that
 dropdown while it is open. With the title list off, `Tab` moves to
 the next icon. `Shift+Tab` steps back in the same places. `Esc`
 closes the dropdown first, then clears the

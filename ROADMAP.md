@@ -21,17 +21,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.15
-
-- [ ] Light theme next to the default dark one, chosen in the config.
-
-### 0.2.16
-
-- [ ] Mouse in the title list: hover highlights a row and moves the
-  selection to it, and a click activates it.
-- [ ] Mouse in the dropdown: hover highlights a title and moves the
-  selection to it, and a click activates it.
-
 ### 0.2.17
 
 - [ ] When you search, the output bar lists open windows first, then

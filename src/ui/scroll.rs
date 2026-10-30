@@ -37,6 +37,12 @@ impl Viewport {
         *self = Self::default();
     }
 
+    /// Returns the first row of the last frame.
+    #[must_use]
+    pub fn first(&self) -> usize {
+        self.first
+    }
+
     /// Returns `metrics` with the first row set, following a selection
     /// that changed since the last frame.
     pub fn place(&mut self, view: &View<'_>, mut metrics: Metrics) -> Metrics {
@@ -97,7 +103,7 @@ fn list(view: &View<'_>, metrics: &Metrics) -> Option<(usize, usize)> {
 }
 
 /// Moves `first` the least so row `selected` is among `rows` shown.
-fn follow(first: usize, selected: usize, rows: usize) -> usize {
+pub(crate) fn follow(first: usize, selected: usize, rows: usize) -> usize {
     if selected < first {
         selected
     } else if selected >= first + rows {

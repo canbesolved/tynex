@@ -13,9 +13,69 @@ use crate::ui::draw::{self, Grid, Metrics, Paint};
 use crate::ui::frames;
 use crate::ui::render::canvas::Area;
 use crate::ui::render::text::Text;
+use crate::ui::scroll;
 
 /// Longest title, in logical pixels, before the ellipsis.
 const TITLE_CAP: f32 = 450.0;
+
+/// First dropdown row on screen. A new selection moves it only far
+/// enough to keep that title visible.
+#[derive(Debug, Default)]
+pub(crate) struct Place {
+    first: usize,
+    index: Option<usize>,
+}
+
+impl Place {
+    /// Forgets the window, for example when the dropdown closes.
+    pub fn reset(&mut self) {
+        *self = Self::default();
+    }
+
+    /// Returns the first row of the last alignment.
+    #[must_use]
+    pub fn first(&self) -> usize {
+        self.first
+    }
+
+    /// Moves the window only when `index` would leave the shown rows.
+    pub fn align(&mut self, index: usize, shown: usize, len: usize) -> usize {
+        let shown = shown.max(1);
+
+        if self.index != Some(index) {
+            self.first = scroll::follow(self.first, index, shown);
+            self.index = Some(index);
+        }
+        self.first = self.first.min(len.saturating_sub(shown));
+        self.first
+    }
+}
+
+/// Updates `place` from the open dropdown, or forgets it when closed.
+pub(crate) fn follow(place: &mut Place, view: &View<'_>, metrics: &Metrics) {
+    if !strip::shows(view, metrics) {
+        place.reset();
+        return;
+    }
+    let Some(index) = view.dropdown else {
+        place.reset();
+        return;
+    };
+    let Some(icon) = view.icons().get(view.icon) else {
+        place.reset();
+        return;
+    };
+    let len = icons::ordered(icon, view.window_rows()).len();
+
+    if len == 0 {
+        place.reset();
+        return;
+    }
+    let index = index.min(len - 1);
+    let shown = rows(view, metrics).min(len);
+
+    place.align(index, shown, len);
+}
 
 /// A dropdown captured so it can slide closed after the state drops it.
 #[derive(Debug, Clone)]
@@ -30,12 +90,25 @@ pub(crate) struct Panel {
     pub first: usize,        // Dropdown index of the first row shown
 }
 
+/// Aligns the dropdown window and returns the panel to draw.
+pub(crate) fn open(
+    place: &mut Place,
+    view: &View<'_>,
+    metrics: &Metrics,
+    grid: &Grid,
+    text: &Text,
+) -> Option<Panel> {
+    follow(place, view, metrics);
+    panel(view, metrics, grid, text, place.first())
+}
+
 /// Returns the open dropdown, or `None` when it is closed.
 pub(crate) fn panel(
     view: &View<'_>,
     metrics: &Metrics,
     grid: &Grid,
     text: &Text,
+    origin: usize,
 ) -> Option<Panel> {
     if !strip::shows(view, metrics) {
         return None;
@@ -53,7 +126,7 @@ pub(crate) fn panel(
 
     let index = index.min(all.len() - 1);
     let rows = rows(view, metrics).min(all.len());
-    let first = (index + 1).saturating_sub(rows); // Keep the selection shown
+    let first = origin.min(all.len().saturating_sub(rows));
     let titles = all[first..first + rows].to_vec();
     let font = grid.font;
     let longest = all
@@ -75,7 +148,7 @@ pub(crate) fn panel(
         w,
         h: titles.len() as f32 * grid.row_h,
         row_h: grid.row_h,
-        selected: index - first,
+        selected: index.saturating_sub(first),
         titles,
         first,
     })

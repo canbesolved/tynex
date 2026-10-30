@@ -64,8 +64,11 @@ pub(super) fn click(click: Click, s: &mut State, cap: usize) -> Action {
             if index >= s.icons.len() {
                 return Action::None;
             }
+            if index == s.icon && s.dropdown.is_some() {
+                s.close_dropdown();
+                return Action::Redraw;
+            }
             let switched = s.icon != index;
-
             let app = s.icons[index].app_id.clone();
 
             s.select_icon(Some(&app));
@@ -82,26 +85,36 @@ pub(super) fn click(click: Click, s: &mut State, cap: usize) -> Action {
             s.close_dropdown();
             Action::Redraw
         }
-        Click::Menu(_) | Click::Elsewhere => Action::None,
+        Click::Menu(_) | Click::Row(_) | Click::Elsewhere => Action::None,
     }
 }
 
-/// Selects the icon under the pointer.
+/// Selects the icon or dropdown title under the pointer.
 ///
 /// Leaving the icons keeps the current selection. Moving to another
-/// icon closes an open dropdown.
-pub(super) fn hover(click: Click, s: &mut State) -> Action {
-    let Click::Icon(index) = click else {
-        return Action::None;
-    };
-    if index >= s.icons.len() || index == s.icon {
-        return Action::None;
-    }
-    let app = s.icons[index].app_id.clone();
+/// icon closes an open dropdown. A title already selected stays put.
+pub(super) fn hover(click: Click, s: &mut State, cap: usize) -> Action {
+    match click {
+        Click::Icon(index) => {
+            if index >= s.icons.len() || index == s.icon {
+                return Action::None;
+            }
+            let app = s.icons[index].app_id.clone();
 
-    s.select_icon(Some(&app));
-    s.close_dropdown();
-    Action::Redraw
+            s.select_icon(Some(&app));
+            s.close_dropdown();
+            Action::Redraw
+        }
+        Click::Menu(index)
+            if s.dropdown.is_some()
+                && s.dropdown != Some(index)
+                && index < s.menu_len(cap) =>
+        {
+            s.dropdown = Some(index);
+            Action::Redraw
+        }
+        Click::Menu(_) | Click::Row(_) | Click::Elsewhere => Action::None,
+    }
 }
 
 /// Moves the dropdown selection one step.

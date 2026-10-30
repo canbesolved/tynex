@@ -31,7 +31,7 @@ Press a hotkey, type a few letters of a window, press `Enter` or
 `Space`, and you are there. Or press either right away to go back to
 the previous window. No mouse, no scrolling, no waiting.
 
-> Status: 0.2.14 — MVP with KDE Plasma 6 on Wayland support. See the
+> Status: 0.2.16 — MVP with KDE Plasma 6 on Wayland support. See the
 > [roadmap](ROADMAP.md).
 
 ## Features
@@ -60,7 +60,7 @@ the previous window. No mouse, no scrolling, no waiting.
 
 | Environment      | Session | Status  |
 | ---------------- | ------- | ------- |
-| KDE Plasma 6     | Wayland | 0.2.14  |
+| KDE Plasma 6     | Wayland | 0.2.16  |
 | Other DEs / WMs  | Any     | Planned |
 | macOS, Windows   | -       | Planned |
 
@@ -74,7 +74,7 @@ prebuilt binaries for Linux x86_64 and arm64 (glibc 2.35 or newer),
 for example:
 
 ```bash
-v=0.2.14 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
+v=0.2.16 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
 url=https://github.com/canbesolved/tynex/releases/download/v$v
 curl -LO "$url/tynex-$v-$t.tar.gz" -LO "$url/SHA256SUMS"
 sha256sum -c --ignore-missing SHA256SUMS
@@ -131,10 +131,13 @@ it loses keyboard focus.
 In the popup, type to filter, `Enter` or `Space` to switch, `Tab` or
 the arrows to move, and `Esc` to clear the query or close. While the
 query is empty, app icons sit under the input bar. `Left` and
-`Right` move along them, and so does the pointer. With the title
-bar on, `Enter` or `Space` switches to the window selected there.
-With it off, they switch when that app has one window, and open its
-windows when it has several. The selected icon starts as the previous
+`Right` move along them, and so does the pointer. A left click on
+the icon whose dropdown is already open closes that menu. With the
+title bar on, `Enter` or `Space` switches to the window selected
+there; hovering a row selects it and a click activates it. With it
+off, they switch when that app has one window, and open its windows
+when it has several. Hovering a dropdown title selects it, and a
+click activates it. The selected icon starts as the previous
 window's app. Typing hides the icons. `Tab` walks the open windows
 when the title bar is on, moves along the icons when it is off, and
 walks matches while you type. `Shift+Tab` does the same backward.

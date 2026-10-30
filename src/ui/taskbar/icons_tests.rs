@@ -89,10 +89,10 @@ fn a_wide_row_shrinks_and_stays_clickable() {
         &state.view(),
         &metrics,
         &grid,
-        &Text::new(Face::new(FONT, 0).unwrap()),
         placed.x + placed.size / 2.0,
         y,
         1.0,
+        None,
     );
 
     assert_eq!(hit, Click::Icon(0));
@@ -146,7 +146,7 @@ fn a_long_title_is_capped() {
     state.open_dropdown();
 
     let panel =
-        icon_menu::panel(&state.view(), &metrics, &grid, &text).unwrap();
+        icon_menu::panel(&state.view(), &metrics, &grid, &text, 0).unwrap();
 
     assert!(panel.w <= 450.0 + 2.0 * grid.gap + 0.5);
     let under = frames::icon_bottom(&state.view(), &metrics, &grid);
