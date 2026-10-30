@@ -19,6 +19,8 @@ The reasons behind each choice are in the
 - [ui/input_bar.md](ui/input_bar.md): input bar.
 - [ui/output_bar.md](ui/output_bar.md): results of the input.
 - [ui/taskbar.md](ui/taskbar.md): running apps and open windows.
+- [ui/fit.md](ui/fit.md): the popup fits the screen height.
+- [ui/scroll.md](ui/scroll.md): scrolling lists and the scrollbar.
 - [modes/prompt.md](modes/prompt.md): prompt mode, the only mode.
 - [modules/input.md](modules/input.md): input sub-modules (search,
   launcher).
@@ -88,6 +90,8 @@ src/
     input_bar.rs       Input bar
     taskbar/           Icon strip, title list, dropdown
     frames.rs          Rounded frames and the spare room
+    fit.rs             Shrinks the lists to fit the screen
+    scroll.rs          List scrolling and the scrollbar
     slide.rs           Dropdown slide clock
     output_bar.rs      Result of the input
     painter.rs         Stacks the bars and owns the slide

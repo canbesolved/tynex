@@ -13,6 +13,7 @@ use wayland_client::globals::GlobalListContents;
 use wayland_client::protocol::wl_buffer::{self, WlBuffer};
 use wayland_client::protocol::wl_compositor::WlCompositor;
 use wayland_client::protocol::wl_keyboard::WlKeyboard;
+use wayland_client::protocol::wl_output::WlOutput;
 use wayland_client::protocol::wl_pointer::WlPointer;
 use wayland_client::protocol::wl_registry::WlRegistry;
 use wayland_client::protocol::wl_seat::WlSeat;
@@ -27,6 +28,7 @@ use wayland_protocols_wlr::layer_shell::v1::client as layer_shell;
 use crate::core::event::Key;
 use crate::platform::linux::wayland::buffer::Buffers;
 use crate::platform::linux::wayland::keyboard::Keyboard;
+use crate::platform::linux::wayland::output::Output;
 
 /// Events for the caller, collected while dispatching.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -40,6 +42,7 @@ pub enum PresenterEvent {
     FocusLost, // Keyboard focus left the open popup
     Click { x: f64, y: f64 }, // Surface coordinates of a left click
     Hover { x: f64, y: f64 }, // Surface coordinates while moving
+    Scroll { notches: i32, dy: f64 }, // Wheel steps, or touchpad pixels
 }
 
 /// The open popup surface.
@@ -64,7 +67,9 @@ pub(super) struct Wl {
     pub pointer_proxy: Option<WlPointer>,
     pub pointer_x: f64, // Last surface coordinate
     pub pointer_y: f64,
+    pub wheel: (i32, f64), // Notches and pixels of this pointer frame
     pub formats: Vec<Format>,
+    pub outputs: Vec<(WlOutput, Output)>,
     pub scale: f32,
     pub popup: Option<Popup>,
     pub buffers: Option<Buffers>,
@@ -171,7 +176,12 @@ impl Dispatch<ZwlrLayerSurfaceV1, ()> for Wl {
         _: &QueueHandle<Self>,
     ) {
         match e {
-            zwlr_layer_surface_v1::Event::Configure { serial, .. } => {
+            zwlr_layer_surface_v1::Event::Configure {
+                serial,
+                width,
+                height,
+            } => {
+                log::debug!("popup configured at {width}x{height}");
                 layer.ack_configure(serial);
                 if let Some(popup) = &mut s.popup {
                     popup.configured = true;

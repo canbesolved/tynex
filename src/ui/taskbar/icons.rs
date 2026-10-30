@@ -21,7 +21,7 @@ use crate::ui::render::text::{Style, Text};
 const GAP_RATIO: f32 = 0.35;
 
 /// Window count font size, as a fraction of the icon side.
-const BADGE_RATIO: f32 = 0.4;
+const BADGE_RATIO: f32 = 0.3;
 
 /// Placed icons for one frame.
 #[derive(Debug, Clone, Copy)]
@@ -211,7 +211,7 @@ pub(crate) fn hit(
     Click::Elsewhere
 }
 
-/// Draws the window count in a pill on the bottom center of the icon.
+/// Draws the window count in a rounded square at the icon's bottom.
 fn badge(
     paint: &mut Paint<'_, '_>,
     placed: &Layout,
@@ -223,8 +223,8 @@ fn badge(
     let size = (placed.size * BADGE_RATIO).max(1.0);
     let width = paint.text.width(&label, size);
     let h = (size * 1.25).min(placed.size);
-    let w = (width + h * 0.6).clamp(h, placed.size);
-    let pill =
+    let w = (width + h * 0.4).clamp(h, placed.size);
+    let back =
         Area::new(x + (placed.size - w) / 2.0, top + placed.size - h, w, h);
     let style = Style {
         size,
@@ -233,12 +233,12 @@ fn badge(
         highlights: &[],
     };
     let (ascent, descent) = paint.text.metrics(size);
-    let base = (pill.y + h / 2.0 + f32::midpoint(ascent, descent)).round();
+    let base = (back.y + h / 2.0 + f32::midpoint(ascent, descent)).round();
     let left = x + (placed.size - width) / 2.0;
 
     paint
         .canvas
-        .fill_rounded_rect(pill, h / 2.0, paint.theme.border);
+        .fill_rounded_rect(back, h / 4.0, paint.theme.border);
     paint
         .text
         .draw(paint.canvas, &label, (left, base), width.max(1.0), &style);

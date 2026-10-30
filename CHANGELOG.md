@@ -14,12 +14,23 @@ project adheres to
 - `Shift+Tab` moves the selection back, the reverse of `Tab`: in the
   icon strip, an open dropdown, the title list and the output bar. It
   wraps the same way (ADR-0068).
+- The title list and the output bar scroll when they hold more rows
+  than they show: the mouse wheel moves 3 rows per notch, the
+  touchpad scrolls smoothly, and a scrollbar shows the position. The
+  selection stays put while scrolling (ADR-0070).
 
 ### Changed
 
 - The window count of an app is a badge on the bottom center of its
   icon, not a line under it. The icon strip is one icon tall
   (ADR-0067).
+
+### Fixed
+
+- The popup fits the screen: with many windows, the title list and
+  the output bar draw fewer rows, then the dropdown room shrinks.
+  Before, a popup taller than the screen hid the input bar and the
+  icon strip above the screen, and flickered (ADR-0069).
 
 ## [0.2.11] - 2026-10-30
 

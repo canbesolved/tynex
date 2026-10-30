@@ -25,6 +25,8 @@ fn metrics() -> Metrics {
         font_size: 14.0,
         width: 300.0,
         max_rows: 3,
+        list_rows: 3,
+        first_row: None,
         scale: 1.0,
         taskbar: TaskbarMode::Iconbar,
         show_icons: false,
@@ -84,11 +86,29 @@ fn the_count_is_a_badge_on_the_icon() {
     let two = state(&["a", "b"]);
     let placed = layout(&two.view(), &metrics, &grid);
     let top = frames::icon_top(&grid, &metrics);
-    let x = placed.x + placed.size / 2.0 - 5.0; // Pill, left of the digit
-    let y = top + placed.size - 3.0;
+    let x = placed.x + placed.size / 2.0 - 3.5; // Badge, left of the digit
+    let y = top + placed.size - 4.5;
     let badged = pixel(&two, &metrics, x, y);
 
     assert_eq!(strip_height(&two.view(), &metrics, &grid), placed.size);
     assert_eq!(badged, [0x30, 0x36, 0x3d, 0xff]); // Theme border
     assert_ne!(pixel(&one, &metrics, x, y), badged);
+}
+
+#[test]
+fn the_badge_is_a_rounded_square() {
+    let metrics = metrics();
+    let grid = Grid::new(&metrics, &Theme::default());
+    let two = state(&["a", "b"]);
+    let placed = layout(&two.view(), &metrics, &grid);
+    let top = frames::icon_top(&grid, &metrics);
+    let h = (placed.size * 0.3 * 1.25).round(); // Badge side
+    let corner = pixel(
+        &two,
+        &metrics,
+        placed.x + (placed.size - h) / 2.0 + 1.0,
+        top + placed.size - h + 1.0,
+    );
+
+    assert!(corner[0] > 0x20, "corner is cut like a circle: {corner:?}");
 }

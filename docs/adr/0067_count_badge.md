@@ -28,10 +28,11 @@ no app has several windows. Where does the count go instead?
 Chosen option: "Badge on the bottom center of the icon", because the
 strip loses the count line and the badge stays inside the icon.
 
-- The number is 0.4 of the drawn icon side, in a pill of the frame
-  border color. The pill is 1.25 times the font size tall and at
-  most one icon side wide.
-- The pill sits inside the icon, flush with its bottom edge.
+- The number is 0.3 of the drawn icon side, in a rounded square of
+  the frame border color. The square is 1.25 times the font size
+  tall, with corners of a quarter of that. More digits widen it, up
+  to one icon side.
+- The square sits inside the icon, flush with its bottom edge.
 - The strip is one icon side tall. A click below the icons no longer
   hits them.
 
@@ -46,9 +47,10 @@ of ADR-0062 is unchanged.
 
 ### Confirmation
 
-A painter test checks that an app with two windows fills the pill on
-the bottom center of its icon, an app with one window does not, and
-the strip is one icon side tall.
+Painter tests check that an app with two windows fills the badge on
+the bottom center of its icon, an app with one window does not, the
+badge corner is not cut like a circle, and the strip is one icon
+side tall.
 
 ## Pros and Cons of the Options
 

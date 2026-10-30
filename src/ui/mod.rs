@@ -9,11 +9,13 @@
 //! running apps, open windows, or both. The info bar comes later.
 
 pub mod draw;
+pub mod fit;
 pub mod frames;
 pub mod input_bar;
 pub mod output_bar;
 pub mod painter;
 pub mod render;
+pub mod scroll;
 pub mod slide;
 pub mod taskbar;
 

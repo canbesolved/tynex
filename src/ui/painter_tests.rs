@@ -21,6 +21,8 @@ pub(in crate::ui) const M: Metrics = Metrics {
     font_size: 14.0,
     width: 300.0,
     max_rows: 3,
+    list_rows: 3,
+    first_row: None,
     scale: 1.0,
     taskbar: TaskbarMode::Titlebar,
     show_icons: true,

@@ -21,11 +21,13 @@ use crate::core::event::Click;
 use crate::core::view::View;
 use crate::core::window::WindowInfo;
 use crate::ui::draw::{self, Grid, Metrics, Paint, Size};
+use crate::ui::fit;
 pub(crate) use crate::ui::frames::{draw_popup, measured};
 use crate::ui::render::canvas::{Canvas, Rgba};
 use crate::ui::render::icons::Icons;
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
+use crate::ui::scroll::Viewport;
 use crate::ui::slide::Slide;
 use crate::ui::taskbar::icons as strip;
 use crate::ui::taskbar::menu;
@@ -45,7 +47,9 @@ pub struct Painter {
     icon_size: f32,
     border: f32,
     slide: Slide,
-    drawn: f32, // Reveal of the last drawn frame
+    drawn: f32,          // Reveal of the last drawn frame
+    screen: Option<u32>, // Shortest output height, physical pixels
+    list: Viewport,      // First row of the list on screen
 }
 
 impl Painter {
@@ -74,7 +78,34 @@ impl Painter {
             border: f32::from(taskbar.iconbar.border),
             slide: Slide::default(),
             drawn: 0.0,
+            screen: None,
+            list: Viewport::default(),
         }
+    }
+
+    /// Sets the screen height in physical pixels; the popup fits in it.
+    pub fn set_screen(&mut self, height: Option<u32>) {
+        self.screen = height;
+    }
+
+    /// Scrolls the list by wheel `notches` or `dy` logical pixels.
+    pub fn scroll(
+        &mut self,
+        view: &View<'_>,
+        scale: f32,
+        notches: i32,
+        dy: f64,
+    ) -> bool {
+        let metrics = self.fitted(view, scale);
+        let row_h = Grid::new(&metrics, &self.theme).row_h;
+        let rows = dy as f32 * scale / row_h.max(1.0);
+
+        self.list.scroll(view, &metrics, notches, rows)
+    }
+
+    /// Forgets the list position; the next show starts at the top.
+    pub fn hidden(&mut self) {
+        self.list.reset();
     }
 
     /// Loads the icons of new windows at output `scale`, so files are
@@ -106,7 +137,7 @@ impl Painter {
     /// Returns the popup size at output `scale`.
     #[must_use]
     pub fn size(&self, view: &View<'_>, scale: f32) -> Size {
-        measured(view, &self.metrics(scale), &self.theme)
+        measured(view, &self.fitted(view, scale), &self.theme)
     }
 
     /// Draws `view` on `canvas` at output `scale`.
@@ -117,7 +148,7 @@ impl Painter {
         scale: f32,
     ) {
         let now = Instant::now();
-        let metrics = self.metrics(scale);
+        let metrics = self.list.place(view, self.fitted(view, scale));
         let grid = Grid::new(&metrics, &self.theme);
         let open = strip::shows(view, &metrics) && view.dropdown.is_some();
         let panel = menu::panel(view, &metrics, &grid, &self.text);
@@ -151,7 +182,7 @@ impl Painter {
     /// Returns what a click at physical `(x, y)` hits.
     #[must_use]
     pub fn hit(&self, view: &View<'_>, scale: f32, x: f32, y: f32) -> Click {
-        let metrics = self.metrics(scale);
+        let metrics = self.fitted(view, scale);
         let grid = Grid::new(&metrics, &self.theme);
 
         strip::hit(
@@ -189,6 +220,8 @@ impl Painter {
             font_size: f32::from(self.font_size),
             width: f32::from(self.width),
             max_rows: usize::from(self.max_rows),
+            list_rows: usize::from(self.max_rows),
+            first_row: None,
             scale,
             taskbar: self.taskbar,
             show_icons: self.show_icons,
@@ -196,6 +229,11 @@ impl Painter {
             icon_size: self.icon_size,
             border: self.border,
         }
+    }
+
+    /// Returns the metrics for `view`, shrunk to fit the screen.
+    fn fitted(&self, view: &View<'_>, scale: f32) -> Metrics {
+        fit::fit(view, self.metrics(scale), &self.theme, self.screen)
     }
 }
 

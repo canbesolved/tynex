@@ -79,8 +79,9 @@ until you type.
   outside the icon. The default is 4 logical pixels, from 1 to 32,
   scaled like `taskbar.iconbar.size`.
 - An app with several windows draws the count in a badge on the
-  bottom center of its icon: the number in a pill of the frame border
-  color, 0.4 of the icon side, inside the icon
+  bottom center of its icon: the number, 0.3 of the icon side, in a
+  rounded square of the frame border color, inside the icon. More
+  digits widen the square
   ([ADR-0067](../../adr/0067_count_badge.md)). The strip is one icon
   tall.
 - `taskbar.iconbar.size` is the icon side in logical pixels, default
@@ -122,8 +123,10 @@ The list does not show search matches. Those are the
   is no app name column
   ([ADR-0058](../../adr/0058_title_bar_row.md)).
 - Titles are truncated with an ellipsis (see [render.md](render.md)).
-- At most `output.max_rows` rows. The list scrolls so the
-  selected window stays visible.
+- At most `output.max_rows` rows, fewer on a short screen
+  ([fit.md](fit.md)). A longer list scrolls: with the wheel or the
+  touchpad, and to keep a newly selected window visible. A scrollbar
+  shows while it scrolls ([scroll.md](scroll.md)).
 - The selected row is highlighted. `Tab` moves that highlight one
   row forward and wraps. `Up` and `Down` move it too
   ([ADR-0061](../../adr/0061_prompt_keys.md)).

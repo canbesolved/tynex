@@ -24,6 +24,8 @@ fn metrics(width: f32) -> Metrics {
         font_size: 14.0,
         width,
         max_rows: 3,
+        list_rows: 3,
+        first_row: None,
         scale: 1.0,
         taskbar: TaskbarMode::Both,
         show_icons: false,
@@ -159,7 +161,6 @@ fn icon_bar_width(text: &Text, title: &str) -> f32 {
 
 fn pixel(data: &[u8], width: u32, x: f32, y: f32) -> [u8; 4] {
     let i = ((y as u32 * width + x as u32) * 4) as usize;
-
     [data[i], data[i + 1], data[i + 2], data[i + 3]]
 }
 

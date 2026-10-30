@@ -23,19 +23,21 @@ use crate::ui::render::theme::Theme;
 /// Sizes and options from the config and the output, in physical pixels.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub(crate) struct Metrics {
-    pub font_size: f32, // Title size
-    pub width: f32,     // Popup width
-    pub max_rows: usize,
-    pub scale: f32,           // Output scale factor, 1.0 or more
-    pub taskbar: TaskbarMode, // Strip, titles, both or off
-    pub show_icons: bool,     // Title-list icon slot
-    pub hint_color: Rgba,     // Hint text while the query is empty
-    pub icon_size: f32,       // Logical pixels
-    pub border: f32,          // Selection outline, logical pixels
+    pub font_size: f32,           // Title size
+    pub width: f32,               // Popup width
+    pub max_rows: usize,          // Dropdown and its spare room
+    pub list_rows: usize,         // Title list and output bar; they scroll
+    pub first_row: Option<usize>, // First list row; None follows selection
+    pub scale: f32,               // Output scale factor, 1.0 or more
+    pub taskbar: TaskbarMode,     // Strip, titles, both or off
+    pub show_icons: bool,         // Title-list icon slot
+    pub hint_color: Rgba,         // Hint text while the query is empty
+    pub icon_size: f32,           // Logical pixels
+    pub border: f32,              // Selection outline, logical pixels
 }
 
 /// Surface size in pixels.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct Size {
     pub width: u32,
     pub height: u32,
