@@ -39,12 +39,13 @@ installed apps join the output list
 - An app that is not running and matches: one launch row (title =
   name).
 - A matching window with no desktop entry stays a window row.
-- Open windows come first. Among them, a title or app name that
-  starts with the query comes before a match later in the text, so
-  `c` lists `Cursor Agents` before `Google Chrome`
-  ([ADR-0079](../../adr/0079_leading_match.md)). Score breaks ties.
-  Installed apps that are not running follow. Launch rows come
-  after the windows, so `c` still lists an open Cursor before Calf
+- Open windows come first. An app whose title or name starts with
+  the query comes before one that matches later in the text, so
+  `c` lists Cursor, then its new-window row, before Google Chrome
+  ([ADR-0079](../../adr/0079_leading_match.md)). The new-window row
+  stays under that app ([ADR-0080](../../adr/0080_new_window_place.md)).
+  Score breaks ties. Installed apps that are not running follow,
+  so `c` still lists an open Cursor before Calf
   ([ADR-0078](../../adr/0078_windows_before_apps.md)).
 
 `gui_only` skips `Terminal=true` apps. The platform catalog supplies

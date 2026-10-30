@@ -106,13 +106,17 @@ fn a_leading_window_stays_above_a_later_match() {
         titles(&out),
         [
             "Cursor Agents",
-            "Google Chrome",
             " +  New window",
+            "Google Chrome",
             " +  New window",
         ]
     );
-    assert_eq!(out[0].app_id, "cursor");
-    assert_eq!(out[1].app_id, "chrome");
+    assert_eq!(
+        out.iter().map(|r| r.app_id.as_str()).collect::<Vec<_>>(),
+        ["cursor", "cursor", "chrome", "chrome"]
+    );
+    assert!(matches!(out[1].target, RowTarget::Launch(_)));
+    assert!(matches!(out[3].target, RowTarget::Launch(_)));
 }
 
 #[test]

@@ -16,11 +16,10 @@ use crate::modules::search::starts_with_query;
 
 /// Builds the output list for a non-empty query with the launcher on.
 ///
-/// Matching open windows come first. A window whose title or app name
-/// starts with the query comes before one that matches later in the
-/// text. Launch rows follow the windows. A running app then adds its
-/// new-window row when that row is enabled. Apps that are not running
-/// follow, one launch row each.
+/// Matching open windows come first. An app whose title or name starts
+/// with the query comes before one that matches later in the text, and
+/// its new-window row stays under those windows. Apps that are not
+/// running follow, one launch row each.
 #[must_use]
 pub fn merge(
     query: &str,
@@ -43,14 +42,15 @@ pub fn merge(
         .map(|a| (a.name.as_str(), short_app_id(&a.id)))
         .collect();
     let app_hits = rank(query, &app_items);
-    let groups = collect_groups(windows, apps, &win_hits, &app_hits);
+    let groups = collect_groups(query, windows, apps, &win_hits, &app_hits);
 
     emit(
-        query, windows, apps, &win_hits, &app_hits, groups, new_window,
+        query, windows, apps, &win_hits, &app_hits, &groups, new_window,
     )
 }
 
 fn collect_groups<'a>(
+    query: &str,
     windows: &'a [Row],
     apps: &'a [AppInfo],
     win_hits: &'a [Hit],
@@ -64,6 +64,7 @@ fn collect_groups<'a>(
 
         group.score = group.score.max(hit.score);
         group.window_hits.push(hit);
+        group.leading |= row_leads(row, query);
         if hit.highlights.is_empty() {
             group.app_field = true;
         }
@@ -78,15 +79,18 @@ fn collect_groups<'a>(
 
     let mut groups: Vec<_> = by_app.into_iter().collect();
 
-    // Open windows first, then launch-only apps. Inside each band,
-    // a better score comes first, then app id.
+    // Open apps first. One whose title or name starts with the query
+    // comes before the other open apps. Then score, then app id.
+    // Launch-only apps stay last.
     groups.sort_by(|(id_a, a), (id_b, b)| {
         let open = |id: &str| windows.iter().any(|w| w.app_id == id);
 
         open(id_b).cmp(&open(id_a)).then_with(|| {
-            Reverse(a.score)
-                .cmp(&Reverse(b.score))
-                .then_with(|| id_a.cmp(id_b))
+            b.leading.cmp(&a.leading).then_with(|| {
+                Reverse(a.score)
+                    .cmp(&Reverse(b.score))
+                    .then_with(|| id_a.cmp(id_b))
+            })
         })
     });
     groups
@@ -98,48 +102,24 @@ fn emit(
     apps: &[AppInfo],
     win_hits: &[Hit],
     app_hits: &[Hit],
-    groups: Vec<(String, Group<'_>)>,
+    groups: &[(String, Group<'_>)],
     new_window: &NewWindowConfig,
 ) -> Vec<Row> {
     let app_matched: HashSet<&str> =
         app_hits.iter().map(|h| apps[h.index].id.as_str()).collect();
     let catalog: HashMap<&str, &AppInfo> =
         apps.iter().map(|a| (a.id.as_str(), a)).collect();
+    let mut scores = vec![0; windows.len()];
+
+    for hit in win_hits {
+        scores[hit.index] = hit.score;
+    }
+
     let mut output = Vec::new();
-
-    for index in shown_windows(query, windows, win_hits, &groups, &app_matched)
-    {
-        push_window(
-            &mut output,
-            &windows[index],
-            win_hits_for(win_hits, index),
-        );
-    }
-    for (app_id, _) in groups {
-        if let Some(app) = catalog.get(app_id.as_str()).copied() {
-            let running = windows.iter().any(|r| r.app_id == app.id);
-
-            if !running || new_window.enabled {
-                output.push(launch_row(app, running, new_window));
-            }
-        }
-    }
-    output
-}
-
-/// Window rows in display order: a title or app name that starts with
-/// the query, then the other matches. Score, then source order.
-fn shown_windows(
-    query: &str,
-    windows: &[Row],
-    win_hits: &[Hit],
-    groups: &[(String, Group<'_>)],
-    app_matched: &HashSet<&str>,
-) -> Vec<usize> {
-    let mut indexes = Vec::new();
     let mut used = HashSet::new();
 
     for (app_id, group) in groups {
+        let mut indexes = Vec::new();
         let take_all = group.app_hit
             || group.app_field
             || app_matched.contains(app_id.as_str());
@@ -157,28 +137,40 @@ fn shown_windows(
                 }
             }
         }
+        indexes.sort_by(|&a, &b| {
+            let lead = |i: usize| row_leads(&windows[i], query);
+
+            lead(b).cmp(&lead(a)).then_with(|| {
+                Reverse(scores[b])
+                    .cmp(&Reverse(scores[a]))
+                    .then_with(|| a.cmp(&b))
+            })
+        });
+        for index in indexes {
+            push_window(
+                &mut output,
+                &windows[index],
+                win_hits_for(win_hits, index),
+            );
+        }
+        if let Some(app) = catalog.get(app_id.as_str()).copied() {
+            let running = windows.iter().any(|r| r.app_id == app.id);
+
+            if !running || new_window.enabled {
+                output.push(launch_row(app, running, new_window));
+            }
+        }
     }
     for hit in win_hits {
         if used.insert(hit.index) {
-            indexes.push(hit.index);
+            push_window(
+                &mut output,
+                &windows[hit.index],
+                Some(hit.highlights.clone()),
+            );
         }
     }
-
-    let mut scores = vec![0; windows.len()];
-
-    for hit in win_hits {
-        scores[hit.index] = hit.score;
-    }
-    indexes.sort_by(|&a, &b| {
-        let lead = |i: usize| row_leads(&windows[i], query);
-
-        lead(b).cmp(&lead(a)).then_with(|| {
-            Reverse(scores[b])
-                .cmp(&Reverse(scores[a]))
-                .then_with(|| a.cmp(&b))
-        })
-    });
-    indexes
+    output
 }
 
 fn row_leads(row: &Row, query: &str) -> bool {
@@ -189,6 +181,7 @@ fn row_leads(row: &Row, query: &str) -> bool {
 #[derive(Default)]
 struct Group<'a> {
     score: u16,
+    leading: bool, // Title or app name starts with the query
     window_hits: Vec<&'a Hit>,
     app_hit: bool,   // Catalog name or id matched
     app_field: bool, // A window hit the app column only

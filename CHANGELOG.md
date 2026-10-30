@@ -21,6 +21,8 @@ A search lists open windows before installed apps.
 - An open window whose title or app name starts with the query
   stays above a match later in the text. `c` lists `Cursor Agents`
   before `Google Chrome` (ADR-0079).
+- The new-window row stays directly under that app's windows
+  (ADR-0080).
 
 ## [0.2.16] - 2026-10-30
 
