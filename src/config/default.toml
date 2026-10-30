@@ -27,13 +27,17 @@ hint.text = 'date +"%A %b %-d %T %Y"'
 hint.update = 0
 
 [output_bar]
-# Cap for the output bar, the title bar and an icon dropdown.
+# Cap for the output bar, the title list and an icon dropdown.
 max_rows = 19
 
+[taskbar]
+# "off" hides the strip and the title list until you type.
+# "icons" shows one icon per running app.
+# "titles" shows the open windows.
+# "both" shows the strip, then the title list.
+mode = "icons"               # off | icons | titles | both
+
 [title_bar]
-# Show the open windows. Search matches are the output bar, shown
-# once you type.
-enabled = false
 # Row order: "recently" puts the last used window first, "app" groups
 # windows by app name.
 sort_by = "recently"         # recently | app
@@ -43,8 +47,6 @@ show_icons = true
 strip_app_name = false
 
 [icon_bar]
-# Row of running apps under the input bar. false hides it.
-enabled = true
 # Icon side in logical pixels, scaled with the display.
 icon_size = 24
 # Selection border outside the icon, in logical pixels.

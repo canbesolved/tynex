@@ -5,7 +5,7 @@
 
 use std::time::{Duration, Instant};
 
-use crate::ui::icon_menu::Panel;
+use crate::ui::taskbar::menu::Panel;
 
 /// How long the dropdown takes to slide.
 const SLIDE: Duration = Duration::from_millis(150);

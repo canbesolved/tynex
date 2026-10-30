@@ -12,10 +12,8 @@ use std::time::{Duration, Instant};
 
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use tynex::adapters::mock::MockSource;
-use tynex::config::{Font, HintConfig, IconBarConfig, MainConfig};
-use tynex::config::{
-    LauncherConfig, LauncherMode, OutputBarConfig, TitleBarConfig,
-};
+use tynex::config::{Font, HintConfig, MainConfig, TaskbarConfig, TaskbarMode};
+use tynex::config::{LauncherConfig, LauncherMode, OutputBarConfig};
 use tynex::core::event::{Action, Event};
 use tynex::core::order::SortBy;
 use tynex::core::queue::channel;
@@ -51,11 +49,9 @@ fn painter(text: Text, icons: Icons) -> Painter {
         width: 480,
     };
     let output = OutputBarConfig { max_rows: 19 };
-    let title = TitleBarConfig {
-        enabled: true,
-        sort_by: SortBy::Recently,
-        show_icons: true,
-        strip_app_name: false,
+    let taskbar = TaskbarConfig {
+        mode: TaskbarMode::Both,
+        ..TaskbarConfig::default()
     };
 
     Painter::new(
@@ -63,9 +59,8 @@ fn painter(text: Text, icons: Icons) -> Painter {
         icons,
         &main,
         &output,
-        &title,
         &HintConfig::default(),
-        &IconBarConfig::default(),
+        &taskbar,
     )
 }
 
@@ -89,8 +84,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 },
                 Vec::new(),
             ),
-            true,
-            true,
+            TaskbarMode::Both,
             19,
         ),
     );

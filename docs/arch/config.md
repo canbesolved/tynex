@@ -32,8 +32,9 @@ The default file. It is kept in `default.toml` and embedded with
 this). Every key is optional: a missing key takes the value shown here.
 
 Sections stay in this order: `[main]`, `[hotkeys]`, `[input_bar]`,
-`[output_bar]`, `[title_bar]`, then `[icon_bar]`
-([ADR-0055](../adr/0055_config_sections.md)).
+`[output_bar]`, `[taskbar]`, `[title_bar]`, then `[icon_bar]`
+([ADR-0055](../adr/0055_config_sections.md), amended by
+[ADR-0065](../adr/0065_taskbar.md)).
 
 ```toml
 [main]
@@ -65,13 +66,17 @@ hint.text = 'date +"%A %b %-d %T %Y"'
 hint.update = 0
 
 [output_bar]
-# Cap for the output bar, the title bar and an icon dropdown.
+# Cap for the output bar, the title list and an icon dropdown.
 max_rows = 19
 
+[taskbar]
+# "off" hides the strip and the title list until you type.
+# "icons" shows one icon per running app.
+# "titles" shows the open windows.
+# "both" shows the strip, then the title list.
+mode = "icons"               # off | icons | titles | both
+
 [title_bar]
-# Show the open windows. Search matches are the output bar, shown
-# once you type.
-enabled = false
 # Row order: "recently" puts the last used window first, "app" groups
 # windows by app name.
 sort_by = "recently"         # recently | app
@@ -81,8 +86,6 @@ show_icons = true
 strip_app_name = false
 
 [icon_bar]
-# Row of running apps under the input bar. false hides it.
-enabled = true
 # Icon side in logical pixels, scaled with the display.
 icon_size = 24
 # Selection border outside the icon, in logical pixels.
@@ -123,16 +126,23 @@ runs it again while the popup stays open, waiting that long after
 the previous command exits. A bad color or a wait outside that
 range stops the daemon.
 
-`output_bar.max_rows` caps both the output bar and the title bar.
+`output_bar.max_rows` caps the output bar, the title list and an
+icon dropdown.
 
-`title_bar.enabled` shows the open windows while the query is empty
-([ADR-0057](../adr/0057_title_bar_query.md)). Typing hides them.
-Clearing the query with `Backspace` or `Esc` shows them again. With
-`false` (default) only the input bar shows until you type. Matches
-then appear in the output bar. It replaces hotkey mode, which 0.1.6
-removed with the `mode` and `keys` keys
-([ADR-0050](../adr/0050_search_only.md)); a config that still has them
-stops the daemon with an unknown key error.
+`taskbar.mode` chooses the taskbar while the query is empty
+([ADR-0065](../adr/0065_taskbar.md)): `off`, `icons` (default),
+`titles` or `both`. `icons` is one icon per running app.
+`titles` is the open windows. `both` is the strip, then the title
+list. Typing hides whichever is showing. Clearing the query with
+`Backspace` or `Esc` shows it again. `off` leaves only the input
+bar until you type. Matches then appear in the output bar.
+
+`icon_bar.enabled` and `title_bar.enabled` were removed in 0.2.10.
+`taskbar.mode` replaces both. A config that still sets either
+`enabled` key stops the daemon with an unknown key error. A config
+that still sets `mode` or `keys`, removed with hotkey mode in 0.1.6,
+stops the daemon too
+([ADR-0050](../adr/0050_search_only.md)).
 
 `title_bar.show_icons` draws the app icon before the title (default
 `true`). `false` shows titles only, with no icon slot. A window
@@ -147,9 +157,10 @@ stops the daemon with an unknown key error.
 
 `layout` was removed in 0.1.7
 ([ADR-0052](../adr/0052_ui_modules.md)). The popup is UI modules, so
-there is nothing to choose. The input bar is always on; the title
-bar can be turned off on its own
-([ADR-0053](../adr/0053_ui_module_toggles.md)). A config that still
+there is nothing to choose. The input bar is always on. The taskbar
+mode picks the strip, the title list, both or neither
+([ADR-0053](../adr/0053_ui_module_toggles.md), amended by
+[ADR-0065](../adr/0065_taskbar.md)). A config that still
 sets `layout` stops the daemon with an unknown key error.
 
 `[appearance]` and the old top-level keys (`desktop`, `hotkey_action`,
@@ -168,15 +179,13 @@ by last use, `app` by app name. The popup always opens with the
 previous window selected (see [core.md](core.md#row-order)). `key`,
 the letter order, was removed in 0.1.6 and is rejected.
 
-`icon_bar.enabled` shows one icon per running app under the input
-bar while the query is empty (default `true`)
-([ADR-0062](../adr/0062_icon_bar.md)). Typing hides the strip.
-`false` leaves the popup as it is without the strip.
 `icon_bar.icon_size` is the icon side in logical pixels, default
 `24`, from 8 to 128. It is multiplied by the output scale, like
 `main.font_size`. A value outside that range stops the daemon.
 `icon_bar.border` is the selection outline in the same units,
-default `4`, from 1 to 32. A missing key uses the default.
+default `4`, from 1 to 32. A missing key uses the default. The
+strip shows when `taskbar.mode` is `icons` or `both`
+([ADR-0062](../adr/0062_icon_bar.md)).
 
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
 
@@ -214,11 +223,10 @@ The config is read once, when `tynex daemon` starts
 | `input_bar.hint.font_color`      | `#RRGGBB`                                 |
 | `input_bar.hint.update`          | 0 to 86400                                |
 | `output_bar.max_rows`            | 1 to 50                                   |
-| `title_bar.enabled`              | `true` or `false`                         |
+| `taskbar.mode`                   | `off`, `icons`, `titles` or `both`        |
 | `title_bar.sort_by`              | `recently` or `app`                       |
 | `title_bar.show_icons`           | `true` or `false`                         |
 | `title_bar.strip_app_name`       | `true` or `false`                         |
-| `icon_bar.enabled`               | `true` or `false`                         |
 | `icon_bar.icon_size`             | 8 to 128                                  |
 | `icon_bar.border`                | 1 to 32                                   |
 
@@ -237,7 +245,7 @@ messages.
 ```text
 tynex: error: ~/.config/tynex/tynex.toml:1:1: unknown key `adaptr`,
   expected one of `main`, `hotkeys`, `input_bar`, `output_bar`,
-  `title_bar`, `icon_bar`
+  `taskbar`, `title_bar`, `icon_bar`
 tynex: error: ~/.config/tynex/tynex.toml:4:13: `main.font_size`
   = 120 is out of range, expected 8 to 72
 ```
@@ -246,7 +254,7 @@ tynex: error: ~/.config/tynex/tynex.toml:4:13: `main.font_size`
 
 The config module returns a plain `Config` struct or a list of
 `ConfigError` values. Other modules get only the sub-struct they need
-(for example `MainConfig` or `TitleBarConfig`), never the whole file.
+(for example `MainConfig` or `TaskbarConfig`), never the whole file.
 
 - `parse` is pure: the font file check is passed in, so tests need no
   disk.

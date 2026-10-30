@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Title bar: the open windows, under the input bar.
+//! Title list of the taskbar: the open windows.
 //!
 //! Search matches are not drawn here. They belong to the output bar.
 
@@ -16,7 +16,7 @@ use crate::ui::render::canvas::Area;
 /// It shows only while enabled and the query is empty. Typing hides
 /// it; clearing the query shows it again.
 pub(crate) fn shows(view: &View<'_>, metrics: &Metrics) -> bool {
-    metrics.title_bar && view.query.is_empty()
+    metrics.taskbar.titles() && view.query.is_empty()
 }
 
 /// Returns the height of the window rows, without the separator.

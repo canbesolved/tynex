@@ -34,6 +34,9 @@ Features that shipped in a release and were removed later.
 - `title_bar.show_app_icon`, the app name column: added in 0.2.0,
   removed in 0.2.3 (**Breaking**). Replaced by `title_bar.show_icons`
   ([ADR-0058](docs/adr/0058_title_bar_row.md)).
+- `title_bar.enabled` (added in 0.2.0) and `icon_bar.enabled` (added
+  in 0.2.9): removed in 0.2.10 (**Breaking**). Replaced by
+  `taskbar.mode` ([ADR-0065](docs/adr/0065_taskbar.md)).
 
 ## Never shipped
 

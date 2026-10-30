@@ -5,12 +5,13 @@
 
 #![allow(clippy::cast_precision_loss)]
 
+use super::icons as strip;
 use crate::core::icons;
 use crate::core::view::View;
 use crate::ui::draw::{self, Grid, Metrics, Paint};
+use crate::ui::frames;
 use crate::ui::render::canvas::Area;
 use crate::ui::render::text::Text;
-use crate::ui::{frames, icon_bar};
 
 /// Longest title, in logical pixels, before the ellipsis.
 const TITLE_CAP: f32 = 450.0;
@@ -34,7 +35,7 @@ pub(crate) fn panel(
     grid: &Grid,
     text: &Text,
 ) -> Option<Panel> {
-    if !icon_bar::shows(view, metrics) {
+    if !strip::shows(view, metrics) {
         return None;
     }
     let index = view.dropdown?;
@@ -56,8 +57,8 @@ pub(crate) fn panel(
         .map(|title| text.width(title, font))
         .fold(0.0, f32::max);
     let text_w = longest.min(TITLE_CAP * metrics.scale);
-    let placed = icon_bar::layout(view, metrics, grid);
-    let popup = icon_bar::popup_width(metrics);
+    let placed = strip::layout(view, metrics, grid);
+    let popup = strip::popup_width(metrics);
     let limit = (popup - 2.0 * grid.pad).max(placed.size);
     let w = (text_w + 2.0 * grid.gap).clamp(placed.size, limit);
     let icon_x = placed.x + view.icon as f32 * (placed.size + placed.gap);

@@ -4,6 +4,7 @@
 //! Tests for the popup: sizes, rows, selection and scrolling.
 
 use super::{draw_popup, measured};
+use crate::config::TaskbarMode;
 use crate::core::state::State;
 use crate::core::view::Row;
 use crate::core::window::WindowId;
@@ -21,10 +22,9 @@ pub(in crate::ui) const M: Metrics = Metrics {
     width: 300.0,
     max_rows: 3,
     scale: 1.0,
-    title_bar: true,
+    taskbar: TaskbarMode::Titles,
     show_icons: true,
     hint_color: Rgba(0x8d, 0xa7, 0x87, 0xff),
-    icon_bar: false,
     icon_size: 24.0,
     border: 4.0,
 };
@@ -100,7 +100,7 @@ fn height_follows_rows_up_to_max() {
 fn without_title_bar_rows_wait_for_a_query() {
     let theme = Theme::default();
     let m = Metrics {
-        title_bar: false,
+        taskbar: TaskbarMode::Off,
         ..M
     };
     let g = Grid::new(&m, &theme);
@@ -120,7 +120,7 @@ fn without_title_bar_rows_wait_for_a_query() {
 fn typing_hides_the_title_bar_until_the_query_is_cleared() {
     let theme = Theme::default();
     let off = Metrics {
-        title_bar: false,
+        taskbar: TaskbarMode::Off,
         ..M
     };
     let mut s = state(3);
@@ -212,7 +212,7 @@ fn output_bar_keeps_the_icon_slot() {
     let output = render_with(
         &typed,
         &Metrics {
-            title_bar: false,
+            taskbar: TaskbarMode::Off,
             ..M
         },
     );

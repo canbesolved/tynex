@@ -9,6 +9,23 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `[taskbar]` with `mode`: `off`, `icons` (default), `titles` or
+  `both`. The icon strip and the title list are one module
+  (ADR-0065).
+
+### Changed
+
+- **Breaking:** `icon_bar.enabled` and `title_bar.enabled` are
+  replaced by `taskbar.mode`.
+  - Both keys on becomes `both`.
+  - Only `icon_bar.enabled` on becomes `icons`.
+  - Only `title_bar.enabled` on becomes `titles`.
+  - Both keys off becomes `off`.
+  - A file that still sets either `enabled` key stops the daemon
+    until the file is edited.
+
 ## [0.2.9] - 2026-10-29
 
 One icon per running app, under the input bar.

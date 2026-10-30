@@ -15,7 +15,7 @@
 use std::time::Instant;
 
 use crate::config::{
-    HintConfig, IconBarConfig, MainConfig, OutputBarConfig, TitleBarConfig,
+    HintConfig, MainConfig, OutputBarConfig, TaskbarConfig, TaskbarMode,
 };
 use crate::core::event::Click;
 use crate::core::view::View;
@@ -26,7 +26,9 @@ use crate::ui::render::canvas::{Canvas, Rgba};
 use crate::ui::render::icons::Icons;
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
-use crate::ui::{icon_bar, icon_menu, slide::Slide};
+use crate::ui::slide::Slide;
+use crate::ui::taskbar::icons as strip;
+use crate::ui::taskbar::menu;
 
 /// Draws views with the configured look. Built once at start, so fonts
 /// and glyph caches stay warm between shows.
@@ -37,10 +39,9 @@ pub struct Painter {
     font_size: u16,
     width: u16,
     max_rows: u16,
-    title_bar: bool,
+    taskbar: TaskbarMode,
     show_icons: bool,
     hint_color: Rgba,
-    icon_bar: bool,
     icon_size: f32,
     border: f32,
     slide: Slide,
@@ -54,9 +55,8 @@ impl Painter {
         icons: Icons,
         main: &MainConfig,
         output: &OutputBarConfig,
-        title: &TitleBarConfig,
         hint: &HintConfig,
-        icon: &IconBarConfig,
+        taskbar: &TaskbarConfig,
     ) -> Self {
         let color = hint.font_color;
 
@@ -67,12 +67,11 @@ impl Painter {
             font_size: main.font_size,
             width: main.width,
             max_rows: output.max_rows,
-            title_bar: title.enabled,
-            show_icons: title.show_icons,
+            taskbar: taskbar.mode,
+            show_icons: taskbar.titles.show_icons,
             hint_color: Rgba(color.r, color.g, color.b, 0xff),
-            icon_bar: icon.enabled,
-            icon_size: f32::from(icon.icon_size),
-            border: f32::from(icon.border),
+            icon_size: f32::from(taskbar.icons.icon_size),
+            border: f32::from(taskbar.icons.border),
             slide: Slide::default(),
             drawn: 0.0,
         }
@@ -98,7 +97,7 @@ impl Painter {
 
         for icon in icons {
             self.icons.prepare(icon, size);
-            if self.icon_bar {
+            if self.taskbar.icons() {
                 self.icons.prepare(icon, strip);
             }
         }
@@ -120,10 +119,10 @@ impl Painter {
         let now = Instant::now();
         let metrics = self.metrics(scale);
         let grid = Grid::new(&metrics, &self.theme);
-        let open = icon_bar::shows(view, &metrics) && view.dropdown.is_some();
-        let panel = icon_menu::panel(view, &metrics, &grid, &self.text);
+        let open = strip::shows(view, &metrics) && view.dropdown.is_some();
+        let panel = menu::panel(view, &metrics, &grid, &self.text);
 
-        if icon_bar::shows(view, &metrics) {
+        if strip::shows(view, &metrics) {
             self.slide.sync(open, panel, now);
         } else {
             self.slide.cancel();
@@ -145,7 +144,7 @@ impl Painter {
         if reveal > 0.0
             && let Some(panel) = self.slide.panel()
         {
-            icon_menu::draw(&mut paint, &grid, panel, reveal, scale);
+            menu::draw(&mut paint, &grid, panel, reveal, scale);
         }
     }
 
@@ -155,7 +154,7 @@ impl Painter {
         let metrics = self.metrics(scale);
         let grid = Grid::new(&metrics, &self.theme);
 
-        icon_bar::hit(
+        strip::hit(
             view,
             &metrics,
             &grid,
@@ -191,10 +190,9 @@ impl Painter {
             width: f32::from(self.width),
             max_rows: usize::from(self.max_rows),
             scale,
-            title_bar: self.title_bar,
+            taskbar: self.taskbar,
             show_icons: self.show_icons,
             hint_color: self.hint_color,
-            icon_bar: self.icon_bar,
             icon_size: self.icon_size,
             border: self.border,
         }

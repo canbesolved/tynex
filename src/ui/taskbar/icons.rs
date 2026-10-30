@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Icon bar: one icon per running app, under the input bar. It hides
-//! while the query is non-empty. A spare band fits the largest dropdown.
+//! Icon strip of the taskbar. One icon per running app, hidden while typing.
 
 #![allow(
     clippy::cast_possible_truncation,
@@ -10,12 +9,13 @@
     clippy::cast_sign_loss
 )]
 
+use super::menu;
 use crate::core::event::Click;
 use crate::core::view::View;
 use crate::ui::draw::{Grid, Metrics, Paint};
+use crate::ui::frames;
 use crate::ui::render::canvas::Area;
 use crate::ui::render::text::{Style, Text};
-use crate::ui::{frames, icon_menu};
 
 /// Gap between icons, as a fraction of the icon side.
 const GAP_RATIO: f32 = 0.35;
@@ -35,7 +35,7 @@ pub(crate) struct Layout {
 
 /// Returns true while the strip is on screen.
 pub(crate) fn shows(view: &View<'_>, metrics: &Metrics) -> bool {
-    metrics.icon_bar && view.query.is_empty()
+    metrics.taskbar.icons() && view.query.is_empty()
 }
 
 /// Returns the surface width in physical pixels.
@@ -201,7 +201,7 @@ pub(crate) fn hit(
         }
     }
 
-    if let Some(panel) = icon_menu::panel(view, metrics, grid, text) {
+    if let Some(panel) = menu::panel(view, metrics, grid, text) {
         let shown = panel.h * reveal.clamp(0.0, 1.0);
 
         if x >= panel.x
@@ -246,5 +246,5 @@ fn count(
 }
 
 #[cfg(test)]
-#[path = "icon_bar_tests.rs"]
+#[path = "icons_tests.rs"]
 mod tests;

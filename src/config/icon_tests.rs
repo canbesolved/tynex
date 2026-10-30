@@ -21,9 +21,8 @@ fn errors(text: &str) -> Vec<String> {
 fn icon_bar_defaults() {
     let config = parse("", &no_font).expect("valid config");
 
-    assert!(config.icon_bar.enabled);
-    assert_eq!(config.icon_bar.icon_size, 24);
-    assert_eq!(config.icon_bar.border, 4);
+    assert_eq!(config.taskbar.icons.icon_size, 24);
+    assert_eq!(config.taskbar.icons.border, 4);
 }
 
 #[test]
@@ -35,11 +34,9 @@ fn icon_size_range() {
     assert!(large.contains("out of range"), "{large}");
 
     let config =
-        parse("[icon_bar]\nenabled = false\nicon_size = 32\n", &no_font)
-            .expect("valid config");
+        parse("[icon_bar]\nicon_size = 32\n", &no_font).expect("valid config");
 
-    assert!(!config.icon_bar.enabled);
-    assert_eq!(config.icon_bar.icon_size, 32);
+    assert_eq!(config.taskbar.icons.icon_size, 32);
 }
 
 #[test]
@@ -52,7 +49,8 @@ fn border_range() {
     assert_eq!(
         parse("[icon_bar]\nborder = 8\n", &no_font)
             .expect("valid config")
-            .icon_bar
+            .taskbar
+            .icons
             .border,
         8
     );

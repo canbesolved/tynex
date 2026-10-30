@@ -38,16 +38,17 @@ the previous window. No mouse, no scrolling, no waiting.
 
 - Centered popup with an input bar: start typing at once; accents
   and small typos are forgiven.
-- Optional list of open windows (`title_bar.enabled`) while the query
-  is empty; the list hides as soon as you type and returns when you
-  clear the query. Order is most recently used first or grouped by app
-  (`title_bar.sort_by`).
+- Optional list of open windows while the query is empty
+  (`taskbar.mode = "titles"` or `"both"`); the list hides as soon as
+  you type and returns when you clear the query. Order is most
+  recently used first or grouped by app (`title_bar.sort_by`).
 - A row of one icon per running app under the input bar while the
-  query is empty (`icon_bar.enabled`). Several windows show a count
-  and open a dropdown.
+  query is empty (`taskbar.mode = "icons"`, the default, or
+  `"both"`). Several windows show a count and open a dropdown.
+  `"off"` hides both until you type.
 - Matches appear in the output bar as you type; with
   `input_bar.launcher.mode` set, installed apps appear there too.
-- Each entry shows the app icon and the window title. The title bar
+- Each entry shows the app icon and the window title. The title list
   can hide its icons with `title_bar.show_icons = false`.
 - Low footprint: idle at 0 % CPU, under 10 MB of RAM, no GPU usage.
 - Modular core: window sources, UI modules and modes are plug-in
@@ -160,14 +161,15 @@ launcher.new_window_text_color = "#8da787" # #RRGGBB
 [output_bar]
 max_rows = 19
 
+[taskbar]
+mode = "icons"               # off | icons | titles | both
+
 [title_bar]
-enabled = false              # Window list before typing
 sort_by = "recently"         # recently | app
 show_icons = true            # false: titles only
 strip_app_name = false       # true: "Café — Firefox" becomes "Café"
 
 [icon_bar]
-enabled = true               # App icons under the input bar
 icon_size = 24               # Logical pixels, 8 to 128
 border = 4                   # Selection outline, 1 to 32
 ```
@@ -188,6 +190,11 @@ listed in [CHANGELOG.md](CHANGELOG.md).
 Upgrading to 0.2.3: delete `title_bar.show_app_icon`. The app name
 column is gone. `title_bar.show_icons` (default `true`) draws the
 icon; `false` shows titles only.
+
+Upgrading to 0.2.10: replace `icon_bar.enabled` and `title_bar.enabled`
+with `[taskbar] mode`. Both on is `both`, icons only is `icons`
+(the new default), titles only is `titles`, and both off is `off`.
+Delete the two `enabled` keys.
 
 ## Architecture
 

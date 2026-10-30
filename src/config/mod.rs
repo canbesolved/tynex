@@ -6,6 +6,7 @@
 mod error;
 mod file;
 mod raw;
+mod taskbar;
 mod validate;
 
 use std::path::{Path, PathBuf};
@@ -14,7 +15,9 @@ use serde::Deserialize;
 
 pub use crate::config::error::ConfigError;
 pub use crate::config::file::{Loaded, load_or_create};
-use crate::core::order::SortBy;
+pub use crate::config::taskbar::{
+    IconBarConfig, TaskbarConfig, TaskbarMode, TitleBarConfig,
+};
 use crate::core::switcher::HotkeyAction;
 use crate::core::view::Rgb;
 
@@ -139,32 +142,6 @@ pub struct OutputBarConfig {
     pub max_rows: u16, // Cap for the output bar and the title bar
 }
 
-/// The `[title_bar]` table.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TitleBarConfig {
-    pub enabled: bool,        // Window list before typing
-    pub sort_by: SortBy,      // Row order
-    pub show_icons: bool,     // Icon before each title
-    pub strip_app_name: bool, // Drop the app name from titles
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct IconBarConfig {
-    pub enabled: bool,  // Running-app strip under the input bar
-    pub icon_size: u16, // Logical pixels, scaled with the display
-    pub border: u16,    // Selection outline, logical pixels
-}
-
-impl Default for IconBarConfig {
-    fn default() -> Self {
-        Self {
-            enabled: true,
-            icon_size: 24,
-            border: 4,
-        }
-    }
-}
-
 /// The whole config file, validated.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Config {
@@ -172,8 +149,7 @@ pub struct Config {
     pub hotkeys: HotkeysConfig,
     pub input_bar: InputBarConfig,
     pub output_bar: OutputBarConfig,
-    pub title_bar: TitleBarConfig,
-    pub icon_bar: IconBarConfig,
+    pub taskbar: TaskbarConfig,
 }
 
 impl Default for Config {
@@ -190,13 +166,7 @@ impl Default for Config {
             },
             input_bar: InputBarConfig::default(),
             output_bar: OutputBarConfig { max_rows: 19 },
-            title_bar: TitleBarConfig {
-                enabled: false,
-                sort_by: SortBy::Recently,
-                show_icons: true,
-                strip_app_name: false,
-            },
-            icon_bar: IconBarConfig::default(),
+            taskbar: TaskbarConfig::default(),
         }
     }
 }
@@ -247,3 +217,7 @@ mod hint_tests;
 #[cfg(test)]
 #[path = "icon_tests.rs"]
 mod icon_tests;
+
+#[cfg(test)]
+#[path = "taskbar_tests.rs"]
+mod taskbar_tests;
