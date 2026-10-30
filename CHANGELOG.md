@@ -11,17 +11,18 @@ project adheres to
 
 ## [0.2.17] - 2026-10-31
 
-A search lists open windows before installed apps.
+A search lists open windows before installed apps. A name that
+starts with the query stays first, with its new-window row under it.
 
 ### Changed
 
-- Matching open windows come before installed apps in the output
-  bar. A stronger idle app no longer jumps above an open window.
-  Launch rows follow the windows (ADR-0078).
-- An open window whose title or app name starts with the query
-  stays above a match later in the text. `c` lists `Cursor Agents`
-  before `Google Chrome` (ADR-0079).
-- The new-window row stays directly under that app's windows
+- Matching open windows come before installed apps. A stronger idle
+  app no longer jumps above an open window (ADR-0078).
+- An app whose title or name starts with the query comes before one
+  that matches later in the text. `c` lists Cursor before Google
+  Chrome (ADR-0079).
+- The new-window row stays directly under that app. `c` lists
+  Cursor, its new-window row, then Google Chrome and its own
   (ADR-0080).
 
 ## [0.2.16] - 2026-10-30

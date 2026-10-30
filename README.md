@@ -48,9 +48,9 @@ the previous window. No mouse, no scrolling, no waiting.
   `"both"`). Several windows show a count and open a dropdown.
   `"off"` hides both until you type.
 - Matches appear in the output bar as you type. Open windows come
-  first, and a title or app name that starts with the query stays
-  above a later match. With `input.launcher.mode` set, installed
-  apps follow.
+  first. An app whose title or name starts with the query stays
+  above a later match, and its new-window row stays under that
+  app. With `input.launcher.mode` set, other installed apps follow.
 - Each entry shows the app icon and the window title. The title list
   can hide its icons with `taskbar.titlebar.show_icons = false`.
 - Low footprint: idle at 0 % CPU, under 10 MB of RAM, no GPU usage.

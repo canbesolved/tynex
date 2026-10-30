@@ -118,7 +118,10 @@ previously used window, or closes it when there is none.
 `"gui_only"` (default; skips `Terminal=true`).
 
 `launcher.new_window` is the extra row under a running app
-([ADR-0059](../adr/0059_new_window_row.md)). It defaults to `true`.
+([ADR-0059](../adr/0059_new_window_row.md)). In a search it stays
+directly under that app
+([ADR-0080](../adr/0080_new_window_place.md)). It defaults to
+`true`.
 `false` hides that row; an app that is not running is still one
 launch row titled with its name. `launcher.new_window_text` is the
 title. The default is one space, `+`, two spaces, then `New window`.

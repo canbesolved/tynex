@@ -9,6 +9,7 @@ matched, then, with the launcher on, launch rows for installed apps
 [ADR-0056](../../adr/0056_launcher_input.md),
 [ADR-0078](../../adr/0078_windows_before_apps.md),
 [ADR-0079](../../adr/0079_leading_match.md),
+[ADR-0080](../../adr/0080_new_window_place.md),
 [modules/input.md](../modules/input.md)). A window whose title or
 app name starts with the query comes before the other windows, and
 its new-window row stays under that app. Later requests can show a
