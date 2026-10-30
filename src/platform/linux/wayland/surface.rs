@@ -55,7 +55,7 @@ pub(super) fn create(wl: &Wl, qh: &QueueHandle<Wl>) -> Popup {
 
 /// Anchor bits for the popup.
 ///
-/// KWin places a surface on the left when the left anchor is set, even
+/// `KWin` places a surface on the left when the left anchor is set, even
 /// if the right anchor is set and the width is explicit. The top edge
 /// alone is centered on that edge.
 fn anchors() -> Anchor {
