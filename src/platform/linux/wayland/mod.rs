@@ -13,6 +13,7 @@
 )]
 
 mod buffer;
+mod cursor;
 mod error;
 mod input;
 mod keyboard;
@@ -71,8 +72,8 @@ impl WaylandPresenter {
             keyboard_proxy: None,
             keyboard: Keyboard::new(),
             pointer_proxy: None,
-            pointer_x: 0.0,
-            pointer_y: 0.0,
+            cursor: cursor::Cursor::bind(&globals, &qh),
+            pointer_at: (0.0, 0.0),
             wheel: (0, 0.0),
             formats: Vec::new(),
             outputs: output::bind_all(&globals, &qh),
@@ -146,8 +147,7 @@ impl WaylandPresenter {
 
     /// Draws a frame with `paint` and commits it.
     ///
-    /// Returns false when the popup is not configured yet or both buffers
-    /// are still held by the compositor; draw again after the next event.
+    /// Returns false before configure or while both buffers are busy.
     pub fn draw(&mut self, paint: impl FnOnce(&mut Canvas<'_>)) -> bool {
         let Some(popup) = self.wl.popup.as_ref().filter(|p| p.configured)
         else {

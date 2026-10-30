@@ -27,6 +27,7 @@ use wayland_protocols_wlr::layer_shell::v1::client as layer_shell;
 
 use crate::core::event::Key;
 use crate::platform::linux::wayland::buffer::Buffers;
+use crate::platform::linux::wayland::cursor::Cursor;
 use crate::platform::linux::wayland::keyboard::Keyboard;
 use crate::platform::linux::wayland::output::Output;
 
@@ -65,9 +66,9 @@ pub(super) struct Wl {
     pub keyboard_proxy: Option<WlKeyboard>,
     pub keyboard: Keyboard,
     pub pointer_proxy: Option<WlPointer>,
-    pub pointer_x: f64, // Last surface coordinate
-    pub pointer_y: f64,
-    pub wheel: (i32, f64), // Notches and pixels of this pointer frame
+    pub cursor: Cursor,
+    pub pointer_at: (f64, f64), // Last surface coordinate
+    pub wheel: (i32, f64),      // Notches and pixels of this pointer frame
     pub formats: Vec<Format>,
     pub outputs: Vec<(WlOutput, Output)>,
     pub scale: f32,

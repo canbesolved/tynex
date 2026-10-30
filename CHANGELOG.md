@@ -34,6 +34,8 @@ project adheres to
   the output bar draw fewer rows, then the dropdown room shrinks.
   Before, a popup taller than the screen hid the input bar and the
   icon strip above the screen, and flickered (ADR-0069).
+- The cursor no longer disappears when the popup opens under the
+  pointer: the popup sets the default cursor shape (ADR-0072).
 
 ## [0.2.11] - 2026-10-30
 

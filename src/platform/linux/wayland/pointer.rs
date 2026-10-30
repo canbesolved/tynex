@@ -21,8 +21,11 @@ impl Dispatch<WlPointer, ()> for Wl {
         e: wl_pointer::Event,
         (): &(),
         _: &Connection,
-        _: &QueueHandle<Self>,
+        qh: &QueueHandle<Self>,
     ) {
+        if let wl_pointer::Event::Enter { serial, .. } = e {
+            s.cursor.show(pointer, serial, qh);
+        }
         match e {
             wl_pointer::Event::Enter {
                 surface_x,
@@ -34,8 +37,7 @@ impl Dispatch<WlPointer, ()> for Wl {
                 surface_y,
                 ..
             } => {
-                s.pointer_x = surface_x;
-                s.pointer_y = surface_y;
+                s.pointer_at = (surface_x, surface_y);
                 if s.popup.is_some() {
                     s.events.push(PresenterEvent::Hover {
                         x: surface_x,
@@ -49,8 +51,8 @@ impl Dispatch<WlPointer, ()> for Wl {
                     && s.popup.is_some() =>
             {
                 s.events.push(PresenterEvent::Click {
-                    x: s.pointer_x,
-                    y: s.pointer_y,
+                    x: s.pointer_at.0,
+                    y: s.pointer_at.1,
                 });
             }
             wl_pointer::Event::Axis {
