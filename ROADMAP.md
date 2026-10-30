@@ -23,32 +23,32 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.15
+### 0.2.14
 
 - [ ] Each UI module is its own block: a small gap separates the bars
   (for example the input bar and the title bar), and every block uses
   the same rounded border and theme colors.
 
-### 0.2.16
+### 0.2.15
 
 - [ ] `taskbar.iconbar.size = "auto"`: the icon side follows the
   screen size, `main.width` and the number of running apps, within
   the usual 8 to 128 logical pixels. A number still sets a fixed
   size.
 
-### 0.2.17
+### 0.2.16
 
 - [ ] Mouse in the title list: hover highlights a row and moves the
   selection to it, and a click activates it.
 - [ ] Mouse in the dropdown: hover highlights a title and moves the
   selection to it, and a click activates it.
 
-### 0.2.18
+### 0.2.17
 
 - [ ] When you search, the output bar lists open windows first, then
   installed apps from the launcher.
 
-### 0.2.19
+### 0.2.18
 
 - [ ] Light theme next to the default dark one, chosen in the config.
 

@@ -74,6 +74,6 @@ selection is followed, and a long list draws a scrollbar.
 
 ## More Information
 
-Mouse selection in the title list is 0.2.17 in
+Mouse selection in the title list is 0.2.16 in
 [ROADMAP.md](../../ROADMAP.md). Related:
 [ADR-0069](0069_screen_fit.md).
