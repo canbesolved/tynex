@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.11] - 2026-10-30
+
+Config sections are `[input]`, `[output]` and `[taskbar]`.
+
 ### Changed
 
 - **Breaking:** config sections are `[main]`, `[hotkeys]`, `[input]`,
@@ -404,7 +408,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.10...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.11...HEAD
+[0.2.11]: https://github.com/canbesolved/tynex/releases/tag/v0.2.11
 [0.2.10]: https://github.com/canbesolved/tynex/releases/tag/v0.2.10
 [0.2.9]: https://github.com/canbesolved/tynex/releases/tag/v0.2.9
 [0.2.8]: https://github.com/canbesolved/tynex/releases/tag/v0.2.8

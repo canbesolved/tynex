@@ -23,13 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.11
-
-- [ ] Simpler config sections: `[main]`, `[hotkeys]`, `[input]`,
-  `[output]` and `[taskbar]`. `[input_bar]` becomes `[input]`,
-  `[output_bar]` becomes `[output]`, and `[icon_bar]` and
-  `[title_bar]` merge into `[taskbar]` (**Breaking**).
-
 ### 0.2.12
 
 - [ ] The popup stays in place: it no longer moves when the output bar
