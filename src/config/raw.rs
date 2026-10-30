@@ -6,7 +6,7 @@
 use serde::Deserialize;
 use toml::Spanned;
 
-use crate::config::Desktop;
+use crate::config::{Desktop, Position};
 
 /// Values not from the file get an empty span.
 fn unspanned<T>(value: T) -> Spanned<T> {
@@ -99,6 +99,7 @@ pub(super) struct RawMain {
     pub font: Spanned<String>,
     pub font_size: Spanned<u16>,
     pub width: Spanned<u16>,
+    pub position: Position,
 }
 
 impl Default for RawMain {
@@ -108,6 +109,7 @@ impl Default for RawMain {
             font: unspanned("auto".into()),
             font_size: unspanned(14),
             width: unspanned(480),
+            position: Position::Center,
         }
     }
 }

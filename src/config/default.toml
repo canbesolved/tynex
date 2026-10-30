@@ -3,6 +3,7 @@ desktop = "auto"             # auto | kde | mock
 font = "auto"                # Font file path, or auto
 font_size = 14
 width = 480
+position = "center"          # center | top
 
 [hotkeys]
 # Hotkey pressed again while the popup is open: "hide" closes the

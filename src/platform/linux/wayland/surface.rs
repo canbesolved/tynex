@@ -4,17 +4,22 @@
 //! Layer-shell surface setup, commit and teardown.
 
 use layer_shell::zwlr_layer_shell_v1::Layer;
-use layer_shell::zwlr_layer_surface_v1::KeyboardInteractivity;
+use layer_shell::zwlr_layer_surface_v1::{Anchor, KeyboardInteractivity};
 use wayland_client::QueueHandle;
 use wayland_client::protocol::wl_buffer::WlBuffer;
 use wayland_client::protocol::wl_shm::Format;
 use wayland_protocols_wlr::layer_shell::v1::client as layer_shell;
 
+use crate::config::Position;
+use crate::platform::linux::wayland::buffer::Buffers;
 use crate::platform::linux::wayland::state::{Popup, Wl};
 use crate::ui::Size;
+use crate::ui::place;
+use crate::ui::render::canvas::Canvas;
 
-/// Creates the popup: overlay layer, no anchors (centered), exclusive
-/// keyboard. It is mapped after the first configure and buffer commit.
+/// Creates the popup: overlay layer, anchored to the top edge so the
+/// compositor centers it on that edge, exclusive keyboard. It is
+/// mapped after the first configure and buffer commit.
 pub(super) fn create(wl: &Wl, qh: &QueueHandle<Wl>) -> Popup {
     let surface = wl.compositor.create_surface(qh, ());
     let viewport = wl
@@ -35,12 +40,49 @@ pub(super) fn create(wl: &Wl, qh: &QueueHandle<Wl>) -> Popup {
     );
 
     layer.set_keyboard_interactivity(KeyboardInteractivity::Exclusive);
+    layer.set_anchor(anchors());
+    layer.set_exclusive_zone(-1);
     Popup {
         surface,
         layer,
         viewport,
         fractional,
         configured: false,
+        sent_margin: None,
+        sent_size: None,
+    }
+}
+
+/// Anchor bits for the popup.
+///
+/// `KWin` places a surface on the left when the left anchor is set, even
+/// if the right anchor is set and the width is explicit. The top edge
+/// alone is centered on that edge.
+fn anchors() -> Anchor {
+    Anchor::Top
+}
+
+/// Sends the top margin and the size. Unchanged values are not sent,
+/// so a configure does not cause another one. `anchor` is the logical
+/// height locked at open, not the current height.
+pub(super) fn place(
+    popup: &mut Popup,
+    size: Size,
+    scale: f32,
+    position: Position,
+    screen: Option<u32>,
+    anchor: Option<u32>,
+) {
+    let logical_size = logical(size, scale);
+    let top = place::margin(position, screen, scale, anchor);
+
+    if popup.sent_margin != Some(top) {
+        popup.layer.set_margin(top, 0, 0, 0);
+        popup.sent_margin = Some(top);
+    }
+    if popup.sent_size != Some(logical_size) {
+        popup.layer.set_size(logical_size.0, logical_size.1);
+        popup.sent_size = Some(logical_size);
     }
 }
 
@@ -92,9 +134,64 @@ pub(super) fn format(formats: &[Format]) -> Format {
     }
 }
 
+/// Draws a frame with `paint` and commits it.
+///
+/// Returns false before configure or while both buffers are busy.
+pub(super) fn draw(
+    wl: &mut Wl,
+    qh: &QueueHandle<Wl>,
+    size: Size,
+    paint: impl FnOnce(&mut Canvas<'_>),
+) -> bool {
+    let Some(popup) = wl.popup.as_ref().filter(|p| p.configured) else {
+        return false;
+    };
+    let (width, height) = (size.width.max(1), size.height.max(1));
+    let format = format(&wl.formats);
+
+    if wl
+        .buffers
+        .as_ref()
+        .is_none_or(|b| (b.width, b.height) != (width, height))
+    {
+        wl.buffers = Buffers::new(&wl.shm, qh, (width, height), format).ok();
+    }
+
+    let Some(buffers) = &mut wl.buffers else {
+        return false;
+    };
+    let Some((i, pixels)) = buffers.free() else {
+        wl.frame_pending = true;
+        return false;
+    };
+    let Some(mut canvas) = Canvas::new(pixels, width, height) else {
+        return false;
+    };
+
+    paint(&mut canvas);
+    if format == Format::Argb8888 {
+        // Memory order B, G, R, A: swap red and blue.
+        pixels
+            .as_chunks_mut::<4>()
+            .0
+            .iter_mut()
+            .for_each(|px| px.swap(0, 2));
+    }
+    commit(popup, buffers.buffer(i), size, wl.scale);
+    buffers.busy[i] = true;
+    true
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_popup_is_anchored_to_the_top_edge_only() {
+        assert_eq!(anchors(), Anchor::Top);
+        assert!(!anchors().contains(Anchor::Left));
+        assert!(!anchors().contains(Anchor::Right));
+    }
 
     #[test]
     fn logical_size_rounds_up() {

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Wayland presenter: a centered layer-shell popup drawn on the CPU.
+//! Wayland presenter: a layer-shell popup drawn on the CPU.
 
 // Surface sizes convert between float scales and integer pixels on
 // purpose; values stay within the popup size.
@@ -26,10 +26,9 @@ use std::fmt;
 use std::os::fd::{AsFd, BorrowedFd};
 
 use wayland_client::globals::registry_queue_init;
-use wayland_client::protocol::wl_shm::Format;
 use wayland_client::{Connection, EventQueue};
 
-use crate::platform::linux::wayland::buffer::Buffers;
+use crate::config::Position;
 pub use crate::platform::linux::wayland::error::PresenterError;
 use crate::platform::linux::wayland::error::{error, missing};
 use crate::platform::linux::wayland::keyboard::Keyboard;
@@ -43,7 +42,9 @@ pub struct WaylandPresenter {
     conn: Connection,
     queue: EventQueue<Wl>,
     wl: Wl,
-    size: Size, // Physical size of the popup
+    size: Size,          // Physical size of the popup
+    position: Position,  // Vertical position from the config
+    anchor: Option<u32>, // Logical height locked while shown
 }
 
 impl WaylandPresenter {
@@ -96,6 +97,8 @@ impl WaylandPresenter {
             queue,
             wl,
             size: Size::default(),
+            position: Position::Center,
+            anchor: None,
         })
     }
 
@@ -123,22 +126,36 @@ impl WaylandPresenter {
         self.wl.popup.is_some()
     }
 
-    /// Shows the popup at `size` physical pixels. A new size is sent only
-    /// when it changes, since each one makes the compositor configure.
+    /// Sets the vertical position. Call once, before the popup is shown.
+    pub fn set_position(&mut self, position: Position) {
+        self.position = position;
+    }
+
+    /// Returns the logical height locked when the popup opened.
+    #[must_use]
+    pub fn anchor(&self) -> Option<u32> {
+        self.anchor
+    }
+
+    /// Shows the popup at `size` physical pixels. The top margin is
+    /// fixed from the height at open. Size and margin are sent only
+    /// when they change, since each one makes the compositor configure.
     pub fn show(&mut self, size: Size) {
         let qh = self.queue.handle();
-        let resized = self.wl.popup.is_none() || size != self.size;
+        let first = self.wl.popup.is_none();
 
         self.size = size;
-        if self.wl.popup.is_none() {
+        if first {
             self.wl.popup = Some(surface::create(&self.wl, &qh));
+            self.anchor = Some(surface::logical(size, self.wl.scale).1);
         }
-        if let Some(popup) = &self.wl.popup {
-            let (w, h) = surface::logical(size, self.wl.scale);
+        let anchor = self.anchor;
+        let scale = self.wl.scale;
+        let screen = output::shortest(&self.wl.outputs);
+        let position = self.position;
 
-            if resized {
-                popup.layer.set_size(w, h);
-            }
+        if let Some(popup) = &mut self.wl.popup {
+            surface::place(popup, size, scale, position, screen, anchor);
             if !popup.configured {
                 popup.surface.commit();
             }
@@ -149,48 +166,9 @@ impl WaylandPresenter {
     ///
     /// Returns false before configure or while both buffers are busy.
     pub fn draw(&mut self, paint: impl FnOnce(&mut Canvas<'_>)) -> bool {
-        let Some(popup) = self.wl.popup.as_ref().filter(|p| p.configured)
-        else {
-            return false;
-        };
-        let (width, height) = (self.size.width.max(1), self.size.height.max(1));
-        let format = surface::format(&self.wl.formats);
+        let qh = self.queue.handle();
 
-        if self
-            .wl
-            .buffers
-            .as_ref()
-            .is_none_or(|b| (b.width, b.height) != (width, height))
-        {
-            let qh = self.queue.handle();
-
-            self.wl.buffers =
-                Buffers::new(&self.wl.shm, &qh, (width, height), format).ok();
-        }
-
-        let Some(buffers) = &mut self.wl.buffers else {
-            return false;
-        };
-        let Some((i, pixels)) = buffers.free() else {
-            self.wl.frame_pending = true;
-            return false;
-        };
-        let Some(mut canvas) = Canvas::new(pixels, width, height) else {
-            return false;
-        };
-
-        paint(&mut canvas);
-        if format == Format::Argb8888 {
-            // Memory order B, G, R, A: swap red and blue.
-            pixels
-                .as_chunks_mut::<4>()
-                .0
-                .iter_mut()
-                .for_each(|px| px.swap(0, 2));
-        }
-        surface::commit(popup, buffers.buffer(i), self.size, self.wl.scale);
-        buffers.busy[i] = true;
-        true
+        surface::draw(&mut self.wl, &qh, self.size, paint)
     }
 
     /// Returns when a held key repeats next; use it as the poll timeout.
@@ -206,6 +184,7 @@ impl WaylandPresenter {
             surface::destroy(popup);
         }
         self.wl.buffers = None;
+        self.anchor = None;
     }
 
     /// Sends queued requests to the compositor. Call before polling.

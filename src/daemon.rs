@@ -66,7 +66,10 @@ fn start(config: &Config) -> Result<(), String> {
     let mut source =
         adapters::select(config.main.desktop, current.as_deref(), &bus)
             .map_err(|e| e.to_string())?;
-    let presenter = WaylandPresenter::connect().map_err(|e| e.to_string())?;
+    let mut presenter =
+        WaylandPresenter::connect().map_err(|e| e.to_string())?;
+
+    presenter.set_position(config.main.position);
     let face = fonts::default_face(&config.main.font)
         .map_err(|e| format!("cannot load the font: {e}"))?;
     let text = Text::new(face);

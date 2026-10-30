@@ -9,6 +9,23 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.13] - 2026-10-30
+
+The popup stays where it opened. `main.position` chooses `center` or
+`top`.
+
+### Added
+
+- `main.position`: `center` (default) or `top`. `center` places the
+  popup in the middle of the screen when it opens. `top` places it
+  24 logical pixels from the top (ADR-0073).
+
+### Changed
+
+- The popup no longer moves when the output bar or a dropdown changes
+  its height. It grows downward from the position it opened at
+  (ADR-0073).
+
 ## [0.2.12] - 2026-10-30
 
 Count badge, `Shift+Tab`, screen fit, list scroll and cursor fix.

@@ -13,7 +13,9 @@
 
 use std::ops::Range;
 
-use crate::config::TaskbarMode;
+use crate::config::{
+    HintConfig, MainConfig, OutputConfig, TaskbarConfig, TaskbarMode,
+};
 use crate::core::view::Row;
 use crate::ui::render::canvas::{Area, Canvas, Rgba};
 use crate::ui::render::icons::Icons;
@@ -41,6 +43,58 @@ pub(crate) struct Metrics {
 pub struct Size {
     pub width: u32,
     pub height: u32,
+}
+
+/// Config values turned into `Metrics` at an output scale.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub(crate) struct Look {
+    pub font_size: u16,
+    pub width: u16,
+    pub max_rows: u16,
+    pub taskbar: TaskbarMode,
+    pub show_icons: bool,
+    pub hint_color: Rgba,
+    pub icon_size: f32, // Logical pixels
+    pub border: f32,    // Selection outline, logical pixels
+}
+
+impl Look {
+    pub(crate) fn new(
+        main: &MainConfig,
+        output: &OutputConfig,
+        hint: &HintConfig,
+        taskbar: &TaskbarConfig,
+    ) -> Self {
+        let color = hint.font_color;
+
+        Self {
+            font_size: main.font_size,
+            width: main.width,
+            max_rows: output.max_rows,
+            taskbar: taskbar.mode,
+            show_icons: taskbar.titlebar.show_icons,
+            hint_color: Rgba(color.r, color.g, color.b, 0xff),
+            icon_size: f32::from(taskbar.iconbar.size),
+            border: f32::from(taskbar.iconbar.border),
+        }
+    }
+
+    /// Returns metrics at output `scale`.
+    pub(crate) fn metrics(self, scale: f32) -> Metrics {
+        Metrics {
+            font_size: f32::from(self.font_size),
+            width: f32::from(self.width),
+            max_rows: usize::from(self.max_rows),
+            list_rows: usize::from(self.max_rows),
+            first_row: None,
+            scale,
+            taskbar: self.taskbar,
+            show_icons: self.show_icons,
+            hint_color: self.hint_color,
+            icon_size: self.icon_size,
+            border: self.border,
+        }
+    }
 }
 
 /// Everything a module draws with.

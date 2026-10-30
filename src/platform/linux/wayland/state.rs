@@ -53,6 +53,8 @@ pub(super) struct Popup {
     pub viewport: Option<WpViewport>,
     pub fractional: Option<WpFractionalScaleV1>,
     pub configured: bool,
+    pub sent_margin: Option<i32>, // Last top margin sent, logical pixels
+    pub sent_size: Option<(u32, u32)>, // Last logical size sent
 }
 
 /// Dispatch state shared with `wayland-client`.
