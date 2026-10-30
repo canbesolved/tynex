@@ -1,23 +1,21 @@
 # Roadmap
 
-Planned features for `tynex`, in the Now / Next / Later format. Each
-horizon maps to a [SemVer](https://semver.org) release. Items move from
-Later to Next to Now as they are scheduled, and leave this file once
-released. Released changes are listed in [CHANGELOG.md](CHANGELOG.md),
-dropped items in [DEPRECATIONS.md](DEPRECATIONS.md).
+Planned features for `tynex`, in the Now / Next / Later format. Items
+move from Later to Next to Now as they are scheduled, and leave this
+file once released. Released changes are listed in
+[CHANGELOG.md](CHANGELOG.md), dropped items in
+[DEPRECATIONS.md](DEPRECATIONS.md).
 
-| Horizon | Release               | Meaning                                  |
-| ------- | --------------------- | ---------------------------------------- |
-| Now     | 0.2.x                 | MVP with KDE Plasma 6 on Wayland support |
-| Next    | 0.8.x - 1.0.0         | Committed for the following releases     |
-| Later   | Unplanned             | Accepted ideas, not scheduled yet        |
+| Horizon | Release     | Meaning                                  |
+| ------- | ----------- | ---------------------------------------- |
+| Now     | 0.2.x       | MVP with KDE Plasma 6 on Wayland support |
+| Next    | After 0.2.x | Committed once the MVP horizon is done   |
+| Later   | Unplanned   | Accepted ideas, not scheduled yet        |
 
 Rules:
 
 - Items are user-facing features, not internal tasks.
 - A design-changing item gets an ADR before work starts.
-- Reserved series: 0.8.x for performance, 0.9.x for security and
-  stability, 1.0.0 for polishing and the first stable release.
 
 ## Now
 
@@ -25,10 +23,7 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 
 ### 0.2.15
 
-- [ ] `taskbar.iconbar.size = "auto"`: the icon side follows the
-  screen size, `main.width` and the number of running apps, within
-  the usual 8 to 128 logical pixels. A number still sets a fixed
-  size.
+- [ ] Light theme next to the default dark one, chosen in the config.
 
 ### 0.2.16
 
@@ -42,32 +37,7 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 - [ ] When you search, the output bar lists open windows first, then
   installed apps from the launcher.
 
-### 0.2.18
-
-- [ ] Light theme next to the default dark one, chosen in the config.
-
 ## Next
-
-### 0.8.x: performance
-
-The whole 0.8.x series is reserved for performance work.
-
-- [ ] Faster, more responsive and smoother UI overall: the popup opens,
-  redraws and reacts to every key without visible delay.
-- [ ] Performance: holding `Up` or `Down` moves the selection one row
-  per key repeat, without skipping rows, and each frame is drawn
-  before the next repeat.
-
-### 0.9.x: security and stability
-
-The whole 0.9.x series is reserved for security and stability fixes.
-No items yet.
-
-### 1.0.0: first stable release
-
-Polishing and the first stable release. No items yet.
-
-## Later
 
 Window list:
 
@@ -82,6 +52,27 @@ Titles:
 - [ ] Rename a window from the popup: `F2` edits the selected title in
   place, `Enter` keeps it, `Esc` cancels. The new title lasts until the
   window closes.
+
+Icon bar:
+
+- [ ] Pinned apps stay in the icon bar while they are not running.
+
+Look:
+
+- [ ] A shadow around the popup.
+
+## Later
+
+Performance:
+
+- [ ] Faster, more responsive and smoother UI overall: the popup opens,
+  redraws and reacts to every key without visible delay.
+- [ ] Performance: holding `Up` or `Down` moves the selection one row
+  per key repeat, without skipping rows, and each frame is drawn
+  before the next repeat.
+
+Titles:
+
 - [ ] Configurable prefixes on rows and titles:
   - Per app: `[apps.<app_id>]` with `prefix = "Web"` so launcher rows
     read `Web: Firefox`.
@@ -91,7 +82,10 @@ Titles:
 
 Icon bar:
 
-- [ ] Pinned apps stay in the icon bar while they are not running.
+- [ ] `taskbar.iconbar.size = "auto"`: the icon side follows the
+  screen size, `main.width` and the number of running apps, within
+  the usual 8 to 128 logical pixels. A number still sets a fixed
+  size.
 
 Launcher:
 
@@ -218,6 +212,16 @@ Platform services:
 - [ ] Font lookup on macOS and Windows (no `fc-match`).
 
 Project:
+
+Release milestones:
+
+- 0.x milestone: define and test core functionality and design.
+- 1.x milestone: Linux desktop support: KDE, GNOME, LXQt, Xfce,
+  Hyprland and COSMIC. Cinnamon, LXDE, MATE, Openbox and others
+  follow later.
+- 2.x milestone: macOS implementation.
+- 3.x milestone: Windows implementation.
+- 4.x milestone: add more features and refactor.
 
 - [ ] Packaging: systemd user unit and autostart entry.
 - [ ] CI: `cargo check` for macOS and Windows targets.
