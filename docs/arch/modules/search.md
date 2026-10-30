@@ -24,7 +24,9 @@ Source: `src/modules/search/fuzzy.rs` and `src/modules/search/fold.rs`.
   near-matches stay out.
 - Results are sorted by the better score of title and app; ties
   keep the row order from `taskbar.titlebar.sort_by` (see
-  [core.md](../core.md#row-order)).
+  [core.md](../core.md#row-order)). The input module then places
+  an app that starts with the query first, with its new-window row
+  under that app ([input.md](input.md)).
 - Match indices go into `View` so the output bar can highlight them, for
   the title only. `frizbee` returns byte offsets of matched
   characters; they are merged into byte ranges.

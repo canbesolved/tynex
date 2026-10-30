@@ -10,6 +10,7 @@ use crate::core::app::AppInfo;
 use crate::core::state::State;
 use crate::modules::search::app_haystack;
 use crate::modules::search::fuzzy::rank;
+use crate::modules::search::starts_with_query;
 
 /// Rebuilds the output list from the query, open windows and apps.
 #[derive(Debug, Clone)]
@@ -67,8 +68,20 @@ fn search_windows(s: &mut State) {
         .zip(&apps)
         .map(|(r, app)| (r.title.as_str(), app.as_str()))
         .collect();
-    let hits = rank(&s.query, &items);
+    let mut hits = rank(&s.query, &items);
 
+    // A title or app name that starts with the query stays above a
+    // match that begins later in the text.
+    hits.sort_by(|a, b| {
+        let lead = |index: usize| {
+            let row = &s.rows[index];
+
+            starts_with_query(&row.title, &s.query)
+                || starts_with_query(&row.app_name, &s.query)
+        };
+
+        lead(b.index).cmp(&lead(a.index))
+    });
     for hit in &hits {
         s.rows[hit.index].highlights.clone_from(&hit.highlights);
     }

@@ -9,6 +9,22 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.17] - 2026-10-31
+
+A search lists open windows before installed apps. A name that
+starts with the query stays first, with its new-window row under it.
+
+### Changed
+
+- Matching open windows come before installed apps. A stronger idle
+  app no longer jumps above an open window (ADR-0078).
+- An app whose title or name starts with the query comes before one
+  that matches later in the text. `c` lists Cursor before Google
+  Chrome (ADR-0079).
+- The new-window row stays directly under that app. `c` lists
+  Cursor, its new-window row, then Google Chrome and its own
+  (ADR-0080).
+
 ## [0.2.16] - 2026-10-30
 
 The pointer selects rows in the title list and the dropdown.
@@ -494,7 +510,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.16...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.17...HEAD
+[0.2.17]: https://github.com/canbesolved/tynex/releases/tag/v0.2.17
 [0.2.16]: https://github.com/canbesolved/tynex/releases/tag/v0.2.16
 [0.2.15]: https://github.com/canbesolved/tynex/releases/tag/v0.2.15
 [0.2.14]: https://github.com/canbesolved/tynex/releases/tag/v0.2.14

@@ -7,6 +7,7 @@ use super::*;
 use crate::config::NewWindowConfig;
 use crate::core::view::Rgb;
 use crate::core::window::WindowId;
+use crate::modules::search::fuzzy::rank;
 
 fn window(id: &str, app_id: &str, app_name: &str, title: &str) -> Row {
     Row {
@@ -90,6 +91,47 @@ fn code_does_not_rank_rustdesk_above_code() {
 
     assert_eq!(titles(&out), ["Code - OSS"]);
     assert_eq!(targets(&out), [RowTarget::Launch("code".into())]);
+}
+
+#[test]
+fn a_leading_window_stays_above_a_later_match() {
+    let windows = vec![
+        window("w1", "chrome", "Google Chrome", "Google Chrome"),
+        window("w2", "cursor", "Cursor", "Cursor Agents"),
+    ];
+    let apps = vec![app("chrome", "Google Chrome"), app("cursor", "Cursor")];
+    let out = merge("c", &windows, &apps, &label());
+
+    assert_eq!(
+        titles(&out),
+        [
+            "Cursor Agents",
+            " +  New window",
+            "Google Chrome",
+            " +  New window",
+        ]
+    );
+    assert_eq!(
+        out.iter().map(|r| r.app_id.as_str()).collect::<Vec<_>>(),
+        ["cursor", "cursor", "chrome", "chrome"]
+    );
+    assert!(matches!(out[1].target, RowTarget::Launch(_)));
+    assert!(matches!(out[3].target, RowTarget::Launch(_)));
+}
+
+#[test]
+fn windows_stay_ahead_of_a_stronger_idle_app() {
+    let windows = vec![window("w1", "browser", "Browser", "firefox notes")];
+    let apps = vec![app("browser", "Browser"), app("firefox", "Firefox")];
+    let window_score =
+        rank("firefox", &[("firefox notes", "Browser")])[0].score;
+    let idle_score = rank("firefox", &[("Firefox", "firefox")])[0].score;
+
+    assert!(idle_score > window_score);
+    assert_eq!(
+        titles(&merge("firefox", &windows, &apps, &label())),
+        ["firefox notes", " +  New window", "Firefox"]
+    );
 }
 
 #[test]

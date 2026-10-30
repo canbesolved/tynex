@@ -38,7 +38,10 @@ The popup opens with the previous window selected. `Space` or
 icon strip is off, or that app has one window. With the title list
 off, the strip on, and several windows, those keys open its
 dropdown (see [taskbar.md](../ui/taskbar.md)). Typing starts at
-once; the best match is selected after every change of the query.
+once. After every change of the query, the first row is selected.
+An open window that starts with the query comes before a later
+match, and its new-window row stays under that app
+([input.md](../modules/input.md)).
 The bar on screen is the
 [input bar](../ui/input_bar.md). Matches are drawn
 in the [output bar](../ui/output_bar.md). Open windows show when

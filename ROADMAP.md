@@ -21,11 +21,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.17
-
-- [ ] When you search, the output bar lists open windows first, then
-  installed apps from the launcher.
-
 ## Next
 
 Window list:

@@ -117,6 +117,20 @@ fn enter_without_matches_does_nothing() {
 }
 
 #[test]
+fn a_leading_window_stays_above_a_later_match() {
+    let mut mode = mode();
+    let mut s = state();
+
+    s.rows[0].title = "Google Chrome".into();
+    s.rows[0].app_name = "Google Chrome".into();
+    s.rows[1].title = "Cursor Agents".into();
+    s.rows[1].app_name = "Cursor".into();
+    s.rows.truncate(2);
+    typed(&mut mode, &mut s, "c");
+    assert_eq!(titles(&s), ["Cursor Agents", "Google Chrome"]);
+}
+
+#[test]
 fn app_names_match() {
     let mut mode = mode();
     let mut s = state();
