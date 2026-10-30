@@ -15,15 +15,15 @@
 use std::time::Instant;
 
 use crate::config::{
-    HintConfig, MainConfig, OutputConfig, TaskbarConfig, TaskbarMode,
+    HintConfig, MainConfig, OutputConfig, Position, TaskbarConfig,
 };
 use crate::core::event::Click;
 use crate::core::view::View;
 use crate::core::window::WindowInfo;
-use crate::ui::draw::{self, Grid, Metrics, Paint, Size};
+use crate::ui::draw::{self, Grid, Look, Paint, Size};
 use crate::ui::fit;
 pub(crate) use crate::ui::frames::{draw_popup, measured};
-use crate::ui::render::canvas::{Canvas, Rgba};
+use crate::ui::render::canvas::Canvas;
 use crate::ui::render::icons::Icons;
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
@@ -38,17 +38,12 @@ pub struct Painter {
     text: Text,
     icons: Icons,
     theme: Theme,
-    font_size: u16,
-    width: u16,
-    max_rows: u16,
-    taskbar: TaskbarMode,
-    show_icons: bool,
-    hint_color: Rgba,
-    icon_size: f32,
-    border: f32,
+    look: Look,
+    position: Position,
     slide: Slide,
     drawn: f32,          // Reveal of the last drawn frame
     screen: Option<u32>, // Shortest output height, physical pixels
+    anchor: Option<u32>, // Logical height locked while shown
     list: Viewport,      // First row of the list on screen
 }
 
@@ -62,30 +57,27 @@ impl Painter {
         hint: &HintConfig,
         taskbar: &TaskbarConfig,
     ) -> Self {
-        let color = hint.font_color;
-
         Self {
             text,
             icons,
             theme: Theme::default(),
-            font_size: main.font_size,
-            width: main.width,
-            max_rows: output.max_rows,
-            taskbar: taskbar.mode,
-            show_icons: taskbar.titlebar.show_icons,
-            hint_color: Rgba(color.r, color.g, color.b, 0xff),
-            icon_size: f32::from(taskbar.iconbar.size),
-            border: f32::from(taskbar.iconbar.border),
+            look: Look::new(main, output, hint, taskbar),
+            position: main.position,
             slide: Slide::default(),
             drawn: 0.0,
             screen: None,
+            anchor: None,
             list: Viewport::default(),
         }
     }
 
-    /// Sets the screen height in physical pixels; the popup fits in it.
-    pub fn set_screen(&mut self, height: Option<u32>) {
+    /// Sets the screen height and the locked open height.
+    ///
+    /// `height` is physical pixels. `anchor` is the logical height from
+    /// when the popup opened, or none before the first show.
+    pub fn set_screen(&mut self, height: Option<u32>, anchor: Option<u32>) {
         self.screen = height;
+        self.anchor = anchor;
     }
 
     /// Scrolls the list by wheel `notches` or `dy` logical pixels.
@@ -123,12 +115,13 @@ impl Painter {
         icons: impl Iterator<Item = &'a str>,
         scale: f32,
     ) {
-        let size = draw::icon_size(&self.metrics(scale), &self.theme);
-        let strip = (self.icon_size * scale).round().max(1.0) as u32;
+        let metrics = self.look.metrics(scale);
+        let size = draw::icon_size(&metrics, &self.theme);
+        let strip = (self.look.icon_size * scale).round().max(1.0) as u32;
 
         for icon in icons {
             self.icons.prepare(icon, size);
-            if self.taskbar.iconbar() {
+            if self.look.taskbar.iconbar() {
                 self.icons.prepare(icon, strip);
             }
         }
@@ -215,25 +208,16 @@ impl Painter {
         self.slide.next(now)
     }
 
-    fn metrics(&self, scale: f32) -> Metrics {
-        Metrics {
-            font_size: f32::from(self.font_size),
-            width: f32::from(self.width),
-            max_rows: usize::from(self.max_rows),
-            list_rows: usize::from(self.max_rows),
-            first_row: None,
-            scale,
-            taskbar: self.taskbar,
-            show_icons: self.show_icons,
-            hint_color: self.hint_color,
-            icon_size: self.icon_size,
-            border: self.border,
-        }
-    }
-
     /// Returns the metrics for `view`, shrunk to fit the screen.
-    fn fitted(&self, view: &View<'_>, scale: f32) -> Metrics {
-        fit::fit(view, self.metrics(scale), &self.theme, self.screen)
+    fn fitted(&self, view: &View<'_>, scale: f32) -> draw::Metrics {
+        fit::fit(
+            view,
+            self.look.metrics(scale),
+            &self.theme,
+            self.screen,
+            self.position,
+            self.anchor,
+        )
     }
 }
 

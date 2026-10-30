@@ -4,7 +4,7 @@
 //! The popup fits the screen: lists shrink first, then the dropdown room.
 
 use super::fit;
-use crate::config::TaskbarMode;
+use crate::config::{Position, TaskbarMode};
 use crate::core::state::State;
 use crate::core::view::{AppIcon, Row, RowTarget};
 use crate::core::window::WindowId;
@@ -61,7 +61,14 @@ fn many_windows_shrink_the_title_list_to_the_screen() {
 
     assert!(measured(&state.view(), &full, &theme).height > screen);
 
-    let fitted = fit(&state.view(), full, &theme, Some(screen));
+    let fitted = fit(
+        &state.view(),
+        full,
+        &theme,
+        Some(screen),
+        Position::Center,
+        None,
+    );
     let height = measured(&state.view(), &fitted, &theme).height;
 
     assert!(height <= screen - 60, "{height}");
@@ -74,8 +81,16 @@ fn a_popup_that_fits_is_unchanged() {
     let theme = Theme::default();
     let state = state(3, 2);
 
-    assert_eq!(fit(&state.view(), metrics(), &theme, Some(1080)), metrics());
-    assert_eq!(fit(&state.view(), metrics(), &theme, None), metrics());
+    let view = state.view();
+
+    assert_eq!(
+        fit(&view, metrics(), &theme, Some(1080), Position::Center, None),
+        metrics()
+    );
+    assert_eq!(
+        fit(&view, metrics(), &theme, None, Position::Center, None),
+        metrics()
+    );
 }
 
 #[test]
@@ -86,7 +101,64 @@ fn a_tiny_screen_shrinks_the_dropdown_room_too() {
         taskbar: TaskbarMode::Iconbar,
         ..metrics()
     };
-    let fitted = fit(&state.view(), iconbar, &theme, Some(600));
+    let fitted = fit(
+        &state.view(),
+        iconbar,
+        &theme,
+        Some(600),
+        Position::Center,
+        None,
+    );
 
     assert!(fitted.max_rows < 19);
+}
+
+#[test]
+fn top_matches_an_unlocked_center() {
+    let theme = Theme::default();
+    let state = state(31, 12);
+    let full = metrics();
+    let center = fit(
+        &state.view(),
+        full,
+        &theme,
+        Some(600),
+        Position::Center,
+        None,
+    );
+    let top = fit(
+        &state.view(),
+        full,
+        &theme,
+        Some(600),
+        Position::Top,
+        Some(40),
+    );
+
+    assert_eq!(center, top);
+}
+
+#[test]
+fn a_locked_center_shrinks_sooner() {
+    let theme = Theme::default();
+    let state = state(31, 12);
+    let full = metrics();
+    let open = fit(
+        &state.view(),
+        full,
+        &theme,
+        Some(1080),
+        Position::Center,
+        None,
+    );
+    let locked = fit(
+        &state.view(),
+        full,
+        &theme,
+        Some(1080),
+        Position::Center,
+        Some(40),
+    );
+
+    assert!(locked.list_rows < open.list_rows);
 }

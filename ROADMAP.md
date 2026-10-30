@@ -23,13 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.13
-
-- [ ] The popup stays in place: it no longer moves when the output bar
-  appears.
-- [ ] Config option for the vertical position of the popup: `center`
-  or `top`.
-
 ### 0.2.15
 
 - [ ] Each UI module is its own block: a small gap separates the bars

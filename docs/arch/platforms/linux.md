@@ -77,7 +77,12 @@ protocol. No client toolkit.
   (optional). `wl_seat` comes with the
   keyboard. Every `wl_output` present at start is bound for its
   current mode and rotation; outputs plugged in later are not tracked.
-- Layer `overlay`, no anchors, so the compositor centers the surface.
+- Layer `overlay`, anchored to the top and to the left and right
+  edges, so it stays centered horizontally and grows downward. The
+  exclusive zone is `-1`, so a panel does not push it. The top margin
+  comes from `main.position`
+  ([ADR-0073](../../adr/0073_popup_place.md)): `center` locks it from
+  the height at open, and `top` uses 24 logical pixels.
 - Keyboard interactivity `exclusive`: all keys go to the popup while it
   is shown. No global key grabbing.
 - Size comes from `Painter::size` in physical pixels; the surface size
@@ -85,8 +90,9 @@ protocol. No client toolkit.
   painter gets the shortest output height, so the popup fits the
   screen (see [fit.md](../ui/fit.md)).
 - `show`: create the surface, wait for `configure`, draw, commit. The
-  size is sent only when it changes: each new size makes the
-  compositor configure again, and each configure redraws.
+  size and the top margin are sent only when they change: each new
+  value makes the compositor configure again, and each configure
+  redraws.
 - `draw`: returns false until the surface is configured or while both
   buffers are held by the compositor. A skipped frame is drawn when
   a buffer is released.

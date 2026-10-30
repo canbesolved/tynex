@@ -43,6 +43,7 @@ desktop = "auto"             # auto | kde | mock
 font = "auto"                # Font file path, or auto
 font_size = 14
 width = 480
+position = "center"          # center | top
 
 [hotkeys]
 # Hotkey pressed again while the popup is open: "hide" closes the
@@ -92,6 +93,14 @@ iconbar.border = 4
 `main.desktop` selects the window source adapter. `auto` picks `kde`
 when the colon-separated `XDG_CURRENT_DESKTOP` list contains `KDE`, and
 fails otherwise; it never selects `mock`.
+
+`main.position` is where the popup sits
+([ADR-0073](../adr/0073_popup_place.md)): `center` (default) or
+`top`. `center` places it in the middle of the shortest output when
+it opens, then keeps that top edge while the output bar or a dropdown
+grows downward. `top` keeps it 24 logical pixels from the top of the
+screen. A missing key stays centered. Any other value stops the
+daemon.
 
 `hotkeys.action` sets what pressing the hotkey (or `tynex show`) does
 while the popup is open: `hide` closes it, `last` switches to the
@@ -224,6 +233,7 @@ The config is read once, when `tynex daemon` starts
 | `main.font`                       | `auto` or a path to an existing font   |
 | `main.font_size`                  | 8 to 72                                |
 | `main.width`                      | 200 to 2000                            |
+| `main.position`                   | `center` or `top`                      |
 | `hotkeys.action`                  | `hide` or `last`                       |
 | `input.launcher.mode`             | `off`, `all` or `gui_only`             |
 | `launcher.new_window`             | `true` or `false`                      |

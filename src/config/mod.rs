@@ -33,6 +33,15 @@ pub enum Desktop {
     Mock,
 }
 
+/// Vertical position of the popup on the screen.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Position {
+    #[default]
+    Center, // Centered when it opens; grows downward
+    Top, // 24 logical pixels from the top
+}
+
 /// Font for titles.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Font {
@@ -47,6 +56,7 @@ pub struct MainConfig {
     pub font: Font,
     pub font_size: u16,
     pub width: u16,
+    pub position: Position,
 }
 
 /// The `[hotkeys]` table.
@@ -161,6 +171,7 @@ impl Default for Config {
                 font: Font::Auto,
                 font_size: 14,
                 width: 480,
+                position: Position::Center,
             },
             hotkeys: HotkeysConfig {
                 action: HotkeyAction::Last,
@@ -226,3 +237,7 @@ mod taskbar_tests;
 #[cfg(test)]
 #[path = "sections_tests.rs"]
 mod sections_tests;
+
+#[cfg(test)]
+#[path = "position_tests.rs"]
+mod position_tests;

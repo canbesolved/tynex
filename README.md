@@ -150,6 +150,7 @@ desktop = "auto"             # auto | kde | mock
 font = "auto"                # Or a font file with your scripts (CJK)
 font_size = 14
 width = 480
+position = "center"          # center | top
 
 [hotkeys]
 action = "last"              # hide | last

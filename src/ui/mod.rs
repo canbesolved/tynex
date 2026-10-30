@@ -14,6 +14,7 @@ pub mod frames;
 pub mod input_bar;
 pub mod output_bar;
 pub mod painter;
+pub mod place;
 pub mod render;
 pub mod scroll;
 pub mod slide;

@@ -230,7 +230,7 @@ fn redraw(p: &mut Parts) {
     let scale = p.presenter.scale();
     let painter = &mut p.painter;
 
-    painter.set_screen(p.presenter.screen_height());
+    painter.set_screen(p.presenter.screen_height(), p.presenter.anchor());
     p.presenter.show(painter.size(&view, scale));
     p.presenter
         .draw(|canvas| painter.draw(canvas, &view, scale));
