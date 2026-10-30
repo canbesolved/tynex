@@ -23,11 +23,6 @@ Rules:
 
 Target: MVP with KDE Plasma 6 on Wayland support.
 
-### 0.2.10
-
-- [ ] `taskbar` module: the icon bar and the title bar become one
-  module with three modes: `icons`, `titles` and `both`.
-
 ### 0.2.11
 
 - [ ] Simpler config sections: `[main]`, `[hotkeys]`, `[input]`,

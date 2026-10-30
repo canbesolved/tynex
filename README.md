@@ -31,7 +31,7 @@ Press a hotkey, type a few letters of a window, press `Enter` or
 `Space`, and you are there. Or press either right away to go back to
 the previous window. No mouse, no scrolling, no waiting.
 
-> Status: 0.2.9 — MVP with KDE Plasma 6 on Wayland support. See the
+> Status: 0.2.10 — MVP with KDE Plasma 6 on Wayland support. See the
 > [roadmap](ROADMAP.md).
 
 ## Features
@@ -59,7 +59,7 @@ the previous window. No mouse, no scrolling, no waiting.
 
 | Environment      | Session | Status  |
 | ---------------- | ------- | ------- |
-| KDE Plasma 6     | Wayland | 0.2.9   |
+| KDE Plasma 6     | Wayland | 0.2.10  |
 | Other DEs / WMs  | Any     | Planned |
 | macOS, Windows   | -       | Planned |
 
@@ -73,7 +73,7 @@ prebuilt binaries for Linux x86_64 and arm64 (glibc 2.35 or newer),
 for example:
 
 ```bash
-v=0.2.9 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
+v=0.2.10 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
 url=https://github.com/canbesolved/tynex/releases/download/v$v
 curl -LO "$url/tynex-$v-$t.tar.gz" -LO "$url/SHA256SUMS"
 sha256sum -c --ignore-missing SHA256SUMS
