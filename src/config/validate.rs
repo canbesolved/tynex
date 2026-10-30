@@ -67,6 +67,7 @@ pub(super) fn validate(
             font_size: main.font_size.into_inner(),
             width: main.width.into_inner(),
             position: main.position,
+            theme: main.theme,
         },
         hotkeys: HotkeysConfig {
             action: match raw.hotkeys.action {

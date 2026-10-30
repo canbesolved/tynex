@@ -86,5 +86,7 @@ missing icon leaves its slot empty.
 
 ## Theme
 
-One dark theme with fixed colors. Theme values live in one struct, so
-other sources can fill it without touching drawing code.
+Two built-in themes. `main.theme` is `dark` (default) or `light`
+([ADR-0076](../../adr/0076_light_theme.md)). Drawing code reads one
+struct, so a later source can fill it without touching that code.
+Radius, padding and the selection color are the same in both.

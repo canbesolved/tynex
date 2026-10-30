@@ -12,7 +12,9 @@ use std::time::{Duration, Instant};
 
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use tynex::adapters::mock::MockSource;
-use tynex::config::{Font, HintConfig, MainConfig, TaskbarConfig, TaskbarMode};
+use tynex::config::{
+    Font, HintConfig, MainConfig, TaskbarConfig, TaskbarMode, Theme,
+};
 use tynex::config::{LauncherConfig, LauncherMode, OutputConfig, Position};
 use tynex::core::event::{Action, Event};
 use tynex::core::order::SortBy;
@@ -49,6 +51,7 @@ fn painter(text: Text, icons: Icons) -> Painter {
         font_size: 14,
         width: 480,
         position: Position::Center,
+        theme: Theme::Dark,
     };
     let output = OutputConfig { max_rows: 19 };
     let taskbar = TaskbarConfig {

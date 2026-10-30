@@ -151,6 +151,7 @@ font = "auto"                # Or a font file with your scripts (CJK)
 font_size = 14
 width = 480
 position = "center"          # center | top
+theme = "dark"               # dark | light
 
 [hotkeys]
 action = "last"              # hide | last
