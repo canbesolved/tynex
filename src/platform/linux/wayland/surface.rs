@@ -17,9 +17,9 @@ use crate::ui::Size;
 use crate::ui::place;
 use crate::ui::render::canvas::Canvas;
 
-/// Creates the popup: overlay layer, anchored to the top and centered
-/// horizontally, exclusive keyboard. It is mapped after the first
-/// configure and buffer commit.
+/// Creates the popup: overlay layer, anchored to the top edge so the
+/// compositor centers it on that edge, exclusive keyboard. It is
+/// mapped after the first configure and buffer commit.
 pub(super) fn create(wl: &Wl, qh: &QueueHandle<Wl>) -> Popup {
     let surface = wl.compositor.create_surface(qh, ());
     let viewport = wl
@@ -40,7 +40,7 @@ pub(super) fn create(wl: &Wl, qh: &QueueHandle<Wl>) -> Popup {
     );
 
     layer.set_keyboard_interactivity(KeyboardInteractivity::Exclusive);
-    layer.set_anchor(Anchor::Top | Anchor::Left | Anchor::Right);
+    layer.set_anchor(anchors());
     layer.set_exclusive_zone(-1);
     Popup {
         surface,
@@ -51,6 +51,15 @@ pub(super) fn create(wl: &Wl, qh: &QueueHandle<Wl>) -> Popup {
         sent_margin: None,
         sent_size: None,
     }
+}
+
+/// Anchor bits for the popup.
+///
+/// KWin places a surface on the left when the left anchor is set, even
+/// if the right anchor is set and the width is explicit. The top edge
+/// alone is centered on that edge.
+fn anchors() -> Anchor {
+    Anchor::Top
 }
 
 /// Sends the top margin and the size. Unchanged values are not sent,
@@ -176,6 +185,13 @@ pub(super) fn draw(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_popup_is_anchored_to_the_top_edge_only() {
+        assert_eq!(anchors(), Anchor::Top);
+        assert!(!anchors().contains(Anchor::Left));
+        assert!(!anchors().contains(Anchor::Right));
+    }
 
     #[test]
     fn logical_size_rounds_up() {

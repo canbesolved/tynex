@@ -77,11 +77,12 @@ protocol. No client toolkit.
   (optional). `wl_seat` comes with the
   keyboard. Every `wl_output` present at start is bound for its
   current mode and rotation; outputs plugged in later are not tracked.
-- Layer `overlay`, anchored to the top and to the left and right
-  edges, so it stays centered horizontally and grows downward. The
-  exclusive zone is `-1`, so a panel does not push it. The top margin
-  comes from `main.position`
-  ([ADR-0073](../../adr/0073_popup_place.md)): `center` locks it from
+- Layer `overlay`, anchored to the top edge, so the compositor
+  centers it on that edge and it grows downward. A left or right
+  anchor would pin it to that side on KWin. The exclusive zone is
+  `-1`, so a panel does not push it. The top margin comes from
+  `main.position` ([ADR-0073](../../adr/0073_popup_place.md),
+  [ADR-0074](../../adr/0074_top_anchor.md)): `center` locks it from
   the height at open, and `top` uses 24 logical pixels.
 - Keyboard interactivity `exclusive`: all keys go to the popup while it
   is shown. No global key grabbing.
