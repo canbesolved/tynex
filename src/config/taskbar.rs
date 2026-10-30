@@ -12,9 +12,9 @@ pub enum TaskbarMode {
     Off,
     /// One icon per running app.
     #[default]
-    Icons,
+    Iconbar,
     /// The open windows.
-    Titles,
+    Titlebar,
     /// The icon strip, then the title list.
     Both,
 }
@@ -22,18 +22,18 @@ pub enum TaskbarMode {
 impl TaskbarMode {
     /// Returns true when this mode includes the icon strip.
     #[must_use]
-    pub const fn icons(self) -> bool {
-        matches!(self, Self::Icons | Self::Both)
+    pub const fn iconbar(self) -> bool {
+        matches!(self, Self::Iconbar | Self::Both)
     }
 
     /// Returns true when this mode includes the title list.
     #[must_use]
-    pub const fn titles(self) -> bool {
-        matches!(self, Self::Titles | Self::Both)
+    pub const fn titlebar(self) -> bool {
+        matches!(self, Self::Titlebar | Self::Both)
     }
 }
 
-/// The `[title_bar]` table: row order and title text.
+/// The `taskbar.titlebar` keys: row order and title text.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TitleBarConfig {
     pub sort_by: SortBy,      // Row order
@@ -51,17 +51,17 @@ impl Default for TitleBarConfig {
     }
 }
 
-/// The `[icon_bar]` table: icon size and the selection border.
+/// The `taskbar.iconbar` keys: icon size and the selection border.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IconBarConfig {
-    pub icon_size: u16, // Logical pixels, scaled with the display
-    pub border: u16,    // Selection outline, logical pixels
+    pub size: u16,   // Logical pixels, scaled with the display
+    pub border: u16, // Selection outline, logical pixels
 }
 
 impl Default for IconBarConfig {
     fn default() -> Self {
         Self {
-            icon_size: 24,
+            size: 24,
             border: 4,
         }
     }
@@ -71,16 +71,16 @@ impl Default for IconBarConfig {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TaskbarConfig {
     pub mode: TaskbarMode,
-    pub titles: TitleBarConfig, // `[title_bar]` keys
-    pub icons: IconBarConfig,   // `[icon_bar]` keys
+    pub titlebar: TitleBarConfig, // `taskbar.titlebar` keys
+    pub iconbar: IconBarConfig,   // `taskbar.iconbar` keys
 }
 
 impl Default for TaskbarConfig {
     fn default() -> Self {
         Self {
-            mode: TaskbarMode::Icons,
-            titles: TitleBarConfig::default(),
-            icons: IconBarConfig::default(),
+            mode: TaskbarMode::Iconbar,
+            titlebar: TitleBarConfig::default(),
+            iconbar: IconBarConfig::default(),
         }
     }
 }

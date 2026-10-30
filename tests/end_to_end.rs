@@ -28,12 +28,12 @@ fn start(config: &Config) -> (App, Source, EventRx) {
     let (tx, rx) = channel();
     let mut sw = Switcher::new(
         config.hotkeys.action,
-        config.taskbar.titles.strip_app_name,
-        config.taskbar.titles.sort_by,
+        config.taskbar.titlebar.strip_app_name,
+        config.taskbar.titlebar.sort_by,
         PromptMode::new(
-            Input::new(config.input_bar.launcher.clone(), Vec::new()),
+            Input::new(config.input.launcher.clone(), Vec::new()),
             config.taskbar.mode,
-            config.output_bar.max_rows,
+            config.output.max_rows,
         ),
     );
 
@@ -113,7 +113,7 @@ fn titles_keep_the_app_name_by_default() {
 #[test]
 fn titles_from_the_source_are_stripped() {
     let text = "[main]\ndesktop = \"mock\"\n\
-                [title_bar]\nstrip_app_name = true\n";
+                [taskbar]\ntitlebar.strip_app_name = true\n";
     let config = config::parse(text, &|_| false).unwrap();
     let (mut sw, ..) = start(&config);
 

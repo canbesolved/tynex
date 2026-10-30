@@ -9,6 +9,23 @@ project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** config sections are `[main]`, `[hotkeys]`, `[input]`,
+  `[output]` and `[taskbar]` (ADR-0066).
+  - `input_bar.*` becomes `input.*`.
+  - `output_bar.max_rows` becomes `output.max_rows`.
+  - `title_bar.sort_by`, `title_bar.show_icons` and
+    `title_bar.strip_app_name` become `taskbar.titlebar.sort_by`,
+    `taskbar.titlebar.show_icons` and
+    `taskbar.titlebar.strip_app_name`.
+  - `icon_bar.icon_size` becomes `taskbar.iconbar.size`.
+  - `icon_bar.border` becomes `taskbar.iconbar.border`.
+  - `taskbar.mode` values `icons` and `titles` become `iconbar`
+    (still the default) and `titlebar`. `off` and `both` stay.
+  - A file that still uses an old section or an old mode value
+    stops the daemon until the file is edited.
+
 ## [0.2.10] - 2026-10-30
 
 The icon strip and the title list are one `[taskbar]` module.

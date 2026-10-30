@@ -40,14 +40,14 @@ once; the best match is selected after every change of the query.
 The bar on screen is the
 [input bar](../ui/input_bar.md). Matches are drawn
 in the [output bar](../ui/output_bar.md). Open windows show when
-`taskbar.mode` is `titles` or `both` and the query is empty. Typing
-hides them; clearing the query shows them again (see
+`taskbar.mode` is `titlebar` or `both` and the query is empty.
+Typing hides them; clearing the query shows them again (see
 [config.md](../config.md#format) and
 [taskbar.md](../ui/taskbar.md)).
 
 ## Taskbar
 
-While `taskbar.mode` is `icons` or `both` and the query is empty,
+While `taskbar.mode` is `iconbar` or `both` and the query is empty,
 `Left` and `Right` move along the icons and close an open dropdown.
 The pointer does the same to the icon under it, and leaves the
 selection when it moves off the icons. `Enter` and `Space` activate

@@ -31,10 +31,11 @@ The default file. It is kept in `default.toml` and embedded with
 `include_str!`; the `Default` impls must match it (a unit test checks
 this). Every key is optional: a missing key takes the value shown here.
 
-Sections stay in this order: `[main]`, `[hotkeys]`, `[input_bar]`,
-`[output_bar]`, `[taskbar]`, `[title_bar]`, then `[icon_bar]`
+Sections stay in this order: `[main]`, `[hotkeys]`, `[input]`,
+`[output]`, then `[taskbar]`
 ([ADR-0055](../adr/0055_config_sections.md), amended by
-[ADR-0065](../adr/0065_taskbar.md)).
+[ADR-0065](../adr/0065_taskbar.md) and
+[ADR-0066](../adr/0066_short_sections.md)).
 
 ```toml
 [main]
@@ -48,7 +49,7 @@ width = 480
 # popup, "last" switches to the previously used window.
 action = "last"              # hide | last
 
-[input_bar]
+[input]
 # Installed apps in the output bar: "off" hides them, "all" includes
 # terminal apps, "gui_only" skips Terminal=true.
 launcher.mode = "gui_only"   # off | all | gui_only
@@ -65,31 +66,27 @@ hint.text = 'date +"%A %b %-d %T %Y"'
 # Seconds after the previous exit. 0 runs once per open.
 hint.update = 0
 
-[output_bar]
+[output]
 # Cap for the output bar, the title list and an icon dropdown.
 max_rows = 19
 
 [taskbar]
 # "off" hides the strip and the title list until you type.
-# "icons" shows one icon per running app.
-# "titles" shows the open windows.
+# "iconbar" shows one icon per running app.
+# "titlebar" shows the open windows.
 # "both" shows the strip, then the title list.
-mode = "icons"               # off | icons | titles | both
-
-[title_bar]
+mode = "iconbar"             # off | iconbar | titlebar | both
 # Row order: "recently" puts the last used window first, "app" groups
 # windows by app name.
-sort_by = "recently"         # recently | app
+titlebar.sort_by = "recently" # recently | app
 # Draw the app icon before the title. false shows titles only.
-show_icons = true
+titlebar.show_icons = true
 # Drop " — <app name>" from the end of window titles.
-strip_app_name = false
-
-[icon_bar]
+titlebar.strip_app_name = false
 # Icon side in logical pixels, scaled with the display.
-icon_size = 24
+iconbar.size = 24
 # Selection border outside the icon, in logical pixels.
-border = 4
+iconbar.border = 4
 ```
 
 `main.desktop` selects the window source adapter. `auto` picks `kde`
@@ -100,7 +97,7 @@ fails otherwise; it never selects `mock`.
 while the popup is open: `hide` closes it, `last` switches to the
 previously used window, or closes it when there is none.
 
-`input_bar.launcher.mode` adds installed apps to the output bar
+`input.launcher.mode` adds installed apps to the output bar
 ([ADR-0056](../adr/0056_launcher_input.md)): `"off"`, `"all"`, or
 `"gui_only"` (default; skips `Terminal=true`).
 
@@ -114,7 +111,7 @@ title. The default is one space, `+`, two spaces, then `New window`.
 uses the default. An empty title or a color that is not `#RRGGBB`
 stops the daemon.
 
-`input_bar.hint` is the text in the empty input bar
+`input.hint` is the text in the empty input bar
 ([ADR-0060](../adr/0060_input_hint.md)). `hint.enabled` defaults to
 `true`. `hint.text` is a shell command. The default is
 `date +"%A %b %-d %T %Y"`. Its first stdout line is the hint. An
@@ -126,16 +123,17 @@ runs it again while the popup stays open, waiting that long after
 the previous command exits. A bad color or a wait outside that
 range stops the daemon.
 
-`output_bar.max_rows` caps the output bar, the title list and an
+`output.max_rows` caps the output bar, the title list and an
 icon dropdown.
 
 `taskbar.mode` chooses the taskbar while the query is empty
-([ADR-0065](../adr/0065_taskbar.md)): `off`, `icons` (default),
-`titles` or `both`. `icons` is one icon per running app.
-`titles` is the open windows. `both` is the strip, then the title
-list. Typing hides whichever is showing. Clearing the query with
-`Backspace` or `Esc` shows it again. `off` leaves only the input
-bar until you type. Matches then appear in the output bar.
+([ADR-0065](../adr/0065_taskbar.md), amended by
+[ADR-0066](../adr/0066_short_sections.md)): `off`, `iconbar`
+(default), `titlebar` or `both`. `iconbar` is one icon per running
+app. `titlebar` is the open windows. `both` is the strip, then the
+title list. Typing hides whichever is showing. Clearing the query
+with `Backspace` or `Esc` shows it again. `off` leaves only the
+input bar until you type. Matches then appear in the output bar.
 
 `icon_bar.enabled` and `title_bar.enabled` were removed in 0.2.10.
 `taskbar.mode` replaces both. A config that still sets either
@@ -144,10 +142,17 @@ that still sets `mode` or `keys`, removed with hotkey mode in 0.1.6,
 stops the daemon too
 ([ADR-0050](../adr/0050_search_only.md)).
 
-`title_bar.show_icons` draws the app icon before the title (default
-`true`). `false` shows titles only, with no icon slot. A window
-without an icon keeps an empty slot when icons are on. The output
-bar always draws the icon
+`[input_bar]`, `[output_bar]`, `[title_bar]` and `[icon_bar]` were
+removed in 0.2.11. Their keys moved to `[input]`, `[output]` and
+`[taskbar]`. `taskbar.mode` values `icons` and `titles` became
+`iconbar` and `titlebar`. A file that still uses an old section or
+an old mode value stops the daemon
+([ADR-0066](../adr/0066_short_sections.md)).
+
+`taskbar.titlebar.show_icons` draws the app icon before the title
+(default `true`). `false` shows titles only, with no icon slot.
+A window without an icon keeps an empty slot when icons are on.
+The output bar always draws the icon
 ([ADR-0058](../adr/0058_title_bar_row.md)).
 
 `title_bar.show_app_icon`, the app name column, was removed in 0.2.3.
@@ -168,23 +173,25 @@ sets `layout` stops the daemon with an unknown key error.
 ([ADR-0055](../adr/0055_config_sections.md)). A config that still has
 them stops the daemon with an unknown key error.
 
-`title_bar.strip_app_name` drops the app name from the end of a
-title, after ` — `, ` – ` or ` - `: `Café — Firefox` becomes `Café`.
+`taskbar.titlebar.strip_app_name` drops the app name from the end
+of a title, after ` — `, ` – ` or ` - `: `Café — Firefox` becomes
+`Café`.
 The end must equal the app name or the last part of the app id
 (`konsole` for `org.kde.konsole`), ignoring case. A title that would
 become empty stays as it is.
 
-`title_bar.sort_by` sets the order of the rows: `recently` (default)
-by last use, `app` by app name. The popup always opens with the
-previous window selected (see [core.md](core.md#row-order)). `key`,
-the letter order, was removed in 0.1.6 and is rejected.
+`taskbar.titlebar.sort_by` sets the order of the rows: `recently`
+(default) by last use, `app` by app name. The popup always opens
+with the previous window selected (see
+[core.md](core.md#row-order)). `key`, the letter order, was removed
+in 0.1.6 and is rejected.
 
-`icon_bar.icon_size` is the icon side in logical pixels, default
+`taskbar.iconbar.size` is the icon side in logical pixels, default
 `24`, from 8 to 128. It is multiplied by the output scale, like
 `main.font_size`. A value outside that range stops the daemon.
-`icon_bar.border` is the selection outline in the same units,
-default `4`, from 1 to 32. A missing key uses the default. The
-strip shows when `taskbar.mode` is `icons` or `both`
+`taskbar.iconbar.border` is the selection outline in the same
+units, default `4`, from 1 to 32. A missing key uses the default.
+The strip shows when `taskbar.mode` is `iconbar` or `both`
 ([ADR-0062](../adr/0062_icon_bar.md)).
 
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
@@ -208,27 +215,27 @@ The config is read once, when `tynex daemon` starts
 
 ## Validation
 
-| Key                              | Rule                                      |
-| -------------------------------- | ----------------------------------------- |
-| `main.desktop`                   | `auto`, `kde` or `mock`                   |
-| `main.font`                      | `auto` or a path to an existing font file |
-| `main.font_size`                 | 8 to 72                                   |
-| `main.width`                     | 200 to 2000                               |
-| `hotkeys.action`                 | `hide` or `last`                          |
-| `input_bar.launcher.mode`        | `off`, `all` or `gui_only`                |
-| `launcher.new_window`            | `true` or `false`                         |
-| `launcher.new_window_text`       | a non-empty string                        |
-| `launcher.new_window_text_color` | `#RRGGBB`                                 |
-| `input_bar.hint.enabled`         | `true` or `false`                         |
-| `input_bar.hint.font_color`      | `#RRGGBB`                                 |
-| `input_bar.hint.update`          | 0 to 86400                                |
-| `output_bar.max_rows`            | 1 to 50                                   |
-| `taskbar.mode`                   | `off`, `icons`, `titles` or `both`        |
-| `title_bar.sort_by`              | `recently` or `app`                       |
-| `title_bar.show_icons`           | `true` or `false`                         |
-| `title_bar.strip_app_name`       | `true` or `false`                         |
-| `icon_bar.icon_size`             | 8 to 128                                  |
-| `icon_bar.border`                | 1 to 32                                   |
+| Key                               | Rule                                   |
+| --------------------------------- | -------------------------------------- |
+| `main.desktop`                    | `auto`, `kde` or `mock`                |
+| `main.font`                       | `auto` or a path to an existing font   |
+| `main.font_size`                  | 8 to 72                                |
+| `main.width`                      | 200 to 2000                            |
+| `hotkeys.action`                  | `hide` or `last`                       |
+| `input.launcher.mode`             | `off`, `all` or `gui_only`             |
+| `launcher.new_window`             | `true` or `false`                      |
+| `launcher.new_window_text`        | a non-empty string                     |
+| `launcher.new_window_text_color`  | `#RRGGBB`                              |
+| `input.hint.enabled`              | `true` or `false`                      |
+| `input.hint.font_color`           | `#RRGGBB`                              |
+| `input.hint.update`               | 0 to 86400                             |
+| `output.max_rows`                 | 1 to 50                                |
+| `taskbar.mode`                    | `off`, `iconbar`, `titlebar` or `both` |
+| `taskbar.titlebar.sort_by`        | `recently` or `app`                    |
+| `taskbar.titlebar.show_icons`     | `true` or `false`                      |
+| `taskbar.titlebar.strip_app_name` | `true` or `false`                      |
+| `taskbar.iconbar.size`            | 8 to 128                               |
+| `taskbar.iconbar.border`          | 1 to 32                                |
 
 Syntax and type errors stop at the first error, as reported by `toml`.
 Value checks run on the parsed file and report every invalid key at
@@ -244,8 +251,7 @@ messages.
 
 ```text
 tynex: error: ~/.config/tynex/tynex.toml:1:1: unknown key `adaptr`,
-  expected one of `main`, `hotkeys`, `input_bar`, `output_bar`,
-  `taskbar`, `title_bar`, `icon_bar`
+  expected one of `main`, `hotkeys`, `input`, `output`, `taskbar`
 tynex: error: ~/.config/tynex/tynex.toml:4:13: `main.font_size`
   = 120 is out of range, expected 8 to 72
 ```

@@ -28,12 +28,12 @@ pub(super) enum RawSortBy {
 }
 
 #[derive(Deserialize, Default)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "lowercase")]
 pub(super) enum RawTaskbarMode {
     Off,
     #[default]
-    Icons,
-    Titles,
+    Iconbar,
+    Titlebar,
     Both,
 }
 
@@ -74,7 +74,7 @@ fn default_hint_update() -> Spanned<u32> {
     unspanned(0)
 }
 
-fn default_icon_size() -> Spanned<u16> {
+fn default_size() -> Spanned<u16> {
     unspanned(24)
 }
 
@@ -87,11 +87,9 @@ fn default_icon_border() -> Spanned<u16> {
 pub(super) struct RawConfig {
     pub main: RawMain,
     pub hotkeys: RawHotkeys,
-    pub input_bar: RawInputBar,
-    pub output_bar: RawOutputBar,
+    pub input: RawInput,
+    pub output: RawOutput,
     pub taskbar: RawTaskbar,
-    pub title_bar: RawTitleBar,
-    pub icon_bar: RawIconBar,
 }
 
 #[derive(Deserialize)]
@@ -130,7 +128,7 @@ impl Default for RawHotkeys {
 
 #[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields, default)]
-pub(super) struct RawInputBar {
+pub(super) struct RawInput {
     pub launcher: RawLauncher,
     pub hint: RawHint,
 }
@@ -184,11 +182,11 @@ impl Default for RawLauncher {
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]
-pub(super) struct RawOutputBar {
+pub(super) struct RawOutput {
     pub max_rows: Spanned<u16>,
 }
 
-impl Default for RawOutputBar {
+impl Default for RawOutput {
     fn default() -> Self {
         Self {
             max_rows: unspanned(19),
@@ -200,6 +198,8 @@ impl Default for RawOutputBar {
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawTaskbar {
     pub mode: RawTaskbarMode,
+    pub titlebar: RawTitleBar,
+    pub iconbar: RawIconBar,
 }
 
 #[derive(Deserialize)]
@@ -223,8 +223,8 @@ impl Default for RawTitleBar {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawIconBar {
-    #[serde(default = "default_icon_size")]
-    pub icon_size: Spanned<u16>,
+    #[serde(default = "default_size")]
+    pub size: Spanned<u16>,
     #[serde(default = "default_icon_border")]
     pub border: Spanned<u16>,
 }
@@ -232,7 +232,7 @@ pub(super) struct RawIconBar {
 impl Default for RawIconBar {
     fn default() -> Self {
         Self {
-            icon_size: default_icon_size(),
+            size: default_size(),
             border: default_icon_border(),
         }
     }

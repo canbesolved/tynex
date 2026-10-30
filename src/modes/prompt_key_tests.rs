@@ -122,8 +122,11 @@ fn space_without_matches_leaves_the_query() {
 
 #[test]
 fn tab_walks_the_title_bar_and_wraps() {
-    let mut mode =
-        prompt(TaskbarMode::Titles, launcher(LauncherMode::Off), Vec::new());
+    let mut mode = prompt(
+        TaskbarMode::Titlebar,
+        launcher(LauncherMode::Off),
+        Vec::new(),
+    );
     let mut s = state();
 
     assert_eq!(mode.on_key(Key::Tab, &mut s), Action::Redraw);
@@ -148,7 +151,7 @@ fn tab_walks_output_matches() {
         },
     ];
 
-    for taskbar in [TaskbarMode::Off, TaskbarMode::Titles] {
+    for taskbar in [TaskbarMode::Off, TaskbarMode::Titlebar] {
         let mut mode =
             prompt(taskbar, launcher(LauncherMode::All), apps.clone());
         let mut s = State::new(Vec::new());

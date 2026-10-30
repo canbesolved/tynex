@@ -9,7 +9,7 @@ width = 480
 # popup, "last" switches to the previously used window.
 action = "last"              # hide | last
 
-[input_bar]
+[input]
 # Installed apps in the output bar: "off" hides them, "all" includes
 # terminal apps, "gui_only" skips Terminal=true.
 launcher.mode = "gui_only"   # off | all | gui_only
@@ -26,28 +26,24 @@ hint.text = 'date +"%A %b %-d %T %Y"'
 # Seconds after the previous exit. 0 runs once per open.
 hint.update = 0
 
-[output_bar]
+[output]
 # Cap for the output bar, the title list and an icon dropdown.
 max_rows = 19
 
 [taskbar]
 # "off" hides the strip and the title list until you type.
-# "icons" shows one icon per running app.
-# "titles" shows the open windows.
+# "iconbar" shows one icon per running app.
+# "titlebar" shows the open windows.
 # "both" shows the strip, then the title list.
-mode = "icons"               # off | icons | titles | both
-
-[title_bar]
+mode = "iconbar"             # off | iconbar | titlebar | both
 # Row order: "recently" puts the last used window first, "app" groups
 # windows by app name.
-sort_by = "recently"         # recently | app
+titlebar.sort_by = "recently" # recently | app
 # Draw the app icon before the title. false shows titles only.
-show_icons = true
+titlebar.show_icons = true
 # Drop " — <app name>" from the end of window titles.
-strip_app_name = false
-
-[icon_bar]
+titlebar.strip_app_name = false
 # Icon side in logical pixels, scaled with the display.
-icon_size = 24
+iconbar.size = 24
 # Selection border outside the icon, in logical pixels.
-border = 4
+iconbar.border = 4

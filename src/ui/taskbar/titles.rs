@@ -16,7 +16,7 @@ use crate::ui::render::canvas::Area;
 /// It shows only while enabled and the query is empty. Typing hides
 /// it; clearing the query shows it again.
 pub(crate) fn shows(view: &View<'_>, metrics: &Metrics) -> bool {
-    metrics.taskbar.titles() && view.query.is_empty()
+    metrics.taskbar.titlebar() && view.query.is_empty()
 }
 
 /// Returns the height of the window rows, without the separator.

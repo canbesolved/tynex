@@ -70,14 +70,14 @@ fn start(config: &Config) -> Result<(), String> {
     let face = fonts::default_face(&config.main.font)
         .map_err(|e| format!("cannot load the font: {e}"))?;
     let text = Text::new(face);
-    let apps = Apps::scan(config.input_bar.launcher.mode);
+    let apps = Apps::scan(config.input.launcher.mode);
     let app_list = apps.list();
     let mut painter = Painter::new(
         text,
         Icons::new(Box::new(IconTheme::default())),
         &config.main,
-        &config.output_bar,
-        &config.input_bar.hint,
+        &config.output,
+        &config.input.hint,
         &config.taskbar,
     );
 
@@ -92,12 +92,12 @@ fn start(config: &Config) -> Result<(), String> {
     let mut parts = Parts {
         app: Switcher::new(
             config.hotkeys.action,
-            config.taskbar.titles.strip_app_name,
-            config.taskbar.titles.sort_by,
+            config.taskbar.titlebar.strip_app_name,
+            config.taskbar.titlebar.sort_by,
             PromptMode::new(
-                Input::new(config.input_bar.launcher.clone(), app_list),
+                Input::new(config.input.launcher.clone(), app_list),
                 config.taskbar.mode,
-                config.output_bar.max_rows,
+                config.output.max_rows,
             ),
         ),
         source,
@@ -105,7 +105,7 @@ fn start(config: &Config) -> Result<(), String> {
         bus,
         painter,
         apps,
-        hint: crate::platform::linux::hint::Hint::new(&config.input_bar.hint),
+        hint: crate::platform::linux::hint::Hint::new(&config.input.hint),
         rx,
     };
 

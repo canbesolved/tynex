@@ -37,7 +37,7 @@ fn row(id: &str, app: &str, title: &str) -> Row {
 }
 
 fn opened() -> (PromptMode, State) {
-    session(TaskbarMode::Icons)
+    session(TaskbarMode::Iconbar)
 }
 
 fn session(taskbar: TaskbarMode) -> (PromptMode, State) {

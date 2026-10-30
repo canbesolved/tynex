@@ -39,17 +39,18 @@ the previous window. No mouse, no scrolling, no waiting.
 - Centered popup with an input bar: start typing at once; accents
   and small typos are forgiven.
 - Optional list of open windows while the query is empty
-  (`taskbar.mode = "titles"` or `"both"`); the list hides as soon as
-  you type and returns when you clear the query. Order is most
-  recently used first or grouped by app (`title_bar.sort_by`).
+  (`taskbar.mode = "titlebar"` or `"both"`); the list hides as soon
+  as you type and returns when you clear the query. Order is most
+  recently used first or grouped by app
+  (`taskbar.titlebar.sort_by`).
 - A row of one icon per running app under the input bar while the
-  query is empty (`taskbar.mode = "icons"`, the default, or
+  query is empty (`taskbar.mode = "iconbar"`, the default, or
   `"both"`). Several windows show a count and open a dropdown.
   `"off"` hides both until you type.
 - Matches appear in the output bar as you type; with
-  `input_bar.launcher.mode` set, installed apps appear there too.
+  `input.launcher.mode` set, installed apps appear there too.
 - Each entry shows the app icon and the window title. The title list
-  can hide its icons with `title_bar.show_icons = false`.
+  can hide its icons with `taskbar.titlebar.show_icons = false`.
 - Low footprint: idle at 0 % CPU, under 10 MB of RAM, no GPU usage.
 - Modular core: window sources, UI modules and modes are plug-in
   modules.
@@ -152,26 +153,22 @@ width = 480
 [hotkeys]
 action = "last"              # hide | last
 
-[input_bar]
+[input]
 launcher.mode = "gui_only"   # off | all | gui_only
 launcher.new_window = true   # false hides the extra row
 launcher.new_window_text = " +  New window"
 launcher.new_window_text_color = "#8da787" # #RRGGBB
 
-[output_bar]
+[output]
 max_rows = 19
 
 [taskbar]
-mode = "icons"               # off | icons | titles | both
-
-[title_bar]
-sort_by = "recently"         # recently | app
-show_icons = true            # false: titles only
-strip_app_name = false       # true: "Café — Firefox" becomes "Café"
-
-[icon_bar]
-icon_size = 24               # Logical pixels, 8 to 128
-border = 4                   # Selection outline, 1 to 32
+mode = "iconbar"             # off | iconbar | titlebar | both
+titlebar.sort_by = "recently" # recently | app
+titlebar.show_icons = true  # false: titles only
+titlebar.strip_app_name = false # true drops the app name
+iconbar.size = 24            # Logical pixels, 8 to 128
+iconbar.border = 4           # Selection outline, 1 to 32
 ```
 
 On first start `tynex daemon` writes this file with defaults. Keys
@@ -195,6 +192,16 @@ Upgrading to 0.2.10: replace `icon_bar.enabled` and `title_bar.enabled`
 with `[taskbar] mode`. Both on is `both`, icons only is `icons`
 (the new default), titles only is `titles`, and both off is `off`.
 Delete the two `enabled` keys.
+
+Upgrading to 0.2.11: rename the sections and the mode values.
+`[input_bar]` becomes `[input]`. `[output_bar]` becomes `[output]`.
+`title_bar.sort_by`, `title_bar.show_icons` and
+`title_bar.strip_app_name` become `taskbar.titlebar.sort_by`,
+`taskbar.titlebar.show_icons` and `taskbar.titlebar.strip_app_name`.
+`icon_bar.icon_size` becomes `taskbar.iconbar.size`.
+`icon_bar.border` becomes `taskbar.iconbar.border`. `mode` values
+`icons` and `titles` become `iconbar` and `titlebar`. Delete
+`[title_bar]` and `[icon_bar]`.
 
 ## Architecture
 

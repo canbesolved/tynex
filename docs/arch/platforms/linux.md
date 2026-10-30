@@ -32,7 +32,7 @@ platform/linux/
 ## Launcher catalog
 
 `apps/` scans `$XDG_DATA_HOME/applications` and `$XDG_DATA_DIRS` once
-at daemon start when `input_bar.launcher.mode` is not `"off"`
+at daemon start when `input.launcher.mode` is not `"off"`
 ([ADR-0056](../../adr/0056_launcher_input.md)). First file for an id
 wins; subdirectory paths use `-` in the id. Entries that are not
 `Type=Application`, or have `NoDisplay`, `Hidden`, or an empty
@@ -45,7 +45,7 @@ or URL are dropped; `%%`, `%c`, `%k` and `%i` are expanded.
 
 ## Hint command
 
-When `input_bar.hint.enabled` is set, opening the popup spawns
+When `input.hint.enabled` is set, opening the popup spawns
 `sh -c` with `hint.text` and draws before that process exits
 ([ADR-0060](../../adr/0060_input_hint.md)). Stdout is a
 non-blocking pipe in the same poll set as Wayland and D-Bus. The
