@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.2.10] - 2026-10-30
+
+The icon strip and the title list are one `[taskbar]` module.
+
 ### Added
 
 - `[taskbar]` with `mode`: `off`, `icons` (default), `titles` or
@@ -383,7 +387,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.9...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.10...HEAD
+[0.2.10]: https://github.com/canbesolved/tynex/releases/tag/v0.2.10
 [0.2.9]: https://github.com/canbesolved/tynex/releases/tag/v0.2.9
 [0.2.8]: https://github.com/canbesolved/tynex/releases/tag/v0.2.8
 [0.2.7]: https://github.com/canbesolved/tynex/releases/tag/v0.2.7
