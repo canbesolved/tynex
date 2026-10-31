@@ -28,6 +28,13 @@ CLI:
 - [ ] `tynex qs` (quick switch): switch to the previously used window,
   like `Alt+Tab`, without opening the popup.
 
+Configuration:
+
+- [ ] `popup_delay`: milliseconds to wait before the popup
+  appears. Default `200`. With `hotkeys.action = "last"`, a second
+  hotkey press inside that window switches to the previous app
+  without showing the popup.
+
 Window list:
 
 - [ ] Close windows from the popup, like `Alt+F4`: `Ctrl+W` or a right
@@ -38,9 +45,9 @@ Window list:
 
 Titles:
 
-- [ ] Rename a window from the popup: `F2` edits the selected title in
-  place, `Enter` keeps it, `Esc` cancels. The new title lasts until the
-  window closes.
+- [ ] Rename a window from the popup: `F2` or `,` edits the selected
+  title in place, `Enter` keeps it, `Esc` cancels. The new title lasts
+  until the window closes.
 
 Icon bar:
 
