@@ -23,6 +23,11 @@ Target: MVP with KDE Plasma 6 on Wayland support.
 
 ## Next
 
+CLI:
+
+- [ ] `tynex qs` (quick switch): switch to the previously used window,
+  like `Alt+Tab`, without opening the popup.
+
 Window list:
 
 - [ ] Close windows from the popup, like `Alt+F4`: `Ctrl+W` or a right
@@ -44,6 +49,12 @@ Icon bar:
 Look:
 
 - [ ] A shadow around the popup.
+
+Launcher:
+
+- [ ] App aliases: map a name to an installed app, for example
+  `Firefox = "Web Browser"`. A query that matches the alias suggests
+  launching that app.
 
 ## Later
 
@@ -70,12 +81,6 @@ Icon bar:
   screen size, `main.width` and the number of running apps, within
   the usual 8 to 128 logical pixels. A number still sets a fixed
   size.
-
-Launcher:
-
-- [ ] App aliases: map a name to an installed app, for example
-  `Firefox = "Web Browser"`. A query that matches the alias suggests
-  launching that app.
 
 Modes:
 
@@ -111,10 +116,25 @@ Configuration:
 - [ ] `tynex reload`: re-read the config without restarting. An invalid
   file is reported and the running config stays in use.
 
+Input:
+
+- [ ] Hint templates: reusable bash scripts for `input.hint.text`, for
+  common status lines without writing a command from scratch. They
+  live in `~/.local/share/tynex/hints/`. The daemon creates that
+  folder on start when it is missing.
+
+Logging:
+
+- [ ] Improve logging: clearer messages and useful context on warnings
+  and errors. Config:
+  - `log_level`: `info`, `warn`, `error` or `debug`.
+  - `log_file`: path to the log file, default `~/.cache/tynex.log`.
+
 Themes:
 
 - [ ] Update the default theme to the Endgame color palette. Exact
   color values will be added when the palette is finalized.
+- [ ] Configurable background, selection and font colors.
 - [ ] Theme options: opacity, background, selection, search highlight
   and text colors, border width and color, font size and style.
 - [ ] Custom themes in `~/.config/tynex/tynex.theme`, chosen with
