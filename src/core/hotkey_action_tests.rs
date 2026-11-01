@@ -5,6 +5,7 @@
 
 use super::tests::{Filter, build, list};
 use super::*;
+use crate::core::event::Event;
 use crate::core::window::WindowId;
 
 /// A switcher with `ids` open.

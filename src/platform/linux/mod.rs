@@ -15,4 +15,5 @@ mod hint_proc;
 pub mod icon_theme;
 pub mod key_file;
 pub mod paths;
+pub mod signals;
 pub mod wayland;

@@ -4,6 +4,7 @@
 //! Tests for the switcher, with a minimal stand-in mode.
 
 use super::*;
+use crate::core::event::Event;
 use crate::core::window::{WindowId, WindowInfo};
 
 /// Typing filters titles by substring; `Enter` activates; `Esc` closes;
@@ -50,6 +51,7 @@ fn window(id: &str, app: &str, title: &str) -> WindowInfo {
         app_name: app.into(),
         title: title.into(),
         icon: None,
+        pid: None,
     }
 }
 
@@ -77,6 +79,7 @@ fn shown(sw: &Switcher<Filter>) -> Vec<String> {
         .map(|r| match &r.target {
             crate::core::view::RowTarget::Window(id) => id.0.clone(),
             crate::core::view::RowTarget::Launch(id) => id.clone(),
+            crate::core::view::RowTarget::Tab(_) => String::new(),
         })
         .collect()
 }
@@ -191,6 +194,7 @@ fn show_selects_the_previous_apps_icon() {
             app_name: String::new(),
             title: "A".into(),
             icon: None,
+            pid: None,
         },
         window("b", "", "B"),
         WindowInfo {
@@ -199,6 +203,7 @@ fn show_selects_the_previous_apps_icon() {
             app_name: String::new(),
             title: "C".into(),
             icon: None,
+            pid: None,
         },
     ]));
     sw.handle(Event::Show);

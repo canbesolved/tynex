@@ -41,6 +41,7 @@ mod tests {
             app_name: app.into(),
             title: String::new(),
             icon: None,
+            pid: None,
         }
     }
 

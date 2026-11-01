@@ -114,10 +114,12 @@ fn bar_pixel(windows: usize) -> [u8; 4] {
     let mut canvas = Canvas::new(&mut data, size.width, size.height).unwrap();
     let mut text = Text::new(Face::new(FONT, 0).unwrap());
     let mut icons = Icons::new(Box::new(NoIcons));
+    let tabs = crate::ui::render::browser_tabs_icons::TabIcons::default();
     let mut paint = Paint {
         canvas: &mut canvas,
         text: &mut text,
         icons: &mut icons,
+        tabs: &tabs,
         theme: &theme,
     };
 

@@ -6,6 +6,7 @@
 
 use std::ops::Range;
 
+use crate::core::browser_tabs::{SourceId, TabRef};
 use crate::core::window::WindowId;
 
 /// What selecting a row does.
@@ -13,6 +14,19 @@ use crate::core::window::WindowId;
 pub enum RowTarget {
     Window(WindowId),
     Launch(String), // App id
+    Tab(TabRef),
+}
+
+/// Icon drawn for a row: a theme name or path, or a tab favicon.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RowIcon {
+    Named(String),
+    /// Favicon of one source. `fallback` is used when it is missing.
+    Tab {
+        source: SourceId,
+        key: String,
+        fallback: String,
+    },
 }
 
 /// Opaque `#RRGGBB` text color.
@@ -52,7 +66,7 @@ pub struct Row {
     pub target: RowTarget,
     pub app_id: String,   // Matched by search, not drawn
     pub app_name: String, // Matched by search, not drawn
-    pub icon: Option<String>,
+    pub icon: Option<RowIcon>,
     pub title: String, // Sanitized, app name stripped
     pub title_color: Option<Rgb>, // None uses the theme text color
     pub highlights: Vec<Range<usize>>, // Byte ranges in `title`

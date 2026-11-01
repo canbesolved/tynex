@@ -10,6 +10,7 @@ ui/render/
   glyphs.rs     Font faces and glyph rasterizing (skrifa)
   text.rs       Measuring, truncation, highlights, glyph cache
   icons.rs      Icon lookup, decoding and cache
+  browser_tabs_icons.rs  Favicons from the tab bridge
   theme.rs      Colors, paddings, radii
 ```
 
@@ -55,6 +56,14 @@ ui/render/
   [ROADMAP.md](../../../ROADMAP.md)).
 - **Emoji:** only outlines are drawn, so color emoji show in one color
   or as a box.
+
+## Tab favicons
+
+`browser_tabs_icons.rs` keeps PNGs from the browser extension. A
+file over 16 KiB, wider or taller than 64 px, or that fails to
+decode is dropped. Each browser connection holds at most 512 icons.
+They go away when that connection closes. A missing favicon uses the
+browser's own window icon.
 
 ## Icons
 

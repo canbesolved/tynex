@@ -6,8 +6,10 @@ output list. They do not draw.
 
 ```text
 modules/input/
-  mod.rs         Runs search, then the launcher
+  mod.rs         Runs search, then the launcher, then joins tabs
   launcher.rs    Groups windows and launch rows
+  browser_tabs.rs  Puts tab rows between windows and launch rows
+  exact.rs       Exact matches first
 ```
 
 Prompt mode holds one `Input` and calls `refresh` after every query
@@ -47,6 +49,24 @@ installed apps join the output list
   Score breaks ties. Installed apps that are not running follow,
   so `c` still lists an open Cursor before Calf
   ([ADR-0078](../../adr/0078_windows_before_apps.md)).
+
+## Exact matches first
+
+The joined list (windows, then browser tabs, then launch rows) is
+split into two bands with a stable sort
+([ADR-0085](../../adr/0085_exact_first.md)):
+
+1. Exact rows: the query appears as one run of letters, with the
+   search's case and accent rules, in the title, or in the app name
+   or short id of a window or launch row. A tab title includes its
+   host. A new-window row is exact when its app has an exact
+   window.
+2. Fuzzy rows: every other match.
+
+Each band keeps the order above, so `miro` lists the tab
+`Overall - Miro — miro.com` before a Chromium window that matched
+only through `chromium-browser`, while `c` still lists Cursor and
+its new-window row before Google Chrome.
 
 `gui_only` skips `Terminal=true` apps. The platform catalog supplies
 `AppInfo` values; `Exec` stays on the platform

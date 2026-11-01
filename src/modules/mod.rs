@@ -4,5 +4,6 @@
 //! Feature modules the modes call. Search and the input launcher are
 //! not modes.
 
+pub mod browser_tabs;
 pub mod input;
 pub mod search;

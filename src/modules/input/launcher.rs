@@ -216,7 +216,7 @@ fn launch_row(
         target: RowTarget::Launch(app.id.clone()),
         app_id: app.id.clone(),
         app_name: app.name.clone(),
-        icon: app.icon.clone(),
+        icon: app.icon.clone().map(crate::core::view::RowIcon::Named),
         title: if running {
             new_window.text.clone()
         } else {

@@ -10,6 +10,7 @@ use crate::core::state::State;
 use crate::core::view::{AppIcon, Row, RowTarget};
 use crate::core::window::WindowId;
 use crate::ui::draw::{Grid, Metrics, Paint};
+use crate::ui::render::browser_tabs_icons::TabIcons;
 use crate::ui::render::canvas::{Canvas, Rgba};
 use crate::ui::render::glyphs::Face;
 use crate::ui::render::icons::{Icons, NoIcons};
@@ -157,7 +158,6 @@ fn a_long_title_is_capped() {
     );
 }
 
-/// Returns the uncapped title width plus the row padding.
 fn icon_bar_width(text: &Text, title: &str) -> f32 {
     text.width(title, 14.0) + 2.0 * 8.0
 }
@@ -174,13 +174,14 @@ fn drawn(state: &State, metrics: &Metrics) -> (Vec<u8>, u32) {
     let mut canvas = Canvas::new(&mut data, size.width, size.height).unwrap();
     let mut text = Text::new(Face::new(FONT, 0).unwrap());
     let mut icons = Icons::new(Box::new(NoIcons));
+    let tabs = TabIcons::default();
     let mut paint = Paint {
         canvas: &mut canvas,
         text: &mut text,
         icons: &mut icons,
+        tabs: &tabs,
         theme: &theme,
     };
-
     frames::draw_popup(&state.view(), metrics, &mut paint);
     (data, size.width)
 }

@@ -53,6 +53,8 @@ pub(super) fn validate(
     check_range("main.width", &main.width, 200..=2000, &mut err);
     check_range("output.max_rows", &raw.output.max_rows, 1..=50, &mut err);
     check_icon(&raw.taskbar.iconbar, &mut err);
+    let browser_tabs =
+        crate::config::browser_tabs::check(raw.browser_tabs, &mut err);
     let new_window = check_new_window(&raw.input.launcher, &mut err);
     let hint = check_hint(&raw.input.hint, &mut err);
 
@@ -104,6 +106,7 @@ pub(super) fn validate(
                 border: raw.taskbar.iconbar.border.into_inner(),
             },
         },
+        browser_tabs,
     })
 }
 

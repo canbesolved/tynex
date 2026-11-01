@@ -16,7 +16,8 @@ use std::ops::Range;
 use crate::config::{
     HintConfig, MainConfig, OutputConfig, TaskbarConfig, TaskbarMode,
 };
-use crate::core::view::Row;
+use crate::core::view::{Row, RowIcon};
+use crate::ui::render::browser_tabs_icons::TabIcons;
 use crate::ui::render::canvas::{Area, Canvas, Rgba};
 use crate::ui::render::icons::Icons;
 use crate::ui::render::text::{Style, Text};
@@ -102,6 +103,7 @@ pub(crate) struct Paint<'a, 'c> {
     pub canvas: &'a mut Canvas<'c>,
     pub text: &'a mut Text,
     pub icons: &'a mut Icons,
+    pub tabs: &'a TabIcons,
     pub theme: &'a Theme,
 }
 
@@ -175,13 +177,26 @@ pub(crate) fn draw_row(
     if show_icon {
         if let Some(icon) = &row.icon {
             let top = area.y + (area.h - grid.icon) / 2.0;
+            let at = (left as i32, top.round() as i32);
+            let side = grid.icon as u32;
 
-            paint.icons.draw(
-                paint.canvas,
-                icon,
-                grid.icon as u32,
-                (left as i32, top.round() as i32),
-            );
+            match icon {
+                RowIcon::Named(name) => {
+                    paint.icons.draw(paint.canvas, name, side, at);
+                }
+                RowIcon::Tab {
+                    source,
+                    key,
+                    fallback,
+                } => {
+                    let found =
+                        paint.tabs.draw(paint.canvas, *source, key, side, at);
+
+                    if !found {
+                        paint.icons.draw(paint.canvas, fallback, side, at);
+                    }
+                }
+            }
         }
         left += grid.icon + grid.gap;
     }

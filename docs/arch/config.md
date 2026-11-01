@@ -5,6 +5,7 @@ Source: `src/config/`.
 ```text
 config/
   mod.rs         Config types, parse(text, font_exists)
+  browser_tabs.rs  [browser_tabs] browsers and enabled
   raw.rs         serde layout with defaults and value spans
   validate.rs    Value checks, all errors at once
   error.rs       ConfigError with line and column
@@ -32,7 +33,7 @@ The default file. It is kept in `default.toml` and embedded with
 this). Every key is optional: a missing key takes the value shown here.
 
 Sections stay in this order: `[main]`, `[hotkeys]`, `[input]`,
-`[output]`, then `[taskbar]`
+`[output]`, `[taskbar]`, then `[browser_tabs]`
 ([ADR-0055](../adr/0055_config_sections.md), amended by
 [ADR-0065](../adr/0065_taskbar.md) and
 [ADR-0066](../adr/0066_short_sections.md)).
@@ -89,6 +90,14 @@ titlebar.strip_app_name = false
 iconbar.size = 24
 # Selection border outside the icon, in logical pixels.
 iconbar.border = 4
+
+[browser_tabs]
+# true registers the host. The socket opens when a selected
+# browser's config folder exists.
+enabled = false
+# "auto" (every installed one), one name, or a list: brave,
+# chrome, chromium.
+browsers = "auto"
 ```
 
 `main.desktop` selects the window source adapter. `auto` picks `kde`

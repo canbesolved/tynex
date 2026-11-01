@@ -51,6 +51,7 @@ fn start(config: &Config) -> Result<(), String> {
     use crate::platform::linux::dbus::Bus;
     use crate::platform::linux::event_loop::{self, Parts};
     use crate::platform::linux::icon_theme::IconTheme;
+    use crate::platform::linux::signals::Signals;
     use crate::platform::linux::wayland::WaylandPresenter;
     use crate::platform::linux::{dbus_ipc, fonts};
     use crate::ui::painter::Painter;
@@ -101,7 +102,8 @@ fn start(config: &Config) -> Result<(), String> {
                 Input::new(config.input.launcher.clone(), app_list),
                 config.taskbar.mode,
                 config.output.max_rows,
-            ),
+            )
+            .with_tabs(config.browser_tabs.enabled),
         ),
         source,
         presenter,
@@ -110,10 +112,13 @@ fn start(config: &Config) -> Result<(), String> {
         apps,
         hint: crate::platform::linux::hint::Hint::new(&config.input.hint),
         rx,
+        tabs: adapters::browser_tabs::start(&config.browser_tabs),
+        signals: Signals::open(),
     };
 
     let result = event_loop::run(&mut parts);
 
+    drop(parts.signals.take()); // A second Ctrl+C now ends at once
     parts.source.stop();
     log::info!("daemon stopped");
     result

@@ -26,7 +26,10 @@ Source: `src/modules/search/fuzzy.rs` and `src/modules/search/fold.rs`.
   keep the row order from `taskbar.titlebar.sort_by` (see
   [core.md](../core.md#row-order)). The input module then places
   an app that starts with the query first, with its new-window row
-  under that app ([input.md](input.md)).
+  under that app, and moves rows that contain the query as typed
+  above fuzzy ones ([input.md](input.md#exact-matches-first)).
+  `contains_query` and `starts_with_query` use the same case and
+  accent rules as ranking.
 - Match indices go into `View` so the output bar can highlight them, for
   the title only. `frizbee` returns byte offsets of matched
   characters; they are merged into byte ranges.

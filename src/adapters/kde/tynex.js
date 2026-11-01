@@ -33,6 +33,7 @@ function push() {
         clean(w.desktopFileName),
         clean(w.resourceClass),
         clean(w.caption),
+        String(w.pid || 0),
     ].join(FIELD));
 
     callDBus(SERVICE, PATH, INTERFACE, "Update", records.join(RECORD));

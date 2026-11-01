@@ -7,8 +7,10 @@ Source: `src/platform/linux/`. Session: Wayland.
 ```text
 platform/linux/
   mod.rs          Backend wiring
-  event_loop.rs   Single poll loop over Wayland and D-Bus fds
+  event_loop.rs   Single poll loop, event dispatch
+  event_loop_fds.rs  The poll set, tabs socket driving
   paths.rs        XDG config, data and runtime paths, atomic writes
+  signals.rs      SIGINT, SIGTERM, SIGHUP as a pollable pipe
   wayland/
     mod.rs        WaylandPresenter: connect, show, draw, hide, dispatch
     state.rs      Dispatch state: globals, popup, events
@@ -178,7 +180,11 @@ screen (see [scroll.md](../ui/scroll.md)).
 One thread, one `rustix::event::poll` call over:
 
 - the Wayland connection fd;
-- the D-Bus connection fd (`dbus` channel watch).
+- the D-Bus connection fd (`dbus` channel watch);
+- the hint command's stdout, while it runs;
+- the signal pipe ([Signals](#signals));
+- with browser tabs on, the tabs socket and each host connection
+  ([adapters/browser_tabs.md](../adapters/browser_tabs.md)).
 
 The poll timeout is the nearest deadline: key repeat, the hint timer,
 or a dropdown slide (about every 1/120 s while it moves). A hidden
@@ -188,18 +194,38 @@ popup, a finished slide and an idle daemon add no timeout
 sources go to the core in order, so no locks or channels are needed.
 
 `event_loop.rs` owns the parts (`Parts`: switcher, window source,
-presenter, bus, painter, event queue). Each turn it:
+presenter, bus, painter, event queue, tabs socket). Each turn it:
 
-1. drains the event queue into the switcher; new window lists then
+1. drives the tabs socket: accepts, reads, writes, and feeds tab
+   updates to the switcher, so their redraws and KWin calls go out
+   in step 4 of the same turn;
+2. drains the event queue into the switcher; new window lists then
    load their icons (`Painter::prepare`);
-2. applies the action: `Redraw` sizes and draws the popup, `Activate`
-   hides it and calls the window source, `Close` hides it;
-3. flushes Wayland requests and D-Bus calls, then polls;
-4. dispatches Wayland events (keys, clicks, configure, scale, closed)
+3. applies the action: `Redraw` sizes and draws the popup, `Activate`
+   hides it and calls the window source, `ActivateTab` hides it and
+   asks the browser, `Close` hides it;
+4. flushes Wayland requests and D-Bus calls, then polls;
+5. dispatches Wayland events (keys, clicks, configure, scale, closed)
    and D-Bus calls, which push new events into the queue.
 
-A `Quit` request hides the popup and ends the loop. Measured with the
+A `Quit` request, or a quit signal, hides the popup and ends the
+loop. Measured with the
 mock source: about 6 MB RSS and no context switches while idle.
+
+## Signals
+
+`signals.rs` turns `SIGINT` (`Ctrl+C`), `SIGTERM` (`kill`) and
+`SIGHUP` (closed terminal) into the same shutdown as `tynex quit`
+([ADR-0084](../../adr/0084_quit_signals.md)). One `sigaction` handler
+writes the signal number to a non-blocking, close-on-exec pipe; the
+poll loop reads it, logs `SIGINT received, quitting` at `info`, and
+sends `Quit`. The daemon then restores the old actions, so a second
+`Ctrl+C` during shutdown ends the process at once, unloads the KWin
+script, and drops the tabs socket, which removes its file.
+
+The signal mask is not changed, and `exec` resets handlers, so
+launched apps and the hint command keep default signal handling.
+`SIGKILL` cannot be caught; the next start removes what it left.
 
 ## D-Bus
 

@@ -90,6 +90,7 @@ pub(super) struct RawConfig {
     pub input: RawInput,
     pub output: RawOutput,
     pub taskbar: RawTaskbar,
+    pub browser_tabs: crate::config::browser_tabs::RawBrowserTabs,
 }
 
 #[derive(Deserialize)]

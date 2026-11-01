@@ -67,6 +67,7 @@ pub(super) fn windows() -> Vec<WindowInfo> {
             app_name: app_name.into(),
             title: title.into(),
             icon: icon.map(Into::into),
+            pid: None,
         })
         .collect()
 }

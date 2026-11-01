@@ -168,7 +168,9 @@ fn session(
                     println!("launch {id}");
                     return close(presenter);
                 }
-                Action::Close => return close(presenter),
+                Action::Close | Action::ActivateTab(_) => {
+                    return close(presenter);
+                }
                 Action::Redraw => redraw(presenter, app, painter),
                 Action::None => {}
             }

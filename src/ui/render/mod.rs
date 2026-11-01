@@ -12,6 +12,7 @@
     clippy::cast_sign_loss
 )]
 
+pub mod browser_tabs_icons;
 pub mod canvas;
 pub mod glyphs;
 pub mod icons;

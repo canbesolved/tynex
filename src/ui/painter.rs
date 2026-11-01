@@ -22,8 +22,8 @@ use crate::core::event::Click;
 use crate::core::view::View;
 use crate::core::window::WindowInfo;
 use crate::ui::draw::{self, Grid, Look, Paint, Size};
-use crate::ui::fit;
 pub(crate) use crate::ui::frames::{draw_popup, measured};
+use crate::ui::render::browser_tabs_icons::TabIcons;
 use crate::ui::render::canvas::Canvas;
 use crate::ui::render::icons::Icons;
 use crate::ui::render::text::Text;
@@ -37,6 +37,7 @@ use crate::ui::taskbar::{icons as strip, menu, titles};
 pub struct Painter {
     text: Text,
     icons: Icons,
+    tabs: TabIcons,
     theme: Theme,
     look: Look,
     position: Position,
@@ -61,6 +62,7 @@ impl Painter {
         Self {
             text,
             icons,
+            tabs: TabIcons::default(),
             theme: match main.theme {
                 Scheme::Dark => Theme::dark(),
                 Scheme::Light => Theme::light(),
@@ -168,6 +170,7 @@ impl Painter {
             canvas,
             text: &mut self.text,
             icons: &mut self.icons,
+            tabs: &self.tabs,
             theme: &self.theme,
         };
 
@@ -221,19 +224,10 @@ impl Painter {
         }
         self.slide.next(now)
     }
-
-    /// Returns the metrics for `view`, shrunk to fit the screen.
-    fn fitted(&self, view: &View<'_>, scale: f32) -> draw::Metrics {
-        fit::fit(
-            view,
-            self.look.metrics(scale),
-            &self.theme,
-            self.screen,
-            self.position,
-            self.anchor,
-        )
-    }
 }
+
+#[path = "painter_tabs.rs"]
+mod tabs;
 
 #[cfg(test)]
 #[path = "painter_tests.rs"]

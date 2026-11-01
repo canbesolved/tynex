@@ -13,7 +13,14 @@ fn main() -> ExitCode {
     tynex::logger::init();
     tynex::logger::install_panic_hook();
 
-    match parse(std::env::args_os().skip(1)) {
+    let args: Vec<_> = std::env::args_os().skip(1).collect();
+
+    #[cfg(target_os = "linux")]
+    if tynex::adapters::browser_tabs::is_host(args.iter().cloned()) {
+        return ExitCode::from(tynex::adapters::browser_tabs::run_host());
+    }
+
+    match parse(args) {
         Ok(Command::Help) => {
             println!("{USAGE}");
             ExitCode::SUCCESS

@@ -35,6 +35,7 @@ fn window(app_id: &str, app_name: &str) -> WindowInfo {
         app_name: app_name.into(),
         title: String::new(),
         icon: None,
+        pid: None,
     }
 }
 

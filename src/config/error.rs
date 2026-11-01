@@ -32,6 +32,17 @@ impl fmt::Display for ConfigError {
     }
 }
 
+/// Rewords `serde` messages for users and hints at renamed keys.
+pub(super) fn message(raw: &str) -> String {
+    match raw.strip_prefix("unknown field") {
+        Some(rest) => format!(
+            "unknown key{rest}; a key renamed or removed in a release is \
+             listed in the release notes"
+        ),
+        None => raw.to_owned(),
+    }
+}
+
 /// Returns the line and column (from 1, in chars) of byte `offset`.
 fn line_col(text: &str, offset: usize) -> (usize, usize) {
     let before = &text[..offset.min(text.len())];

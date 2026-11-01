@@ -145,10 +145,12 @@ fn last_dropdown_title_survives_a_short_reveal() {
     let mut canvas = Canvas::new(&mut data, 200, 200).unwrap();
     let mut text = text();
     let mut icons = Icons::new(Box::new(NoIcons));
+    let tabs = crate::ui::render::browser_tabs_icons::TabIcons::default();
     let mut paint = Paint {
         canvas: &mut canvas,
         text: &mut text,
         icons: &mut icons,
+        tabs: &tabs,
         theme: &theme,
     };
 

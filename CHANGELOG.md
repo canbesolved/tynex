@@ -9,6 +9,41 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-01
+
+### Added
+
+- Open Brave, Chrome and Chromium tabs can be searched and switched to from
+  the popup, through a local browser extension in
+  `extensions/browser_tabs/chromium/`
+  ([ADR-0081](docs/adr/0081_tab_bridge.md)). Tab rows come after
+  window matches and before installed apps. Nothing is sent while
+  the popup is closed.
+- `[browser_tabs]` turns the tab bridge on (`enabled`, off by
+  default) and picks the browsers (`browsers`: `"auto"`, one name,
+  or a list of `brave`, `chrome` and `chromium`; each covers its release
+  channels, such as Brave Origin or Chrome Beta). The daemon
+  registers its native messaging host only for installed browsers,
+  and opens the tabs socket only when one is selected.
+- Add-ons that the user installs into another program live under
+  `extensions/` ([ADR-0083](docs/adr/0083_extensions_folder.md)).
+
+- `Ctrl+C` in the daemon's terminal, `SIGTERM` and `SIGHUP` stop the
+  daemon like `tynex quit`: the KWin script is unloaded and the tabs
+  socket removed ([ADR-0084](docs/adr/0084_quit_signals.md)).
+
+### Changed
+
+- A row that contains the query as typed, in its title or app name,
+  comes before rows that match only fuzzily, whether it is a window,
+  a tab or an app. `miro` now lists a Miro tab above a Chromium
+  window that matched through `chromium-browser`
+  ([ADR-0085](docs/adr/0085_exact_first.md)).
+- The KWin script reports each window's pid. A pid of `0`, or a
+  value that is not a number, is stored as none
+  ([ADR-0082](docs/adr/0082_kwin_pid.md)). Reload the KWin script
+  by restarting the daemon after the update.
+
 ## [0.2.17] - 2026-10-31
 
 A search lists open windows before installed apps. A name that
@@ -510,7 +545,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.2.17...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/canbesolved/tynex/compare/v0.2.17...v0.3.0
 [0.2.17]: https://github.com/canbesolved/tynex/releases/tag/v0.2.17
 [0.2.16]: https://github.com/canbesolved/tynex/releases/tag/v0.2.16
 [0.2.15]: https://github.com/canbesolved/tynex/releases/tag/v0.2.15

@@ -4,6 +4,8 @@
 //! Window source adapters and the registry that selects one.
 
 #[cfg(target_os = "linux")]
+pub mod browser_tabs;
+#[cfg(target_os = "linux")]
 pub mod kde;
 pub mod mock;
 

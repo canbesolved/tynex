@@ -25,6 +25,10 @@ The reasons behind each choice are in the
 - [modules/input.md](modules/input.md): input sub-modules (search,
   launcher).
 - [modules/search.md](modules/search.md): fuzzy matching of windows.
+- [modules/browser_tabs.md](modules/browser_tabs.md): open browser
+  tabs in search results.
+- [adapters/browser_tabs.md](adapters/browser_tabs.md): Unix socket
+  bridge to the browser extension.
 
 ## Goals
 
@@ -50,6 +54,10 @@ input, and only when there is one. The taskbar shows running apps,
 open windows, both, or neither (`taskbar.mode`). The input bar, the
 output bar and the taskbar exist. The info bar is planned
 ([ROADMAP.md](../../ROADMAP.md)).
+
+`browser_tabs` is a feature module in the same sense: it is off
+until `[browser_tabs] enabled` is set, and then tab rows join the
+output bar. It draws nothing of its own.
 
 ## Process model
 
@@ -79,6 +87,7 @@ src/
     mod.rs             Registry, auto-detect by XDG_CURRENT_DESKTOP
     mock/              In-memory windows for tests and manual runs
     kde/               KWin script, runner activation
+    browser_tabs/      Unix socket bridge to browser extensions
   platform/            Per-OS backends, gated by cfg(target_os)
     linux/             Wayland, D-Bus, event loop, fonts, paths,
                        desktop files, icon themes
@@ -99,6 +108,9 @@ src/
   modules/
     input/             Search, then launcher; one output list
     search/            Fuzzy matcher, accent folding
+    browser_tabs/      Tab lists, rows and the window pick
+extensions/            Add-ons installed into another program
+  browser_tabs/chromium/   Chromium extension
 ```
 
 Dependency direction: every module may depend on `core`; `core`
@@ -114,6 +126,9 @@ wires concrete modules together.
 2. The presenter for the session is chosen (Wayland for 0.1.0).
 3. The adapter is chosen from the `desktop` key, or detected from
    `XDG_CURRENT_DESKTOP` when it is `auto`.
+4. With `[browser_tabs] enabled`, and a selected browser whose
+   config folder exists, the browser tabs adapter is opened as
+   well. It is a tab source, not a window source.
 
 Each seam is an enum with one variant per module, and only the chosen
 variant is constructed. Other modules are never initialized and add
@@ -128,6 +143,9 @@ hotkey/CLI  --Show--------> core --View--> Presenter (map surface)
 key press   --Event::Key--> Mode --Action::Activate(id)--> KdeSource
                          \- Mode --Action::Launch(id)--> apps spawn
 KdeSource   --Run(id)-----> KWin /WindowsRunner --> window activated
+extension --host--> browser_tabs adapter --Event::Tabs--> module
+module --Action::ActivateTab--> adapter --activate--> extension
+module --Action::Activate(id)--> KdeSource (raise by pid)
 ```
 
 ## Footprint budget

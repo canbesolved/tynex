@@ -5,10 +5,11 @@
 
 use std::fmt;
 
+use crate::core::browser_tabs::TabsUpdate;
 use crate::core::event::{Action, Click, Key};
 use crate::core::queue::EventTx;
 use crate::core::state::State;
-use crate::core::window::WindowId;
+use crate::core::window::{WindowId, WindowInfo};
 
 /// Error reported by a window source.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -58,6 +59,17 @@ pub trait Mode {
 
     /// Handles one pointer move while the popup is open.
     fn on_hover(&mut self, _click: Click, _s: &mut State) -> Action {
+        Action::None
+    }
+
+    /// Applies a browser tab change. `state` is `None` while hidden.
+    /// The default ignores it.
+    fn on_tabs(
+        &mut self,
+        _update: TabsUpdate,
+        _state: &mut Option<State>,
+        _windows: &[WindowInfo],
+    ) -> Action {
         Action::None
     }
 }

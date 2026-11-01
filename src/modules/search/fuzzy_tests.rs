@@ -58,7 +58,7 @@ fn app_id_matches_without_highlights() {
 #[test]
 fn smart_case() {
     assert_eq!(order("Cafe")[0], 2);
-    assert_eq!(order("CAFE"), []);
+    assert_eq!(order("CAFE"), [] as [usize; 0]);
 }
 
 #[test]
@@ -82,7 +82,7 @@ fn non_ascii_matches_with_unicode_case() {
 #[test]
 fn typos_start_at_five_characters() {
     assert_eq!(order("relaese")[0], 0); // 7 characters, 1 typo
-    assert_eq!(order("rlz"), []); // 3 characters, no typo
+    assert_eq!(order("rlz"), [] as [usize; 0]); // 3 characters, no typo
     // "codx" is not a subsequence of any title without a typo.
     assert_eq!(order("codx"), [] as [usize; 0]);
 }

@@ -49,3 +49,11 @@ titlebar.strip_app_name = false
 iconbar.size = 24
 # Selection border outside the icon, in logical pixels.
 iconbar.border = 4
+
+[browser_tabs]
+# true registers the host. The socket opens when a selected
+# browser's config folder exists.
+enabled = false
+# "auto" (every installed one), one name, or a list: brave,
+# chrome, chromium.
+browsers = "auto"
