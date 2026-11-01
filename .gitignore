@@ -1,4 +1,5 @@
 /target
+extensions/browser_tabs/chromium/dist/
 *.swp
 .idea/
 .vscode/

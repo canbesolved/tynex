@@ -8,14 +8,19 @@
 //! `Shift+Tab` walks it back.
 
 use crate::config::TaskbarMode;
+use crate::core::browser_tabs::TabsUpdate;
 use crate::core::event::{Action, Click, Key};
 use crate::core::state::State;
 use crate::core::traits::Mode;
 use crate::core::view::RowTarget;
+use crate::core::window::WindowInfo;
+use crate::modules::browser_tabs::Session;
 use crate::modules::input::Input;
 
 #[path = "prompt_icon.rs"]
 mod prompt_icon;
+#[path = "prompt_tabs.rs"]
+mod tabs;
 
 /// Typed characters build a query; the best match is selected.
 #[derive(Debug)]
@@ -23,6 +28,7 @@ pub struct PromptMode {
     input: Input,
     taskbar: TaskbarMode,
     max_rows: usize, // Cap for the dropdown
+    tabs: Option<Session>,
 }
 
 impl PromptMode {
@@ -36,7 +42,17 @@ impl PromptMode {
             input,
             taskbar,
             max_rows: usize::from(max_rows).max(1),
+            tabs: None,
         }
+    }
+
+    /// Turns tab search on. Off by default, so the popup is unchanged.
+    #[must_use]
+    pub fn with_tabs(mut self, enabled: bool) -> Self {
+        if enabled {
+            self.tabs = Some(Session::default());
+        }
+        self
     }
 
     /// Returns true while the icon strip is on screen.
@@ -54,7 +70,7 @@ impl Mode for PromptMode {
             return action;
         }
         match key {
-            Key::Char { text: ' ', .. } | Key::Enter => confirm(s),
+            Key::Char { text: ' ', .. } | Key::Enter => confirm(self, s),
             Key::Char { text, .. } => {
                 s.close_dropdown();
                 s.insert(text);
@@ -147,6 +163,15 @@ impl Mode for PromptMode {
         }
     }
 
+    fn on_tabs(
+        &mut self,
+        update: TabsUpdate,
+        state: &mut Option<State>,
+        windows: &[WindowInfo],
+    ) -> Action {
+        tabs::on_tabs(self, update, state, windows)
+    }
+
     fn on_hover(&mut self, click: Click, s: &mut State) -> Action {
         if let Click::Row(index) = click {
             return hover_row(self, s, index);
@@ -177,6 +202,7 @@ fn click_row(mode: &PromptMode, s: &mut State, index: usize) -> Action {
     match &s.rows[index].target {
         RowTarget::Window(id) => Action::Activate(id.clone()),
         RowTarget::Launch(id) => Action::Launch(id.clone()),
+        RowTarget::Tab(_) => Action::None,
     }
 }
 
@@ -185,13 +211,17 @@ fn list_on(mode: &PromptMode, s: &State) -> bool {
     mode.taskbar.titlebar() && s.query.is_empty()
 }
 
-/// Activates or launches the selected row.
-fn confirm(s: &State) -> Action {
-    match s.selected_target() {
+/// Activates, launches or switches to the selected row.
+fn confirm(mode: &mut PromptMode, s: &State) -> Action {
+    let action = match s.selected_target() {
         Some(RowTarget::Window(id)) => Action::Activate(id.clone()),
         Some(RowTarget::Launch(id)) => Action::Launch(id.clone()),
+        Some(RowTarget::Tab(tab)) => Action::ActivateTab(tab.clone()),
         None => Action::None,
-    }
+    };
+
+    tabs::note(mode, &action, s);
+    action
 }
 
 #[cfg(test)]

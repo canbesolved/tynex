@@ -62,10 +62,12 @@ fn render_with(state: &State, m: &Metrics) -> (Vec<u8>, Size) {
     let mut canvas = Canvas::new(&mut data, size.width, size.height).unwrap();
     let mut text = Text::new(Face::new(FONT, 0).unwrap());
     let mut icons = Icons::new(Box::new(NoIcons));
+    let tabs = crate::ui::render::browser_tabs_icons::TabIcons::default();
     let mut paint = Paint {
         canvas: &mut canvas,
         text: &mut text,
         icons: &mut icons,
+        tabs: &tabs,
         theme: &theme,
     };
 

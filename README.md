@@ -31,8 +31,8 @@ Press a hotkey, type a few letters of a window, press `Enter` or
 `Space`, and you are there. Or press either right away to go back to
 the previous window. No mouse, no scrolling, no waiting.
 
-> Status: 0.2.17 — MVP with KDE Plasma 6 on Wayland support. See the
-> [roadmap](ROADMAP.md).
+> Status: 0.3.0 — KDE Plasma 6 on Wayland, with Brave, Chrome and
+> Chromium tabs. See the [roadmap](ROADMAP.md).
 
 ## Features
 
@@ -47,10 +47,16 @@ the previous window. No mouse, no scrolling, no waiting.
   query is empty (`taskbar.mode = "iconbar"`, the default, or
   `"both"`). Several windows show a count and open a dropdown.
   `"off"` hides both until you type.
-- Matches appear in the output bar as you type. Open windows come
-  first. An app whose title or name starts with the query stays
-  above a later match, and its new-window row stays under that
-  app. With `input.launcher.mode` set, other installed apps follow.
+- Matches appear in the output bar as you type. Rows that contain
+  the query as typed come before fuzzy matches. Within each, open
+  windows come first, then open Brave, Chrome or Chromium tabs when
+  `[browser_tabs]` is on, then installed apps. An app whose title or
+  name starts with the query stays above a later match, and its
+  new-window row stays under that app.
+- Browser tabs: load `extensions/browser_tabs/chromium/` in
+  Brave, Chrome or Chromium, set `[browser_tabs] enabled = true`, and search tab
+  titles from the popup. See
+  [browser tabs](docs/arch/adapters/browser_tabs.md).
 - Each entry shows the app icon and the window title. The title list
   can hide its icons with `taskbar.titlebar.show_icons = false`.
 - Low footprint: idle at 0 % CPU, under 10 MB of RAM, no GPU usage.
@@ -123,6 +129,9 @@ tynex show    # Open the switcher
 tynex hide    # Close the switcher
 tynex quit    # Stop the background service
 ```
+
+`Ctrl+C` in the daemon's terminal, `kill` and closing that terminal
+stop it like `tynex quit`.
 
 On KDE the default hotkey is `Meta+Tab`. Change it in System Settings,
 Shortcuts, `tynex`. On other desktops bind `tynex show` to any key.

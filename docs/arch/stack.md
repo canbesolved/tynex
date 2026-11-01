@@ -21,11 +21,13 @@ runtime cost. Adding a crate needs a line in this file and an ADR.
 | `xkbcommon`             | Keymaps, text  | linux | defaults off              |
 | `rustix`                | Syscalls       | linux | `event fs mm process`     |
 | `dbus`                  | D-Bus, libdbus | linux | defaults off              |
+| `libc`                  | Signals        | linux | already used by `dbus`    |
 | `tiny-skia`             | Drawing, PNG   | all   | `png-format simd std`     |
 | `resvg`                 | SVG icons      | all   | defaults off              |
 | `skrifa`                | Glyph outlines | all   | `std`                     |
 | `frizbee`               | Fuzzy matching | all   |                           |
 | `serde`                 | Config structs | all   | `derive`                  |
+| `serde_json`            | Tab messages   | all   | browser tabs adapter      |
 | `toml`                  | Config parser  | all   | `parse serde std`         |
 | `lexopt`                | CLI arguments  | all   |                           |
 | `log`                   | Logging facade | all   |                           |
@@ -71,6 +73,10 @@ Why each part was chosen, with rejected options, is recorded in ADRs:
 - Paths without `dirs`: [ADR-0029](../adr/0029_std_paths.md).
 - Logging: [ADR-0030](../adr/0030_logging.md),
   crash output: [ADR-0032](../adr/0032_crash_output.md).
+- Browser tabs: [ADR-0081](../adr/0081_tab_bridge.md). `serde_json`
+  parses the bridge messages; the host parses none.
+- Signals: [ADR-0084](../adr/0084_quit_signals.md). `libc` installs
+  the quit handler; `rustix` has no `sigaction`.
 
 ## Build profile
 

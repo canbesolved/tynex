@@ -86,7 +86,8 @@ To avoid a JSON dependency, the list is one string: records separated
 by `\x1e`, fields by `\x1f`.
 
 ```text
-<uuid> \x1f <desktopFileName> \x1f <resourceClass> \x1f <caption> \x1e ...
+<uuid> \x1f <desktopFileName> \x1f <resourceClass> \x1f <caption>
+       \x1f <pid> \x1e ...
 ```
 
 Control characters `\x1e` and `\x1f` are stripped from captions in the
@@ -99,7 +100,9 @@ order sent:
   ([ADR-0045](../../adr/0045_app_names.md));
 - `title` is the caption, sanitized later by the core;
 - `icon` is `Icon=` of the desktop file, else the app id;
-- records without exactly four fields or with an empty id are
+- `pid` is the window's process id. `0` or a value that is not a
+  number becomes `None` ([ADR-0082](../../adr/0082_kwin_pid.md));
+- records without exactly five fields or with an empty id are
   skipped, and a repeated id keeps only its first record.
 
 ## D-Bus interface

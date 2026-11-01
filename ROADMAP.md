@@ -8,8 +8,8 @@ file once released. Released changes are listed in
 
 | Horizon | Release     | Meaning                                  |
 | ------- | ----------- | ---------------------------------------- |
-| Now     | 0.2.x       | MVP with KDE Plasma 6 on Wayland support |
-| Next    | After 0.2.x | Committed once the MVP horizon is done   |
+| Now     | 0.3.x–0.4.x | Scheduled releases                       |
+| Next    | After 0.4.x | Committed once the 0.4.x horizon is done |
 | Later   | Unplanned   | Accepted ideas, not scheduled yet        |
 
 Rules:
@@ -19,14 +19,12 @@ Rules:
 
 ## Now
 
-Target: MVP with KDE Plasma 6 on Wayland support.
-
-## Next
-
-CLI:
+### 0.4.0
 
 - [ ] `tynex qs` (quick switch): switch to the previously used window,
   like `Alt+Tab`, without opening the popup.
+
+## Next
 
 Configuration:
 
@@ -97,12 +95,9 @@ Modes:
 
 Browser tabs:
 
-- [ ] Search open browser tabs by title and URL, and switch to one
-  with `Enter`. A browser extension sends tab changes to `tynex`
-  through a local bridge, with no polling. Tab data stays on the
-  machine.
-  - Chrome and other Chromium browsers first, then Firefox.
-  - Needs an ADR for the bridge protocol before work starts.
+- [ ] Edge and Vivaldi: register the host for them too,
+  once their manifest folders are confirmed.
+- [ ] Firefox: same local bridge and search.
 
 Info bar:
 

@@ -88,7 +88,8 @@ cargo +nightly fmt --check
 cargo clippy --all-targets -- -D warnings
 cargo deny check
 markdownlint-cli2 "**/*.md"
-shellcheck scripts/*.sh
+shellcheck scripts/*.sh extensions/browser_tabs/chromium/build.sh
+node --test extensions/browser_tabs/chromium/test/lib.test.js
 reuse lint
 ```
 
@@ -110,7 +111,8 @@ All commands must finish without errors.
    cargo test
    cargo deny check
    markdownlint-cli2 "**/*.md"
-   shellcheck scripts/*.sh
+   shellcheck scripts/*.sh extensions/browser_tabs/chromium/build.sh
+   node --test extensions/browser_tabs/chromium/test/lib.test.js
    reuse lint
    scripts/adr_log.sh   # When ADRs changed
    ```

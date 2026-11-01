@@ -153,6 +153,6 @@ fn activate_menu(s: &State, cap: usize) -> Action {
     match menu.get(index).map(|row| &row.target) {
         Some(RowTarget::Window(id)) => Action::Activate(id.clone()),
         Some(RowTarget::Launch(id)) => Action::Launch(id.clone()),
-        None => Action::None,
+        Some(RowTarget::Tab(_)) | None => Action::None,
     }
 }

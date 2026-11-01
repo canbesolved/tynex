@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "tynex",
+  "version": "0.3.0",
+  "description": "Search and switch open tabs from tynex.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApcZe6pUhwztBwol4VENFgOvgLA0KVSTe4O0vFOtrjbwjXIREqcpUrBePMNiWEL1pJDKORxWOL7Zl0682QIZGpi10rnC2kRFoTIkUQCu41d1n2OnFH0gLXlxejp3zkopNXYyG+P1wMs/pols/HkYFgLcU2TAcJ8C84xUtNAeP3O5WqJ9aiNPY4CgAhxoPfgh4NdzlUUS7TDJ9VqxQEF4FKZeYsZbvJYQWz7VzxnIJ7whClr/gfJlyb38rZw0txBKW9NcOaFXwQzc4ddyqN9Zizfd5xyeqrjPx7r55iZwbkWVCGpbgPznXUyjwLVraYZj/6xCw4JNpSU3xmv7CLjC1TQIDAQAB",
+  "permissions": ["tabs", "nativeMessaging", "alarms", "favicon"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "tynex",
+    "default_icon": {
+      "16": "icons/16.png",
+      "32": "icons/32.png"
+    }
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  }
+}

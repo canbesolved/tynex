@@ -4,6 +4,7 @@
 //! Pure switcher logic: no I/O, no OS types, no threads.
 
 pub mod app;
+pub mod browser_tabs;
 pub mod event;
 pub mod icon_nav;
 pub mod icons;

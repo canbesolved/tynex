@@ -13,9 +13,9 @@ const RECORD: char = '\x1e';
 /// Separates the fields of one window.
 const FIELD: char = '\x1f';
 
-/// Turns `<uuid> US <desktop file> US <class> US <caption> RS ...` into
-/// windows, in the order sent. Malformed records and repeats of an id
-/// are skipped.
+/// Turns `<uuid> US <file> US <class> US <caption> US <pid> RS ...`
+/// into windows, in the order sent. Malformed records and repeats of
+/// an id are skipped.
 pub fn parse(payload: &str) -> Vec<WindowInfo> {
     let mut seen = HashSet::new();
 
@@ -26,10 +26,11 @@ pub fn parse(payload: &str) -> Vec<WindowInfo> {
         .collect()
 }
 
-/// Decodes one record: exactly four fields and a non-empty id.
+/// Decodes one record: exactly five fields and a non-empty id.
 fn record(text: &str) -> Option<WindowInfo> {
     let mut fields = text.split(FIELD);
-    let (id, desktop_file, class, caption) = (
+    let (id, desktop_file, class, caption, pid) = (
+        fields.next()?,
         fields.next()?,
         fields.next()?,
         fields.next()?,
@@ -53,7 +54,16 @@ fn record(text: &str) -> Option<WindowInfo> {
         app_name: class.to_owned(), // Until a desktop file names the app
         title: caption.to_owned(),  // Sanitized by the core
         icon: None,
+        pid: pid_of(pid),
     })
+}
+
+/// A pid of `0` or not a number is missing.
+fn pid_of(text: &str) -> Option<u32> {
+    match text.parse() {
+        Ok(0) | Err(_) => None,
+        Ok(pid) => Some(pid),
+    }
 }
 
 #[cfg(test)]
@@ -70,6 +80,7 @@ mod tests {
             app_name: app.1.into(),
             title: title.into(),
             icon: None,
+            pid: None,
         }
     }
 
@@ -81,14 +92,18 @@ mod tests {
     #[test]
     fn records_keep_their_order() {
         let payload = format!(
-            "{{{UUID_A}}}\x1forg.kde.konsole\x1fkonsole\x1f~ : bash\x1e\
-             {{{UUID_B}}}\x1ffirefox\x1ffirefox\x1fCafé — Firefox"
+            "{{{UUID_A}}}\x1forg.kde.konsole\x1fkonsole\x1f~ : bash\x1f100\x1e\
+             {{{UUID_B}}}\x1ffirefox\x1ffirefox\x1fCafé — Firefox\x1f0"
         );
 
+        let mut first =
+            window(UUID_A, ("org.kde.konsole", "konsole"), "~ : bash");
+
+        first.pid = Some(100);
         assert_eq!(
             parse(&payload),
             [
-                window(UUID_A, ("org.kde.konsole", "konsole"), "~ : bash"),
+                first,
                 window(UUID_B, ("firefox", "firefox"), "Café — Firefox"),
             ]
         );
@@ -96,8 +111,8 @@ mod tests {
 
     #[test]
     fn empty_fields() {
-        let no_desktop_file = format!("{UUID_A}\x1f\x1fxterm\x1f");
-        let no_app = format!("{UUID_A}\x1f\x1f\x1fTitle");
+        let no_desktop_file = format!("{UUID_A}\x1f\x1fxterm\x1f\x1f");
+        let no_app = format!("{UUID_A}\x1f\x1f\x1fTitle\x1fnope");
 
         assert_eq!(
             parse(&no_desktop_file),
@@ -108,31 +123,33 @@ mod tests {
 
     #[test]
     fn malformed_records_are_skipped() {
-        let good = format!("{UUID_B}\x1fa\x1fa\x1fA");
+        let good = format!("{UUID_B}\x1fa\x1fa\x1fA\x1f2");
         let payload = format!(
-            "\x1fa\x1fa\x1fNo id\x1e\
-             {UUID_A}\x1fa\x1fa\x1fToo\x1fmany\x1e\
+            "\x1fa\x1fa\x1fNo id\x1f1\x1e\
+             {UUID_A}\x1fa\x1fa\x1fToo\x1fmany\x1fextra\x1e\
              {UUID_A}\x1fa\x1fToo few\x1e\
              \x1e{good}\x1e"
         );
 
-        assert_eq!(parse(&payload), [window(UUID_B, ("a", "a"), "A")]);
+        let mut kept = window(UUID_B, ("a", "a"), "A");
+
+        kept.pid = Some(2);
+        assert_eq!(parse(&payload), [kept]);
     }
 
     #[test]
     fn repeated_ids_keep_the_first_record() {
         let payload = format!(
-            "{UUID_A}\x1fa\x1fa\x1fNew\x1e\
-             {UUID_B}\x1fb\x1fb\x1fOld\x1e\
-             {{{UUID_A}}}\x1fa\x1fa\x1fNew"
+            "{UUID_A}\x1fa\x1fa\x1fNew\x1f3\x1e\
+             {UUID_B}\x1fb\x1fb\x1fOld\x1f4\x1e\
+             {{{UUID_A}}}\x1fa\x1fa\x1fNew\x1f3"
         );
 
-        assert_eq!(
-            parse(&payload),
-            [
-                window(UUID_A, ("a", "a"), "New"),
-                window(UUID_B, ("b", "b"), "Old"),
-            ]
-        );
+        let mut first = window(UUID_A, ("a", "a"), "New");
+        let mut second = window(UUID_B, ("b", "b"), "Old");
+
+        first.pid = Some(3);
+        second.pid = Some(4);
+        assert_eq!(parse(&payload), [first, second]);
     }
 }

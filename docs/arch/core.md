@@ -7,7 +7,8 @@ unit-testable and identical on every platform.
 
 ```text
 core/
-  window.rs     WindowId, WindowInfo
+  window.rs     WindowId, WindowInfo (includes pid)
+  browser_tabs.rs  SourceId, TabInfo, TabRef, TabList, TabsUpdate
   app.rs        AppInfo: id, name, icon (no Exec)
   event.rs      Event, Action, Key
   traits.rs     WindowSource, Presenter, Mode
@@ -34,6 +35,7 @@ pub struct WindowInfo {
     pub app_name: String, // Shown name, from a desktop file or WM class
     pub title: String,
     pub icon: Option<String>, // Icon name or path
+    pub pid: Option<u32>,     // None when the adapter has no pid
 }
 
 /// Inputs to the core.
@@ -45,6 +47,7 @@ pub enum Event {
     Hover(Click),
     Hide,
     Quit,
+    Tabs(TabsUpdate), // From the browser tabs adapter
 }
 
 /// Outputs of the core.
@@ -53,6 +56,7 @@ pub enum Action {
     Redraw,
     Activate(WindowId),
     Launch(String), // App id
+    ActivateTab(TabRef), // Hide, then ask the tab source
     Close,
 }
 ```
@@ -64,9 +68,19 @@ while the pointer moves. The icon, title, or dropdown row under
 the pointer becomes selected.
 
 `AppInfo` is `id`, `name`, `icon`. `Exec` stays on the platform.
-A `Row` has a `RowTarget`: `Window` or `Launch`. `State` keeps open
-windows in `rows` (title bar) and the result list in `output`
-(output bar and selection).
+A `Row` has a `RowTarget`: `Window`, `Launch` or `Tab`, and an
+optional `RowIcon`: a theme name or path, or a tab favicon with a
+fallback name. `State` keeps open windows in `rows` (title bar), the
+result list in `output` (output bar and selection), and the tab
+lists of the open popup in `tab_lists`.
+
+`TabsUpdate` is one change from the browser tabs adapter: `List`
+(tabs of one browser), `Icons` (favicons arrived; the pixels stay in
+the renderer), `Gone` (a browser disconnected) and `Activated` (the
+reply to `ActivateTab`). The switcher passes it to the mode. There
+is no tab source trait: the only transport is the socket adapter,
+which the Linux event loop drives directly
+([ADR-0081](../adr/0081_tab_bridge.md)).
 
 `Key` is a portable enum (`Char { text, latin }`, `Enter`, `Esc`,
 `Tab`, `BackTab`, `Up`, `Down`, `Left`, `Right`, `Home`, `End`,
@@ -105,6 +119,13 @@ pub trait Mode {
     fn on_hover(&mut self, click: Click, s: &mut State) -> Action;
     /// Recomputes output rows and highlights; default does nothing.
     fn refresh(&mut self, s: &mut State) {}
+    /// Applies a browser tab update; default ignores it.
+    fn on_tabs(
+        &mut self,
+        update: TabsUpdate,
+        state: &mut Option<State>, // None while hidden
+        windows: &[WindowInfo],
+    ) -> Action;
 }
 ```
 
@@ -124,7 +145,7 @@ is added with its module.
 ## Switcher state machine
 
 ```text
-          Show                 Activate / Launch / Close
+          Show           Activate / Launch / ActivateTab / Close
  Hidden ─────────────> Visible ─────────────────────────> Hidden
                        │    ▲
                  Key   │    │ Redraw
@@ -140,9 +161,11 @@ is added with its module.
   closes the popup, or with `HotkeyAction::Last` returns `Activate`
   for the previous window.
 - `Visible`: keys go to the mode. A mode returning `Activate`,
-  `Launch` or `Close` hides the popup.
+  `Launch`, `ActivateTab` or `Close` hides the popup.
 - `Windows` while visible: refresh the rows, keep the query, the
-  cursor and the selection by id.
+  cursor, the tab lists and the selected target.
+- `Tabs`: goes to the mode in either state; the mode ignores lists
+  while hidden.
 - `Hide` and `Quit` close an open popup. The daemon loop stops itself
   on `Quit`.
 

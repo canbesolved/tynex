@@ -59,6 +59,28 @@ pub fn starts_with_query(text: &str, query: &str) -> bool {
     }
 }
 
+/// Whether `text` contains `query` as typed, as one run of letters,
+/// with the same case and accent rules as ranking. An empty query
+/// matches nothing.
+#[must_use]
+pub fn contains_query(text: &str, query: &str) -> bool {
+    if query.is_empty() {
+        return false;
+    }
+
+    let hay = if query.is_ascii() {
+        Folded::new(text).text
+    } else {
+        text.to_owned()
+    };
+
+    if query.chars().any(char::is_uppercase) {
+        hay.contains(query)
+    } else {
+        hay.to_lowercase().contains(&query.to_lowercase())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -91,5 +113,15 @@ mod tests {
         assert!(starts_with_query("Cursor", "C"));
         assert!(!starts_with_query("cursor", "C"));
         assert!(!starts_with_query("Cursor", ""));
+    }
+
+    #[test]
+    fn contains_needs_one_run_of_letters() {
+        assert!(contains_query("Overall - Miro — miro.com", "miro"));
+        assert!(contains_query("Zürich notes", "zurich"));
+        assert!(contains_query("Ñandú", "ñandú"));
+        assert!(!contains_query("Chromium Web Browser", "miro"));
+        assert!(!contains_query("miro", "Miro"));
+        assert!(!contains_query("Miro", ""));
     }
 }

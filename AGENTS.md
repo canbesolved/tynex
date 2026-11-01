@@ -14,6 +14,9 @@ module you touch before changing code.
 - `docs/adr/`: architecture decision records (MADR 4.0).
 - `scripts/`: helper scripts (`new_adr.sh`, `adr_log.sh`).
 - `assets/`: images and other media.
+- `extensions/`: add-ons the user installs into another program,
+  `<feature>/<host>/`. Not part of the Cargo crate. The KWin script
+  stays in `src/adapters/kde/` because the daemon embeds it.
 - `ROADMAP.md`: planned features (Now / Next / Later).
 - `CHANGELOG.md`: notable changes, Keep a Changelog format.
 - `DEPRECATIONS.md`: history of deprecated, removed and never shipped
@@ -134,7 +137,8 @@ cargo clippy --all-targets -- -D warnings
 cargo test
 cargo deny check
 markdownlint-cli2 "**/*.md"
-shellcheck scripts/*.sh
+shellcheck scripts/*.sh extensions/browser_tabs/chromium/build.sh
+node --test extensions/browser_tabs/chromium/test/lib.test.js
 reuse lint
 scripts/adr_log.sh   # When ADRs changed
 ```

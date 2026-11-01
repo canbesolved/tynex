@@ -3,6 +3,7 @@
 
 //! Inputs and outputs of the core.
 
+use crate::core::browser_tabs::{TabRef, TabsUpdate};
 use crate::core::window::{WindowId, WindowInfo};
 
 /// Portable key press. Each platform maps native key events to it.
@@ -41,6 +42,7 @@ pub enum Event {
     Hover(Click), // Pointer move; same places as a click
     Hide,
     Quit,
+    Tabs(TabsUpdate), // From the browser tabs adapter
 }
 
 /// Outputs of the core.
@@ -49,7 +51,8 @@ pub enum Action {
     None,
     Redraw,
     Activate(WindowId),
-    Launch(String), // App id
+    Launch(String),      // App id
+    ActivateTab(TabRef), // Hide, then ask the tab source
     Close,
 }
 

@@ -3,6 +3,7 @@
 
 //! State of an open popup, shared by the switcher and the modes.
 
+use crate::core::browser_tabs::TabList;
 use crate::core::view::{AppIcon, Row, RowTarget, Strip, View};
 use crate::core::window::WindowId;
 
@@ -18,6 +19,7 @@ pub struct State {
     pub icons: Vec<AppIcon>, // Running apps, most recent first
     pub icon: usize,      // Index into `icons`
     pub dropdown: Option<usize>, // Selected title while open
+    pub tab_lists: Vec<TabList>, // Empty unless the popup is open
 }
 
 impl State {
@@ -36,6 +38,7 @@ impl State {
             icons: Vec::new(),
             icon: 0,
             dropdown: None,
+            tab_lists: Vec::new(),
         }
     }
 
@@ -132,7 +135,7 @@ impl State {
     pub fn selected_id(&self) -> Option<&WindowId> {
         match self.selected_target()? {
             RowTarget::Window(id) => Some(id),
-            RowTarget::Launch(_) => None,
+            RowTarget::Launch(_) | RowTarget::Tab(_) => None,
         }
     }
 
@@ -150,6 +153,18 @@ impl State {
 
             self.selected = (self.selected + len - 1) % len;
         }
+    }
+
+    /// Selects the output row with `target`, else clamps.
+    pub fn select_target(&mut self, target: Option<&RowTarget>) {
+        let found = target.and_then(|target| {
+            self.output.iter().position(|row| &row.target == target)
+        });
+
+        self.selected = match found {
+            Some(pos) => pos,
+            None => self.selected.min(self.output.len().saturating_sub(1)),
+        };
     }
 
     /// Selects the output row of window `id`, else clamps the

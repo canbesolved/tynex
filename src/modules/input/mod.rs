@@ -3,11 +3,14 @@
 
 //! Input sub-modules: search of open windows, then the launcher.
 
+pub mod browser_tabs;
+mod exact;
 pub mod launcher;
 
 use crate::config::{LauncherConfig, LauncherMode, NewWindowConfig};
 use crate::core::app::AppInfo;
 use crate::core::state::State;
+use crate::core::view::Row;
 use crate::modules::search::app_haystack;
 use crate::modules::search::fuzzy::rank;
 use crate::modules::search::starts_with_query;
@@ -44,19 +47,22 @@ impl Input {
             return;
         }
 
-        if self.mode == LauncherMode::Off || self.apps.is_empty() {
-            search_windows(s);
-            return;
-        }
+        let windows = if self.mode == LauncherMode::Off || self.apps.is_empty()
+        {
+            search_windows(s)
+        } else {
+            launcher::merge(&s.query, &s.rows, &self.apps, &self.new_window)
+        };
+        let tabs = crate::modules::browser_tabs::rows(&s.query, &s.tab_lists);
 
         s.output =
-            launcher::merge(&s.query, &s.rows, &self.apps, &self.new_window);
+            exact::exact_first(&s.query, browser_tabs::join(windows, tabs));
         s.selected = 0;
     }
 }
 
-/// Filters open windows into `output` and sets title highlights.
-fn search_windows(s: &mut State) {
+/// Filters open windows and sets title highlights.
+fn search_windows(s: &mut State) -> Vec<Row> {
     let apps: Vec<String> = s
         .rows
         .iter()
@@ -85,14 +91,12 @@ fn search_windows(s: &mut State) {
     for hit in &hits {
         s.rows[hit.index].highlights.clone_from(&hit.highlights);
     }
-    s.output = hits
-        .iter()
+    hits.iter()
         .map(|h| {
             let mut row = s.rows[h.index].clone();
 
             row.highlights.clone_from(&h.highlights);
             row
         })
-        .collect();
-    s.selected = 0;
+        .collect()
 }

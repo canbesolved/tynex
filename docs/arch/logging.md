@@ -24,6 +24,11 @@ TYNEX_LOG=debug tynex daemon
 Records from other crates are shown only at `warn` and above, unless
 the level is `trace`.
 
+The browser tabs host is started by the browser, so it inherits the
+browser's environment and writes to the browser's stderr. To see
+its records, start the browser from a terminal with `TYNEX_LOG` set
+([adapters/browser_tabs.md](adapters/browser_tabs.md#logging)).
+
 ## Format
 
 One line per record on stderr, no timestamps or colors:

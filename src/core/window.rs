@@ -15,4 +15,5 @@ pub struct WindowInfo {
     pub app_name: String,     // Shown name, from a desktop file or WM class
     pub title: String,        // Sanitized, see `text::sanitize_title`
     pub icon: Option<String>, // Icon name or path
+    pub pid: Option<u32>,     // None when the source has no pid
 }

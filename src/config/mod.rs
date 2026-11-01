@@ -3,6 +3,7 @@
 
 //! `tynex.toml`: parsing, defaults and validation.
 
+mod browser_tabs;
 mod error;
 mod file;
 mod raw;
@@ -14,6 +15,7 @@ use std::path::{Path, PathBuf};
 
 use serde::Deserialize;
 
+pub use crate::config::browser_tabs::{Browser, BrowserTabsConfig, Browsers};
 pub use crate::config::error::ConfigError;
 pub use crate::config::file::{Loaded, load_or_create};
 pub use crate::config::taskbar::{
@@ -164,6 +166,7 @@ pub struct Config {
     pub input: InputConfig,
     pub output: OutputConfig,
     pub taskbar: TaskbarConfig,
+    pub browser_tabs: BrowserTabsConfig,
 }
 
 impl Default for Config {
@@ -183,6 +186,7 @@ impl Default for Config {
             input: InputConfig::default(),
             output: OutputConfig { max_rows: 19 },
             taskbar: TaskbarConfig::default(),
+            browser_tabs: BrowserTabsConfig::default(),
         }
     }
 }
@@ -201,21 +205,10 @@ pub fn parse(
     let raw = toml::from_str(text).map_err(|e| {
         let span = e.span().unwrap_or(0..0);
 
-        vec![ConfigError::at(text, span, message(e.message()))]
+        vec![ConfigError::at(text, span, error::message(e.message()))]
     })?;
 
     validate::validate(text, raw, font_exists)
-}
-
-/// Rewords `serde` messages for users and hints at renamed keys.
-fn message(raw: &str) -> String {
-    match raw.strip_prefix("unknown field") {
-        Some(rest) => format!(
-            "unknown key{rest}; a key renamed or removed in a release is \
-             listed in the release notes"
-        ),
-        None => raw.to_owned(),
-    }
 }
 
 #[cfg(test)]
@@ -245,3 +238,7 @@ mod sections_tests;
 #[cfg(test)]
 #[path = "position_tests.rs"]
 mod position_tests;
+
+#[cfg(test)]
+#[path = "browser_tabs_tests.rs"]
+mod browser_tabs_tests;

@@ -72,6 +72,7 @@ mod tests {
             app_name: app.into(),
             title: id.into(),
             icon: None,
+            pid: None,
         }
     }
 

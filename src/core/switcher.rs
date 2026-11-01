@@ -68,6 +68,9 @@ impl<M: Mode> Switcher<M> {
             Event::Click(click) => self.click(click),
             Event::Hover(click) => self.hover(click),
             Event::Hide | Event::Quit => self.close(),
+            Event::Tabs(update) => {
+                self.mode.on_tabs(update, &mut self.state, &self.windows)
+            }
         }
     }
 
@@ -97,7 +100,8 @@ impl<M: Mode> Switcher<M> {
         let Some(old) = self.state.take() else {
             return Action::None;
         };
-        let selected = old.selected_id().cloned();
+        let selected = old.selected_target().cloned();
+        let tab_lists = old.tab_lists;
         let app = old.icons.get(old.icon).map(|icon| icon.app_id.clone());
         let dropdown = old.dropdown;
         let mut state = State::new(self.rows());
@@ -105,9 +109,10 @@ impl<M: Mode> Switcher<M> {
         state.query = old.query;
         state.cursor = old.cursor;
         state.hint = old.hint;
+        state.tab_lists = tab_lists;
         self.apply_icons(&mut state, app.as_deref(), dropdown);
         self.mode.refresh(&mut state);
-        state.select_id(selected.as_ref());
+        state.select_target(selected.as_ref());
         self.state = Some(state);
         Action::Redraw
     }
@@ -166,7 +171,10 @@ impl<M: Mode> Switcher<M> {
     fn keep(&mut self, action: Action, state: State) -> Action {
         if !matches!(
             action,
-            Action::Activate(_) | Action::Launch(_) | Action::Close
+            Action::Activate(_)
+                | Action::Launch(_)
+                | Action::Close
+                | Action::ActivateTab(_)
         ) {
             self.state = Some(state);
         }
@@ -218,7 +226,7 @@ fn row(window: &WindowInfo) -> Row {
         target: RowTarget::Window(window.id.clone()),
         app_id: window.app_id.clone(),
         app_name: window.app_name.clone(),
-        icon: window.icon.clone(),
+        icon: window.icon.clone().map(crate::core::view::RowIcon::Named),
         title: window.title.clone(),
         title_color: None,
         highlights: Vec::new(),

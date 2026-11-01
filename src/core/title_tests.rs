@@ -13,6 +13,7 @@ fn window(app_id: &str, app_name: &str, title: &str) -> WindowInfo {
         app_name: app_name.into(),
         title: title.into(),
         icon: None,
+        pid: None,
     }
 }
 

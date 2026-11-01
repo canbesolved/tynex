@@ -7,9 +7,8 @@
 
 use std::time::Instant;
 
-use rustix::event::{PollFd, PollFlags, Timespec, poll};
-
 use crate::adapters::Source;
+use crate::adapters::browser_tabs::Socket;
 use crate::core::event::{Action, Event};
 use crate::core::queue::EventRx;
 use crate::core::switcher::Switcher;
@@ -18,6 +17,7 @@ use crate::modes::prompt::PromptMode;
 use crate::platform::linux::apps::Apps;
 use crate::platform::linux::dbus::Bus;
 use crate::platform::linux::hint::Hint;
+use crate::platform::linux::signals::Signals;
 use crate::platform::linux::wayland::{PresenterEvent, WaylandPresenter};
 use crate::ui::painter::Painter;
 
@@ -34,6 +34,8 @@ pub struct Parts {
     pub apps: Apps,
     pub hint: Hint,
     pub rx: EventRx,
+    pub tabs: Option<Socket>,
+    pub signals: Option<Signals>, // SIGINT, SIGTERM, SIGHUP quit
 }
 
 /// Runs until a `Quit` request arrives.
@@ -43,10 +45,10 @@ pub struct Parts {
 /// Fails when the Wayland or D-Bus connection is lost.
 pub fn run(p: &mut Parts) -> Result<(), String> {
     loop {
+        fds::drive_tabs(p); // Before the flushes below send its output
         while let Some(event) = p.rx.recv() {
             if !handle(p, event) {
-                p.presenter.hide();
-                return p.presenter.flush().map_err(|e| e.to_string());
+                return quit(p);
             }
         }
 
@@ -57,7 +59,7 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
         p.presenter.flush().map_err(|e| e.to_string())?;
         p.bus.flush(); // Calls such as an activation
         p.apps.reap();
-        wait(p)?;
+        fds::wait(p)?;
 
         for event in p.presenter.dispatch().map_err(|e| e.to_string())? {
             match event {
@@ -80,7 +82,19 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
             }
         }
         p.bus.dispatch().map_err(|e| e.to_string())?;
+        if let Some(name) = p.signals.as_ref().and_then(Signals::take) {
+            log::info!("{name} received, quitting");
+            handle(p, Event::Quit);
+            return quit(p);
+        }
     }
+}
+
+/// Hides the popup and sends the last requests. The caller then
+/// stops the window source, like after `tynex quit`.
+fn quit(p: &mut Parts) -> Result<(), String> {
+    p.presenter.hide();
+    p.presenter.flush().map_err(|e| e.to_string())
 }
 
 /// Converts a surface coordinate to physical pixels.
@@ -123,43 +137,8 @@ fn scroll(p: &mut Parts, notches: i32, dy: f64) {
     }
 }
 
-/// Blocks until a fd is readable or the next deadline is due.
-fn wait(p: &Parts) -> Result<(), String> {
-    let deadline = earliest(
-        earliest(p.presenter.next_deadline(), p.hint.deadline()),
-        p.painter.next_frame(Instant::now()),
-    );
-    let timeout = deadline
-        .map(|at| {
-            Timespec::try_from(at.saturating_duration_since(Instant::now()))
-        })
-        .transpose()
-        .map_err(|e| e.to_string())?;
-    let wayland = p.presenter.fd();
-    let dbus = p.bus.fd();
-    let hint = p.hint.stdout_fd();
-    let n = 2 + usize::from(hint.is_some());
-    let extra = hint.unwrap_or(wayland);
-    let mut fds = [
-        PollFd::new(&wayland, PollFlags::IN),
-        PollFd::new(&dbus, PollFlags::IN),
-        PollFd::new(&extra, PollFlags::IN),
-    ];
-
-    match poll(&mut fds[..n], timeout.as_ref()) {
-        Ok(_) | Err(rustix::io::Errno::INTR) => Ok(()),
-        Err(e) => Err(e.to_string()),
-    }
-}
-
-/// Returns the sooner of two optional deadlines.
-fn earliest(a: Option<Instant>, b: Option<Instant>) -> Option<Instant> {
-    match (a, b) {
-        (Some(a), Some(b)) => Some(a.min(b)),
-        (Some(a), None) => Some(a),
-        (None, b) => b,
-    }
-}
+#[path = "event_loop_fds.rs"]
+mod fds;
 
 /// Feeds one event to the switcher and applies the result. Returns false
 /// on `Quit`.
@@ -172,6 +151,9 @@ fn handle(p: &mut Parts, event: Event) -> bool {
         let text = p.hint.on_show(Instant::now());
 
         p.app.set_hint(text);
+        if let Some(tabs) = &mut p.tabs {
+            tabs.list();
+        }
     }
 
     let action = p.app.handle(event);
@@ -179,6 +161,9 @@ fn handle(p: &mut Parts, event: Event) -> bool {
     if open && p.app.view().is_none() {
         p.hint.on_hide();
         p.painter.hidden();
+        if let Some(tabs) = &mut p.tabs {
+            tabs.hide();
+        }
     }
 
     if windows {
@@ -204,6 +189,12 @@ fn handle(p: &mut Parts, event: Event) -> bool {
             }
         }
         Action::Close => p.presenter.hide(),
+        Action::ActivateTab(tab) => {
+            p.presenter.hide();
+            if let Some(tabs) = &mut p.tabs {
+                tabs.activate(&tab);
+            }
+        }
         Action::None => {}
     }
     !quit
