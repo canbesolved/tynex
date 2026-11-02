@@ -131,6 +131,15 @@ Configuration:
 - [ ] `tynex reload`: re-read the config without restarting. An invalid
   file is reported and the running config stays in use.
 
+Defaults:
+
+- [ ] Change the default `taskbar.iconbar.size` to `36`.
+- [ ] Change the default `taskbar.iconbar.border` to `5`.
+- [ ] Change the default `input.launcher.new_window_text_color`.
+- [ ] Change the default hint command (`input.hint.text`).
+- [ ] Default text and hint colors follow the active theme, or `auto`
+  when the theme changes.
+
 Input:
 
 - [ ] Hint templates: reusable bash scripts for `input.hint.text`, for
