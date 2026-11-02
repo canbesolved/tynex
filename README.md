@@ -37,7 +37,9 @@ the previous window. No mouse, no scrolling, no waiting.
 ## Features
 
 - Centered popup with an input bar: start typing at once; accents
-  and small typos are forgiven.
+  and small typos are forgiven. While the query is empty, the bar
+  shows a hint: the first line of `input.hint.text` (a date by
+  default). Typing hides it.
 - Optional list of open windows while the query is empty
   (`taskbar.mode = "titlebar"` or `"both"`); the list hides as soon
   as you type and returns when you clear the query. Order is most
@@ -68,7 +70,7 @@ the previous window. No mouse, no scrolling, no waiting.
 
 | Environment      | Session | Status  |
 | ---------------- | ------- | ------- |
-| KDE Plasma 6     | Wayland | 0.2.17  |
+| KDE Plasma 6     | Wayland | 0.3.0   |
 | Other DEs / WMs  | Any     | Planned |
 | macOS, Windows   | -       | Planned |
 
@@ -82,7 +84,7 @@ prebuilt binaries for Linux x86_64 and arm64 (glibc 2.35 or newer),
 for example:
 
 ```bash
-v=0.2.17 t=x86_64-unknown-linux-gnu     # or aarch64-unknown-linux-gnu
+v=0.3.0 t=x86_64-unknown-linux-gnu      # or aarch64-unknown-linux-gnu
 url=https://github.com/canbesolved/tynex/releases/download/v$v
 curl -LO "$url/tynex-$v-$t.tar.gz" -LO "$url/SHA256SUMS"
 sha256sum -c --ignore-missing SHA256SUMS
@@ -175,6 +177,10 @@ launcher.mode = "gui_only"   # off | all | gui_only
 launcher.new_window = true   # false hides the extra row
 launcher.new_window_text = " +  New window"
 launcher.new_window_text_color = "#8da787" # #RRGGBB
+hint.enabled = true          # false hides the empty-query hint
+hint.font_color = "#8da787"  # #RRGGBB
+hint.text = 'date +"%A %b %-d %T %Y"'
+hint.update = 0              # Seconds; 0 runs once per open
 
 [output]
 max_rows = 19
@@ -186,6 +192,10 @@ titlebar.show_icons = true  # false: titles only
 titlebar.strip_app_name = false # true drops the app name
 iconbar.size = 24            # Logical pixels, 8 to 128
 iconbar.border = 4           # Selection outline, 1 to 32
+
+[browser_tabs]
+enabled = false              # true registers the host
+browsers = "auto"            # auto, one name, or a list
 ```
 
 On first start `tynex daemon` writes this file with defaults. Keys
@@ -218,7 +228,12 @@ Upgrading to 0.2.11: rename the sections and the mode values.
 `icon_bar.icon_size` becomes `taskbar.iconbar.size`.
 `icon_bar.border` becomes `taskbar.iconbar.border`. `mode` values
 `icons` and `titles` become `iconbar` and `titlebar`. Delete
-`[title_bar]` and `[icon_bar]`.
+`[title_bar]` and `[icon_bar]`. Hint keys move with `[input_bar]`
+and stay `hint.*` under `[input]`.
+
+Upgrading to 0.3.0: `[browser_tabs]` is new and optional. Leave it
+out, or set `enabled = false`, and an older file keeps working.
+Set `enabled = true` and load the extension to search tabs.
 
 ## Architecture
 

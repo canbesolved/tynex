@@ -123,7 +123,7 @@ wires concrete modules together.
 [ADR-0005](../adr/0005_trait_modules.md)):
 
 1. The OS backend is fixed at compile time by `cfg(target_os)`.
-2. The presenter for the session is chosen (Wayland for 0.1.0).
+2. The presenter for the session is chosen (Wayland on Linux).
 3. The adapter is chosen from the `desktop` key, or detected from
    `XDG_CURRENT_DESKTOP` when it is `auto`.
 4. With `[browser_tabs] enabled`, and a selected browser whose

@@ -21,7 +21,7 @@ Build:
 Runtime:
 
 - Linux with a Wayland compositor that supports layer-shell (KDE
-  Plasma 6 for 0.1.0).
+  Plasma 6 for the current release).
 - D-Bus session bus.
 - fontconfig (`fc-match`) for `font = "auto"`.
 

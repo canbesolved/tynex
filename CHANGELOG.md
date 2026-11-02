@@ -9,6 +9,13 @@ project adheres to
 
 ## [Unreleased]
 
+### Fixed
+
+- Docs match 0.3.0. The README download example, environment table
+  and config sample include the input hint and `[browser_tabs]`.
+  The contributing runtime note and the Linux presenter notes name
+  the current release.
+
 ## [0.3.0] - 2026-11-01
 
 ### Added
