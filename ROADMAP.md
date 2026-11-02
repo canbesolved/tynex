@@ -19,6 +19,24 @@ Rules:
 
 ## Now
 
+### 0.3.1
+
+- [ ] Rename a window from the popup: `F2` or `,` edits the selected
+  title in place, `Enter` keeps it, `Esc` cancels. The new title lasts
+  until the window closes.
+
+### 0.3.2
+
+- [ ] Pinned apps stay in the icon bar while they are not running.
+
+### 0.3.3
+
+- [ ] Open a new tab in the browser from the popup.
+
+### 0.3.4
+
+- [ ] Browser bookmarks in the popup: search bookmarks and open one.
+
 ### 0.4.0
 
 - [ ] `tynex qs` (quick switch): switch to the previously used window,
@@ -32,6 +50,11 @@ Configuration:
   appears. Default `200`. With `hotkeys.action = "last"`, a second
   hotkey press inside that window switches to the previous app
   without showing the popup.
+- [ ] Popup animation: `animation = true` or `false` turns it on or
+  off. `animation_speed = 1.0` scales how fast it runs, from `0.5` to
+  `3.0` (`1.0` is normal speed).
+- [ ] Config: priority of output bar results among open windows,
+  installed apps, browser tabs and exact matches.
 
 Window list:
 
@@ -40,16 +63,6 @@ Window list:
   - In the icon bar, a right click on an app with several windows
     opens its dropdown; a right click on a title there closes that
     window.
-
-Titles:
-
-- [ ] Rename a window from the popup: `F2` or `,` edits the selected
-  title in place, `Enter` keeps it, `Esc` cancels. The new title lasts
-  until the window closes.
-
-Icon bar:
-
-- [ ] Pinned apps stay in the icon bar while they are not running.
 
 Look:
 
@@ -148,6 +161,8 @@ Themes:
 
 Look:
 
+- [ ] Output bar: muted gray labels between result groups so ordering
+  among windows, tabs, apps and exact matches is easy to see.
 - [ ] Text shaping and right-to-left layout for Arabic, Hebrew and
   Indic scripts (`rustybuzz`).
 - [ ] Color emoji in titles.
