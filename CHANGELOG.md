@@ -9,6 +9,13 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Each `ROADMAP.md` item has an `RM-NNNN` code, carried into commits,
+  pull requests, changelog and deprecation entries.
+  `scripts/rm_next.sh` prints the lowest free code
+  ([ADR-0086](docs/adr/0086_roadmap_codes.md)).
+
 ### Fixed
 
 - Docs match 0.3.0. The README download example, environment table

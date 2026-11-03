@@ -3,6 +3,8 @@
 History of features that were deprecated, removed, or dropped before
 they shipped. Current changes are in [CHANGELOG.md](CHANGELOG.md),
 planned ones in [ROADMAP.md](ROADMAP.md). Entries are never deleted.
+A dropped roadmap item keeps its `RM-NNNN` code at the end of its
+entry, so the code is not reused.
 
 ## Deprecated
 

@@ -102,7 +102,11 @@ All commands must finish without errors.
 2. Make one scoped change. Update the module page in `docs/arch/`, add
    an ADR for significant decisions (`scripts/new_adr.sh`), and add an
    entry under `[Unreleased]` in [CHANGELOG.md](CHANGELOG.md). A
-   renamed or removed config key is listed as **Breaking:**.
+   renamed or removed config key is listed as **Breaking:**. Work on a
+   [ROADMAP.md](ROADMAP.md) item names its `RM-NNNN` code at the end
+   of the changelog entry, for example `(RM-0001)`. A new roadmap item
+   takes the code printed by `scripts/rm_next.sh` (see
+   [AGENTS.md](AGENTS.md#roadmap-codes)).
 3. Run the checks:
 
    ```bash
@@ -118,7 +122,9 @@ All commands must finish without errors.
    ```
 
 4. Commit with [Conventional Commits](https://www.conventionalcommits.org)
-   and open a pull request to `main`. The maintainer reviews and merges.
+   and open a pull request to `main`. For a roadmap item, end the
+   commit subject with its code and name it in the pull request
+   summary. The maintainer reviews and merges.
 
 ## Footprint checks
 
@@ -140,7 +146,8 @@ Mention the numbers in the pull request when they change.
 1. Open a release pull request: set `version` in `Cargo.toml`, rename
    `## [Unreleased]` in `CHANGELOG.md` to `## [x.y.z] - YYYY-MM-DD`
    with a new empty `## [Unreleased]` above it, update the links at the
-   end, and remove released items from `ROADMAP.md`.
+   end, and remove released items from `ROADMAP.md`. Their codes stay
+   in the changelog entries.
 2. After the merge, tag the merge commit on `main` and push the tag:
 
    ```bash
