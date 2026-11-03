@@ -3,10 +3,22 @@
 
 //! Keysyms to `core::Key`: plain keys, combinations and modifier taps.
 
+use std::ops::RangeInclusive;
+
 use xkbcommon::xkb::{self, keysyms};
 
 use crate::core::event::Key;
 use crate::core::hotkey::{Binding, Code, Mods, Named, Side};
+use crate::core::us_layout::us_char;
+use crate::platform::linux::evdev;
+
+/// Keysyms of keys that are not characters: modifiers, `Enter`,
+/// arrows, keypad, `F` keys.
+const FUNCTION_KEYS: RangeInclusive<u32> = 0xfe00..=0xffff;
+
+/// Dead keys are inside `FUNCTION_KEYS` but sit on character keys.
+const DEAD_KEYS: RangeInclusive<u32> =
+    keysyms::KEY_dead_grave..=keysyms::KEY_dead_longsolidusoverlay;
 
 /// Maps `Left` and `Right` to a word move while Control is held.
 pub(super) fn word_move(key: Key, ctrl: bool) -> Key {
@@ -56,8 +68,7 @@ pub(super) fn combo(
     mods: Mods,
     latin: Option<char>,
 ) -> Option<Binding> {
-    let held =
-        mods.has(Mods::CTRL) || mods.has(Mods::ALT) || mods.has(Mods::META);
+    let held = held(mods);
     let code = match named(sym) {
         Some(
             n @ (Named::F(_) | Named::Insert | Named::PageUp | Named::PageDown),
@@ -68,6 +79,39 @@ pub(super) fn combo(
     };
 
     Some(Binding { mods, code })
+}
+
+/// Returns the key evdev `key` gives on the US layout
+/// (`main.switch_layout`) when the system keymap gives it `sym`, a
+/// character or a dead key. Other keys keep the system keymap, so
+/// remaps such as `caps:escape` still work.
+pub(super) fn us_key(
+    key: u32,
+    sym: u32,
+    mods: Mods,
+    caps: bool,
+) -> Option<Key> {
+    let character = !FUNCTION_KEYS.contains(&sym) || DEAD_KEYS.contains(&sym);
+    let at = evdev::physical(key).filter(|_| character)?;
+    let text = us_char(at, mods.has(Mods::SHIFT), caps)?;
+    let base = us_char(at, false, false)?;
+
+    Some(if held(mods) {
+        Key::Combo(Binding {
+            mods,
+            code: Code::Char(base),
+        })
+    } else {
+        Key::Char {
+            text,
+            latin: base.is_ascii_alphabetic().then_some(base),
+        }
+    })
+}
+
+/// Returns true when Ctrl, Alt or Meta is held: a combination.
+fn held(mods: Mods) -> bool {
+    mods.has(Mods::CTRL) || mods.has(Mods::ALT) || mods.has(Mods::META)
 }
 
 /// Returns the modifier side of `sym`, for taps.
@@ -98,6 +142,11 @@ pub(super) fn mods(state: &xkb::State) -> Mods {
         state.mod_name_is_active(name, xkb::STATE_MODS_EFFECTIVE)
     })
     .fold(Mods::default(), |all, (_, one)| all.with(one))
+}
+
+/// Returns true while Caps Lock is on in `state`.
+pub(super) fn caps(state: &xkb::State) -> bool {
+    state.mod_name_is_active(xkb::MOD_NAME_CAPS, xkb::STATE_MODS_EFFECTIVE)
 }
 
 /// Returns the named key of `sym`, if it has one.

@@ -13,10 +13,11 @@ fn unspanned<T>(value: T) -> Spanned<T> {
     Spanned::new(0..0, value)
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub(super) enum RawHotkeyAction {
     Hide,
+    #[default]
     Last,
 }
 
@@ -102,6 +103,7 @@ pub(super) struct RawMain {
     pub width: Spanned<u16>,
     pub position: Position,
     pub theme: Theme,
+    pub switch_layout: bool,
 }
 
 impl Default for RawMain {
@@ -113,26 +115,17 @@ impl Default for RawMain {
             width: unspanned(480),
             position: Position::Center,
             theme: Theme::Dark,
+            switch_layout: false,
         }
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawHotkeys {
     pub action: RawHotkeyAction,
     pub rename: Option<Spanned<toml::Value>>,
     pub pinned: Option<Spanned<toml::Value>>,
-}
-
-impl Default for RawHotkeys {
-    fn default() -> Self {
-        Self {
-            action: RawHotkeyAction::Last,
-            rename: None,
-            pinned: None,
-        }
-    }
 }
 
 #[derive(Deserialize, Default)]

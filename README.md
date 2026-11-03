@@ -176,6 +176,7 @@ font_size = 14
 width = 480
 position = "center"          # center | top
 theme = "dark"               # dark | light
+switch_layout = false        # true: type with the US layout
 
 [hotkeys]
 action = "last"              # hide | last

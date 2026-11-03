@@ -70,6 +70,7 @@ fn start(config: &Config) -> Result<(), String> {
         WaylandPresenter::connect().map_err(|e| e.to_string())?;
 
     presenter.set_position(config.main.position);
+    presenter.set_us_layout(config.main.switch_layout);
     let face = fonts::default_face(&config.main.font)
         .map_err(|e| format!("cannot load the font: {e}"))?;
     let text = Text::new(face);

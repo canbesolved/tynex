@@ -21,7 +21,9 @@ Three traits isolate the operating system. Everything else is shared.
   `[target.'cfg(target_os = "linux")'.dependencies]`.
 - Presenters receive a ready pixel buffer from the shared renderer and
   only blit it, so drawing is written once.
-- Each backend maps native key events to the portable `core::Key`.
+- Each backend maps native key events to the portable `core::Key`,
+  and its key numbers to `core::us_layout::PhysicalKey` for
+  `main.switch_layout`.
 - Paths come from each platform's `paths.rs`, built on the standard
   library, never hard-coded.
 

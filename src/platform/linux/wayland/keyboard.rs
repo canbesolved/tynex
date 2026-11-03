@@ -12,7 +12,7 @@ use xkbcommon::xkb::{self, compose};
 use crate::core::event::Key;
 use crate::core::hotkey::{Binding, Code, Mods, Side};
 use crate::platform::linux::wayland::keys::{
-    self, combo, latin, to_key, word_move,
+    self, combo, latin, to_key, us_key, word_move,
 };
 
 /// Keys that repeat while held: moving and deleting.
@@ -31,6 +31,7 @@ const REPEATED: &[Key] = &[
 pub(super) struct Keyboard {
     context: xkb::Context,
     state: Option<(xkb::Keymap, xkb::State)>,
+    us: bool, // Character keys use the US layout (`switch_layout`)
     compose: Option<compose::State>,
     rate: u32,       // Repeats per second; 0 disables repeat
     delay: Duration, // Before the first repeat
@@ -56,12 +57,18 @@ impl Keyboard {
         Self {
             context,
             state: None,
+            us: false,
             compose,
             rate: 25,
             delay: Duration::from_millis(600),
             held: None,
             tap: None,
         }
+    }
+
+    /// Reads character keys with the US layout while `on`.
+    pub fn set_us_layout(&mut self, on: bool) {
+        self.us = on;
     }
 
     /// Loads the keymap sent by the compositor as `size` bytes of `fd`.
@@ -121,18 +128,26 @@ impl Keyboard {
             return None;
         }
 
-        let text = match compose_step(self.compose.as_mut(), sym) {
-            Compose::Pending => return None,
-            Compose::Text(text) => Some(text),
-            Compose::Plain => Some(state.key_get_utf8(code)),
-        };
         let mods = keys::mods(state);
-        let latin = latin(keymap, code);
-        let plain = to_key(sym, text.as_deref(), latin)
-            .map(|key| word_move(key, mods.has(Mods::CTRL)));
-        let key_out = match plain {
-            Some(Key::WordLeft | Key::WordRight) if mods == Mods::CTRL => plain,
-            _ => combo(sym, mods, latin).map(Key::Combo).or(plain),
+        let us = self.us.then(|| us_key(key, sym, mods, keys::caps(state)));
+        let key_out = if let Some(us) = us.flatten() {
+            Some(us)
+        } else {
+            let text = match compose_step(self.compose.as_mut(), sym) {
+                Compose::Pending => return None,
+                Compose::Text(text) => Some(text),
+                Compose::Plain => Some(state.key_get_utf8(code)),
+            };
+            let latin = latin(keymap, code);
+            let plain = to_key(sym, text.as_deref(), latin)
+                .map(|key| word_move(key, mods.has(Mods::CTRL)));
+
+            match plain {
+                Some(Key::WordLeft | Key::WordRight) if mods == Mods::CTRL => {
+                    plain
+                }
+                _ => combo(sym, mods, latin).map(Key::Combo).or(plain),
+            }
         };
 
         self.held = key_out
@@ -215,3 +230,7 @@ fn compose_step(compose: Option<&mut compose::State>, sym: u32) -> Compose {
 #[cfg(test)]
 #[path = "keyboard_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "keyboard_us_tests.rs"]
+mod us_tests;

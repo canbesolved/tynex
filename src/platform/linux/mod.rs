@@ -8,6 +8,7 @@ pub mod apps;
 pub mod dbus;
 pub mod dbus_ipc;
 pub mod desktop_files;
+pub mod evdev;
 pub mod event_loop;
 pub mod fonts;
 pub mod hint;

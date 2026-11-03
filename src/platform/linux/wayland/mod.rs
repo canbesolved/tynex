@@ -132,6 +132,12 @@ impl WaylandPresenter {
         self.position = position;
     }
 
+    /// Reads character keys with the US layout while the popup is
+    /// open (`main.switch_layout`).
+    pub fn set_us_layout(&mut self, on: bool) {
+        self.wl.keyboard.set_us_layout(on);
+    }
+
     /// Returns the logical height locked when the popup opened.
     #[must_use]
     pub fn anchor(&self) -> Option<u32> {

@@ -11,6 +11,7 @@ platform/linux/
   event_loop_fds.rs  The poll set, tabs socket driving
   paths.rs        XDG config, data and runtime paths, atomic writes
   signals.rs      SIGINT, SIGTERM, SIGHUP as a pollable pipe
+  evdev.rs        Evdev key numbers to core PhysicalKey
   wayland/
     mod.rs        WaylandPresenter: connect, show, draw, hide, dispatch
     state.rs      Dispatch state: globals, popup, events
@@ -160,13 +161,22 @@ closes, and without input it closes after ten seconds.
   from the first layout where it is an ASCII letter
   (`key_get_syms_by_level`). Letter bindings match it, so `"r"`
   works on a Cyrillic layout.
+- With `main.switch_layout`
+  ([ADR-0090](../../adr/0090_us_keymap.md)), a key whose system
+  keysym is a character or a dead key (not in `0xfe00..=0xffff`,
+  except the dead keys) is looked up by its evdev number
+  (`evdev.rs`) and typed with `core::us_layout::us_char`, with the
+  Shift and Caps Lock state of the system keymap. With `Ctrl`, `Alt`
+  or `Meta` it is a `Combo` of the unshifted US character. Other
+  keys, and keys outside the US table, keep the system keymap, so
+  remaps such as `caps:escape` still work.
 - Key repeat, for arrows, `Backspace` and `Delete`, uses the rate
   and delay the compositor sends. `next_deadline` gives the poll
   timeout and `dispatch` reports due repeats; leaving focus or
   hiding stops it.
 
-Tests use real keymaps from the system's XKB data (`us,gr`), so CI
-installs `libxkbcommon-dev`.
+Tests use real keymaps from the system's XKB data (`us`, `gr`, `de`,
+`ru`), so CI installs `libxkbcommon-dev`.
 
 ## Pointer
 
