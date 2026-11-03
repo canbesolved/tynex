@@ -75,8 +75,14 @@ the dropdown slides in. The gaps scale with the display.
 
 - Shown when `taskbar.mode` is `iconbar` or `both`, and the query
   is empty.
-- One icon per `app_id`, most recently used app first. That order
-  does not follow `taskbar.titlebar.sort_by`.
+- Pinned apps (`taskbar.iconbar.pinned`) come first, in config
+  order, running or not ([ADR-0089](../../adr/0089_pinned_apps.md)).
+  Then one icon per other `app_id`, most recently used app first.
+  That order does not follow `taskbar.titlebar.sort_by`.
+- A pinned app that is not running has no windows and the icon of
+  its desktop file, drawn at half opacity. `Enter`, `Space` or a
+  click launches it. `hotkeys.pinned` opens or focuses each pinned
+  app ([prompt.md](../modes/prompt.md#pinned-apps)).
 - The selected icon starts as the app of the previous window.
   `taskbar.iconbar.border` outlines it in the selection color,
   outside the icon. The default is 4 logical pixels, from 1 to 32,

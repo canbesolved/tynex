@@ -20,7 +20,7 @@ core/
   switcher.rs   State machine (tests in switcher_tests.rs)
   view.rs       View, Row, RowTarget: what the presenter must draw
   order.rs      SortBy: row order (recently, app)
-  icons.rs      One icon per running app, dropdown title order
+  icons.rs      Strip: pinned apps, then running apps; dropdown order
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
   title.rs      Row titles: sanitizing and app name stripping
@@ -75,8 +75,12 @@ the pointer becomes selected.
 A `Row` has a `RowTarget`: `Window`, `Launch` or `Tab`, and an
 optional `RowIcon`: a theme name or path, or a tab favicon with a
 fallback name. `State` keeps open windows in `rows` (title bar), the
-result list in `output` (output bar and selection), and the tab
-lists of the open popup in `tab_lists`.
+result list in `output` (output bar and selection), the tab lists
+of the open popup in `tab_lists`, and the strip in `icons`, whose
+first `pinned` icons are the pinned apps
+([ADR-0089](../adr/0089_pinned_apps.md)). The switcher builds the
+strip from its pinned `AppInfo` list and the windows: a pinned app
+that is not running has no windows.
 
 `TabsUpdate` is one change from the browser tabs adapter: `List`
 (tabs of one browser), `Icons` (favicons arrived; the pixels stay in

@@ -3,8 +3,40 @@
 
 //! Running apps for the icon bar, one icon per app id.
 
+use crate::core::app::AppInfo;
 use crate::core::view::{AppIcon, Row, RowTarget};
 use crate::core::window::{WindowId, WindowInfo};
+
+/// Builds the strip: `pinned` apps first in their order, running or
+/// not, then the other running apps, most recently used first.
+///
+/// A pinned app that is not running has no windows and the icon of
+/// its desktop file.
+#[must_use]
+pub fn strip(pinned: &[AppInfo], windows: &[WindowInfo]) -> Vec<AppIcon> {
+    let mut running = running(windows);
+    let mut icons: Vec<AppIcon> = pinned
+        .iter()
+        .map(|app| {
+            match running.iter().position(|icon| icon.app_id == app.id) {
+                Some(at) => {
+                    let mut icon = running.remove(at);
+
+                    icon.icon = icon.icon.or_else(|| app.icon.clone());
+                    icon
+                }
+                None => AppIcon {
+                    app_id: app.id.clone(),
+                    icon: app.icon.clone(),
+                    windows: Vec::new(),
+                },
+            }
+        })
+        .collect();
+
+    icons.append(&mut running);
+    icons
+}
 
 /// Groups `windows` by app id, most recently used app first.
 ///
@@ -122,5 +154,35 @@ mod tests {
             .collect();
 
         assert_eq!(titles, ["Café", "café", "Release"]);
+    }
+
+    fn app(id: &str, icon: &str) -> AppInfo {
+        AppInfo {
+            id: id.into(),
+            name: id.into(),
+            icon: Some(icon.into()),
+        }
+    }
+
+    #[test]
+    fn pinned_apps_come_first_running_or_not() {
+        let pinned = [app("kate", "kate-icon"), app("gimp", "gimp-icon")];
+        let icons = strip(
+            &pinned,
+            &[
+                window("w1", "firefox"),
+                window("w2", "kate"),
+                window("w3", "firefox"),
+            ],
+        );
+        let ids: Vec<_> = icons.iter().map(|i| i.app_id.as_str()).collect();
+
+        assert_eq!(ids, ["kate", "gimp", "firefox"]);
+        assert_eq!(icons[0].windows, [WindowId("w2".into())]);
+        assert_eq!(icons[0].icon.as_deref(), Some("kate-icon"));
+        assert_eq!(icons[1].windows, []);
+        assert_eq!(icons[1].icon.as_deref(), Some("gimp-icon"));
+        assert_eq!(icons[2].windows.len(), 2);
+        assert_eq!(strip(&[], &[window("w1", "kate")]).len(), 1);
     }
 }

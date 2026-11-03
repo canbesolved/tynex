@@ -49,6 +49,9 @@ the previous window. No mouse, no scrolling, no waiting.
   query is empty (`taskbar.mode = "iconbar"`, the default, or
   `"both"`). Several windows show a count and open a dropdown.
   `"off"` hides both until you type.
+- Pinned apps stay first in that row, also when closed
+  (`taskbar.iconbar.pinned`); `Alt+1` to `Alt+9` open or focus them
+  while the popup is open (`hotkeys.pinned`).
 - Matches appear in the output bar as you type. Rows that contain
   the query as typed come before fuzzy matches. Within each, open
   windows come first, then open Brave, Chrome or Chromium tabs when
@@ -177,6 +180,9 @@ theme = "dark"               # dark | light
 [hotkeys]
 action = "last"              # hide | last
 rename = "."                 # Key, list of keys, or ""
+# One key per pinned app, by position
+pinned = ["Alt+1", "Alt+2", "Alt+3", "Alt+4", "Alt+5", "Alt+6",
+  "Alt+7", "Alt+8", "Alt+9"]
 
 [input]
 launcher.mode = "gui_only"   # off | all | gui_only
@@ -198,6 +204,7 @@ titlebar.show_icons = true  # false: titles only
 titlebar.strip_app_name = false # true drops the app name
 iconbar.size = 24            # Logical pixels, 8 to 128
 iconbar.border = 4           # Selection outline, 1 to 32
+iconbar.pinned = []          # Desktop ids, e.g. "firefox"
 
 [browser_tabs]
 enabled = false              # true registers the host

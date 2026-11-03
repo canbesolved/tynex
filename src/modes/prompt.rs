@@ -36,6 +36,7 @@ pub struct PromptMode {
     max_rows: usize, // Cap for the dropdown
     tabs: Option<Session>,
     rename: Bindings, // Keys that rename the selected window
+    pinned: Vec<Bindings>, // The n-th opens the n-th pinned app
 }
 
 impl PromptMode {
@@ -51,7 +52,15 @@ impl PromptMode {
             max_rows: usize::from(max_rows).max(1),
             tabs: None,
             rename: Bindings::default(),
+            pinned: Vec::new(),
         }
+    }
+
+    /// Sets the keys of the pinned apps, by position. None by default.
+    #[must_use]
+    pub fn with_pinned(mut self, keys: Vec<Bindings>) -> Self {
+        self.pinned = keys;
+        self
     }
 
     /// Sets the keys that rename the selected window. None by default.
@@ -78,7 +87,9 @@ impl PromptMode {
 
 impl Mode for PromptMode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
-        if let Some(action) = rename::key(self, key, s) {
+        if let Some(action) = rename::key(self, key, s)
+            .or_else(|| prompt_icon::pinned(&self.pinned, key, s))
+        {
             return action;
         }
         let Some(key) = hotkey::plain(key) else {
@@ -212,3 +223,7 @@ mod pointer_tests;
 #[cfg(test)]
 #[path = "prompt_rename_tests.rs"]
 mod rename_tests;
+
+#[cfg(test)]
+#[path = "prompt_pinned_tests.rs"]
+mod pinned_tests;

@@ -58,8 +58,20 @@ impl Icons {
         size: u32,
         (x, y): (i32, i32),
     ) {
+        self.draw_faded(canvas, icon, size, (x, y), 1.0);
+    }
+
+    /// Draws `icon` like `draw`, with `opacity` from 0 to 1.
+    pub fn draw_faded(
+        &mut self,
+        canvas: &mut Canvas<'_>,
+        icon: &str,
+        size: u32,
+        at: (i32, i32),
+        opacity: f32,
+    ) {
         if let Some(image) = self.image(icon, size) {
-            canvas.draw_image(image, (x, y));
+            canvas.draw_image_faded(image, at, opacity);
         }
     }
 

@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Icon strip of the taskbar. One icon per running app, hidden while typing.
+//! Icon strip of the taskbar: pinned apps, then one icon per running
+//! app. Hidden while typing.
 
 #![allow(
     clippy::cast_possible_truncation,
@@ -9,19 +10,18 @@
     clippy::cast_sign_loss
 )]
 
-use super::menu;
+use super::{badge, menu};
 use crate::core::event::Click;
 use crate::core::view::View;
 use crate::ui::draw::{Grid, Metrics, Paint};
 use crate::ui::frames;
 use crate::ui::render::canvas::Area;
-use crate::ui::render::text::Style;
 
 /// Gap between icons, as a fraction of the icon side.
 const GAP_RATIO: f32 = 0.35;
 
-/// Window count font size, as a fraction of the icon side.
-const BADGE_RATIO: f32 = 0.3;
+/// Opacity of a pinned app that is not running.
+const NOT_RUNNING: f32 = 0.5;
 
 /// Placed icons for one frame.
 #[derive(Debug, Clone, Copy)]
@@ -138,16 +138,22 @@ pub(crate) fn draw(
         }
         if let Some(name) = &icon.icon {
             let side = placed.size.round().max(1.0) as u32;
+            let opacity = if icon.windows.is_empty() {
+                NOT_RUNNING
+            } else {
+                1.0
+            };
 
-            paint.icons.draw(
+            paint.icons.draw_faded(
                 paint.canvas,
                 name,
                 side,
                 (x.round() as i32, top.round() as i32),
+                opacity,
             );
         }
         if icon.windows.len() > 1 {
-            badge(paint, &placed, x, top, icon.windows.len());
+            badge::draw(paint, &placed, x, top, icon.windows.len());
         }
     }
 }
@@ -209,39 +215,6 @@ pub(crate) fn hit(
         }
     }
     Click::Elsewhere
-}
-
-/// Draws the window count in a rounded square at the icon's bottom.
-fn badge(
-    paint: &mut Paint<'_, '_>,
-    placed: &Layout,
-    x: f32,
-    top: f32,
-    n: usize,
-) {
-    let label = n.to_string();
-    let size = (placed.size * BADGE_RATIO).max(1.0);
-    let width = paint.text.width(&label, size);
-    let h = (size * 1.25).min(placed.size);
-    let w = (width + h * 0.4).clamp(h, placed.size);
-    let back =
-        Area::new(x + (placed.size - w) / 2.0, top + placed.size - h, w, h);
-    let style = Style {
-        size,
-        color: paint.theme.text,
-        highlight: paint.theme.highlight,
-        highlights: &[],
-    };
-    let (ascent, descent) = paint.text.metrics(size);
-    let base = (back.y + h / 2.0 + f32::midpoint(ascent, descent)).round();
-    let left = x + (placed.size - width) / 2.0;
-
-    paint
-        .canvas
-        .fill_rounded_rect(back, h / 4.0, paint.theme.border);
-    paint
-        .text
-        .draw(paint.canvas, &label, (left, base), width.max(1.0), &style);
 }
 
 #[cfg(test)]

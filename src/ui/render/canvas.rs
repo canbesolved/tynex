@@ -106,11 +106,26 @@ impl<'a> Canvas<'a> {
 
     /// Draws `image` with its top-left at `(x, y)`, over the canvas.
     pub fn draw_image(&mut self, image: &Pixmap, (x, y): (i32, i32)) {
+        self.draw_image_faded(image, (x, y), 1.0);
+    }
+
+    /// Draws `image` at `(x, y)` with `opacity`, 0 clear to 1 opaque.
+    pub fn draw_image_faded(
+        &mut self,
+        image: &Pixmap,
+        (x, y): (i32, i32),
+        opacity: f32,
+    ) {
+        let paint = PixmapPaint {
+            opacity: opacity.clamp(0.0, 1.0),
+            ..PixmapPaint::default()
+        };
+
         self.pixmap.draw_pixmap(
             x,
             y,
             image.as_ref(),
-            &PixmapPaint::default(),
+            &paint,
             Transform::identity(),
             None,
         );

@@ -73,3 +73,32 @@ fn removed_enabled_keys_are_unknown() {
     assert!(icon.contains("unknown key `enabled`"), "{icon}");
     assert!(icon.contains("release notes"), "{icon}");
 }
+
+#[test]
+fn pinned_apps_keep_their_order() {
+    let config = parse(
+        "[taskbar]\niconbar.pinned = [\"firefox\", \"org.kde.konsole\"]\n",
+        &no_font,
+    )
+    .unwrap();
+
+    assert_eq!(
+        config.taskbar.iconbar.pinned,
+        ["firefox", "org.kde.konsole"]
+    );
+    assert_eq!(
+        Config::default().taskbar.iconbar.pinned,
+        Vec::<String>::new()
+    );
+}
+
+#[test]
+fn pinned_apps_must_be_unique_and_named() {
+    let twice =
+        errors("[taskbar]\niconbar.pinned = [\"firefox\", \"firefox\"]\n");
+    let empty = errors("[taskbar]\niconbar.pinned = [\" \"]\n");
+
+    assert_eq!(twice.len(), 1);
+    assert!(twice[0].contains("lists \"firefox\" twice"), "{}", twice[0]);
+    assert!(empty[0].contains("empty app id"), "{}", empty[0]);
+}

@@ -7,6 +7,7 @@
 //! hides whichever is showing. The dropdown of one app's windows is
 //! `menu`.
 
+mod badge;
 pub(crate) mod icons;
 pub(crate) mod menu;
 pub(crate) mod titles;

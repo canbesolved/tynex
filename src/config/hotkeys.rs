@@ -19,6 +19,7 @@ pub(crate) const RENAME: &str = ".";
 pub struct HotkeysConfig {
     pub action: HotkeyAction,
     pub rename: Bindings, // Edits the selected window title
+    pub pinned: Vec<Bindings>, // The n-th opens the n-th pinned app
 }
 
 /// Returns the default bindings of `hotkeys.rename`.
@@ -26,36 +27,77 @@ pub(crate) fn default_rename() -> Bindings {
     Bindings(Binding::parse(RENAME).into_iter().collect())
 }
 
+/// Returns the default `hotkeys.pinned`: `Alt+1` to `Alt+9`.
+pub(crate) fn default_pinned() -> Vec<Bindings> {
+    (1..=9)
+        .filter_map(|n| Binding::parse(&format!("Alt+{n}")).ok())
+        .map(|b| Bindings(vec![b]))
+        .collect()
+}
+
 /// Checks the `[hotkeys]` table. Every bad binding is reported.
 pub(super) fn check(
     raw: &RawHotkeys,
     err: &mut impl FnMut(Range<usize>, String),
 ) -> HotkeysConfig {
-    let rename = bindings("rename", raw.rename.as_ref(), default_rename(), err);
-    let rename_span = raw.rename.as_ref().map_or(0..0, Spanned::span);
+    let rename = match &raw.rename {
+        Some(value) => bindings("rename", value.get_ref(), value.span(), err),
+        None => default_rename(),
+    };
+    let pinned = pinned(raw.pinned.as_ref(), err);
+    let span = |value: &Option<Spanned<toml::Value>>| {
+        value.as_ref().map_or(0..0, Spanned::span)
+    };
+    let mut actions = vec![("rename".to_owned(), &rename, span(&raw.rename))];
 
-    conflicts(&[("rename", &rename, rename_span)], err);
+    for (n, keys) in pinned.iter().enumerate() {
+        actions.push((format!("pinned[{}]", n + 1), keys, span(&raw.pinned)));
+    }
+    conflicts(&actions, err);
     HotkeysConfig {
         action: match raw.action {
             RawHotkeyAction::Hide => HotkeyAction::Hide,
             RawHotkeyAction::Last => HotkeyAction::Last,
         },
         rename,
+        pinned,
     }
 }
 
-/// Checks `hotkeys.<name>`: a binding, a list of bindings, `""` or
-/// `[]`. A missing key uses `default`.
-pub(super) fn bindings(
-    name: &str,
+/// Checks `hotkeys.pinned`: a list with one entry per pinned app, each
+/// a binding, a list of bindings, `""` or `[]`.
+fn pinned(
     value: Option<&Spanned<toml::Value>>,
-    default: Bindings,
     err: &mut impl FnMut(Range<usize>, String),
-) -> Bindings {
+) -> Vec<Bindings> {
     let Some(value) = value else {
-        return default;
+        return default_pinned();
     };
     let span = value.span();
+
+    if let toml::Value::Array(items) = value.get_ref() {
+        items
+            .iter()
+            .map(|item| bindings("pinned", item, span.clone(), err))
+            .collect()
+    } else {
+        err(
+            span,
+            "`hotkeys.pinned` must be a list with one key per pinned app"
+                .into(),
+        );
+        Vec::new()
+    }
+}
+
+/// Checks one `hotkeys.<name>` value: a binding, a list of bindings,
+/// `""` or `[]`. Errors point at `span`.
+fn bindings(
+    name: &str,
+    value: &toml::Value,
+    span: Range<usize>,
+    err: &mut impl FnMut(Range<usize>, String),
+) -> Bindings {
     let mut one = |text: &str| match text {
         "" => None,
         text => Binding::parse(text)
@@ -68,7 +110,7 @@ pub(super) fn bindings(
             .ok(),
     };
 
-    match value.get_ref() {
+    match value {
         toml::Value::String(text) => Bindings(one(text).into_iter().collect()),
         toml::Value::Array(items) => {
             let mut list = Vec::new();
@@ -92,7 +134,7 @@ pub(super) fn bindings(
 
 /// Reports a binding used by two actions, naming both keys.
 pub(super) fn conflicts(
-    actions: &[(&str, &Bindings, Range<usize>)],
+    actions: &[(String, &Bindings, Range<usize>)],
     err: &mut impl FnMut(Range<usize>, String),
 ) {
     for (i, (name, keys, span)) in actions.iter().enumerate() {

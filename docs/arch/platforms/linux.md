@@ -30,18 +30,24 @@ platform/linux/
   hint_proc.rs    Spawn `sh -c` and read stdout without blocking
   key_file.rs     Reader for desktop entries, theme indexes, kdeglobals
   desktop_files.rs  App names and icons from desktop files
-  apps/           Launcher catalog: scan `.desktop`, spawn Exec
+  apps/           App catalog: scan `.desktop`, spawn Exec
   icon_theme.rs   IconTheme: icon files from freedesktop icon themes
 ```
 
-## Launcher catalog
+## App catalog
 
 `apps/` scans `$XDG_DATA_HOME/applications` and `$XDG_DATA_DIRS` once
-at daemon start when `input.launcher.mode` is not `"off"`
-([ADR-0056](../../adr/0056_launcher_input.md)). First file for an id
+at daemon start when `input.launcher.mode` is not `"off"` or
+`taskbar.iconbar.pinned` lists an app
+([ADR-0056](../../adr/0056_launcher_input.md),
+[ADR-0089](../../adr/0089_pinned_apps.md)). First file for an id
 wins; subdirectory paths use `-` in the id. Entries that are not
 `Type=Application`, or have `NoDisplay`, `Hidden`, or an empty
-`Exec`, are skipped. `gui_only` also skips `Terminal=true`.
+`Exec`, are skipped. The catalog keeps `Terminal=true` apps so they
+can be pinned; the launcher list leaves them out with `gui_only`,
+and is empty when the launcher is off. `pinned` returns the pinned
+apps in config order; an id without a desktop file keeps no icon
+and is logged.
 
 `Exec` is split on quotes, not a shell. Field codes that need a file
 or URL are dropped; `%%`, `%c`, `%k` and `%i` are expanded.
