@@ -7,7 +7,7 @@
 use std::ops::Range;
 
 use crate::core::browser_tabs::{SourceId, TabRef};
-use crate::core::window::WindowId;
+use crate::core::window::{WindowId, WindowInfo};
 
 /// What selecting a row does.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -72,6 +72,22 @@ pub struct Row {
     pub highlights: Vec<Range<usize>>, // Byte ranges in `title`
 }
 
+impl Row {
+    /// Builds the row of an open window.
+    #[must_use]
+    pub fn window(window: &WindowInfo) -> Self {
+        Self {
+            target: RowTarget::Window(window.id.clone()),
+            app_id: window.app_id.clone(),
+            app_name: window.app_name.clone(),
+            icon: window.icon.clone().map(RowIcon::Named),
+            title: window.title.clone(),
+            title_color: None,
+            highlights: Vec::new(),
+        }
+    }
+}
+
 /// One running app in the icon bar.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AppIcon {
@@ -79,6 +95,14 @@ pub struct AppIcon {
     pub icon: Option<String>,
     /// Windows of this app, most recently used first.
     pub windows: Vec<WindowId>,
+}
+
+/// A title being renamed, borrowed for one frame.
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct Edit<'a> {
+    pub id: &'a WindowId,
+    pub text: &'a str,
+    pub cursor: usize, // Byte index in `text`
 }
 
 /// The icon strip, borrowed for one frame.
@@ -97,6 +121,7 @@ pub struct View<'a> {
     pub selected: usize,         // Index into the output rows
     pub icon: usize,             // Index into `icons`
     pub dropdown: Option<usize>, // Selected title while open
+    edit: Option<Edit<'a>>,      // Title being renamed
     windows: &'a [Row],
     output: &'a [Row],
     icons: &'a [AppIcon],
@@ -119,10 +144,28 @@ impl<'a> View<'a> {
             selected,
             icon: strip.icon,
             dropdown: strip.dropdown,
+            edit: None,
             windows,
             output,
             icons: strip.icons,
         }
+    }
+
+    /// Shows `edit` in place of its window's title.
+    #[must_use]
+    pub(crate) fn with_edit(mut self, edit: Option<Edit<'a>>) -> Self {
+        self.edit = edit;
+        self
+    }
+
+    /// Returns the edited text and its cursor when `target`'s title is
+    /// being renamed. The row title is then drawn as this text.
+    #[must_use]
+    pub fn edit(&self, target: &RowTarget) -> Option<(&'a str, usize)> {
+        let edit = self.edit?;
+
+        matches!(target, RowTarget::Window(w) if w == edit.id)
+            .then_some((edit.text, edit.cursor))
     }
 
     /// Returns the open windows, in list order. The title bar draws

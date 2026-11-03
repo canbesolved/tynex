@@ -51,6 +51,9 @@ theme = "dark"               # dark | light
 # Hotkey pressed again while the popup is open: "hide" closes the
 # popup, "last" switches to the previously used window.
 action = "last"              # hide | last
+# Key that renames the selected window until it closes: a key such
+# as "F2" or "Ctrl+R", a list of keys, or "" for none.
+rename = "."
 
 [input]
 # Installed apps in the output bar: "off" hides them, "all" includes
@@ -121,6 +124,27 @@ stays dark. Any other value stops the daemon.
 `hotkeys.action` sets what pressing the hotkey (or `tynex show`) does
 while the popup is open: `hide` closes it, `last` switches to the
 previously used window, or closes it when there is none.
+
+`hotkeys.rename` is the key that renames the selected window
+([ADR-0088](../adr/0088_rename_windows.md)). The default `"."` is
+never typed into the query. Keys are written in the hotkey notation
+([ADR-0087](../adr/0087_hotkey_notation.md)), which every
+`[hotkeys]` binding uses:
+
+- `Modifier+Key`, with `Ctrl`, `Alt`, `Shift` and `Meta` (`Super`,
+  `Win`); spaces around `+` and any case: `"Meta + Space"`.
+- Named keys from W3C UI Events: `Space`, `Enter`, `Tab`, `Escape`,
+  `Backspace`, `Delete`, `Insert`, `Home`, `End`, `PageUp`,
+  `PageDown`, `ArrowUp` to `ArrowRight`, `F1` to `F24`.
+- A single character, as the key types it: `"."`, `","`.
+- A modifier alone, fired when tapped: `ShiftLeft`, `ShiftRight`,
+  `ControlLeft`, `ControlRight`, `AltLeft`, `AltRight`, `MetaLeft`,
+  `MetaRight`.
+- A list fires on any of its keys: `["F2", "Ctrl+R"]`. `""` or `[]`
+  turns the action off.
+
+An unknown or malformed key stops the daemon with its line and
+column. So does a key bound to two actions.
 
 `input.launcher.mode` adds installed apps to the output bar
 ([ADR-0056](../adr/0056_launcher_input.md)): `"off"`, `"all"`, or
@@ -255,6 +279,7 @@ The config is read once, when `tynex daemon` starts
 | `main.position`                   | `center` or `top`                      |
 | `main.theme`                      | `dark` or `light`                      |
 | `hotkeys.action`                  | `hide` or `last`                       |
+| `hotkeys.rename`                  | a key, a list of keys, or `""`         |
 | `input.launcher.mode`             | `off`, `all` or `gui_only`             |
 | `launcher.new_window`             | `true` or `false`                      |
 | `launcher.new_window_text`        | a non-empty string                     |

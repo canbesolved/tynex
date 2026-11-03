@@ -17,6 +17,7 @@ mod cursor;
 mod error;
 mod input;
 mod keyboard;
+mod keys;
 mod output;
 mod pointer;
 mod state;

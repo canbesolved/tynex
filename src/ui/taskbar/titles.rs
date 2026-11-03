@@ -68,7 +68,9 @@ pub(crate) fn draw(
                 paint.theme.selected,
             );
         }
-        draw::draw_row(paint, grid, row, area, &[], metrics.show_icons);
+        let edit = view.edit(&row.target);
+
+        draw::draw_row(paint, grid, row, area, (&[], edit), metrics.show_icons);
         top += grid.row_h;
     }
     scroll::bar(paint, metrics, rows, first, len);

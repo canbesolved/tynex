@@ -10,15 +10,21 @@
 use crate::config::TaskbarMode;
 use crate::core::browser_tabs::TabsUpdate;
 use crate::core::event::{Action, Click, Key};
+use crate::core::hotkey::{self, Bindings};
 use crate::core::state::State;
+use crate::core::text_edit;
 use crate::core::traits::Mode;
 use crate::core::view::RowTarget;
 use crate::core::window::WindowInfo;
 use crate::modules::browser_tabs::Session;
 use crate::modules::input::Input;
 
+#[path = "prompt_pointer.rs"]
+mod pointer;
 #[path = "prompt_icon.rs"]
 mod prompt_icon;
+#[path = "prompt_rename.rs"]
+mod rename;
 #[path = "prompt_tabs.rs"]
 mod tabs;
 
@@ -29,6 +35,7 @@ pub struct PromptMode {
     taskbar: TaskbarMode,
     max_rows: usize, // Cap for the dropdown
     tabs: Option<Session>,
+    rename: Bindings, // Keys that rename the selected window
 }
 
 impl PromptMode {
@@ -43,7 +50,15 @@ impl PromptMode {
             taskbar,
             max_rows: usize::from(max_rows).max(1),
             tabs: None,
+            rename: Bindings::default(),
         }
+    }
+
+    /// Sets the keys that rename the selected window. None by default.
+    #[must_use]
+    pub fn with_rename(mut self, keys: Bindings) -> Self {
+        self.rename = keys;
+        self
     }
 
     /// Turns tab search on. Off by default, so the popup is unchanged.
@@ -63,56 +78,31 @@ impl PromptMode {
 
 impl Mode for PromptMode {
     fn on_key(&mut self, key: Key, s: &mut State) -> Action {
+        if let Some(action) = rename::key(self, key, s) {
+            return action;
+        }
+        let Some(key) = hotkey::plain(key) else {
+            return Action::None;
+        };
         if self.strip(s)
             && let Some(action) =
                 prompt_icon::key(key, s, self.max_rows, self.taskbar.titlebar())
         {
             return action;
         }
-        match key {
-            Key::Char { text: ' ', .. } | Key::Enter => confirm(self, s),
-            Key::Char { text, .. } => {
+        if matches!(key, Key::Char { text: ' ', .. } | Key::Enter) {
+            return confirm(self, s);
+        }
+        if let Some(changed) =
+            text_edit::apply(&mut s.query, &mut s.cursor, key)
+        {
+            if changed {
                 s.close_dropdown();
-                s.insert(text);
                 self.refresh(s);
-                Action::Redraw
             }
-            Key::Backspace => {
-                if s.backspace() {
-                    self.refresh(s);
-                }
-                Action::Redraw
-            }
-            Key::Delete => {
-                if s.delete() {
-                    self.refresh(s);
-                }
-                Action::Redraw
-            }
-            Key::Left => {
-                s.move_left();
-                Action::Redraw
-            }
-            Key::Right => {
-                s.move_right();
-                Action::Redraw
-            }
-            Key::WordLeft => {
-                s.move_word_left();
-                Action::Redraw
-            }
-            Key::WordRight => {
-                s.move_word_right();
-                Action::Redraw
-            }
-            Key::Home => {
-                s.cursor = 0;
-                Action::Redraw
-            }
-            Key::End => {
-                s.cursor = s.query.len();
-                Action::Redraw
-            }
+            return Action::Redraw;
+        }
+        match key {
             Key::Up => {
                 s.select_prev();
                 Action::Redraw
@@ -139,7 +129,7 @@ impl Mode for PromptMode {
                 }
                 Action::Redraw
             }
-            Key::Tab | Key::BackTab => Action::None,
+            _ => Action::None,
         }
     }
 
@@ -153,8 +143,11 @@ impl Mode for PromptMode {
     }
 
     fn on_click(&mut self, click: Click, s: &mut State) -> Action {
+        if s.rename.is_some() {
+            return Action::None;
+        }
         if let Click::Row(index) = click {
-            return click_row(self, s, index);
+            return pointer::click_row(self, s, index);
         }
         if self.strip(s) {
             prompt_icon::click(click, s, self.max_rows)
@@ -173,8 +166,11 @@ impl Mode for PromptMode {
     }
 
     fn on_hover(&mut self, click: Click, s: &mut State) -> Action {
+        if s.rename.is_some() {
+            return Action::None;
+        }
         if let Click::Row(index) = click {
-            return hover_row(self, s, index);
+            return pointer::hover_row(self, s, index);
         }
         if self.strip(s) {
             prompt_icon::hover(click, s, self.max_rows)
@@ -182,33 +178,6 @@ impl Mode for PromptMode {
             Action::None
         }
     }
-}
-
-/// Selects a title-list row. The output bar is left alone.
-fn hover_row(mode: &PromptMode, s: &mut State, index: usize) -> Action {
-    if !list_on(mode, s) || index >= s.rows.len() || index == s.selected {
-        return Action::None;
-    }
-    s.selected = index;
-    Action::Redraw
-}
-
-/// Activates the title-list row under the pointer.
-fn click_row(mode: &PromptMode, s: &mut State, index: usize) -> Action {
-    if !list_on(mode, s) || index >= s.rows.len() {
-        return Action::None;
-    }
-    s.selected = index;
-    match &s.rows[index].target {
-        RowTarget::Window(id) => Action::Activate(id.clone()),
-        RowTarget::Launch(id) => Action::Launch(id.clone()),
-        RowTarget::Tab(_) => Action::None,
-    }
-}
-
-/// Returns true while the title list is on screen.
-fn list_on(mode: &PromptMode, s: &State) -> bool {
-    mode.taskbar.titlebar() && s.query.is_empty()
 }
 
 /// Activates, launches or switches to the selected row.
@@ -239,3 +208,7 @@ mod icon_tests;
 #[cfg(test)]
 #[path = "prompt_pointer_tests.rs"]
 mod pointer_tests;
+
+#[cfg(test)]
+#[path = "prompt_rename_tests.rs"]
+mod rename_tests;

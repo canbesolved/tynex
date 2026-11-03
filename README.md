@@ -156,6 +156,11 @@ when the title bar is on, moves along the icons when it is off, and
 walks matches while you type. `Shift+Tab` does the same backward.
 A long list scrolls with the mouse wheel or the touchpad.
 
+To rename a window, select it and press `.`: edit the title in
+place, then `Enter` keeps it and `Esc` cancels. The new name is used
+in every list and in search until the window closes. Set another key
+with `hotkeys.rename`, for example `"F2"`, to type dots in a search.
+
 ## Configuration
 
 The config file is `~/.config/tynex/tynex.toml`:
@@ -171,6 +176,7 @@ theme = "dark"               # dark | light
 
 [hotkeys]
 action = "last"              # hide | last
+rename = "."                 # Key, list of keys, or ""
 
 [input]
 launcher.mode = "gui_only"   # off | all | gui_only

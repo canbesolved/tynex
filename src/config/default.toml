@@ -10,6 +10,9 @@ theme = "dark"               # dark | light
 # Hotkey pressed again while the popup is open: "hide" closes the
 # popup, "last" switches to the previously used window.
 action = "last"              # hide | last
+# Key that renames the selected window until it closes: a key such
+# as "F2" or "Ctrl+R", a list of keys, or "" for none.
+rename = "."
 
 [input]
 # Installed apps in the output bar: "off" hides them, "all" includes

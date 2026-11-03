@@ -93,8 +93,14 @@ fn draw_hint(
     }
 }
 
-/// Draws a 1 px beam, 10% shorter than the text, at `advance`.
-fn beam(paint: &mut Paint<'_, '_>, grid: &Grid, bar: Area, advance: f32) {
+/// Draws a 1 px beam, 10% shorter than the text, at `advance` from
+/// the left of `bar`. It is clipped at the right edge of `bar`.
+pub(crate) fn beam(
+    paint: &mut Paint<'_, '_>,
+    grid: &Grid,
+    bar: Area,
+    advance: f32,
+) {
     let x = (bar.x + advance).round();
     let right = bar.x + bar.w;
     let width = (x + BEAM_WIDTH).min(right) - x;

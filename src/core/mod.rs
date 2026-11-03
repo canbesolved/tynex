@@ -6,13 +6,16 @@
 pub mod app;
 pub mod browser_tabs;
 pub mod event;
+pub mod hotkey;
 pub mod icon_nav;
 pub mod icons;
 pub mod order;
 pub mod queue;
+pub mod rename;
 pub mod state;
 pub mod switcher;
 pub mod text;
+pub mod text_edit;
 pub mod title;
 pub mod traits;
 pub mod view;

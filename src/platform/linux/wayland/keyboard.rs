@@ -7,9 +7,13 @@ use std::fs::File;
 use std::os::unix::fs::FileExt;
 use std::time::{Duration, Instant};
 
-use xkbcommon::xkb::{self, compose, keysyms};
+use xkbcommon::xkb::{self, compose};
 
 use crate::core::event::Key;
+use crate::core::hotkey::{Binding, Code, Mods, Side};
+use crate::platform::linux::wayland::keys::{
+    self, combo, latin, to_key, word_move,
+};
 
 /// Keys that repeat while held: moving and deleting.
 const REPEATED: &[Key] = &[
@@ -31,6 +35,7 @@ pub(super) struct Keyboard {
     rate: u32,       // Repeats per second; 0 disables repeat
     delay: Duration, // Before the first repeat
     held: Option<(u32, Key, Instant)>, // Repeating key, next repeat time
+    tap: Option<(u32, Side)>, // Modifier pressed with no key after it
 }
 
 impl Keyboard {
@@ -55,6 +60,7 @@ impl Keyboard {
             rate: 25,
             delay: Duration::from_millis(600),
             held: None,
+            tap: None,
         }
     }
 
@@ -108,15 +114,26 @@ impl Keyboard {
         let (keymap, state) = self.state.as_ref()?;
         let code = xkb::Keycode::new(key + 8);
         let sym = state.key_get_one_sym(code).raw();
+
+        self.tap = keys::side(sym).map(|side| (key, side));
+        if self.tap.is_some() {
+            self.held = None;
+            return None;
+        }
+
         let text = match compose_step(self.compose.as_mut(), sym) {
             Compose::Pending => return None,
             Compose::Text(text) => Some(text),
             Compose::Plain => Some(state.key_get_utf8(code)),
         };
-        let ctrl = state
-            .mod_name_is_active(xkb::MOD_NAME_CTRL, xkb::STATE_MODS_EFFECTIVE);
-        let key_out = to_key(sym, text.as_deref(), latin(keymap, code))
-            .map(|key| word_move(key, ctrl));
+        let mods = keys::mods(state);
+        let latin = latin(keymap, code);
+        let plain = to_key(sym, text.as_deref(), latin)
+            .map(|key| word_move(key, mods.has(Mods::CTRL)));
+        let key_out = match plain {
+            Some(Key::WordLeft | Key::WordRight) if mods == Mods::CTRL => plain,
+            _ => combo(sym, mods, latin).map(Key::Combo).or(plain),
+        };
 
         self.held = key_out
             .filter(|k| REPEATED.contains(k) && self.rate > 0)
@@ -124,16 +141,25 @@ impl Keyboard {
         key_out
     }
 
-    /// Handles a release of evdev `key`.
-    pub fn release(&mut self, key: u32) {
+    /// Handles a release of evdev `key`. Returns a modifier tap when
+    /// `key` is a modifier released with no other key pressed since.
+    pub fn release(&mut self, key: u32) -> Option<Key> {
         if self.held.is_some_and(|(held, ..)| held == key) {
             self.held = None;
         }
+
+        let (_, side) = self.tap.take_if(|(tapped, _)| *tapped == key)?;
+
+        Some(Key::Combo(Binding {
+            mods: Mods::default(),
+            code: Code::Tap(side),
+        }))
     }
 
     /// Stops repeating, for example when focus leaves the popup.
     pub fn stop(&mut self) {
         self.held = None;
+        self.tap = None;
     }
 
     /// Returns when the held key repeats next, if any.
@@ -184,53 +210,6 @@ fn compose_step(compose: Option<&mut compose::State>, sym: u32) -> Compose {
         }
         compose::Status::Nothing => Compose::Plain,
     }
-}
-
-/// Maps `Left` and `Right` to a word move while Control is held.
-fn word_move(key: Key, ctrl: bool) -> Key {
-    match key {
-        Key::Left if ctrl => Key::WordLeft,
-        Key::Right if ctrl => Key::WordRight,
-        other => other,
-    }
-}
-
-/// Maps a keysym and its text to a `core::Key`.
-fn to_key(sym: u32, text: Option<&str>, latin: Option<char>) -> Option<Key> {
-    match sym {
-        keysyms::KEY_Return | keysyms::KEY_KP_Enter => Some(Key::Enter),
-        keysyms::KEY_Escape => Some(Key::Esc),
-        keysyms::KEY_Tab => Some(Key::Tab),
-        keysyms::KEY_ISO_Left_Tab => Some(Key::BackTab), // Shift+Tab
-        keysyms::KEY_Up | keysyms::KEY_KP_Up => Some(Key::Up),
-        keysyms::KEY_Down | keysyms::KEY_KP_Down => Some(Key::Down),
-        keysyms::KEY_Left | keysyms::KEY_KP_Left => Some(Key::Left),
-        keysyms::KEY_Right | keysyms::KEY_KP_Right => Some(Key::Right),
-        keysyms::KEY_Home | keysyms::KEY_KP_Home => Some(Key::Home),
-        keysyms::KEY_End | keysyms::KEY_KP_End => Some(Key::End),
-        keysyms::KEY_BackSpace => Some(Key::Backspace),
-        keysyms::KEY_Delete | keysyms::KEY_KP_Delete => Some(Key::Delete),
-        _ => {
-            let mut chars = text?.chars();
-            let c = chars.next().filter(|c| !c.is_control())?;
-
-            chars
-                .next()
-                .is_none()
-                .then_some(Key::Char { text: c, latin })
-        }
-    }
-}
-
-/// Returns the letter of `code` in the first layout where it is an ASCII
-/// letter, so letter keys work with any active layout.
-fn latin(keymap: &xkb::Keymap, code: xkb::Keycode) -> Option<char> {
-    (0..keymap.num_layouts_for_key(code)).find_map(|layout| {
-        let sym = *keymap.key_get_syms_by_level(code, layout, 0).first()?;
-        let c = char::from_u32(xkb::keysym_to_utf32(sym))?;
-
-        c.is_ascii_alphabetic().then(|| c.to_ascii_lowercase())
-    })
 }
 
 #[cfg(test)]

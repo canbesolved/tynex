@@ -10,16 +10,15 @@ use toml::Spanned;
 
 use crate::config::error::ConfigError;
 use crate::config::raw::{
-    RawConfig, RawHint, RawHotkeyAction, RawIconBar, RawLauncher,
-    RawLauncherMode, RawSortBy, RawTaskbarMode,
+    RawConfig, RawHint, RawIconBar, RawLauncher, RawLauncherMode, RawSortBy,
+    RawTaskbarMode,
 };
 use crate::config::{
-    Config, Font, HintConfig, HotkeysConfig, IconBarConfig, InputConfig,
-    LauncherConfig, LauncherMode, MainConfig, NewWindowConfig, OutputConfig,
-    TaskbarConfig, TaskbarMode, TitleBarConfig,
+    Config, Font, HintConfig, IconBarConfig, InputConfig, LauncherConfig,
+    LauncherMode, MainConfig, NewWindowConfig, OutputConfig, TaskbarConfig,
+    TaskbarMode, TitleBarConfig,
 };
 use crate::core::order::SortBy;
-use crate::core::switcher::HotkeyAction;
 use crate::core::view::Rgb;
 
 /// Checks `raw` from `text`; `font_exists` tells if a font path exists.
@@ -57,6 +56,7 @@ pub(super) fn validate(
         crate::config::browser_tabs::check(raw.browser_tabs, &mut err);
     let new_window = check_new_window(&raw.input.launcher, &mut err);
     let hint = check_hint(&raw.input.hint, &mut err);
+    let hotkeys = crate::config::hotkeys::check(&raw.hotkeys, &mut err);
 
     if !errors.is_empty() {
         return Err(errors);
@@ -71,12 +71,7 @@ pub(super) fn validate(
             position: main.position,
             theme: main.theme,
         },
-        hotkeys: HotkeysConfig {
-            action: match raw.hotkeys.action {
-                RawHotkeyAction::Hide => HotkeyAction::Hide,
-                RawHotkeyAction::Last => HotkeyAction::Last,
-            },
-        },
+        hotkeys,
         input: InputConfig {
             launcher: LauncherConfig {
                 mode: match raw.input.launcher.mode {

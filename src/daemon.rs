@@ -103,7 +103,8 @@ fn start(config: &Config) -> Result<(), String> {
                 config.taskbar.mode,
                 config.output.max_rows,
             )
-            .with_tabs(config.browser_tabs.enabled),
+            .with_tabs(config.browser_tabs.enabled)
+            .with_rename(config.hotkeys.rename.clone()),
         ),
         source,
         presenter,

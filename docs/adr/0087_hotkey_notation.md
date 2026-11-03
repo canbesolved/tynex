@@ -1,5 +1,5 @@
 ---
-status: "proposed"
+status: "accepted"
 date: "2026-11-03"
 decision-makers: "CanBeSolved"
 ---
@@ -46,12 +46,21 @@ Syntax:
   accepted as `Meta`, `Control` as `Ctrl`.
 - Key names follow the W3C UI Events `KeyboardEvent.code` values for
   named keys: `Space`, `Enter`, `Tab`, `Escape`, `Backspace`,
-  `Delete`, `F1` to `F24`, `ArrowUp`, `Home`, and the sided
-  modifiers `ShiftLeft`, `ShiftRight`, `ControlLeft`, `AltLeft`,
-  `MetaLeft` and their `Right` forms.
+  `Delete`, `Insert`, `Home`, `End`, `PageUp`, `PageDown`, `ArrowUp`,
+  `ArrowDown`, `ArrowLeft`, `ArrowRight`, `F1` to `F24`, and the
+  sided modifiers `ShiftLeft`, `ShiftRight`, `ControlLeft`,
+  `AltLeft`, `MetaLeft` and their `Right` forms. Aliases: `Return`,
+  `Esc`, `Del`, `Ins`, `Up`, `Down`, `Left`, `Right`.
 - A single printable character is the character the key types,
-  for example `"."` or `","`. It follows the active layout, with the
-  same Latin fallback as other keys.
+  for example `"."` or `","`. It follows the active layout; a
+  lowercase Latin letter also matches the same key on another
+  layout. `"R"` is what `Shift+R` types, so `Shift` is not written
+  with a character alone: `"Shift+."` is an error.
+- With `Ctrl`, `Alt` or `Meta`, a letter is the Latin letter of the
+  key, in any case: `"Ctrl+R"` is `"ctrl+r"`.
+- A binding fires instead of what the key does otherwise: a
+  character binding is not typed. A combination that no binding
+  takes keeps its plain meaning: `Ctrl+Enter` still confirms.
 - A modifier alone, such as `"ShiftLeft"`, fires when it is pressed
   and released with no other key in between, so `Shift+A` still
   types `A`.
@@ -80,8 +89,10 @@ Planned defaults in this notation: `rename = "."`,
 
 ### Confirmation
 
-Unit tests in the config module parse every documented name, the
-aliases, spaces around `+`, case, and reject unknown names.
+Unit tests in `core/hotkey_tests.rs` and `config/hotkeys_tests.rs`
+parse every documented form, the aliases, spaces around `+`, case,
+lists, and reject unknown names. Keyboard tests check that the
+Wayland keyboard reports combinations and modifier taps.
 
 ## Pros and Cons of the Options
 
@@ -111,5 +122,5 @@ aliases, spaces around `+`, case, and reject unknown names.
 
 - W3C UI Events KeyboardEvent code values:
   <https://www.w3.org/TR/uievents-code/>.
-- Accept once the first `[hotkeys]` key binding is implemented, and
-  update `docs/arch/config.md` in that change.
+- Accepted with the first binding, `hotkeys.rename`
+  ([ADR-0088](0088_rename_windows.md)).
