@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-11-03
+
+Row colors per result type in the output bar.
+
 ### Added
 
 - Row colors in the output bar: `output.colors.window`, `.tab` and
@@ -611,7 +615,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.3...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.4...HEAD
+[0.3.4]: https://github.com/canbesolved/tynex/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/canbesolved/tynex/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/canbesolved/tynex/compare/v0.3.0...v0.3.2
 [0.3.0]: https://github.com/canbesolved/tynex/compare/v0.2.17...v0.3.0
