@@ -6,6 +6,7 @@
 mod browser_tabs;
 mod error;
 mod file;
+mod hotkeys;
 mod raw;
 mod taskbar;
 mod theme;
@@ -18,6 +19,7 @@ use serde::Deserialize;
 pub use crate::config::browser_tabs::{Browser, BrowserTabsConfig, Browsers};
 pub use crate::config::error::ConfigError;
 pub use crate::config::file::{Loaded, load_or_create};
+pub use crate::config::hotkeys::HotkeysConfig;
 pub use crate::config::taskbar::{
     IconBarConfig, TaskbarConfig, TaskbarMode, TitleBarConfig,
 };
@@ -62,12 +64,6 @@ pub struct MainConfig {
     pub width: u16,
     pub position: Position,
     pub theme: Theme,
-}
-
-/// The `[hotkeys]` table.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct HotkeysConfig {
-    pub action: HotkeyAction,
 }
 
 /// How installed apps appear in the output bar.
@@ -182,6 +178,7 @@ impl Default for Config {
             },
             hotkeys: HotkeysConfig {
                 action: HotkeyAction::Last,
+                rename: hotkeys::default_rename(),
             },
             input: InputConfig::default(),
             output: OutputConfig { max_rows: 19 },
@@ -242,3 +239,7 @@ mod position_tests;
 #[cfg(test)]
 #[path = "browser_tabs_tests.rs"]
 mod browser_tabs_tests;
+
+#[cfg(test)]
+#[path = "hotkeys_tests.rs"]
+mod hotkeys_tests;

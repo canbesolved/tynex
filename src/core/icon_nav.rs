@@ -6,8 +6,22 @@
 use crate::core::icons;
 use crate::core::state::State;
 use crate::core::view::Row;
+use crate::core::window::WindowInfo;
 
 impl State {
+    /// Fills the icon strip from `windows`, selects the icon of `app`
+    /// and restores `dropdown`.
+    pub fn fill_icons(
+        &mut self,
+        windows: &[WindowInfo],
+        app: Option<&str>,
+        dropdown: Option<usize>,
+    ) {
+        self.icons = icons::running(windows);
+        self.select_icon(app);
+        self.dropdown = dropdown;
+    }
+
     /// Selects the icon of `app_id`, or the first icon.
     pub fn select_icon(&mut self, app_id: Option<&str>) {
         let found = app_id.and_then(|id| {

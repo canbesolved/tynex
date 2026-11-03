@@ -11,10 +11,27 @@ project adheres to
 
 ### Added
 
+- Rename a window from the popup: `.` edits the selected title in
+  place, `Enter` keeps it, `Esc` cancels. The new title replaces the
+  window title in every list and in search until the window closes.
+  `hotkeys.rename` sets the key; with the default, a dot is not typed
+  into a search ([ADR-0088](docs/adr/0088_rename_windows.md))
+  (RM-0001).
+- `[hotkeys]` keys use one notation: `Modifier+Key` with W3C key
+  names, such as `"F2"`, `"Ctrl+R"` or `"Meta + Space"`, a single
+  character, a modifier tapped alone (`"ShiftLeft"`), or a list of
+  them ([ADR-0087](docs/adr/0087_hotkey_notation.md)).
 - Each `ROADMAP.md` item has an `RM-NNNN` code, carried into commits,
   pull requests, changelog and deprecation entries.
   `scripts/rm_next.sh` prints the lowest free code
   ([ADR-0086](docs/adr/0086_roadmap_codes.md)).
+
+### Changed
+
+- `Alt` with a letter no longer types that letter into the query. A
+  key held with `Ctrl`, `Alt` or `Meta` is a combination for
+  `[hotkeys]`; when none is bound, `Ctrl+Enter`, `Alt+Left` and the
+  like still act as `Enter` and `Left`.
 
 ### Deprecated
 

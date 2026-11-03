@@ -67,7 +67,11 @@ impl Dispatch<WlKeyboard, ()> for Wl {
                         s.events.push(PresenterEvent::Key(k));
                     }
                 }
-                _ => s.keyboard.release(key),
+                _ => {
+                    if let Some(k) = s.keyboard.release(key) {
+                        s.events.push(PresenterEvent::Key(k));
+                    }
+                }
             },
             wl_keyboard::Event::Modifiers {
                 mods_depressed,

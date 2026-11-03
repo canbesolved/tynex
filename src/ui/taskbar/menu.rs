@@ -11,6 +11,7 @@ use crate::core::icons;
 use crate::core::view::View;
 use crate::ui::draw::{self, Grid, Metrics, Paint};
 use crate::ui::frames;
+use crate::ui::input_bar;
 use crate::ui::render::canvas::Area;
 use crate::ui::render::text::Text;
 use crate::ui::scroll;
@@ -85,9 +86,10 @@ pub(crate) struct Panel {
     pub w: f32,
     pub h: f32,
     pub row_h: f32,
-    pub titles: Vec<String>, // The rows shown
-    pub selected: usize,     // Among the rows shown
-    pub first: usize,        // Dropdown index of the first row shown
+    pub titles: Vec<String>,          // The rows shown
+    pub selected: usize,              // Among the rows shown
+    pub beam: Option<(usize, usize)>, // Row shown and cursor of a rename
+    pub first: usize,                 // Dropdown index of the first row shown
 }
 
 /// Aligns the dropdown window and returns the panel to draw.
@@ -115,9 +117,13 @@ pub(crate) fn panel(
     }
     let index = view.dropdown?;
     let icon = view.icons().get(view.icon)?;
-    let all: Vec<String> = icons::ordered(icon, view.window_rows())
-        .into_iter()
-        .map(|row| row.title.clone())
+    let ordered = icons::ordered(icon, view.window_rows());
+    let edits: Vec<_> =
+        ordered.iter().map(|row| view.edit(&row.target)).collect();
+    let all: Vec<String> = ordered
+        .iter()
+        .zip(&edits)
+        .map(|(row, edit)| edit.map_or(&row.title[..], |(text, _)| text).into())
         .collect();
 
     if all.is_empty() {
@@ -149,6 +155,13 @@ pub(crate) fn panel(
         h: titles.len() as f32 * grid.row_h,
         row_h: grid.row_h,
         selected: index.saturating_sub(first),
+        beam: edits.iter().enumerate().find_map(|(at, edit)| {
+            let (_, cursor) = (*edit)?;
+
+            (first..first + rows)
+                .contains(&at)
+                .then(|| (at - first, cursor))
+        }),
         titles,
         first,
     })
@@ -212,18 +225,29 @@ pub(crate) fn draw(
                 paint.theme.selected,
             );
         }
-        draw::draw_text(
-            paint,
-            grid,
-            (title, &[]),
-            Area::new(
-                row.x + grid.gap,
-                row.y,
-                (row.w - 2.0 * grid.gap).max(0.0),
-                row.h,
-            ),
-            paint.theme.text,
+        let area = Area::new(
+            row.x + grid.gap,
+            row.y,
+            (row.w - 2.0 * grid.gap).max(0.0),
+            row.h,
         );
+
+        let color = paint.theme.text;
+
+        match panel.beam.filter(|(at, _)| *at == index) {
+            Some((_, cursor)) => {
+                input_bar::draw_field(
+                    paint,
+                    grid,
+                    (title, cursor),
+                    area,
+                    color,
+                );
+            }
+            None => {
+                draw::draw_text(paint, grid, (title, &[]), area, color);
+            }
+        }
     }
 }
 

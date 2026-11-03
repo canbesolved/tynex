@@ -137,6 +137,11 @@ The list does not show search matches. Those are the
 - The selected row is highlighted. `Tab` moves that highlight one
   row forward and wraps. `Up` and `Down` move it too
   ([ADR-0061](../../adr/0061_prompt_keys.md)).
+- A window being renamed, in the title list or the dropdown, shows
+  the edited text with a beam at the edit cursor. A title wider than
+  its row scrolls left so the beam stays visible, as in the output
+  bar. The dropdown keeps its order and width rules while typing
+  ([ADR-0088](../../adr/0088_rename_windows.md)).
 
 ## Keys and clicks
 
@@ -151,7 +156,9 @@ Otherwise they still move the title or output list.
 `Tab` steps the dropdown while it is open. With the title list off,
 `Tab` moves to the next icon. `Shift+Tab` steps back in the same
 places, in the title list too, and wraps the same way. `Esc` closes
-the dropdown first.
+the dropdown first. `hotkeys.rename` renames the selected dropdown
+title, or the selected title-list row
+([prompt.md](../modes/prompt.md#rename)).
 
 A left click on an icon selects it and opens the dropdown, or
 activates its one window. A left click on that same icon while its

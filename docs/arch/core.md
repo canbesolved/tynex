@@ -11,8 +11,12 @@ core/
   browser_tabs.rs  SourceId, TabInfo, TabRef, TabList, TabsUpdate
   app.rs        AppInfo: id, name, icon (no Exec)
   event.rs      Event, Action, Key
+  hotkey.rs     Binding, Bindings: hotkey notation and key matching
+  hotkey_parse.rs  Binding text to Binding (ADR-0087)
   traits.rs     WindowSource, Presenter, Mode
   state.rs      State of an open popup, shared with the modes
+  text_edit.rs  One-line editing: query and renamed title
+  rename.rs     Rename (title being edited), Renames (kept titles)
   switcher.rs   State machine (tests in switcher_tests.rs)
   view.rs       View, Row, RowTarget: what the presenter must draw
   order.rs      SortBy: row order (recently, app)
@@ -84,15 +88,38 @@ which the Linux event loop drives directly
 
 `Key` is a portable enum (`Char { text, latin }`, `Enter`, `Esc`,
 `Tab`, `BackTab`, `Up`, `Down`, `Left`, `Right`, `Home`, `End`,
-`Backspace`, `Delete`, `WordLeft`, `WordRight`). `BackTab` is
-`Shift+Tab`. Each platform maps native key
-events to it:
+`Backspace`, `Delete`, `WordLeft`, `WordRight`, `Combo(Binding)`).
+`BackTab` is `Shift+Tab`. Each platform maps native key events to
+it:
 
 - `text`: the character the active layout produces, after dead keys
   and compose (`α` on a Greek layout, `é` with a French one).
 - `latin`: the character of the same physical key in the first Latin
-  layout of the keymap, if any (`a` for the key that gives `α`). No
-  mode uses it since hotkey mode was removed.
+  layout of the keymap, if any (`a` for the key that gives `α`).
+  Hotkey bindings of a lowercase letter match it.
+- `Combo`: a key held with `Ctrl`, `Alt` or `Meta`, a key with no
+  other variant (`F1` to `F24`, `Insert`, `PageUp`, `PageDown`), or
+  a modifier pressed and released alone (`ShiftLeft`). `Ctrl+Left`
+  and `Ctrl+Right` stay `WordLeft` and `WordRight`.
+
+## Hotkeys
+
+`hotkey.rs` holds the notation of
+[ADR-0087](../adr/0087_hotkey_notation.md). A `Binding` is `Mods`
+(a bit set of `CTRL`, `ALT`, `SHIFT`, `META`) and a `Code`: a
+character, a named key or a modifier tap. `Binding::parse` reads
+`"Ctrl+Shift+T"`, `"F2"` or `"."`. `Bindings` is the list of one
+action; `matches(key)` is true when any binding fires:
+
+- a character matches `Char` with that `text`, or a lowercase letter
+  with that `latin`;
+- a named key matches its plain `Key` (`"Space"` is `Char(' ')`,
+  `"Shift+Tab"` is `BackTab`, `"Ctrl+Left"` is `WordLeft`);
+- any other binding matches the equal `Combo`.
+
+`hotkey::plain` turns a `Combo` that no binding took into its plain
+key, so `Ctrl+Enter` still confirms; it returns `None` for keys with
+no plain meaning, such as `Ctrl+R`.
 
 ## Traits
 
@@ -163,7 +190,11 @@ is added with its module.
 - `Visible`: keys go to the mode. A mode returning `Activate`,
   `Launch`, `ActivateTab` or `Close` hides the popup.
 - `Windows` while visible: refresh the rows, keep the query, the
-  cursor, the tab lists and the selected target.
+  cursor, the tab lists, the selected target and a title being
+  renamed, unless its window closed.
+- A mode that keeps a renamed title sets `State::renamed`. The
+  switcher stores it (see [Renamed windows](#renamed-windows)) and
+  rebuilds the rows.
 - `Tabs`: goes to the mode in either state; the mode ignores lists
   while hidden.
 - `Hide` and `Quit` close an open popup. The daemon loop stops itself
@@ -181,7 +212,9 @@ open windows, the output rows, the running-app icons, the selected
 icon, and whether a dropdown is open. Each `Row` has an id, an
 icon, row text (`title`), an optional title color, highlight byte
 ranges, and the app name and id for search. A row with no title
-color uses the theme text color. `windows` is every open window,
+color uses the theme text color. `edit(target)` returns the text and
+cursor of a title being renamed; that row draws this text with a
+beam instead of its title. `windows` is every open window,
 for the title list.
 `rows` is the current result, for the output bar: the matches while
 a query is typed. The title list is shown when `taskbar.mode` is
@@ -205,6 +238,21 @@ The switcher applies it on each `Windows` event. The app name stays a
 separate field of `Row` for search. The title list draws the icon
 when `show_icons` is set, then the title. The output bar always draws the
 icon and the title.
+
+## Renamed windows
+
+`hotkeys.rename` edits the selected window title in place
+([ADR-0088](../adr/0088_rename_windows.md)). `State::rename` is the
+`Rename` being edited: window id, text, cursor and the title before.
+The rows keep their titles until the edit is kept, so the dropdown
+order does not move while typing. `text_edit.rs` applies the same
+editing keys as the query.
+
+`Renames` in the switcher maps a window id to its new title and the
+window's own title. On each `Windows` event it replaces the titles
+of renamed windows and forgets windows that closed. A blank title or
+the window's own title removes the rename. Search matches the new
+title only. Nothing is stored on disk.
 
 ## Text and languages
 

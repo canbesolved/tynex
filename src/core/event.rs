@@ -4,6 +4,7 @@
 //! Inputs and outputs of the core.
 
 use crate::core::browser_tabs::{TabRef, TabsUpdate};
+use crate::core::hotkey::Binding;
 use crate::core::window::{WindowId, WindowInfo};
 
 /// Portable key press. Each platform maps native key events to it.
@@ -30,6 +31,9 @@ pub enum Key {
     Delete,
     WordLeft,  // Ctrl+Left
     WordRight, // Ctrl+Right
+    /// A key with Ctrl, Alt or Meta, a key with no other variant (`F2`),
+    /// or a modifier tapped alone. Only hotkey bindings use it.
+    Combo(Binding),
 }
 
 /// Inputs to the core.

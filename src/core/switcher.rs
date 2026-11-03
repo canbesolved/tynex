@@ -4,13 +4,13 @@
 //! Switcher state machine: open, refresh, route keys, close.
 
 use crate::core::event::{Action, Click, Event, Key};
-use crate::core::icons;
 use crate::core::order::{SortBy, order};
+use crate::core::rename::Renames;
 use crate::core::state::State;
 use crate::core::text::sanitize_title;
 use crate::core::title::row_title;
 use crate::core::traits::Mode;
-use crate::core::view::{Row, RowTarget, View};
+use crate::core::view::{Row, View};
 use crate::core::window::WindowInfo;
 
 /// What a hotkey press does while the popup is open.
@@ -27,6 +27,7 @@ pub struct Switcher<M> {
     sort: SortBy,             // Row order
     hint: String,             // Latest hint, including the loading dots
     windows: Vec<WindowInfo>, // Cached list, MRU first, row titles
+    renames: Renames,         // Titles set from the popup
     state: Option<State>,     // Some while the popup is open
     mode: M,
 }
@@ -46,6 +47,7 @@ impl<M: Mode> Switcher<M> {
             sort,
             hint: String::new(),
             windows: Vec::new(),
+            renames: Renames::default(),
             state: None,
             mode,
         }
@@ -96,25 +98,34 @@ impl<M: Mode> Switcher<M> {
                 ..w
             })
             .collect();
+        self.renames.apply(&mut self.windows);
 
         let Some(old) = self.state.take() else {
             return Action::None;
         };
+
+        self.state = Some(self.rebuild(old));
+        Action::Redraw
+    }
+
+    /// Builds a new state from the cached windows, keeping the query,
+    /// the selection, the strip and a title being edited from `old`.
+    fn rebuild(&mut self, old: State) -> State {
         let selected = old.selected_target().cloned();
-        let tab_lists = old.tab_lists;
         let app = old.icons.get(old.icon).map(|icon| icon.app_id.clone());
-        let dropdown = old.dropdown;
         let mut state = State::new(self.rows());
 
         state.query = old.query;
         state.cursor = old.cursor;
         state.hint = old.hint;
-        state.tab_lists = tab_lists;
-        self.apply_icons(&mut state, app.as_deref(), dropdown);
+        state.tab_lists = old.tab_lists;
+        state.fill_icons(&self.windows, app.as_deref(), old.dropdown);
         self.mode.refresh(&mut state);
         state.select_target(selected.as_ref());
-        self.state = Some(state);
-        Action::Redraw
+        state.rename = old
+            .rename
+            .filter(|r| self.windows.iter().any(|w| w.id == r.id));
+        state
     }
 
     fn show(&mut self) -> Action {
@@ -130,7 +141,7 @@ impl<M: Mode> Switcher<M> {
             .map(|window| window.app_id.clone());
 
         state.hint.clone_from(&self.hint);
-        self.apply_icons(&mut state, app.as_deref(), None);
+        state.fill_icons(&self.windows, app.as_deref(), None);
         self.mode.refresh(&mut state);
         // The previous window is selected in any order, like Alt+Tab.
         state.select_id(self.windows.get(1).map(|w| &w.id));
@@ -144,6 +155,10 @@ impl<M: Mode> Switcher<M> {
         };
         let action = self.mode.on_key(key, &mut state);
 
+        if let Some((id, title)) = state.renamed.take() {
+            self.renames.set(&mut self.windows, &id, &title);
+            state = self.rebuild(state);
+        }
         self.keep(action, state)
     }
 
@@ -181,18 +196,6 @@ impl<M: Mode> Switcher<M> {
         action
     }
 
-    /// Fills the icon strip from the cached windows.
-    fn apply_icons(
-        &self,
-        state: &mut State,
-        app: Option<&str>,
-        dropdown: Option<usize>,
-    ) {
-        state.icons = icons::running(&self.windows);
-        state.select_icon(app);
-        state.dropdown = dropdown;
-    }
-
     fn close(&mut self) -> Action {
         match self.state.take() {
             Some(_) => Action::Close,
@@ -215,21 +218,8 @@ impl<M: Mode> Switcher<M> {
     fn rows(&self) -> Vec<Row> {
         order(&self.windows, self.sort)
             .into_iter()
-            .map(row)
+            .map(Row::window)
             .collect()
-    }
-}
-
-/// Builds a row for `window`.
-fn row(window: &WindowInfo) -> Row {
-    Row {
-        target: RowTarget::Window(window.id.clone()),
-        app_id: window.app_id.clone(),
-        app_name: window.app_name.clone(),
-        icon: window.icon.clone().map(crate::core::view::RowIcon::Named),
-        title: window.title.clone(),
-        title_color: None,
-        highlights: Vec::new(),
     }
 }
 

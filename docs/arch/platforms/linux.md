@@ -20,7 +20,8 @@ platform/linux/
     pointer.rs    Motion, the left click and vertical scrolling
     cursor.rs     The default arrow over the popup, by shape name
     output.rs     wl_output modes, for the screen height
-    keyboard.rs   xkb keymap, compose, repeat, native key -> core Key
+    keyboard.rs   xkb keymap, compose, repeat, modifier taps
+    keys.rs       Keysym -> core Key: plain keys and combinations
     error.rs      PresenterError
   dbus.rs         Shared D-Bus connection, dispatch, calls
   dbus_ipc.rs     DbusIpc: impl IpcServer, IpcClient
@@ -136,15 +137,23 @@ closes, and without input it closes after ten seconds.
   `Esc`, `Tab`, `BackTab` (`ISO_Left_Tab`, which `Shift+Tab` gives),
   arrows, `Home`, `End`, `Backspace`, `Delete`, or `Char` when the
   text is one printable character. `Ctrl+Left` and
-  `Ctrl+Right` are `WordLeft` and `WordRight`. Other Ctrl
-  combinations produce no `Char`.
+  `Ctrl+Right` are `WordLeft` and `WordRight`.
+- `Key::Combo` carries what the plain keys cannot
+  ([ADR-0087](../../adr/0087_hotkey_notation.md)): a key held with
+  `Ctrl`, `Alt` or `Meta` (`MOD_NAME_LOGO`), with its Latin letter or
+  its unshifted character; `F1` to `F24`, `Insert`, `PageUp` and
+  `PageDown` with any modifiers. AltGr is not `Alt`, so AltGr
+  characters still type.
+- A modifier key (`Shift_L`, `Control_R`, `Super_L`, ...) pressed and
+  released with no other key in between is a tap:
+  `Combo(ShiftLeft)` on release. Any other key cancels the tap.
 - Dead keys and compose sequences (`´` then `e` gives `é`) use the
   `xkbcommon` compose table for the locale in `LC_ALL`, `LC_CTYPE` or
   `LANG`.
 - For `Key::Char.latin`, the level-1 keysym of the same keycode is read
   from the first layout where it is an ASCII letter
-  (`key_get_syms_by_level`). No mode uses it since hotkey mode was
-  removed.
+  (`key_get_syms_by_level`). Letter bindings match it, so `"r"`
+  works on a Cyrillic layout.
 - Key repeat, for arrows, `Backspace` and `Delete`, uses the rate
   and delay the compositor sends. `next_deadline` gives the poll
   timeout and `dispatch` reports due repeats; leaving focus or

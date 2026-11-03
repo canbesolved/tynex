@@ -22,6 +22,7 @@ Source: `src/modes/prompt.rs`. The
 | `Space` / `Enter`          | Activate or launch, then close |
 | `Tab` / `Shift+Tab`        | Walk the list or the icons     |
 | `Esc`                      | Clear query; close if empty    |
+| `hotkeys.rename` (`.`)     | Rename the selected window     |
 
 `Space` is not inserted
 ([ADR-0061](../../adr/0061_prompt_keys.md), amended by
@@ -49,6 +50,26 @@ in the [output bar](../ui/output_bar.md). Open windows show when
 Typing hides them; clearing the query shows them again (see
 [config.md](../config.md#format) and
 [taskbar.md](../ui/taskbar.md)).
+
+## Rename
+
+`hotkeys.rename` (default `.`) edits the selected title in place
+([ADR-0088](../../adr/0088_rename_windows.md)): the selected title
+in an open icon dropdown, else the title list or the output bar.
+Source: `src/modes/prompt_rename.rs`.
+
+- The rename key is never typed into the query, also when nothing
+  is selected. A dot cannot be searched while `.` is the key.
+- While editing, characters, `Backspace`, `Delete`, `Left`, `Right`,
+  `Ctrl+Left`, `Ctrl+Right`, `Home` and `End` edit the title.
+  `Enter` keeps it, `Esc` cancels and leaves the query alone. Other
+  keys, clicks and hover do nothing.
+- A kept title replaces the window title in every list and in search
+  until the window closes (see [core.md](../core.md#renamed-windows)).
+
+Keys bound in `[hotkeys]` come first. A combination that no binding
+takes counts as its plain key, so `Ctrl+Enter` confirms like `Enter`
+([ADR-0087](../../adr/0087_hotkey_notation.md)).
 
 ## Taskbar
 

@@ -17,6 +17,7 @@ use crate::config::{
     HintConfig, MainConfig, OutputConfig, TaskbarConfig, TaskbarMode,
 };
 use crate::core::view::{Row, RowIcon};
+use crate::ui::input_bar;
 use crate::ui::render::browser_tabs_icons::TabIcons;
 use crate::ui::render::canvas::{Area, Canvas, Rgba};
 use crate::ui::render::icons::Icons;
@@ -163,13 +164,14 @@ pub(crate) fn icon_size(metrics: &Metrics, theme: &Theme) -> u32 {
 ///
 /// `show_icon` reserves the icon slot. A row without an icon keeps
 /// the empty slot so titles stay aligned. `highlights` are search
-/// matches; the title bar passes an empty slice.
+/// matches; the title bar passes an empty slice. `edit` is the text
+/// and cursor of a title being renamed, drawn in place of the title.
 pub(crate) fn draw_row(
     paint: &mut Paint<'_, '_>,
     grid: &Grid,
     row: &Row,
     area: Area,
-    highlights: &[Range<usize>],
+    (highlights, edit): (&[Range<usize>], Option<(&str, usize)>),
     show_icon: bool,
 ) {
     let mut left = area.x + grid.gap;
@@ -208,7 +210,12 @@ pub(crate) fn draw_row(
         .title_color
         .map_or(paint.theme.text, |c| Rgba(c.r, c.g, c.b, 0xff));
 
-    draw_text(paint, grid, (&row.title, highlights), title, color);
+    match edit {
+        Some(edit) => input_bar::draw_field(paint, grid, edit, title, color),
+        None => {
+            draw_text(paint, grid, (&row.title, highlights), title, color);
+        }
+    }
 }
 
 /// Returns the baseline that centers text of `size` in `area`.

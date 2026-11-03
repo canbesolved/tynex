@@ -121,12 +121,14 @@ impl Default for RawMain {
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawHotkeys {
     pub action: RawHotkeyAction,
+    pub rename: Option<Spanned<toml::Value>>,
 }
 
 impl Default for RawHotkeys {
     fn default() -> Self {
         Self {
             action: RawHotkeyAction::Last,
+            rename: None,
         }
     }
 }

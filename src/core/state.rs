@@ -4,7 +4,9 @@
 //! State of an open popup, shared by the switcher and the modes.
 
 use crate::core::browser_tabs::TabList;
-use crate::core::view::{AppIcon, Row, RowTarget, Strip, View};
+use crate::core::rename::Rename;
+use crate::core::text_edit;
+use crate::core::view::{AppIcon, Edit, Row, RowTarget, Strip, View};
 use crate::core::window::WindowId;
 
 /// State of an open popup. Modes read and change it.
@@ -20,6 +22,8 @@ pub struct State {
     pub icon: usize,      // Index into `icons`
     pub dropdown: Option<usize>, // Selected title while open
     pub tab_lists: Vec<TabList>, // Empty unless the popup is open
+    pub rename: Option<Rename>, // Title being edited
+    pub renamed: Option<(WindowId, String)>, // Kept title, for the switcher
 }
 
 impl State {
@@ -39,71 +43,48 @@ impl State {
             icon: 0,
             dropdown: None,
             tab_lists: Vec::new(),
+            rename: None,
+            renamed: None,
         }
     }
 
     /// Inserts `c` at the cursor and moves the cursor past it.
     pub fn insert(&mut self, c: char) {
-        self.query.insert(self.cursor, c);
-        self.cursor += c.len_utf8();
+        text_edit::insert(&mut self.query, &mut self.cursor, c);
     }
 
     /// Deletes the character before the cursor.
     ///
     /// Returns false when the cursor is already at the start.
     pub fn backspace(&mut self) -> bool {
-        let Some(start) = prev_char(&self.query, self.cursor) else {
-            return false;
-        };
-
-        self.query.drain(start..self.cursor);
-        self.cursor = start;
-        true
+        text_edit::backspace(&mut self.query, &mut self.cursor)
     }
 
     /// Deletes the character at the cursor.
     ///
     /// Returns false when the cursor is already at the end.
     pub fn delete(&mut self) -> bool {
-        let Some(end) = next_char(&self.query, self.cursor) else {
-            return false;
-        };
-
-        self.query.drain(self.cursor..end);
-        true
+        text_edit::delete(&mut self.query, self.cursor)
     }
 
     /// Moves the cursor one character left.
     pub fn move_left(&mut self) {
-        if let Some(i) = prev_char(&self.query, self.cursor) {
-            self.cursor = i;
-        }
+        self.cursor = text_edit::left(&self.query, self.cursor);
     }
 
     /// Moves the cursor one character right.
     pub fn move_right(&mut self) {
-        if let Some(i) = next_char(&self.query, self.cursor) {
-            self.cursor = i;
-        }
+        self.cursor = text_edit::right(&self.query, self.cursor);
     }
 
     /// Moves the cursor to the start of the previous word.
     pub fn move_word_left(&mut self) {
-        let head = self.query[..self.cursor].trim_end();
-
-        self.cursor = match head.rfind(char::is_whitespace) {
-            Some(i) => i + head[i..].chars().next().map_or(0, char::len_utf8),
-            None => 0,
-        };
+        self.cursor = text_edit::word_left(&self.query, self.cursor);
     }
 
     /// Moves the cursor to the start of the next word.
     pub fn move_word_right(&mut self) {
-        let rest = &self.query[self.cursor..];
-        let word = rest.find(char::is_whitespace).unwrap_or(rest.len());
-        let spaces = rest[word..].len() - rest[word..].trim_start().len();
-
-        self.cursor += word + spaces;
+        self.cursor = text_edit::word_right(&self.query, self.cursor);
     }
 
     /// Returns a read-only view for the presenter.
@@ -122,6 +103,11 @@ impl State {
                 icons: &self.icons,
             },
         )
+        .with_edit(self.rename.as_ref().map(|r| Edit {
+            id: &r.id,
+            text: &r.text,
+            cursor: r.cursor,
+        }))
     }
 
     /// Returns the target of the selected output row, if any.
@@ -181,14 +167,4 @@ impl State {
             None => self.selected.min(self.output.len().saturating_sub(1)),
         };
     }
-}
-
-/// Returns the byte index of the character before `index`.
-fn prev_char(text: &str, index: usize) -> Option<usize> {
-    text[..index].char_indices().next_back().map(|(i, _)| i)
-}
-
-/// Returns the byte index after the character at `index`.
-fn next_char(text: &str, index: usize) -> Option<usize> {
-    text[index..].chars().next().map(|c| index + c.len_utf8())
 }

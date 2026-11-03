@@ -48,6 +48,11 @@ query shows the open windows again when `taskbar.mode` is
   Matched letters use the highlight color (see [render.md](render.md)).
   A new-window row uses its configured title color
   ([ADR-0059](../../adr/0059_new_window_row.md)).
+- A window being renamed shows the edited text without highlights,
+  with a beam at the edit cursor, like the input bar
+  ([ADR-0088](../../adr/0088_rename_windows.md)). A title wider than
+  the row scrolls left so the beam stays visible; editing starts
+  with the cursor at the end of the title.
 - `Enter` and `Space` activate a window row or launch an app row.
   `Tab`, `Shift+Tab`, up and down move that selection
   ([ADR-0061](../../adr/0061_prompt_keys.md)). Prompt mode owns the

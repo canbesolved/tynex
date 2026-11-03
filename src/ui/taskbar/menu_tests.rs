@@ -139,6 +139,7 @@ fn last_dropdown_title_survives_a_short_reveal() {
         row_h: grid.row_h,
         titles: vec!["one".into(), "two".into(), "three".into()],
         selected: 2,
+        beam: None,
         first: 0,
     };
     let mut data = vec![0; 200 * 200 * 4];
