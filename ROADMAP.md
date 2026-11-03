@@ -28,12 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.3.4
-
-- [ ] RM-0064 Row color per result type in the output bar, set in the
-  config: for example pastel green for open windows, pastel yellow
-  for browser tabs and pastel blue for apps that are not running.
-
 ### 0.3.5
 
 Defaults:
