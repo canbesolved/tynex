@@ -58,10 +58,14 @@ pub(super) fn key(
     }
 }
 
-/// Opens or focuses the pinned app whose key is `key`, wherever the
-/// popup is. A running app's most recent window is activated; an app
-/// that is not running is launched. `None` when no pinned key matches.
+/// Opens or focuses the pinned app whose key is `key`, while the query
+/// is empty. A running app's most recent window is activated; an app
+/// that is not running is launched. `None` when no pinned key matches
+/// or something is typed: the key then goes on like any other.
 pub(super) fn pinned(keys: &[Bindings], key: Key, s: &State) -> Option<Action> {
+    if !s.query.is_empty() {
+        return None;
+    }
     let n = keys.iter().position(|keys| keys.matches(key))?;
     let Some(icon) = s.icons.get(n).filter(|_| n < s.pinned) else {
         return Some(Action::None); // Fewer pinned apps than keys

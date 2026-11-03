@@ -51,7 +51,7 @@ the previous window. No mouse, no scrolling, no waiting.
   `"off"` hides both until you type.
 - Pinned apps stay first in that row, also when closed
   (`taskbar.iconbar.pinned`); `Alt+1` to `Alt+9` open or focus them
-  while the popup is open (`hotkeys.pinned`).
+  while the popup is open and nothing is typed (`hotkeys.pinned`).
 - Matches appear in the output bar as you type. Rows that contain
   the query as typed come before fuzzy matches. Within each, open
   windows come first, then open Brave, Chrome or Chromium tabs when

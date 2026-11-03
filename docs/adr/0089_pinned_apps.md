@@ -46,9 +46,11 @@ the same on every desktop.
   is not "any of these keys". Default: `Alt+1` to `Alt+9`. `Meta+1`
   to `Meta+9` are not used because Plasma's task manager takes them
   globally.
-- The keys work only while the popup is open, also while typing. A
-  running app's most recent window is activated; an app that is not
-  running is launched. A key past the last pinned app does nothing.
+- The keys work only while the popup is open and the query is empty.
+  Once something is typed they act like any other key, so a
+  printable key such as `"1"` is typed. A running app's most recent
+  window is activated; an app that is not running is launched. A key
+  past the last pinned app does nothing.
 - The app catalog is scanned when the launcher is on or any app is
   pinned. It keeps terminal apps, so they can be pinned; the
   launcher list leaves them out with `gui_only`. A pinned id without

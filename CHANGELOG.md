@@ -13,9 +13,9 @@ project adheres to
 
 - Pinned apps: `taskbar.iconbar.pinned` lists apps that stay first in
   the icon strip, in that order, also when they are not running. A
-  closed app is dimmed; selecting it launches it. In the popup,
-  `hotkeys.pinned` (default `Alt+1` to `Alt+9`) opens or focuses the
-  n-th pinned app ([ADR-0089](docs/adr/0089_pinned_apps.md))
+  closed app is dimmed; selecting it launches it. In the popup, with
+  nothing typed, `hotkeys.pinned` (default `Alt+1` to `Alt+9`) opens
+  or focuses the n-th pinned app ([ADR-0089](docs/adr/0089_pinned_apps.md))
   (RM-0002).
 - Rename a window from the popup: `.` edits the selected title in
   place, `Enter` keeps it, `Esc` cancels. The new title replaces the

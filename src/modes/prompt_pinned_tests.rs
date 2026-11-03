@@ -7,7 +7,7 @@ use super::*;
 use crate::config::{LauncherConfig, LauncherMode, TaskbarMode};
 use crate::core::app::AppInfo;
 use crate::core::hotkey::Binding;
-use crate::core::view::{Row, RowTarget};
+use crate::core::view::Row;
 use crate::core::window::{WindowId, WindowInfo};
 use crate::modules::input::Input;
 
@@ -90,8 +90,12 @@ fn a_key_past_the_pinned_apps_does_nothing() {
 }
 
 #[test]
-fn pinned_keys_work_while_typing_but_not_while_renaming() {
+fn pinned_keys_work_only_with_an_empty_query() {
     let (mut mode, mut s) = session();
+    let one = Key::Char {
+        text: '1',
+        latin: None,
+    };
 
     mode.on_key(
         Key::Char {
@@ -100,15 +104,22 @@ fn pinned_keys_work_while_typing_but_not_while_renaming() {
         },
         &mut s,
     );
-    assert_eq!(
-        mode.on_key(key("F2"), &mut s),
-        Action::Launch("gimp".into())
-    );
+    assert_eq!(mode.on_key(key("F2"), &mut s), Action::None);
+    assert_eq!(s.query, "f");
+
+    // A printable pinned key is typed once the query is not empty.
+    let mut typed =
+        mode.with_pinned(vec![Bindings(vec![Binding::parse("1").unwrap()])]);
+
+    assert_eq!(typed.on_key(one, &mut s), Action::Redraw);
+    assert_eq!(s.query, "f1");
+}
+
+#[test]
+fn pinned_keys_wait_while_renaming() {
+    let (mut mode, mut s) = session();
 
     s.start_rename(&WindowId("w1".into()));
     assert_eq!(mode.on_key(key("F2"), &mut s), Action::None);
-    assert!(matches!(
-        s.output.first().map(|r| &r.target),
-        Some(RowTarget::Window(_))
-    ));
+    assert!(s.rename.is_some());
 }

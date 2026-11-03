@@ -75,8 +75,9 @@ takes counts as its plain key, so `Ctrl+Enter` confirms like `Enter`
 ## Pinned apps
 
 The n-th key of `hotkeys.pinned` (default `Alt+1` to `Alt+9`) opens
-the n-th app of `taskbar.iconbar.pinned`, wherever the popup is,
-also while typing ([ADR-0089](../../adr/0089_pinned_apps.md)). A
+the n-th app of `taskbar.iconbar.pinned` while the query is empty
+([ADR-0089](../../adr/0089_pinned_apps.md)). Once something is typed
+the keys act like any other key. A
 running app's most recent window is activated; an app that is not
 running is launched. Either closes the popup. A key past the last
 pinned app does nothing. While a title is renamed, the keys wait.

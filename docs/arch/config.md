@@ -54,7 +54,7 @@ action = "last"              # hide | last
 # Key that renames the selected window until it closes: a key such
 # as "F2" or "Ctrl+R", a list of keys, or "" for none.
 rename = "."
-# Keys that open or focus the pinned apps while the popup is open:
+# Keys that open or focus the pinned apps while nothing is typed:
 # the first key opens the first app in taskbar.iconbar.pinned.
 pinned = ["Alt+1", "Alt+2", "Alt+3", "Alt+4", "Alt+5", "Alt+6",
   "Alt+7", "Alt+8", "Alt+9"]
@@ -155,9 +155,10 @@ column. So does a key bound to two actions.
 
 `hotkeys.pinned` is a list by position: the n-th entry opens or
 focuses the n-th app of `taskbar.iconbar.pinned` while the popup is
-open ([ADR-0089](../adr/0089_pinned_apps.md)). Each entry is a key,
-a list of keys, or `""`. The default is `Alt+1` to `Alt+9`. A
-conflict names the entry, for example `hotkeys.pinned[2]`.
+open and nothing is typed ([ADR-0089](../adr/0089_pinned_apps.md)).
+Each entry is a key, a list of keys, or `""`. The default is `Alt+1`
+to `Alt+9`. A conflict names the entry, for example
+`hotkeys.pinned[2]`.
 
 `input.launcher.mode` adds installed apps to the output bar
 ([ADR-0056](../adr/0056_launcher_input.md)): `"off"`, `"all"`, or
