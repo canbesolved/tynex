@@ -28,17 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.3.3
-
-- [ ] RM-0044 English keys in the popup: with
-  `main.switch_layout = true` (default `false`), tynex reads keys
-  with the US layout while the popup is open, whatever the system
-  layout is.
-  - The system layout is not changed, so there is nothing to
-    restore, and it works the same on every desktop and OS.
-  - The desktop's layout indicator does not change while the popup
-    is open.
-
 ### 0.3.4
 
 - [ ] RM-0064 Row color per result type in the output bar, set in the
