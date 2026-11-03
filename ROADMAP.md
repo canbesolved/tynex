@@ -27,11 +27,13 @@ Rules:
 
 ### 0.3.2
 
-- [ ] Pinned apps stay in the icon bar while they are not running.
+- [ ] Pinned apps stay in the icon bar while they are not running. A
+  configurable hotkey opens or focuses each pinned app.
 
 ### 0.3.3
 
-- [ ] Open a new tab in the browser from the popup.
+- [ ] Open a new tab in the browser from the popup, or with a
+  configurable hotkey while the popup is open.
 
 ### 0.3.4
 
@@ -39,8 +41,8 @@ Rules:
 
 ### 0.4.0
 
-- [ ] `tynex qs` (quick switch): switch to the previously used window,
-  like `Alt+Tab`, without opening the popup.
+- [ ] `tynex qs` (quick switch): back to last without opening the
+  popup, the same way as `hotkeys.action = "last"` (see Next).
 
 ## Next
 
@@ -48,13 +50,24 @@ Configuration:
 
 - [ ] `popup_delay`: milliseconds to wait before the popup
   appears. Default `200`. With `hotkeys.action = "last"`, a second
-  hotkey press inside that window switches to the previous app
-  without showing the popup.
+  hotkey press inside that window uses back-to-last instead of
+  showing the popup (see below).
+- [ ] Back to last: with `hotkeys.action = "last"` or `tynex qs`,
+  switch to the previously used app window or browser tab.
 - [ ] Popup animation: `animation = true` or `false` turns it on or
   off. `animation_speed = 1.0` scales how fast it runs, from `0.5` to
   `3.0` (`1.0` is normal speed).
 - [ ] Config: priority of output bar results among open windows,
   installed apps, browser tabs and exact matches.
+- [ ] **Breaking:** rename `output.max_rows` to `output.max_results`.
+  Default `10`. A file that still sets `max_rows` stops the daemon
+  until it is edited.
+- [ ] Remove duplicate rows from the output bar results.
+
+Input:
+
+- [ ] Left Shift confirms the selected match, the same as `Space`, in
+  the input bar.
 
 Window list:
 
@@ -111,6 +124,8 @@ Browser tabs:
 - [ ] Edge and Vivaldi: register the host for them too,
   once their manifest folders are confirmed.
 - [ ] Firefox: same local bridge and search.
+- [ ] Tab scoring: rank matched tabs by use. The last used tab comes
+  first; among the rest, more often used tabs rank higher.
 
 Info bar:
 
