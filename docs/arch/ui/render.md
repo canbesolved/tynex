@@ -51,9 +51,9 @@ ui/render/
   (`&'static [u8]`).
 - **Scripts:** Latin, Cyrillic, Greek, Chinese, Japanese and Korean
   render correctly without shaping, when the font has them. Arabic,
-  Hebrew and Indic scripts need shaping and right-to-left layout;
-  until then they render imperfectly (see
-  [ROADMAP.md](../../../ROADMAP.md)).
+  Hebrew and Indic scripts need shaping and right-to-left layout,
+  which is not planned, so they render imperfectly (see
+  [DEPRECATIONS.md](../../../DEPRECATIONS.md)).
 - **Emoji:** only outlines are drawn, so color emoji show in one color
   or as a box.
 

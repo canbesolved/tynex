@@ -10,7 +10,9 @@ entry, so the code is not reused.
 
 Features that still work but will be removed in a later release.
 
-None yet.
+- `taskbar.mode = "both"`, the icon strip and the title list at
+  once: added in 0.2.10, deprecated on 2026-11-03, to be removed in
+  0.5.0 (**Breaking**). Use `iconbar` or `titlebar` (RM-0067).
 
 ## Removed
 
@@ -71,3 +73,14 @@ Features that were planned or designed, then dropped before a release.
 - Grid and horizontal strip layouts. Planned for Later, dropped on
   2026-10-28: the popup is UI modules, not a choice of layout
   ([ADR-0052](docs/adr/0052_ui_modules.md)).
+- Input method support (`text-input-v3`) to type Chinese, Japanese and
+  Korean in prompt mode. Planned for Later, dropped on 2026-11-03
+  (RM-0042).
+- Phonetic search: Chinese titles by pinyin and Japanese by romaji.
+  Planned for Later, dropped on 2026-11-03 (RM-0043).
+- Text shaping and right-to-left layout for Arabic, Hebrew and Indic
+  scripts (`rustybuzz`). Planned for Later, dropped on 2026-11-03
+  (RM-0040).
+- Muted gray labels between result groups in the output bar, so the
+  order of windows, tabs, apps and exact matches is easy to see.
+  Planned for Later, dropped on 2026-11-03 (RM-0039).
