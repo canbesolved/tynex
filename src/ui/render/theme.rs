@@ -4,6 +4,7 @@
 //! Colors and sizes. `main.theme` fills this struct. Drawing code
 //! reads it from one place, so other sources can fill it later.
 
+use crate::core::row_color::RowColors;
 use crate::ui::render::canvas::Rgba;
 
 /// Visual theme of the popup.
@@ -14,6 +15,7 @@ pub struct Theme {
     pub selected: Rgba, // Selected row background
     pub text: Rgba,
     pub highlight: Rgba, // Search matches
+    pub rows: RowColors, // Output bar row background per result type
     pub radius: f32,
     pub padding: f32,
 }
@@ -28,6 +30,7 @@ impl Theme {
             selected: Rgba(0x1f, 0x6f, 0xeb, 0x66),
             text: Rgba(0xe6, 0xed, 0xf3, 0xff),
             highlight: Rgba(0x58, 0xa6, 0xff, 0xff),
+            rows: RowColors::default(),
             radius: 12.0,
             padding: 8.0,
         }

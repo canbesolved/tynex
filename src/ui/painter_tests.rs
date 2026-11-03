@@ -56,8 +56,16 @@ pub(in crate::ui) fn render(state: &State) -> (Vec<u8>, Size) {
 
 /// Draws `state` with metrics `m`.
 fn render_with(state: &State, m: &Metrics) -> (Vec<u8>, Size) {
-    let theme = Theme::default();
-    let size = measured(&state.view(), m, &theme);
+    render_themed(state, m, &Theme::default())
+}
+
+/// Draws `state` with metrics `m` and `theme`.
+pub(in crate::ui) fn render_themed(
+    state: &State,
+    m: &Metrics,
+    theme: &Theme,
+) -> (Vec<u8>, Size) {
+    let size = measured(&state.view(), m, theme);
     let mut data = vec![0; (size.width * size.height * 4) as usize];
     let mut canvas = Canvas::new(&mut data, size.width, size.height).unwrap();
     let mut text = Text::new(Face::new(FONT, 0).unwrap());
@@ -68,7 +76,7 @@ fn render_with(state: &State, m: &Metrics) -> (Vec<u8>, Size) {
         text: &mut text,
         icons: &mut icons,
         tabs: &tabs,
-        theme: &theme,
+        theme,
     };
 
     draw_popup(&state.view(), m, &mut paint);
@@ -82,7 +90,7 @@ pub(in crate::ui) fn pixel(data: &[u8], size: Size, x: f32, y: f32) -> [u8; 4] {
 }
 
 /// Center of row `n` of the list, in the block under the input bar.
-fn row_center(n: usize) -> f32 {
+pub(in crate::ui) fn row_center(n: usize) -> f32 {
     let g = Grid::new(&M, &Theme::default());
     let input = 2.0 * g.pad + g.row_h;
 

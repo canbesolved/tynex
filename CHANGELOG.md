@@ -9,6 +9,14 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Row colors in the output bar: `output.colors.window`, `.tab` and
+  `.app` paint a band behind rows of open windows, browser tabs and
+  apps that are not running. Each is `""` (default, none), `#RRGGBB`
+  or `#RRGGBBAA` with opacity
+  ([ADR-0091](docs/adr/0091_row_colors.md)) (RM-0064).
+
 ## [0.3.3] - 2026-11-03
 
 English keys in the popup, whatever the system layout is.

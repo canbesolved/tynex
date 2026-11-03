@@ -48,6 +48,11 @@ query shows the open windows again when `taskbar.mode` is
   Matched letters use the highlight color (see [render.md](render.md)).
   A new-window row uses its configured title color
   ([ADR-0059](../../adr/0059_new_window_row.md)).
+- With `output.colors`, a row of a colored type (open window,
+  browser tab, app that is not running) gets a rounded band behind
+  it, the shape of the selection; the translucent selection is drawn
+  over it ([ADR-0091](../../adr/0091_row_colors.md)). The colors live
+  in the theme (`Theme::rows`); `core::row_color` picks a row's band.
 - A window being renamed shows the edited text without highlights,
   with a beam at the edit cursor, like the input bar
   ([ADR-0088](../../adr/0088_rename_windows.md)). A title wider than

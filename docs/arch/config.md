@@ -82,6 +82,11 @@ hint.update = 0
 [output]
 # Cap for the output bar, the title list and an icon dropdown.
 max_rows = 19
+# Row background in the output bar per result type: "" for none,
+# "#RRGGBB", or "#RRGGBBAA" where AA is the opacity.
+colors.window = ""           # Open windows
+colors.tab = ""              # Browser tabs
+colors.app = ""              # Apps that are not running
 
 [taskbar]
 # "off" hides the strip and the title list until you type.
@@ -204,6 +209,20 @@ fits (see [fit.md](ui/fit.md)). A title list or output bar longer
 than its rows scrolls, with a scrollbar (see
 [scroll.md](ui/scroll.md)).
 
+`output.colors` paints a band behind each output bar row of a
+result type ([ADR-0091](../adr/0091_row_colors.md)): `window` for
+open windows, `tab` for browser tabs and `app` for apps that are not
+running. Each is `""` (default, no band), `#RRGGBB` or `#RRGGBBAA`,
+where `AA` is the opacity. The new-window row keeps no band. Pastel
+colors with some opacity read well on both themes:
+
+```toml
+[output]
+colors.window = "#a3d9a540"  # Pastel green
+colors.tab = "#f2e2a040"     # Pastel yellow
+colors.app = "#a8c8f040"     # Pastel blue
+```
+
 `taskbar.mode` chooses the taskbar while the query is empty
 ([ADR-0065](../adr/0065_taskbar.md), amended by
 [ADR-0066](../adr/0066_short_sections.md)): `off`, `iconbar`
@@ -319,6 +338,7 @@ The config is read once, when `tynex daemon` starts
 | `input.hint.font_color`           | `#RRGGBB`                              |
 | `input.hint.update`               | 0 to 86400                             |
 | `output.max_rows`                 | 1 to 50                                |
+| `output.colors.*`                 | `""`, `#RRGGBB` or `#RRGGBBAA`         |
 | `taskbar.mode`                    | `off`, `iconbar`, `titlebar` or `both` |
 | `taskbar.titlebar.sort_by`        | `recently` or `app`                    |
 | `taskbar.titlebar.show_icons`     | `true` or `false`                      |

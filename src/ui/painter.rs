@@ -63,9 +63,12 @@ impl Painter {
             text,
             icons,
             tabs: TabIcons::default(),
-            theme: match main.theme {
-                Scheme::Dark => Theme::dark(),
-                Scheme::Light => Theme::light(),
+            theme: Theme {
+                rows: output.colors,
+                ..match main.theme {
+                    Scheme::Dark => Theme::dark(),
+                    Scheme::Light => Theme::light(),
+                }
             },
             look: Look::new(main, output, hint, taskbar),
             position: main.position,
@@ -240,3 +243,7 @@ mod hint_draw_tests;
 #[cfg(test)]
 #[path = "caret_tests.rs"]
 mod caret_tests;
+
+#[cfg(test)]
+#[path = "output_bar_tests.rs"]
+mod output_bar_tests;
