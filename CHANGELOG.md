@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-11-03
+
+English keys in the popup, whatever the system layout is.
+
 ### Added
 
 - English keys in the popup: with `main.switch_layout = true`
@@ -599,7 +603,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.2...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.3...HEAD
+[0.3.3]: https://github.com/canbesolved/tynex/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/canbesolved/tynex/compare/v0.3.0...v0.3.2
 [0.3.0]: https://github.com/canbesolved/tynex/compare/v0.2.17...v0.3.0
 [0.2.17]: https://github.com/canbesolved/tynex/releases/tag/v0.2.17
