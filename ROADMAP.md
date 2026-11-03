@@ -16,62 +16,71 @@ Rules:
 
 - Items are user-facing features, not internal tasks.
 - A design-changing item gets an ADR before work starts.
+- Every item has a code, `RM-` plus at least four digits
+  (`RM-NNNN`), right after the checkbox. The code stays when the item
+  moves or is reworded.
+- A new item takes the lowest free code, printed by
+  `scripts/rm_next.sh`. A code is free when it is in none of
+  `ROADMAP.md`, `CHANGELOG.md` and `DEPRECATIONS.md`.
+- Work on an item names its code in the commit subject, the pull
+  request, the `CHANGELOG.md` entry and, for a dropped item, the
+  `DEPRECATIONS.md` entry. See [AGENTS.md](AGENTS.md#roadmap-codes).
 
 ## Now
 
 ### 0.3.1
 
-- [ ] Rename a window from the popup: `F2` or `,` edits the selected
+- [ ] RM-0001 Rename a window from the popup: `F2` or `,` edits the selected
   title in place, `Enter` keeps it, `Esc` cancels. The new title lasts
   until the window closes.
 
 ### 0.3.2
 
-- [ ] Pinned apps stay in the icon bar while they are not running. A
+- [ ] RM-0002 Pinned apps stay in the icon bar while they are not running. A
   configurable hotkey opens or focuses each pinned app.
 
 ### 0.3.3
 
-- [ ] Open a new tab in the browser from the popup, or with a
+- [ ] RM-0003 Open a new tab in the browser from the popup, or with a
   configurable hotkey while the popup is open.
 
 ### 0.3.4
 
-- [ ] Browser bookmarks in the popup: search bookmarks and open one.
+- [ ] RM-0004 Browser bookmarks in the popup: search bookmarks and open one.
 
 ### 0.4.0
 
-- [ ] `tynex qs` (quick switch): back to last without opening the
+- [ ] RM-0005 `tynex qs` (quick switch): back to last without opening the
   popup, the same way as `hotkeys.action = "last"` (see Next).
 
 ## Next
 
 Configuration:
 
-- [ ] `popup_delay`: milliseconds to wait before the popup
+- [ ] RM-0006 `popup_delay`: milliseconds to wait before the popup
   appears. Default `200`. With `hotkeys.action = "last"`, a second
   hotkey press inside that window uses back-to-last instead of
   showing the popup (see below).
-- [ ] Back to last: with `hotkeys.action = "last"` or `tynex qs`,
+- [ ] RM-0007 Back to last: with `hotkeys.action = "last"` or `tynex qs`,
   switch to the previously used app window or browser tab.
-- [ ] Popup animation: `animation = true` or `false` turns it on or
+- [ ] RM-0008 Popup animation: `animation = true` or `false` turns it on or
   off. `animation_speed = 1.0` scales how fast it runs, from `0.5` to
   `3.0` (`1.0` is normal speed).
-- [ ] Config: priority of output bar results among open windows,
+- [ ] RM-0009 Config: priority of output bar results among open windows,
   installed apps, browser tabs and exact matches.
-- [ ] **Breaking:** rename `output.max_rows` to `output.max_results`.
+- [ ] RM-0010 **Breaking:** rename `output.max_rows` to `output.max_results`.
   Default `10`. A file that still sets `max_rows` stops the daemon
   until it is edited.
-- [ ] Remove duplicate rows from the output bar results.
+- [ ] RM-0011 Remove duplicate rows from the output bar results.
 
 Input:
 
-- [ ] Left Shift confirms the selected match, the same as `Space`, in
+- [ ] RM-0012 Left Shift confirms the selected match, the same as `Space`, in
   the input bar.
 
 Window list:
 
-- [ ] Close windows from the popup, like `Alt+F4`: `Ctrl+W` or a right
+- [ ] RM-0013 Close windows from the popup, like `Alt+F4`: `Ctrl+W` or a right
   click closes the selected window.
   - In the icon bar, a right click on an app with several windows
     opens its dropdown; a right click on a title there closes that
@@ -79,11 +88,11 @@ Window list:
 
 Look:
 
-- [ ] A shadow around the popup.
+- [ ] RM-0014 A shadow around the popup.
 
 Launcher:
 
-- [ ] App aliases: map a name to an installed app, for example
+- [ ] RM-0015 App aliases: map a name to an installed app, for example
   `Firefox = "Web Browser"`. A query that matches the alias suggests
   launching that app.
 
@@ -91,15 +100,15 @@ Launcher:
 
 Performance:
 
-- [ ] Faster, more responsive and smoother UI overall: the popup opens,
+- [ ] RM-0016 Faster, more responsive and smoother UI overall: the popup opens,
   redraws and reacts to every key without visible delay.
-- [ ] Performance: holding `Up` or `Down` moves the selection one row
+- [ ] RM-0017 Performance: holding `Up` or `Down` moves the selection one row
   per key repeat, without skipping rows, and each frame is drawn
   before the next repeat.
 
 Titles:
 
-- [ ] Configurable prefixes on rows and titles:
+- [ ] RM-0018 Configurable prefixes on rows and titles:
   - Per app: `[apps.<app_id>]` with `prefix = "Web"` so launcher rows
     read `Web: Firefox`.
   - By pattern: `[title_prefix]` maps a pattern to a prefix on matching
@@ -108,28 +117,28 @@ Titles:
 
 Icon bar:
 
-- [ ] `taskbar.iconbar.size = "auto"`: the icon side follows the
+- [ ] RM-0019 `taskbar.iconbar.size = "auto"`: the icon side follows the
   screen size, `main.width` and the number of running apps, within
   the usual 8 to 128 logical pixels. A number still sets a fixed
   size.
 
 Modes:
 
-- [ ] Mode indicator: the sign at the start of the input bar (`>`
+- [ ] RM-0020 Mode indicator: the sign at the start of the input bar (`>`
   today) shows the current mode and changes when you switch mode:
   prompt, AI, files and others. It comes with the second mode.
 
 Browser tabs:
 
-- [ ] Edge and Vivaldi: register the host for them too,
+- [ ] RM-0021 Edge and Vivaldi: register the host for them too,
   once their manifest folders are confirmed.
-- [ ] Firefox: same local bridge and search.
-- [ ] Tab scoring: rank matched tabs by use. The last used tab comes
+- [ ] RM-0022 Firefox: same local bridge and search.
+- [ ] RM-0023 Tab scoring: rank matched tabs by use. The last used tab comes
   first; among the rest, more often used tabs rank higher.
 
 Info bar:
 
-- [ ] `info_bar` module: a status bar inside the popup that can replace
+- [ ] RM-0024 `info_bar` module: a status bar inside the popup that can replace
   useful parts of the system panel (time and date, battery percentage,
   and the like). It runs only while the popup is open, so it adds no
   idle work.
@@ -143,61 +152,61 @@ Info bar:
 
 Configuration:
 
-- [ ] `tynex reload`: re-read the config without restarting. An invalid
+- [ ] RM-0025 `tynex reload`: re-read the config without restarting. An invalid
   file is reported and the running config stays in use.
 
 Defaults:
 
-- [ ] Change the default `taskbar.iconbar.size` to `36`.
-- [ ] Change the default `taskbar.iconbar.border` to `5`.
-- [ ] Change the default `input.launcher.new_window_text_color`.
-- [ ] Change the default hint command (`input.hint.text`).
-- [ ] Default text and hint colors follow the active theme, or `auto`
+- [ ] RM-0026 Change the default `taskbar.iconbar.size` to `36`.
+- [ ] RM-0027 Change the default `taskbar.iconbar.border` to `5`.
+- [ ] RM-0028 Change the default `input.launcher.new_window_text_color`.
+- [ ] RM-0029 Change the default hint command (`input.hint.text`).
+- [ ] RM-0030 Default text and hint colors follow the active theme, or `auto`
   when the theme changes.
 
 Input:
 
-- [ ] Hint templates: reusable bash scripts for `input.hint.text`, for
+- [ ] RM-0031 Hint templates: reusable bash scripts for `input.hint.text`, for
   common status lines without writing a command from scratch. They
   live in `~/.local/share/tynex/hints/`. The daemon creates that
   folder on start when it is missing.
 
 Logging:
 
-- [ ] Improve logging: clearer messages and useful context on warnings
+- [ ] RM-0032 Improve logging: clearer messages and useful context on warnings
   and errors. Config:
   - `log_level`: `info`, `warn`, `error` or `debug`.
   - `log_file`: path to the log file, default `~/.cache/tynex.log`.
 
 Themes:
 
-- [ ] Update the default theme to the Endgame color palette. Exact
+- [ ] RM-0033 Update the default theme to the Endgame color palette. Exact
   color values will be added when the palette is finalized.
-- [ ] Configurable background, selection and font colors.
-- [ ] Theme options: opacity, background, selection, search highlight
+- [ ] RM-0034 Configurable background, selection and font colors.
+- [ ] RM-0035 Theme options: opacity, background, selection, search highlight
   and text colors, border width and color, font size and style.
-- [ ] Custom themes in `~/.config/tynex/tynex.theme`, chosen with
+- [ ] RM-0036 Custom themes in `~/.config/tynex/tynex.theme`, chosen with
   `dark_theme = "tynex.theme"` and `light_theme = "tynex.theme"`; one
   file may hold both a dark and a light variant.
-- [ ] Follow the system: switch between the dark and light theme when
+- [ ] RM-0037 Follow the system: switch between the dark and light theme when
   the desktop color scheme changes.
-- [ ] Import colors from the desktop color scheme.
+- [ ] RM-0038 Import colors from the desktop color scheme.
 
 Look:
 
-- [ ] Output bar: muted gray labels between result groups so ordering
+- [ ] RM-0039 Output bar: muted gray labels between result groups so ordering
   among windows, tabs, apps and exact matches is easy to see.
-- [ ] Text shaping and right-to-left layout for Arabic, Hebrew and
+- [ ] RM-0040 Text shaping and right-to-left layout for Arabic, Hebrew and
   Indic scripts (`rustybuzz`).
-- [ ] Color emoji in titles.
+- [ ] RM-0041 Color emoji in titles.
 
 Languages:
 
-- [ ] Input method support (`text-input-v3`) to type Chinese, Japanese
+- [ ] RM-0042 Input method support (`text-input-v3`) to type Chinese, Japanese
   and Korean in prompt mode.
-- [ ] Phonetic search: match Chinese titles by pinyin and Japanese by
+- [ ] RM-0043 Phonetic search: match Chinese titles by pinyin and Japanese by
   romaji.
-- [ ] Switch the keyboard layout to English when the popup opens and
+- [ ] RM-0044 Switch the keyboard layout to English when the popup opens and
   restore the previous one when it closes: `switch_layout = "us"`, off
   by default.
 
@@ -233,28 +242,28 @@ Shared parts (core, modes, modules, config, renderer) are portable.
 
 Adapters:
 
-- [ ] wlroots-style compositors: `wlr-foreign-toplevel-management`.
-- [ ] COSMIC: `ext-foreign-toplevel-list` and COSMIC toplevel
+- [ ] RM-0045 wlroots-style compositors: `wlr-foreign-toplevel-management`.
+- [ ] RM-0046 COSMIC: `ext-foreign-toplevel-list` and COSMIC toplevel
   management.
-- [ ] X11: EWMH (`_NET_CLIENT_LIST`, `_NET_ACTIVE_WINDOW`) with
+- [ ] RM-0047 X11: EWMH (`_NET_CLIENT_LIST`, `_NET_ACTIVE_WINDOW`) with
   `x11rb`.
-- [ ] GNOME: Shell extension exposing windows over D-Bus.
-- [ ] macOS: `CGWindowListCopyWindowInfo` and Accessibility API.
-- [ ] Windows: `EnumWindows` and `SetForegroundWindow`.
+- [ ] RM-0048 GNOME: Shell extension exposing windows over D-Bus.
+- [ ] RM-0049 macOS: `CGWindowListCopyWindowInfo` and Accessibility API.
+- [ ] RM-0050 Windows: `EnumWindows` and `SetForegroundWindow`.
 
 Presenters:
 
-- [ ] X11: override-redirect window with a keyboard grab.
-- [ ] GNOME: popup without layer-shell.
-- [ ] macOS: AppKit panel.
-- [ ] Windows: Win32 popup.
+- [ ] RM-0051 X11: override-redirect window with a keyboard grab.
+- [ ] RM-0052 GNOME: popup without layer-shell.
+- [ ] RM-0053 macOS: AppKit panel.
+- [ ] RM-0054 Windows: Win32 popup.
 
 Platform services:
 
-- [ ] Unix socket IPC: fallback without a D-Bus session bus (minimal
+- [ ] RM-0055 Unix socket IPC: fallback without a D-Bus session bus (minimal
   X11 setups without systemd) and default on macOS.
-- [ ] Windows named pipe IPC.
-- [ ] Font lookup on macOS and Windows (no `fc-match`).
+- [ ] RM-0056 Windows named pipe IPC.
+- [ ] RM-0057 Font lookup on macOS and Windows (no `fc-match`).
 
 Project:
 
@@ -268,12 +277,12 @@ Release milestones:
 - 3.x milestone: Windows implementation.
 - 4.x milestone: add more features and refactor.
 
-- [ ] Packaging: systemd user unit and autostart entry.
-- [ ] CI: `cargo check` for macOS and Windows targets.
-- [ ] Own fuzzy matcher in place of `frizbee`, to shrink the binary by
+- [ ] RM-0058 Packaging: systemd user unit and autostart entry.
+- [ ] RM-0059 CI: `cargo check` for macOS and Windows targets.
+- [ ] RM-0060 Own fuzzy matcher in place of `frizbee`, to shrink the binary by
   about 3.7 MB, if it can match its ranking and typo tolerance
   ([ADR-0044](docs/adr/0044_binary_budget.md)).
-- [ ] Prebuilt binaries for macOS on Apple silicon and Windows x64 and
+- [ ] RM-0061 Prebuilt binaries for macOS on Apple silicon and Windows x64 and
   arm64, added with each port (ADR-0042).
 
 [layer-shell]: https://wayland.app/protocols/wlr-layer-shell-unstable-v1

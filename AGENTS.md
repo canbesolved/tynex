@@ -12,12 +12,14 @@ module you touch before changing code.
   `src/` (for example `src/adapters/kde/` -> `docs/arch/adapters/kde.md`).
 - `docs/arch/stack.md`: tech stack. Every crate is listed there.
 - `docs/adr/`: architecture decision records (MADR 4.0).
-- `scripts/`: helper scripts (`new_adr.sh`, `adr_log.sh`).
+- `scripts/`: helper scripts (`new_adr.sh`, `adr_log.sh`,
+  `rm_next.sh`).
 - `assets/`: images and other media.
 - `extensions/`: add-ons the user installs into another program,
   `<feature>/<host>/`. Not part of the Cargo crate. The KWin script
   stays in `src/adapters/kde/` because the daemon embeds it.
-- `ROADMAP.md`: planned features (Now / Next / Later).
+- `ROADMAP.md`: planned features (Now / Next / Later), each with an
+  `RM-NNNN` code.
 - `CHANGELOG.md`: notable changes, Keep a Changelog format.
 - `DEPRECATIONS.md`: history of deprecated, removed and never shipped
   features.
@@ -52,6 +54,27 @@ module you touch before changing code.
   docs describe what exists or is in the current release.
 - A deprecated or removed feature, or a planned feature dropped from
   `ROADMAP.md`, gets an entry in `DEPRECATIONS.md`, in the same commit.
+
+## Roadmap codes
+
+Every `ROADMAP.md` item has a code, `RM-` plus at least four digits,
+for example `RM-0012` (ADR-0086). Use it to name an item exactly.
+
+- Lookup: an `RM-NNNN` in a request means that roadmap item. Find it
+  in `ROADMAP.md`; a released or dropped item is in `CHANGELOG.md` or
+  `DEPRECATIONS.md`. Ask when the code is in none of them.
+- New item: take the code printed by `scripts/rm_next.sh` (the lowest
+  code in none of the three files). Place it right after the
+  checkbox: `- [ ] RM-NNNN Text`.
+- Keep the code when an item moves between horizons or is reworded.
+  A split item keeps it on one part; the others get new codes.
+- Carry the code, as `(RM-NNNN)` at the end, in:
+  - the commit subject (still under 72 characters);
+  - the pull request `## Summary`;
+  - the `CHANGELOG.md` entry of the released item;
+  - the `DEPRECATIONS.md` entry of a dropped item.
+- Never remove a code from `CHANGELOG.md` or `DEPRECATIONS.md`, so it
+  is not reused. Branch names do not need the code.
 
 ## Decisions (ADR)
 
@@ -191,12 +214,15 @@ stable.
 - Commits follow [Conventional Commits](https://www.conventionalcommits.org):
   `feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`, `chore:`.
 - One logical change per commit. Subject line under 72 characters.
+  Work on a roadmap item ends the subject with its code, for example
+  `feat: rename a window from the popup (RM-0001)`.
 - Remote: `git@github.com:CanBeSolved/tynex.git`.
 
 ## Commits and pull requests
 
 - A pull request description has two sections:
-  - `## Summary`: what changes and why, as a short list;
+  - `## Summary`: what changes and why, as a short list, with the
+    `RM-NNNN` code of each roadmap item it covers;
   - `## Checks`: each Tooling command run and its result, for example
     `reuse lint`: compliant. Name checks that were skipped and why.
 - Do not add a `Co-Authored-By` trailer to commit messages.
