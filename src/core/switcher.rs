@@ -3,6 +3,7 @@
 
 //! Switcher state machine: open, refresh, route keys, close.
 
+use crate::core::app::AppInfo;
 use crate::core::event::{Action, Click, Event, Key};
 use crate::core::order::{SortBy, order};
 use crate::core::rename::Renames;
@@ -28,6 +29,7 @@ pub struct Switcher<M> {
     hint: String,             // Latest hint, including the loading dots
     windows: Vec<WindowInfo>, // Cached list, MRU first, row titles
     renames: Renames,         // Titles set from the popup
+    pinned: Vec<AppInfo>,     // Apps first in the strip, in order
     state: Option<State>,     // Some while the popup is open
     mode: M,
 }
@@ -48,9 +50,17 @@ impl<M: Mode> Switcher<M> {
             hint: String::new(),
             windows: Vec::new(),
             renames: Renames::default(),
+            pinned: Vec::new(),
             state: None,
             mode,
         }
+    }
+
+    /// Sets the apps that stay first in the icon strip, running or not.
+    #[must_use]
+    pub fn with_pinned(mut self, pinned: Vec<AppInfo>) -> Self {
+        self.pinned = pinned;
+        self
     }
 
     /// Sets the hint drawn while the query is empty.
@@ -119,7 +129,11 @@ impl<M: Mode> Switcher<M> {
         state.cursor = old.cursor;
         state.hint = old.hint;
         state.tab_lists = old.tab_lists;
-        state.fill_icons(&self.windows, app.as_deref(), old.dropdown);
+        state.fill_icons(
+            (&self.pinned, &self.windows),
+            app.as_deref(),
+            old.dropdown,
+        );
         self.mode.refresh(&mut state);
         state.select_target(selected.as_ref());
         state.rename = old
@@ -141,7 +155,7 @@ impl<M: Mode> Switcher<M> {
             .map(|window| window.app_id.clone());
 
         state.hint.clone_from(&self.hint);
-        state.fill_icons(&self.windows, app.as_deref(), None);
+        state.fill_icons((&self.pinned, &self.windows), app.as_deref(), None);
         self.mode.refresh(&mut state);
         // The previous window is selected in any order, like Alt+Tab.
         state.select_id(self.windows.get(1).map(|w| &w.id));

@@ -13,6 +13,10 @@ action = "last"              # hide | last
 # Key that renames the selected window until it closes: a key such
 # as "F2" or "Ctrl+R", a list of keys, or "" for none.
 rename = "."
+# Keys that open or focus the pinned apps while nothing is typed:
+# the first key opens the first app in taskbar.iconbar.pinned.
+pinned = ["Alt+1", "Alt+2", "Alt+3", "Alt+4", "Alt+5", "Alt+6",
+  "Alt+7", "Alt+8", "Alt+9"]
 
 [input]
 # Installed apps in the output bar: "off" hides them, "all" includes
@@ -52,6 +56,9 @@ titlebar.strip_app_name = false
 iconbar.size = 24
 # Selection border outside the icon, in logical pixels.
 iconbar.border = 4
+# Apps that stay first in the strip, also when not running: desktop
+# file ids such as "firefox" or "org.kde.konsole".
+iconbar.pinned = []
 
 [browser_tabs]
 # true registers the host. The socket opens when a selected

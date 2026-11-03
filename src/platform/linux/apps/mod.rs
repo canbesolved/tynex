@@ -32,17 +32,20 @@ pub(super) struct Entry {
 pub struct Apps {
     entries: HashMap<String, Entry>, // By app id
     children: Vec<Child>,            // Spawned, reaped on wake
+    mode: LauncherMode,              // Which entries the launcher lists
 }
 
 impl Apps {
     /// Scans XDG application dirs. Returns an empty catalog when the
-    /// launcher is off.
+    /// launcher is off and no app is pinned. Terminal apps are kept for
+    /// pinning; `list` leaves them out with `gui_only`.
     #[must_use]
-    pub fn scan(mode: LauncherMode) -> Self {
-        if mode == LauncherMode::Off {
+    pub fn scan(mode: LauncherMode, pinned: &[String]) -> Self {
+        if mode == LauncherMode::Off && pinned.is_empty() {
             return Self {
                 entries: HashMap::new(),
                 children: Vec::new(),
+                mode,
             };
         }
 
@@ -50,27 +53,52 @@ impl Apps {
             .iter()
             .find_map(|var| std::env::var(var).ok().filter(|v| !v.is_empty()))
             .unwrap_or_default();
-        let entries = scan(
-            &paths::data_dirs(),
-            &locale_keys(&locale),
-            mode == LauncherMode::GuiOnly,
-        );
+        let entries = scan(&paths::data_dirs(), &locale_keys(&locale), false);
 
-        log::info!("launcher catalog: {} apps", entries.len());
+        log::info!("app catalog: {} apps", entries.len());
         Self {
             entries,
             children: Vec::new(),
+            mode,
         }
     }
 
-    /// Returns the pure app list for the input module.
+    /// Returns the apps the launcher may list, by name: none when it is
+    /// off, and no terminal apps with `gui_only`.
     #[must_use]
     pub fn list(&self) -> Vec<AppInfo> {
-        let mut list: Vec<_> =
-            self.entries.values().map(|e| e.info.clone()).collect();
+        let mut list: Vec<_> = self
+            .entries
+            .values()
+            .filter(|e| match self.mode {
+                LauncherMode::Off => false,
+                LauncherMode::All => true,
+                LauncherMode::GuiOnly => !e.terminal,
+            })
+            .map(|e| e.info.clone())
+            .collect();
 
         list.sort_by(|a, b| a.name.cmp(&b.name).then(a.id.cmp(&b.id)));
         list
+    }
+
+    /// Returns the pinned apps in `ids` order. An id without a desktop
+    /// file is kept with no icon, and a warning is logged.
+    #[must_use]
+    pub fn pinned(&self, ids: &[String]) -> Vec<AppInfo> {
+        ids.iter()
+            .map(|id| {
+                if let Some(entry) = self.entries.get(id) {
+                    return entry.info.clone();
+                }
+                log::warn!("pinned app {id:?} has no desktop file");
+                AppInfo {
+                    id: id.clone(),
+                    name: id.clone(),
+                    icon: None,
+                }
+            })
+            .collect()
     }
 
     /// Starts the app of `id`.

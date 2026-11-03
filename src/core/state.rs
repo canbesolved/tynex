@@ -20,6 +20,7 @@ pub struct State {
     pub selected: usize,  // Index into `output`
     pub icons: Vec<AppIcon>, // Running apps, most recent first
     pub icon: usize,      // Index into `icons`
+    pub pinned: usize,    // The first icons are the pinned apps
     pub dropdown: Option<usize>, // Selected title while open
     pub tab_lists: Vec<TabList>, // Empty unless the popup is open
     pub rename: Option<Rename>, // Title being edited
@@ -41,6 +42,7 @@ impl State {
             selected: 0,
             icons: Vec::new(),
             icon: 0,
+            pinned: 0,
             dropdown: None,
             tab_lists: Vec::new(),
             rename: None,

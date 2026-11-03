@@ -122,6 +122,7 @@ impl Default for RawMain {
 pub(super) struct RawHotkeys {
     pub action: RawHotkeyAction,
     pub rename: Option<Spanned<toml::Value>>,
+    pub pinned: Option<Spanned<toml::Value>>,
 }
 
 impl Default for RawHotkeys {
@@ -129,6 +130,7 @@ impl Default for RawHotkeys {
         Self {
             action: RawHotkeyAction::Last,
             rename: None,
+            pinned: None,
         }
     }
 }
@@ -234,6 +236,7 @@ pub(super) struct RawIconBar {
     pub size: Spanned<u16>,
     #[serde(default = "default_icon_border")]
     pub border: Spanned<u16>,
+    pub pinned: Option<Spanned<Vec<String>>>,
 }
 
 impl Default for RawIconBar {
@@ -241,6 +244,7 @@ impl Default for RawIconBar {
         Self {
             size: default_size(),
             border: default_icon_border(),
+            pinned: None,
         }
     }
 }

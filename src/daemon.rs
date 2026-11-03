@@ -47,7 +47,6 @@ fn start(config: &Config) -> Result<(), String> {
     use crate::core::traits::WindowSource;
     use crate::modes::prompt::PromptMode;
     use crate::modules::input::Input;
-    use crate::platform::linux::apps::Apps;
     use crate::platform::linux::dbus::Bus;
     use crate::platform::linux::event_loop::{self, Parts};
     use crate::platform::linux::icon_theme::IconTheme;
@@ -74,8 +73,7 @@ fn start(config: &Config) -> Result<(), String> {
     let face = fonts::default_face(&config.main.font)
         .map_err(|e| format!("cannot load the font: {e}"))?;
     let text = Text::new(face);
-    let apps = Apps::scan(config.input.launcher.mode);
-    let app_list = apps.list();
+    let (apps, app_list, pinned) = catalog(config);
     let mut painter = Painter::new(
         text,
         Icons::new(Box::new(IconTheme::default())),
@@ -86,7 +84,10 @@ fn start(config: &Config) -> Result<(), String> {
     );
 
     painter.prepare_icons(
-        app_list.iter().filter_map(|a| a.icon.as_deref()),
+        app_list
+            .iter()
+            .chain(&pinned)
+            .filter_map(|a| a.icon.as_deref()),
         presenter.scale(),
     );
     dbus_ipc::serve(&bus, tx.clone());
@@ -104,8 +105,10 @@ fn start(config: &Config) -> Result<(), String> {
                 config.output.max_rows,
             )
             .with_tabs(config.browser_tabs.enabled)
-            .with_rename(config.hotkeys.rename.clone()),
-        ),
+            .with_rename(config.hotkeys.rename.clone())
+            .with_pinned(config.hotkeys.pinned.clone()),
+        )
+        .with_pinned(pinned),
         source,
         presenter,
         bus,
@@ -123,6 +126,27 @@ fn start(config: &Config) -> Result<(), String> {
     parts.source.stop();
     log::info!("daemon stopped");
     result
+}
+
+/// Scans the app catalog once. Returns it with the launcher list and
+/// the pinned apps.
+#[cfg(target_os = "linux")]
+fn catalog(
+    config: &Config,
+) -> (
+    crate::platform::linux::apps::Apps,
+    Vec<crate::core::app::AppInfo>,
+    Vec<crate::core::app::AppInfo>,
+) {
+    let ids = &config.taskbar.iconbar.pinned;
+    let apps = crate::platform::linux::apps::Apps::scan(
+        config.input.launcher.mode,
+        ids,
+    );
+    let list = apps.list();
+    let pinned = apps.pinned(ids);
+
+    (apps, list, pinned)
 }
 
 /// Loads the config at `path`, writing the default file if missing.

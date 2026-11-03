@@ -179,6 +179,7 @@ impl Default for Config {
             hotkeys: HotkeysConfig {
                 action: HotkeyAction::Last,
                 rename: hotkeys::default_rename(),
+                pinned: hotkeys::default_pinned(),
             },
             input: InputConfig::default(),
             output: OutputConfig { max_rows: 19 },

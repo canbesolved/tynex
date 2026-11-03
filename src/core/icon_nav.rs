@@ -3,21 +3,23 @@
 
 //! Icon selection and the dropdown, on an open popup.
 
+use crate::core::app::AppInfo;
 use crate::core::icons;
 use crate::core::state::State;
 use crate::core::view::Row;
 use crate::core::window::WindowInfo;
 
 impl State {
-    /// Fills the icon strip from `windows`, selects the icon of `app`
-    /// and restores `dropdown`.
+    /// Fills the icon strip from `pinned` and `windows`, selects the
+    /// icon of `app` and restores `dropdown`.
     pub fn fill_icons(
         &mut self,
-        windows: &[WindowInfo],
+        (pinned, windows): (&[AppInfo], &[WindowInfo]),
         app: Option<&str>,
         dropdown: Option<usize>,
     ) {
-        self.icons = icons::running(windows);
+        self.icons = icons::strip(pinned, windows);
+        self.pinned = pinned.len();
         self.select_icon(app);
         self.dropdown = dropdown;
     }

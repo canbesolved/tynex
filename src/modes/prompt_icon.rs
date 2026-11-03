@@ -4,6 +4,7 @@
 //! Keys and clicks for the icon strip. The query is empty.
 
 use crate::core::event::{Action, Click, Key};
+use crate::core::hotkey::Bindings;
 use crate::core::state::State;
 use crate::core::view::RowTarget;
 
@@ -55,6 +56,25 @@ pub(super) fn key(
         }
         _ => None,
     }
+}
+
+/// Opens or focuses the pinned app whose key is `key`, while the query
+/// is empty. A running app's most recent window is activated; an app
+/// that is not running is launched. `None` when no pinned key matches
+/// or something is typed: the key then goes on like any other.
+pub(super) fn pinned(keys: &[Bindings], key: Key, s: &State) -> Option<Action> {
+    if !s.query.is_empty() {
+        return None;
+    }
+    let n = keys.iter().position(|keys| keys.matches(key))?;
+    let Some(icon) = s.icons.get(n).filter(|_| n < s.pinned) else {
+        return Some(Action::None); // Fewer pinned apps than keys
+    };
+
+    Some(match icon.windows.first() {
+        Some(id) => Action::Activate(id.clone()),
+        None => Action::Launch(icon.app_id.clone()),
+    })
 }
 
 /// Handles a click while the strip is showing.

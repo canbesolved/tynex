@@ -54,6 +54,10 @@ action = "last"              # hide | last
 # Key that renames the selected window until it closes: a key such
 # as "F2" or "Ctrl+R", a list of keys, or "" for none.
 rename = "."
+# Keys that open or focus the pinned apps while nothing is typed:
+# the first key opens the first app in taskbar.iconbar.pinned.
+pinned = ["Alt+1", "Alt+2", "Alt+3", "Alt+4", "Alt+5", "Alt+6",
+  "Alt+7", "Alt+8", "Alt+9"]
 
 [input]
 # Installed apps in the output bar: "off" hides them, "all" includes
@@ -93,6 +97,9 @@ titlebar.strip_app_name = false
 iconbar.size = 24
 # Selection border outside the icon, in logical pixels.
 iconbar.border = 4
+# Apps that stay first in the strip, also when not running: desktop
+# file ids such as "firefox" or "org.kde.konsole".
+iconbar.pinned = []
 
 [browser_tabs]
 # true registers the host. The socket opens when a selected
@@ -145,6 +152,13 @@ never typed into the query. Keys are written in the hotkey notation
 
 An unknown or malformed key stops the daemon with its line and
 column. So does a key bound to two actions.
+
+`hotkeys.pinned` is a list by position: the n-th entry opens or
+focuses the n-th app of `taskbar.iconbar.pinned` while the popup is
+open and nothing is typed ([ADR-0089](../adr/0089_pinned_apps.md)).
+Each entry is a key, a list of keys, or `""`. The default is `Alt+1`
+to `Alt+9`. A conflict names the entry, for example
+`hotkeys.pinned[2]`.
 
 `input.launcher.mode` adds installed apps to the output bar
 ([ADR-0056](../adr/0056_launcher_input.md)): `"off"`, `"all"`, or
@@ -249,6 +263,12 @@ units, default `4`, from 1 to 32. A missing key uses the default.
 The strip shows when `taskbar.mode` is `iconbar` or `both`
 ([ADR-0062](../adr/0062_icon_bar.md)).
 
+`taskbar.iconbar.pinned` lists desktop file ids, without `.desktop`,
+that stay first in the strip in this order, also when the app is not
+running ([ADR-0089](../adr/0089_pinned_apps.md)). An empty id, or an
+id listed twice, stops the daemon. An id with no desktop file still
+shows, without an icon, and is logged at start.
+
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
 
 ## Loading rules
@@ -280,6 +300,7 @@ The config is read once, when `tynex daemon` starts
 | `main.theme`                      | `dark` or `light`                      |
 | `hotkeys.action`                  | `hide` or `last`                       |
 | `hotkeys.rename`                  | a key, a list of keys, or `""`         |
+| `hotkeys.pinned`                  | a list of the above, one per app       |
 | `input.launcher.mode`             | `off`, `all` or `gui_only`             |
 | `launcher.new_window`             | `true` or `false`                      |
 | `launcher.new_window_text`        | a non-empty string                     |
@@ -294,6 +315,7 @@ The config is read once, when `tynex daemon` starts
 | `taskbar.titlebar.strip_app_name` | `true` or `false`                      |
 | `taskbar.iconbar.size`            | 8 to 128                               |
 | `taskbar.iconbar.border`          | 1 to 32                                |
+| `taskbar.iconbar.pinned`          | desktop file ids, each once            |
 
 Syntax and type errors stop at the first error, as reported by `toml`.
 Value checks run on the parsed file and report every invalid key at

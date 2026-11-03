@@ -63,10 +63,13 @@ fn a_key_used_by_two_actions_is_an_error() {
     let mut errors = Vec::new();
     let mut err = |_, message: String| errors.push(message);
 
+    let select = keys(&["Enter", "Space"]);
+    let space = keys(&["Space"]);
+
     conflicts(
         &[
-            ("select", &keys(&["Enter", "Space"]), 0..0),
-            ("space", &keys(&["Space"]), 0..0),
+            ("select".to_owned(), &select, 0..0),
+            ("space".to_owned(), &space, 0..0),
         ],
         &mut err,
     );
@@ -77,4 +80,54 @@ fn a_key_used_by_two_actions_is_an_error() {
           different keys"
         ]
     );
+}
+
+fn pinned(text: &str) -> Result<Vec<Bindings>, Vec<String>> {
+    parse(&format!("[hotkeys]\npinned = {text}\n"), &no_font)
+        .map(|c| c.hotkeys.pinned)
+        .map_err(|errors| errors.iter().map(ToString::to_string).collect())
+}
+
+#[test]
+fn pinned_keys_default_to_alt_and_a_digit() {
+    let config = parse("", &no_font).unwrap();
+    let alt: Vec<String> = (1..=9).map(|n| format!("Alt+{n}")).collect();
+    let alt: Vec<&str> = alt.iter().map(String::as_str).collect();
+    let expected: Vec<Bindings> = alt.iter().map(|k| keys(&[k])).collect();
+
+    assert_eq!(config.hotkeys.pinned, expected);
+}
+
+#[test]
+fn pinned_keys_go_by_position_and_take_lists() {
+    assert_eq!(
+        pinned("[\"F1\", [\"F2\", \"Ctrl+2\"], \"\"]"),
+        Ok(vec![
+            keys(&["F1"]),
+            keys(&["F2", "Ctrl+2"]),
+            Bindings::default()
+        ])
+    );
+    assert_eq!(pinned("[]"), Ok(Vec::new()));
+}
+
+#[test]
+fn bad_pinned_keys_are_errors() {
+    assert!(pinned("\"Alt+1\"").is_err());
+    assert!(pinned("[\"Hyper+1\"]").is_err());
+
+    let errors = pinned("[\"F1\", \"F1\"]").unwrap_err();
+
+    assert_eq!(errors.len(), 1);
+    assert!(
+        errors[0].contains("`hotkeys.pinned[1]` and `hotkeys.pinned[2]`"),
+        "{}",
+        errors[0]
+    );
+
+    let errors =
+        parse("[hotkeys]\nrename = \"F1\"\npinned = [\"F1\"]\n", &no_font)
+            .unwrap_err();
+
+    assert_eq!(errors.len(), 1);
 }
