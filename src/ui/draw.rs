@@ -211,13 +211,7 @@ pub(crate) fn draw_row(
         .map_or(paint.theme.text, |c| Rgba(c.r, c.g, c.b, 0xff));
 
     match edit {
-        Some((text, cursor)) => {
-            let typed =
-                paint.text.width(&text[..cursor.min(text.len())], grid.font);
-
-            draw_text(paint, grid, (text, &[]), title, color);
-            input_bar::beam(paint, grid, title, typed);
-        }
+        Some(edit) => input_bar::draw_field(paint, grid, edit, title, color),
         None => {
             draw_text(paint, grid, (&row.title, highlights), title, color);
         }

@@ -138,8 +138,9 @@ The list does not show search matches. Those are the
   row forward and wraps. `Up` and `Down` move it too
   ([ADR-0061](../../adr/0061_prompt_keys.md)).
 - A window being renamed, in the title list or the dropdown, shows
-  the edited text with a beam at the edit cursor. The dropdown keeps
-  its order and width rules while typing
+  the edited text with a beam at the edit cursor. A title wider than
+  its row scrolls left so the beam stays visible, as in the output
+  bar. The dropdown keeps its order and width rules while typing
   ([ADR-0088](../../adr/0088_rename_windows.md)).
 
 ## Keys and clicks

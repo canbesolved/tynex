@@ -232,13 +232,21 @@ pub(crate) fn draw(
             row.h,
         );
 
-        draw::draw_text(paint, grid, (title, &[]), area, paint.theme.text);
-        if let Some((_, cursor)) = panel.beam.filter(|(at, _)| *at == index) {
-            let typed = paint
-                .text
-                .width(&title[..cursor.min(title.len())], grid.font);
+        let color = paint.theme.text;
 
-            input_bar::beam(paint, grid, area, typed);
+        match panel.beam.filter(|(at, _)| *at == index) {
+            Some((_, cursor)) => {
+                input_bar::draw_field(
+                    paint,
+                    grid,
+                    (title, cursor),
+                    area,
+                    color,
+                );
+            }
+            None => {
+                draw::draw_text(paint, grid, (title, &[]), area, color);
+            }
         }
     }
 }

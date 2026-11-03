@@ -62,6 +62,48 @@ pub(crate) fn draw(
     beam(paint, grid, bar, (mark_w + gap + typed).min(bar.w));
 }
 
+/// Draws an edited `text` in `area` with a beam at byte `cursor`.
+///
+/// When the text before the cursor is wider than `area`, the text
+/// scrolls left so the cursor stays at the right edge. A cut at the
+/// right shows an ellipsis.
+pub(crate) fn draw_field(
+    paint: &mut Paint<'_, '_>,
+    grid: &Grid,
+    (text, cursor): (&str, usize),
+    area: Area,
+    color: Rgba,
+) {
+    let cursor = cursor.min(text.len());
+    let room = (area.w - BEAM_WIDTH).max(0.0);
+    let start = scroll_start(text, cursor, room, |part| {
+        paint.text.width(part, grid.font)
+    });
+    let typed = paint.text.width(&text[start..cursor], grid.font);
+
+    draw_text(paint, grid, (&text[start..], &[]), area, color);
+    beam(paint, grid, area, typed);
+}
+
+/// Returns the first byte to draw so that `text[start..cursor]` fits
+/// `room`: 0 when it all fits, else the earliest start that does.
+pub(crate) fn scroll_start(
+    text: &str,
+    cursor: usize,
+    room: f32,
+    width: impl Fn(&str) -> f32,
+) -> usize {
+    let starts: Vec<usize> = text[..cursor]
+        .char_indices()
+        .map(|(i, _)| i)
+        .chain([cursor])
+        .collect();
+    let first_fit =
+        starts.partition_point(|&start| width(&text[start..cursor]) > room);
+
+    starts[first_fit.min(starts.len() - 1)]
+}
+
 /// Draws `hint` centered on the popup width, in `color`.
 fn draw_hint(
     paint: &mut Paint<'_, '_>,
@@ -95,12 +137,7 @@ fn draw_hint(
 
 /// Draws a 1 px beam, 10% shorter than the text, at `advance` from
 /// the left of `bar`. It is clipped at the right edge of `bar`.
-pub(crate) fn beam(
-    paint: &mut Paint<'_, '_>,
-    grid: &Grid,
-    bar: Area,
-    advance: f32,
-) {
+fn beam(paint: &mut Paint<'_, '_>, grid: &Grid, bar: Area, advance: f32) {
     let x = (bar.x + advance).round();
     let right = bar.x + bar.w;
     let width = (x + BEAM_WIDTH).min(right) - x;
@@ -121,3 +158,7 @@ pub(crate) fn beam(
         .canvas
         .fill_rect(Area::new(x, y, width, height), paint.theme.text);
 }
+
+#[cfg(test)]
+#[path = "input_bar_tests.rs"]
+mod tests;
