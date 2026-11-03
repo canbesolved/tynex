@@ -16,6 +16,11 @@ project adheres to
   `scripts/rm_next.sh` prints the lowest free code
   ([ADR-0086](docs/adr/0086_roadmap_codes.md)).
 
+### Deprecated
+
+- `taskbar.mode = "both"` will be removed in 0.5.0. Use `iconbar` or
+  `titlebar` (RM-0067).
+
 ### Fixed
 
 - Docs match 0.3.0. The README download example, environment table

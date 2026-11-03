@@ -8,8 +8,8 @@ file once released. Released changes are listed in
 
 | Horizon | Release     | Meaning                                  |
 | ------- | ----------- | ---------------------------------------- |
-| Now     | 0.3.x–0.4.x | Scheduled releases                       |
-| Next    | After 0.4.x | Committed once the 0.4.x horizon is done |
+| Now     | 0.3.x–0.5.x | Scheduled releases                       |
+| Next    | After 0.5.x | Committed once the 0.5.x horizon is done |
 | Later   | Unplanned   | Accepted ideas, not scheduled yet        |
 
 Rules:
@@ -17,22 +17,23 @@ Rules:
 - Items are user-facing features, not internal tasks.
 - A design-changing item gets an ADR before work starts.
 - Every item has a code, `RM-` plus at least four digits
-  (`RM-NNNN`), right after the checkbox. The code stays when the item
-  moves or is reworded.
+(`RM-NNNN`), right after the checkbox. The code stays when the item
+moves or is reworded.
 - A new item takes the lowest free code, printed by
-  `scripts/rm_next.sh`. A code is free when it is in none of
-  `ROADMAP.md`, `CHANGELOG.md` and `DEPRECATIONS.md`.
+`scripts/rm_next.sh`. A code is free when it is in none of
+`ROADMAP.md`, `CHANGELOG.md` and `DEPRECATIONS.md`.
 - Work on an item names its code in the commit subject, the pull
-  request, the `CHANGELOG.md` entry and, for a dropped item, the
-  `DEPRECATIONS.md` entry. See [AGENTS.md](AGENTS.md#roadmap-codes).
+request, the `CHANGELOG.md` entry and, for a dropped item, the
+`DEPRECATIONS.md` entry. See [AGENTS.md](AGENTS.md#roadmap-codes).
 
 ## Now
 
 ### 0.3.1
 
-- [ ] RM-0001 Rename a window from the popup: `F2` or `,` edits the selected
-  title in place, `Enter` keeps it, `Esc` cancels. The new title lasts
-  until the window closes.
+- [ ] RM-0001 Rename a window from the popup: the `hotkeys.rename` key
+  (default `"."`, ADR-0087) edits the selected title in place,
+  `Enter` keeps it, `Esc` cancels. The new title lasts until the
+  window closes.
 
 ### 0.3.2
 
@@ -41,54 +42,108 @@ Rules:
 
 ### 0.3.3
 
-- [ ] RM-0003 Open a new tab in the browser from the popup, or with a
-  configurable hotkey while the popup is open.
+- [ ] RM-0003 Open a new tab in the browser from the popup, or with the
+  `hotkeys.new_tab` key while the popup is open.
 
 ### 0.3.4
 
 - [ ] RM-0004 Browser bookmarks in the popup: search bookmarks and open one.
 
+### 0.3.5
+
+- [ ] RM-0044 English keys in the popup: with
+  `main.switch_layout = true` (default `false`), tynex reads keys
+  with the US layout while the popup is open, whatever the system
+  layout is.
+  - The system layout is not changed, so there is nothing to
+    restore, and it works the same on every desktop and OS.
+  - The desktop's layout indicator does not change while the popup
+    is open.
+
+### 0.3.6
+
+- [ ] RM-0064 Row color per result type in the output bar, set in the
+  config: for example pastel green for open windows, pastel yellow
+  for browser tabs and pastel blue for apps that are not running.
+
+### 0.3.7
+
+Defaults:
+
+- [ ] RM-0026 Change the default `taskbar.iconbar.size` to `36`.
+- [ ] RM-0027 Change the default `taskbar.iconbar.border` to `5`.
+- [ ] RM-0028 Change the default `input.launcher.new_window_text_color`
+  to `#797979`, a neutral gray that reads the same on the dark and
+  light themes (contrast 4.35:1 on both backgrounds).
+- [ ] RM-0029 Change the default hint command (`input.hint.text`).
+- [ ] RM-0030 The hint color follows the theme. The new default
+  `input.hint.font_color = ""` uses a color built into the code:
+  white (`#ffffff`) on the dark theme, black (`#000000`) on the light
+  one. A `#RRGGBB` value still sets a fixed color.
+
+### 0.3.8
+
+- [ ] RM-0010 **Breaking:** rename `output.max_rows` to
+  `output.max_results`. Default `10`. A file that still sets
+  `max_rows` stops the daemon until it is edited.
+
+### 0.3.9
+
+- [ ] RM-0011 Remove duplicate rows from the output bar results. A
+  browser window and its active tab share a title, so a search for
+  `My website` lists both: the window with the browser icon and the
+  tab with the site favicon. Show only one row for them: the tab row,
+  which also brings its window to the front.
+
+### 0.3.10
+
+- [ ] RM-0012 Input keys in `[hotkeys]`, written in the hotkey
+  notation (ADR-0087):
+  - `select` confirms the selected match. Default
+    `["Enter", "Space"]`, as today.
+  - `space` types a space in the query. Default `"ShiftLeft"`: a
+    left Shift pressed and released alone.
+  - Each key takes one binding or a list. To type spaces with
+    `Space`, set `select = "Enter"` and `space = "Space"`.
+
+### 0.3.11
+
+- [ ] RM-0009 Config: priority of output bar results among open
+  windows, installed apps, browser tabs and exact matches.
+
 ### 0.4.0
 
-- [ ] RM-0005 `tynex qs` (quick switch): back to last without opening the
-  popup, the same way as `hotkeys.action = "last"` (see Next).
+- [ ] RM-0007 Back to last: with `hotkeys.action = "last"` or
+  `tynex qs`, switch to the previously used app window or browser
+  tab.
+- [ ] RM-0005 `tynex qs` (quick switch): back to last without opening
+  the popup, the same way as `hotkeys.action = "last"`.
+
+### 0.5.0
+
+- [ ] RM-0062 Text editing in the input bar: `Ctrl+A` selects the
+  whole query, `Ctrl+X` cuts the selection and `Ctrl+V` pastes from
+  the clipboard. Dragging the mouse over the query selects text.
+- [ ] RM-0067 **Breaking:** remove `taskbar.mode = "both"`. The popup
+  shows either the icon strip or the title list, never both, so
+  only one of them takes the keys. Values are `off`, `iconbar`
+  (default) and `titlebar`. A file that still sets `both` stops the
+  daemon until it is edited.
+- [ ] RM-0066 Arrow keys open and close the icon dropdown:
+  - `Down` on a selected icon with several windows opens its
+    dropdown, like `Enter` and `Space`.
+  - `Up` on the top title of an open dropdown closes it and leaves
+    the icon selected.
 
 ## Next
-
-Configuration:
-
-- [ ] RM-0006 `popup_delay`: milliseconds to wait before the popup
-  appears. Default `200`. With `hotkeys.action = "last"`, a second
-  hotkey press inside that window uses back-to-last instead of
-  showing the popup (see below).
-- [ ] RM-0007 Back to last: with `hotkeys.action = "last"` or `tynex qs`,
-  switch to the previously used app window or browser tab.
-- [ ] RM-0008 Popup animation: `animation = true` or `false` turns it on or
-  off. `animation_speed = 1.0` scales how fast it runs, from `0.5` to
-  `3.0` (`1.0` is normal speed).
-- [ ] RM-0009 Config: priority of output bar results among open windows,
-  installed apps, browser tabs and exact matches.
-- [ ] RM-0010 **Breaking:** rename `output.max_rows` to `output.max_results`.
-  Default `10`. A file that still sets `max_rows` stops the daemon
-  until it is edited.
-- [ ] RM-0011 Remove duplicate rows from the output bar results.
-
-Input:
-
-- [ ] RM-0012 Left Shift confirms the selected match, the same as `Space`, in
-  the input bar.
 
 Window list:
 
 - [ ] RM-0013 Close windows from the popup, like `Alt+F4`: `Ctrl+W` or a right
   click closes the selected window.
   - In the icon bar, a right click on an app with several windows
-    opens its dropdown; a right click on a title there closes that
-    window.
-
-Look:
-
-- [ ] RM-0014 A shadow around the popup.
+  opens its dropdown; a right click on a title there closes that
+  window.
 
 Launcher:
 
@@ -110,10 +165,10 @@ Titles:
 
 - [ ] RM-0018 Configurable prefixes on rows and titles:
   - Per app: `[apps.<app_id>]` with `prefix = "Web"` so launcher rows
-    read `Web: Firefox`.
+  read `Web: Firefox`.
   - By pattern: `[title_prefix]` maps a pattern to a prefix on matching
-    window titles, for example `"Jira" = "[J] "`. Patterns are regular
-    expressions, so plain text matches as well.
+  window titles, for example `"Jira" = "[J] "`. Patterns are regular
+  expressions, so plain text matches as well.
 
 Icon bar:
 
@@ -122,19 +177,37 @@ Icon bar:
   the usual 8 to 128 logical pixels. A number still sets a fixed
   size.
 
+Output bar:
+
+- [ ] RM-0065 Pointer in the output list: hovering a row moves the
+  selection highlight to it, and a click activates the row, as in
+  the title list (ADR-0077).
+
 Modes:
 
 - [ ] RM-0020 Mode indicator: the sign at the start of the input bar (`>`
   today) shows the current mode and changes when you switch mode:
   prompt, AI, files and others. It comes with the second mode.
 
+Search:
+
+- [ ] RM-0023 Usage scoring: rank matches of every kind by use: open
+  windows, browser tabs and installed apps. The last used item comes
+  first; among the rest, more often used items rank higher.
+
 Browser tabs:
 
 - [ ] RM-0021 Edge and Vivaldi: register the host for them too,
   once their manifest folders are confirmed.
 - [ ] RM-0022 Firefox: same local bridge and search.
-- [ ] RM-0023 Tab scoring: rank matched tabs by use. The last used tab comes
-  first; among the rest, more often used tabs rank higher.
+- [ ] RM-0063 `browser_tabs.match_first`: which part of a tab ranks
+  first in search results, `"title"` (default) or `"url"`.
+  - The URL part is the site's domain without `www.`, for example
+  `github.com` or `reddit.com`, not the path.
+  - With `"url"`, typing `reddit` lists every tab whose domain
+  matches first, then the tabs that match only by title.
+  - With `"title"`, title matches come first, then domain matches.
+  - Inside each group, tabs follow usage scoring (see Search).
 
 Info bar:
 
@@ -143,26 +216,21 @@ Info bar:
   and the like). It runs only while the popup is open, so it adds no
   idle work.
   - Config: `[info_bar]` with `placement = "top"`, `"bottom"` or
-    `"both"`.
+  `"both"`.
   - Custom scripts: a shell script's output is shown in the bar; each
-    output line becomes a row.
+  output line becomes a row.
   - Plugins: date and time, battery, power usage in watts, CPU load,
-    RAM usage.
+  RAM usage.
   - Open questions: hotkeys for bar actions; a keyboard layout plugin.
 
 Configuration:
 
+- [ ] RM-0006 `popup_delay`: milliseconds to wait before the popup
+  appears. Default `200`. With `hotkeys.action = "last"`, a second
+  hotkey press inside that window uses back to last instead of
+  showing the popup (see Back to last in 0.4.0).
 - [ ] RM-0025 `tynex reload`: re-read the config without restarting. An invalid
   file is reported and the running config stays in use.
-
-Defaults:
-
-- [ ] RM-0026 Change the default `taskbar.iconbar.size` to `36`.
-- [ ] RM-0027 Change the default `taskbar.iconbar.border` to `5`.
-- [ ] RM-0028 Change the default `input.launcher.new_window_text_color`.
-- [ ] RM-0029 Change the default hint command (`input.hint.text`).
-- [ ] RM-0030 Default text and hint colors follow the active theme, or `auto`
-  when the theme changes.
 
 Input:
 
@@ -194,21 +262,11 @@ Themes:
 
 Look:
 
-- [ ] RM-0039 Output bar: muted gray labels between result groups so ordering
-  among windows, tabs, apps and exact matches is easy to see.
-- [ ] RM-0040 Text shaping and right-to-left layout for Arabic, Hebrew and
-  Indic scripts (`rustybuzz`).
+- [ ] RM-0008 Popup animation: `animation = true` or `false` turns it
+  on or off. `animation_speed = 1.0` scales how fast it runs, from
+  `0.5` to `3.0` (`1.0` is normal speed).
+- [ ] RM-0014 A shadow around the popup.
 - [ ] RM-0041 Color emoji in titles.
-
-Languages:
-
-- [ ] RM-0042 Input method support (`text-input-v3`) to type Chinese, Japanese
-  and Korean in prompt mode.
-- [ ] RM-0043 Phonetic search: match Chinese titles by pinyin and Japanese by
-  romaji.
-- [ ] RM-0044 Switch the keyboard layout to English when the popup opens and
-  restore the previous one when it closes: `switch_layout = "us"`, off
-  by default.
 
 Platform support:
 
@@ -235,10 +293,10 @@ Shared parts (core, modes, modules, config, renderer) are portable.
 
 - Popup "layer-shell": the Wayland presenter from 0.1.0 works as is.
 - "wlr toplevel": the `wlr-foreign-toplevel-management` protocol, part
-  of `wayland-protocols-wlr`, so the adapter needs no new crate.
+of `wayland-protocols-wlr`, so the adapter needs no new crate.
 - Support data from wayland.app, checked 2026-10-15:
-  [layer-shell][layer-shell], [wlr toplevel][wlr-toplevel],
-  [ext toplevel list][ext-toplevel].
+[layer-shell](https://wayland.app/protocols/wlr-layer-shell-unstable-v1), [wlr toplevel](https://wayland.app/protocols/wlr-foreign-toplevel-management-unstable-v1),
+[ext toplevel list](https://wayland.app/protocols/ext-foreign-toplevel-list-v1).
 
 Adapters:
 
@@ -271,8 +329,8 @@ Release milestones:
 
 - 0.x milestone: define and test core functionality and design.
 - 1.x milestone: Linux desktop support: KDE, GNOME, LXQt, Xfce,
-  Hyprland and COSMIC. Cinnamon, LXDE, MATE, Openbox and others
-  follow later.
+Hyprland and COSMIC. Cinnamon, LXDE, MATE, Openbox and others
+follow later.
 - 2.x milestone: macOS implementation.
 - 3.x milestone: Windows implementation.
 - 4.x milestone: add more features and refactor.
@@ -284,8 +342,3 @@ Release milestones:
   ([ADR-0044](docs/adr/0044_binary_budget.md)).
 - [ ] RM-0061 Prebuilt binaries for macOS on Apple silicon and Windows x64 and
   arm64, added with each port (ADR-0042).
-
-[layer-shell]: https://wayland.app/protocols/wlr-layer-shell-unstable-v1
-[wlr-toplevel]:
-  https://wayland.app/protocols/wlr-foreign-toplevel-management-unstable-v1
-[ext-toplevel]: https://wayland.app/protocols/ext-foreign-toplevel-list-v1
