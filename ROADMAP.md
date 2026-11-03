@@ -28,7 +28,7 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.3.5
+### 0.3.3
 
 - [ ] RM-0044 English keys in the popup: with
   `main.switch_layout = true` (default `false`), tynex reads keys
@@ -39,13 +39,13 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
   - The desktop's layout indicator does not change while the popup
     is open.
 
-### 0.3.6
+### 0.3.4
 
 - [ ] RM-0064 Row color per result type in the output bar, set in the
   config: for example pastel green for open windows, pastel yellow
   for browser tabs and pastel blue for apps that are not running.
 
-### 0.3.7
+### 0.3.5
 
 Defaults:
 
@@ -60,13 +60,13 @@ Defaults:
   white (`#ffffff`) on the dark theme, black (`#000000`) on the light
   one. A `#RRGGBB` value still sets a fixed color.
 
-### 0.3.8
+### 0.3.6
 
 - [ ] RM-0010 **Breaking:** rename `output.max_rows` to
   `output.max_results`. Default `10`. A file that still sets
   `max_rows` stops the daemon until it is edited.
 
-### 0.3.9
+### 0.3.7
 
 - [ ] RM-0011 Remove duplicate rows from the output bar results. A
   browser window and its active tab share a title, so a search for
@@ -74,7 +74,7 @@ Defaults:
   tab with the site favicon. Show only one row for them: the tab row,
   which also brings its window to the front.
 
-### 0.3.10
+### 0.3.8
 
 - [ ] RM-0012 Input keys in `[hotkeys]`, written in the hotkey
   notation (ADR-0087):
@@ -85,7 +85,7 @@ Defaults:
   - Each key takes one binding or a list. To type spaces with
     `Space`, set `select = "Enter"` and `space = "Space"`.
 
-### 0.3.11
+### 0.3.9
 
 - [ ] RM-0009 Config: priority of output bar results among open
   windows, installed apps, browser tabs and exact matches.
