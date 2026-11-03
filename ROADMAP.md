@@ -28,15 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.3.3
-
-- [ ] RM-0003 Open a new tab in the browser from the popup, or with the
-  `hotkeys.new_tab` key while the popup is open.
-
-### 0.3.4
-
-- [ ] RM-0004 Browser bookmarks in the popup: search bookmarks and open one.
-
 ### 0.3.5
 
 - [ ] RM-0044 English keys in the popup: with
@@ -124,6 +115,13 @@ Defaults:
     the icon selected.
 
 ## Next
+
+Browser tabs:
+
+- [ ] RM-0003 Open a new tab in the browser from the popup, or with the
+  `hotkeys.new_tab` key while the popup is open.
+- [ ] RM-0004 Browser bookmarks in the popup: search bookmarks and open
+  one.
 
 Window list:
 
