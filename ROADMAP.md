@@ -28,18 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.3.1
-
-- [ ] RM-0001 Rename a window from the popup: the `hotkeys.rename` key
-  (default `"."`, ADR-0087) edits the selected title in place,
-  `Enter` keeps it, `Esc` cancels. The new title lasts until the
-  window closes.
-
-### 0.3.2
-
-- [ ] RM-0002 Pinned apps stay in the icon bar while they are not running. A
-  configurable hotkey opens or focuses each pinned app.
-
 ### 0.3.3
 
 - [ ] RM-0003 Open a new tab in the browser from the popup, or with the
