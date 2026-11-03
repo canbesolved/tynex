@@ -5,6 +5,9 @@ font_size = 14
 width = 480
 position = "center"          # center | top
 theme = "dark"               # dark | light
+# Read keys with the US layout while the popup is open, whatever the
+# system layout is. The system layout does not change.
+switch_layout = false
 
 [hotkeys]
 # Hotkey pressed again while the popup is open: "hide" closes the

@@ -46,6 +46,9 @@ font_size = 14
 width = 480
 position = "center"          # center | top
 theme = "dark"               # dark | light
+# Read keys with the US layout while the popup is open, whatever the
+# system layout is. The system layout does not change.
+switch_layout = false
 
 [hotkeys]
 # Hotkey pressed again while the popup is open: "hide" closes the
@@ -127,6 +130,12 @@ daemon.
 `light`. `dark` is the near-black popup. `light` is near-white.
 Radius, padding and the selection color are shared. A missing key
 stays dark. Any other value stops the daemon.
+
+`main.switch_layout = true` reads character keys with the US layout
+while the popup is open ([ADR-0090](../adr/0090_us_keymap.md)), so a
+query is Latin whatever layout is active. The system layout and its
+indicator do not change. Special keys (`Enter`, arrows, remaps such
+as `caps:escape`) keep the system layout. Default `false`.
 
 `hotkeys.action` sets what pressing the hotkey (or `tynex show`) does
 while the popup is open: `hide` closes it, `last` switches to the
@@ -298,6 +307,7 @@ The config is read once, when `tynex daemon` starts
 | `main.width`                      | 200 to 2000                            |
 | `main.position`                   | `center` or `top`                      |
 | `main.theme`                      | `dark` or `light`                      |
+| `main.switch_layout`              | `true` or `false`                      |
 | `hotkeys.action`                  | `hide` or `last`                       |
 | `hotkeys.rename`                  | a key, a list of keys, or `""`         |
 | `hotkeys.pinned`                  | a list of the above, one per app       |

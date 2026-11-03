@@ -74,6 +74,7 @@ pub(super) fn validate(
             width: main.width.into_inner(),
             position: main.position,
             theme: main.theme,
+            switch_layout: main.switch_layout,
         },
         hotkeys,
         input: InputConfig {

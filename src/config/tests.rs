@@ -230,3 +230,13 @@ fn missing_file_is_created_then_read() {
     );
     fs::remove_dir_all(dir).unwrap();
 }
+
+#[test]
+fn switch_layout_is_off_by_default() {
+    let on = parse("[main]\nswitch_layout = true\n", &|_| false)
+        .expect("valid config");
+
+    assert!(!parse("", &|_| false).expect("empty").main.switch_layout);
+    assert!(on.main.switch_layout);
+    assert!(parse("[main]\nswitch_layout = \"us\"\n", &|_| false).is_err());
+}

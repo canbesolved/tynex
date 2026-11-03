@@ -52,6 +52,7 @@ fn painter(text: Text, icons: Icons) -> Painter {
         width: 480,
         position: Position::Center,
         theme: Theme::Dark,
+        switch_layout: false,
     };
     let output = OutputConfig { max_rows: 19 };
     let taskbar = TaskbarConfig {

@@ -9,6 +9,14 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- English keys in the popup: with `main.switch_layout = true`
+  (default `false`), character keys are read with the US layout
+  while the popup is open, whatever the system layout is. The system
+  layout and its indicator do not change
+  ([ADR-0090](docs/adr/0090_us_keymap.md)) (RM-0044).
+
 ## [0.3.2] - 2026-11-03
 
 Rename windows, pinned apps, and one notation for `[hotkeys]` keys.

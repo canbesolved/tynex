@@ -64,6 +64,7 @@ pub struct MainConfig {
     pub width: u16,
     pub position: Position,
     pub theme: Theme,
+    pub switch_layout: bool, // Read keys with the US layout in the popup
 }
 
 /// How installed apps appear in the output bar.
@@ -175,6 +176,7 @@ impl Default for Config {
                 width: 480,
                 position: Position::Center,
                 theme: Theme::Dark,
+                switch_layout: false,
             },
             hotkeys: HotkeysConfig {
                 action: HotkeyAction::Last,

@@ -24,6 +24,7 @@ core/
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
   title.rs      Row titles: sanitizing and app name stripping
+  us_layout.rs  PhysicalKey, us_char: US layout for switch_layout
 ```
 
 ## Types
@@ -105,6 +106,14 @@ it:
   other variant (`F1` to `F24`, `Insert`, `PageUp`, `PageDown`), or
   a modifier pressed and released alone (`ShiftLeft`). `Ctrl+Left`
   and `Ctrl+Right` stay `WordLeft` and `WordRight`.
+
+With `main.switch_layout`, character keys ignore the system layout
+([ADR-0090](../adr/0090_us_keymap.md)). `us_layout::PhysicalKey`
+names a key by position, after W3C `KeyboardEvent.code` (`KeyA`,
+`Digit1`, `Period`, ...), for the 47 character keys of a US
+keyboard. `us_char(key, shift, caps)` returns its US character; Caps
+Lock acts on letters only. Each platform maps its native key numbers
+to `PhysicalKey`, so the table is shared.
 
 ## Hotkeys
 
