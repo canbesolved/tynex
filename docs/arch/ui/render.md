@@ -99,3 +99,5 @@ Two built-in themes. `main.theme` is `dark` (default) or `light`
 ([ADR-0076](../../adr/0076_light_theme.md)). Drawing code reads one
 struct, so a later source can fill it without touching that code.
 Radius, padding and the selection color are the same in both.
+`output.colors` fills `Theme::rows`, the output bar row bands, on
+either theme.

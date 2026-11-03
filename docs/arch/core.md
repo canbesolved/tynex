@@ -17,6 +17,7 @@ core/
   state.rs      State of an open popup, shared with the modes
   text_edit.rs  One-line editing: query and renamed title
   rename.rs     Rename (title being edited), Renames (kept titles)
+  row_color.rs  Tint, RowColors: output bar row band per result type
   switcher.rs   State machine (tests in switcher_tests.rs)
   view.rs       View, Row, RowTarget: what the presenter must draw
   order.rs      SortBy: row order (recently, app)

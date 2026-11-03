@@ -9,6 +9,7 @@ use std::path::{Path, PathBuf};
 use toml::Spanned;
 
 use crate::config::error::ConfigError;
+use crate::config::output::check_colors;
 use crate::config::raw::{
     RawConfig, RawHint, RawIconBar, RawLauncher, RawLauncherMode, RawSortBy,
     RawTaskbarMode,
@@ -61,6 +62,7 @@ pub(super) fn validate(
     let new_window = check_new_window(&raw.input.launcher, &mut err);
     let hint = check_hint(&raw.input.hint, &mut err);
     let hotkeys = crate::config::hotkeys::check(&raw.hotkeys, &mut err);
+    let colors = check_colors(&raw.output.colors, &mut err);
 
     if !errors.is_empty() {
         return Err(errors);
@@ -90,6 +92,7 @@ pub(super) fn validate(
         },
         output: OutputConfig {
             max_rows: raw.output.max_rows.into_inner(),
+            colors,
         },
         taskbar: TaskbarConfig {
             mode: taskbar_mode(&raw.taskbar.mode),

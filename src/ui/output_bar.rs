@@ -8,9 +8,9 @@
 
 #![allow(clippy::cast_precision_loss)]
 
-use crate::core::view::View;
+use crate::core::view::{Rgb, View};
 use crate::ui::draw::{self, Grid, Metrics, Paint};
-use crate::ui::render::canvas::Area;
+use crate::ui::render::canvas::{Area, Rgba};
 use crate::ui::scroll;
 
 /// Returns true when the input has produced something to show.
@@ -52,6 +52,15 @@ pub(crate) fn draw(
     for (index, row) in view.rows().enumerate().skip(first).take(max) {
         let area = Area::new(grid.pad, top, width, grid.row_h);
 
+        if let Some(tint) = paint.theme.rows.of(row) {
+            let Rgb { r, g, b } = tint.color;
+
+            paint.canvas.fill_rounded_rect(
+                area,
+                radius / 2.0,
+                Rgba(r, g, b, tint.alpha),
+            );
+        }
         if index == view.selected {
             paint.canvas.fill_rounded_rect(
                 area,

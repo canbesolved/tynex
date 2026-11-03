@@ -197,6 +197,9 @@ hint.update = 0              # Seconds; 0 runs once per open
 
 [output]
 max_rows = 19
+colors.window = ""           # Row band: "", #RRGGBB or #RRGGBBAA
+colors.tab = ""
+colors.app = ""              # Apps that are not running
 
 [taskbar]
 mode = "iconbar"             # off | iconbar | titlebar | both

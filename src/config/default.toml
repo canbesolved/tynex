@@ -41,6 +41,11 @@ hint.update = 0
 [output]
 # Cap for the output bar, the title list and an icon dropdown.
 max_rows = 19
+# Row background in the output bar per result type: "" for none,
+# "#RRGGBB", or "#RRGGBBAA" where AA is the opacity.
+colors.window = ""           # Open windows
+colors.tab = ""              # Browser tabs
+colors.app = ""              # Apps that are not running
 
 [taskbar]
 # "off" hides the strip and the title list until you type.

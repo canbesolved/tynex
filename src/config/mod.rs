@@ -7,6 +7,7 @@ mod browser_tabs;
 mod error;
 mod file;
 mod hotkeys;
+mod output;
 mod raw;
 mod taskbar;
 mod theme;
@@ -20,6 +21,7 @@ pub use crate::config::browser_tabs::{Browser, BrowserTabsConfig, Browsers};
 pub use crate::config::error::ConfigError;
 pub use crate::config::file::{Loaded, load_or_create};
 pub use crate::config::hotkeys::HotkeysConfig;
+pub use crate::config::output::OutputConfig;
 pub use crate::config::taskbar::{
     IconBarConfig, TaskbarConfig, TaskbarMode, TitleBarConfig,
 };
@@ -149,12 +151,6 @@ pub struct InputConfig {
     pub hint: HintConfig,
 }
 
-/// The `[output]` table.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct OutputConfig {
-    pub max_rows: u16, // Cap for the output bar and the title list
-}
-
 /// The whole config file, validated.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Config {
@@ -184,7 +180,7 @@ impl Default for Config {
                 pinned: hotkeys::default_pinned(),
             },
             input: InputConfig::default(),
-            output: OutputConfig { max_rows: 19 },
+            output: OutputConfig::default(),
             taskbar: TaskbarConfig::default(),
             browser_tabs: BrowserTabsConfig::default(),
         }

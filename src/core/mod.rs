@@ -12,6 +12,7 @@ pub mod icons;
 pub mod order;
 pub mod queue;
 pub mod rename;
+pub mod row_color;
 pub mod state;
 pub mod switcher;
 pub mod text;

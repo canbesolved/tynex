@@ -186,12 +186,14 @@ impl Default for RawLauncher {
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawOutput {
     pub max_rows: Spanned<u16>,
+    pub colors: crate::config::output::RawColors,
 }
 
 impl Default for RawOutput {
     fn default() -> Self {
         Self {
             max_rows: unspanned(19),
+            colors: crate::config::output::RawColors::default(),
         }
     }
 }
