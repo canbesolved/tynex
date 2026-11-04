@@ -28,28 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.3.5
-
-Defaults:
-
-- [ ] RM-0026 Change the default `taskbar.iconbar.size` to `36`.
-- [ ] RM-0027 Change the default `taskbar.iconbar.border` to `5`.
-- [ ] RM-0028 Change the default `input.launcher.new_window_text_color`
-  to `#797979`, a neutral gray that reads the same on the dark and
-  light themes (contrast 4.35:1 on both backgrounds).
-- [ ] RM-0029 Change the default hint command (`input.hint.text`).
-- [ ] RM-0030 The hint color follows the theme. The new default
-  `input.hint.font_color = ""` uses a color built into the code:
-  white (`#ffffff`) on the dark theme, black (`#000000`) on the light
-  one. A `#RRGGBB` value still sets a fixed color.
-
-Hint:
-
-- [ ] RM-0031 Hint templates: reusable bash scripts for
-  `input.hint.text`, for common status lines without writing a
-  command from scratch. They live in `~/.local/share/tynex/hints/`.
-  The daemon creates that folder on start when it is missing.
-
 ### 0.3.6
 
 - [ ] RM-0010 **Breaking:** rename `output.max_rows` to

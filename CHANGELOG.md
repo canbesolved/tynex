@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-11-04
+
+New defaults and hint templates.
+
 ### Added
 
 - Hint templates in `extensions/hint_templates/`: `date_time.sh`,
@@ -16,6 +20,8 @@ project adheres to
   `~/.local/share/tynex/hints/` and point `input.hint.text` at it.
   The daemon creates that folder on start when it is missing, with
   `default.sh` ([ADR-0092](docs/adr/0092_hint_script.md)) (RM-0031).
+
+### Changed
 
 - The default `taskbar.iconbar.size` is `36` (was `24`) (RM-0026).
 - The default `taskbar.iconbar.border` is `5` (was `4`) (RM-0027).
@@ -640,7 +646,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.4...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.5...HEAD
+[0.3.5]: https://github.com/canbesolved/tynex/compare/v0.3.4...v0.3.5
 [0.3.4]: https://github.com/canbesolved/tynex/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/canbesolved/tynex/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/canbesolved/tynex/compare/v0.3.0...v0.3.2
