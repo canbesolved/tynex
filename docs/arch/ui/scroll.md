@@ -6,7 +6,7 @@ when they hold more rows than they show
 
 ## Rules
 
-- Rows shown: `output.max_rows`, or fewer on a short screen
+- Rows shown: `output.max_results`, or fewer on a short screen
   ([fit.md](fit.md)). Scrolling is on only when the list is longer.
 - One wheel notch moves 3 rows. Touchpad scrolling adds up pixels and
   moves one row per row height. The list stops at its first and last

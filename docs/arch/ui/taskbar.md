@@ -100,11 +100,11 @@ the dropdown slides in. The gaps scale with the display.
   inner width, every icon and the gap shrink by the same factor
   until the row fits. A shorter row is centered.
 - In `iconbar` mode the spare room is as tall as the dropdown of the
-  app with the most windows, capped at `output.max_rows`. It is zero
+  app with the most windows, capped at `output.max_results`. It is zero
   when every app has one window. It stays that tall while the strip
   is showing, so opening the dropdown does not resize the popup.
 - The dropdown lists titles alphabetically, ignoring case, at most
-  `output.max_rows`. In `both` mode it also shows no more rows than
+  `output.max_results`. In `both` mode it also shows no more rows than
   the title list, so the popup does not grow. A longer dropdown
   keeps the selected title visible, and moves only when that title
   would leave the window. Its width fits the
@@ -136,7 +136,7 @@ The list does not show search matches. Those are the
   is no app name column
   ([ADR-0058](../../adr/0058_title_bar_row.md)).
 - Titles are truncated with an ellipsis (see [render.md](render.md)).
-- At most `output.max_rows` rows, fewer on a short screen
+- At most `output.max_results` rows, fewer on a short screen
   ([fit.md](fit.md)). A longer list scrolls: with the wheel or the
   touchpad, and to keep a newly selected window visible. A scrollbar
   shows while it scrolls ([scroll.md](scroll.md)).

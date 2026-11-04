@@ -185,14 +185,14 @@ impl Default for RawLauncher {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawOutput {
-    pub max_rows: Spanned<u16>,
+    pub max_results: Spanned<u16>,
     pub colors: crate::config::output::RawColors,
 }
 
 impl Default for RawOutput {
     fn default() -> Self {
         Self {
-            max_rows: unspanned(19),
+            max_results: unspanned(10),
             colors: crate::config::output::RawColors::default(),
         }
     }

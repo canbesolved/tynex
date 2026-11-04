@@ -189,7 +189,7 @@ fn syntax_and_type_errors_stop_at_first() {
 fn value_errors_are_all_reported() {
     let text = "[main]\nfont = \"/nope.ttf\"\n\
                 font_size = 120\nwidth = 100\n\
-                [output]\nmax_rows = 0\n";
+                [output]\nmax_results = 0\n";
     let all = errors(text);
 
     assert_eq!(all.len(), 4, "{all:?}");
@@ -201,7 +201,7 @@ fn value_errors_are_all_reported() {
         "{all:?}"
     );
     assert!(
-        all.iter().any(|m| m.contains("`output.max_rows`")),
+        all.iter().any(|m| m.contains("`output.max_results`")),
         "{all:?}"
     );
 }

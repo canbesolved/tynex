@@ -40,7 +40,7 @@ query shows the open windows again when `taskbar.mode` is
   hide it.
 - An empty match list still keeps one row of height, so the popup
   does not collapse.
-- At most `output.max_rows` rows, fewer on a short screen
+- At most `output.max_results` rows, fewer on a short screen
   ([fit.md](fit.md)). More matches scroll: with the wheel or the
   touchpad, and to keep a newly selected match visible. A scrollbar
   shows while it scrolls ([scroll.md](scroll.md)).

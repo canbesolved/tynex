@@ -9,6 +9,12 @@ project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** `output.max_rows` is renamed to `output.max_results`,
+  with a new default of `10` (was `19`). A file that still sets
+  `max_rows` stops the daemon until it is edited (RM-0010).
+
 ## [0.3.5] - 2026-11-04
 
 New defaults and hint templates.
