@@ -116,6 +116,7 @@ fn refresh_puts_the_miro_tab_first() {
     state.tab_lists = vec![TabList {
         source: SourceId(1),
         pid: 7,
+        windows: Vec::new(),
         browser: "Brave".into(),
         icon: "brave-browser".into(),
         tabs: vec![TabInfo {

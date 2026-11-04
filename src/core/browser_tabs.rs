@@ -4,6 +4,8 @@
 //! Browser tab identity. The module and the adapter share these types.
 //! Neither this file nor its callers perform I/O.
 
+use crate::core::window::WindowId;
+
 /// Daemon-assigned id of one host connection. Never reused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct SourceId(pub u32);
@@ -35,6 +37,7 @@ pub struct TabList {
     pub browser: String, // Display name, when no window matches
     pub icon: String,    // Fallback icon name or path
     pub tabs: Vec<TabInfo>,
+    pub windows: Vec<WindowId>, // Windows of `pid` when the list came
 }
 
 /// A tab-list change the mode applies to the open popup.

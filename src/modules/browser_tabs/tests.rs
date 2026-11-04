@@ -56,6 +56,7 @@ fn leading_matches_come_first() {
     let list = TabList {
         source: SourceId(1),
         pid: 4,
+        windows: Vec::new(),
         browser: "Brave".to_owned(),
         icon: "brave".to_owned(),
         tabs: vec![
@@ -105,6 +106,23 @@ fn lists_are_replaced_and_dropped_by_source() {
 
     assert_eq!(session.apply(gone.clone(), &mut state, &[]), Action::Redraw);
     assert_eq!(session.apply(gone, &mut state, &[]), Action::None);
+}
+
+#[test]
+fn a_list_keeps_the_windows_of_its_browser() {
+    let mut state = Some(State::new(Vec::new()));
+    let windows = [
+        window("w1", "A - Brave", Some(4)),
+        window("w2", "B - Kate", Some(5)),
+        window("w3", "C - Brave", None),
+    ];
+    let update = list(vec![tab(1, 1, true, 1, "A", "https://a.example")]);
+
+    Session::default().apply(update, &mut state, &windows);
+    assert_eq!(
+        state.unwrap().tab_lists[0].windows,
+        [WindowId("w1".to_owned())]
+    );
 }
 
 #[test]
@@ -169,6 +187,7 @@ fn activation_uses_the_noted_list() {
         open.tab_lists = vec![TabList {
             source: SourceId(1),
             pid: 4,
+            windows: Vec::new(),
             browser: String::new(),
             icon: String::new(),
             tabs: Vec::new(),

@@ -55,8 +55,10 @@ impl Input {
         };
         let tabs = crate::modules::browser_tabs::rows(&s.query, &s.tab_lists);
 
-        s.output =
-            exact::exact_first(&s.query, browser_tabs::join(windows, tabs));
+        s.output = exact::exact_first(
+            &s.query,
+            browser_tabs::join(windows, tabs, &s.tab_lists),
+        );
         s.selected = 0;
     }
 }
