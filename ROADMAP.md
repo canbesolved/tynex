@@ -28,12 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.3.6
-
-- [ ] RM-0010 **Breaking:** rename `output.max_rows` to
-  `output.max_results`. Default `10`. A file that still sets
-  `max_rows` stops the daemon until it is edited.
-
 ### 0.3.7
 
 - [ ] RM-0011 Remove duplicate rows from the output bar results. A
