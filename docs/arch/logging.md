@@ -57,7 +57,7 @@ panic. Then it logs the crash at `error` level, like any other
 message, and the process aborts.
 
 ```text
-tynex: error: tynex 0.3.5 crashed
+tynex: error: tynex 0.3.6 crashed
 panicked at src/core/switcher.rs:42:18:
 index out of bounds: the len is 0 but the index is 2
 backtrace:
