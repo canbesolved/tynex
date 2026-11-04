@@ -81,7 +81,7 @@ hint.update = 0
 
 [output]
 # Cap for the output bar, the title list and an icon dropdown.
-max_rows = 19
+max_results = 10
 # Row background in the output bar per result type: "" for none,
 # "#RRGGBB", or "#RRGGBBAA" where AA is the opacity.
 colors.window = ""           # Open windows
@@ -226,7 +226,7 @@ one into the folder and point `hint.text` at it, for example
 
 Edits are kept. Delete `default.sh` to get the current one again.
 
-`output.max_rows` caps the output bar, the title list and an
+`output.max_results` caps the output bar, the title list and an
 icon dropdown. On a short screen fewer rows are drawn, so the popup
 fits (see [fit.md](ui/fit.md)). A title list or output bar longer
 than its rows scrolls, with a scrollbar (see
@@ -268,6 +268,10 @@ removed in 0.2.11. Their keys moved to `[input]`, `[output]` and
 `iconbar` and `titlebar`. A file that still uses an old section or
 an old mode value stops the daemon
 ([ADR-0066](../adr/0066_short_sections.md)).
+
+`output.max_rows` was renamed to `output.max_results` in 0.3.6, and
+the default went from `19` to `10`. A file that still sets
+`max_rows` stops the daemon with an unknown key error.
 
 `taskbar.titlebar.show_icons` draws the app icon before the title
 (default `true`). `false` shows titles only, with no icon slot.
@@ -360,7 +364,7 @@ The config is read once, when `tynex daemon` starts
 | `input.hint.enabled`              | `true` or `false`                      |
 | `input.hint.font_color`           | `""` or `#RRGGBB`                      |
 | `input.hint.update`               | 0 to 86400                             |
-| `output.max_rows`                 | 1 to 50                                |
+| `output.max_results`              | 1 to 50                                |
 | `output.colors.*`                 | `""`, `#RRGGBB` or `#RRGGBBAA`         |
 | `taskbar.mode`                    | `off`, `iconbar`, `titlebar` or `both` |
 | `taskbar.titlebar.sort_by`        | `recently` or `app`                    |

@@ -105,7 +105,7 @@ fn start(config: &Config) -> Result<(), String> {
             PromptMode::new(
                 Input::new(config.input.launcher.clone(), app_list),
                 config.taskbar.mode,
-                config.output.max_rows,
+                config.output.max_results,
             )
             .with_tabs(config.browser_tabs.enabled)
             .with_rename(config.hotkeys.rename.clone())

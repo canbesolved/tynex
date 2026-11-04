@@ -9,15 +9,15 @@ use std::path::{Path, PathBuf};
 use toml::Spanned;
 
 use crate::config::error::ConfigError;
-use crate::config::output::check_colors;
+use crate::config::output::check_output;
 use crate::config::raw::{
     RawConfig, RawHint, RawIconBar, RawLauncher, RawLauncherMode, RawSortBy,
     RawTaskbarMode,
 };
 use crate::config::{
     Config, Font, HintConfig, IconBarConfig, InputConfig, LauncherConfig,
-    LauncherMode, MainConfig, NewWindowConfig, OutputConfig, TaskbarConfig,
-    TaskbarMode, TitleBarConfig,
+    LauncherMode, MainConfig, NewWindowConfig, TaskbarConfig, TaskbarMode,
+    TitleBarConfig,
 };
 use crate::core::order::SortBy;
 use crate::core::view::Rgb;
@@ -51,7 +51,6 @@ pub(super) fn validate(
 
     check_range("main.font_size", &main.font_size, 8..=72, &mut err);
     check_range("main.width", &main.width, 200..=2000, &mut err);
-    check_range("output.max_rows", &raw.output.max_rows, 1..=50, &mut err);
     check_icon(&raw.taskbar.iconbar, &mut err);
     let pinned = crate::config::taskbar::check_pinned(
         raw.taskbar.iconbar.pinned.as_ref(),
@@ -62,7 +61,7 @@ pub(super) fn validate(
     let new_window = check_new_window(&raw.input.launcher, &mut err);
     let hint = check_hint(&raw.input.hint, &mut err);
     let hotkeys = crate::config::hotkeys::check(&raw.hotkeys, &mut err);
-    let colors = check_colors(&raw.output.colors, &mut err);
+    let output = check_output(&raw.output, &mut err);
 
     if !errors.is_empty() {
         return Err(errors);
@@ -90,10 +89,7 @@ pub(super) fn validate(
             },
             hint,
         },
-        output: OutputConfig {
-            max_rows: raw.output.max_rows.into_inner(),
-            colors,
-        },
+        output,
         taskbar: TaskbarConfig {
             mode: taskbar_mode(&raw.taskbar.mode),
             titlebar: TitleBarConfig {
@@ -206,7 +202,7 @@ fn check_icon(
 }
 
 /// Reports `<name>` when its value is outside `range`.
-fn check_range(
+pub(super) fn check_range(
     name: &str,
     value: &Spanned<u16>,
     range: RangeInclusive<u16>,

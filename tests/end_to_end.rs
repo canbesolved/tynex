@@ -33,7 +33,7 @@ fn start(config: &Config) -> (App, Source, EventRx) {
         PromptMode::new(
             Input::new(config.input.launcher.clone(), Vec::new()),
             config.taskbar.mode,
-            config.output.max_rows,
+            config.output.max_results,
         ),
     );
 

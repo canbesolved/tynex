@@ -1,26 +1,28 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! The `[output]` table: row cap and row colors.
+//! The `[output]` table: result cap and row colors.
 
 use std::ops::Range;
 
 use serde::Deserialize;
 use toml::Spanned;
 
+use crate::config::raw::RawOutput;
+use crate::config::validate::check_range;
 use crate::core::row_color::{RowColors, Tint};
 
 /// The `[output]` table.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OutputConfig {
-    pub max_rows: u16, // Cap for the output bar and the title list
+    pub max_results: u16, // Cap for the output bar and the title list
     pub colors: RowColors, // Row background per result type
 }
 
 impl Default for OutputConfig {
     fn default() -> Self {
         Self {
-            max_rows: 19,
+            max_results: 10,
             colors: RowColors::default(),
         }
     }
@@ -35,9 +37,24 @@ pub(super) struct RawColors {
     pub app: Option<Spanned<String>>,
 }
 
+/// Checks `[output]`. A bad value is an error; the returned value is
+/// then unused.
+pub(super) fn check_output(
+    raw: &RawOutput,
+    err: &mut impl FnMut(Range<usize>, String),
+) -> OutputConfig {
+    let cap = &raw.max_results;
+
+    check_range("output.max_results", cap, 1..=50, err);
+    OutputConfig {
+        max_results: *cap.get_ref(),
+        colors: check_colors(&raw.colors, err),
+    }
+}
+
 /// Checks the row colors. A bad value is an error; the returned value
 /// is then unused.
-pub(super) fn check_colors(
+fn check_colors(
     raw: &RawColors,
     err: &mut impl FnMut(Range<usize>, String),
 ) -> RowColors {

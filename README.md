@@ -196,7 +196,7 @@ hint.text = "~/.local/share/tynex/hints/default.sh"
 hint.update = 0              # Seconds; 0 runs once per open
 
 [output]
-max_rows = 19
+max_results = 10             # Rows shown, 1 to 50
 colors.window = ""           # Row band: "", #RRGGBB or #RRGGBBAA
 colors.tab = ""
 colors.app = ""              # Apps that are not running
@@ -251,6 +251,9 @@ and stay `hint.*` under `[input]`.
 Upgrading to 0.3.0: `[browser_tabs]` is new and optional. Leave it
 out, or set `enabled = false`, and an older file keeps working.
 Set `enabled = true` and load the extension to search tabs.
+
+Upgrading to 0.3.6: rename `output.max_rows` to `output.max_results`.
+The default is now `10`.
 
 ## Architecture
 

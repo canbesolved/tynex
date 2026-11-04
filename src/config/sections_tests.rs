@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Section names from 0.2.11.
+//! Section names from 0.2.11 and keys renamed since.
 
 use super::*;
 use crate::core::order::SortBy;
@@ -47,7 +47,7 @@ fn new_layout_parses() {
 [input]\n\
 launcher.mode = \"off\"\n\
 [output]\n\
-max_rows = 7\n\
+max_results = 7\n\
 [taskbar]\n\
 mode = \"titlebar\"\n\
 titlebar.sort_by = \"app\"\n\
@@ -58,11 +58,20 @@ iconbar.border = 2\n";
     let config = parse(text, &no_font).expect("valid config");
 
     assert_eq!(config.input.launcher.mode, LauncherMode::Off);
-    assert_eq!(config.output.max_rows, 7);
+    assert_eq!(config.output.max_results, 7);
     assert_eq!(config.taskbar.mode, TaskbarMode::Titlebar);
     assert_eq!(config.taskbar.titlebar.sort_by, SortBy::App);
     assert!(!config.taskbar.titlebar.show_icons);
     assert!(config.taskbar.titlebar.strip_app_name);
     assert_eq!(config.taskbar.iconbar.size, 32);
     assert_eq!(config.taskbar.iconbar.border, 2);
+}
+
+#[test]
+fn max_results_replaces_max_rows() {
+    let msg = &errors("[output]\nmax_rows = 19\n")[0];
+
+    assert!(msg.contains("unknown key `max_rows`"), "{msg}");
+    assert!(msg.contains("release notes"), "{msg}");
+    assert_eq!(Config::default().output.max_results, 10);
 }

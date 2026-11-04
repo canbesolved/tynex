@@ -74,7 +74,7 @@ impl Look {
         Self {
             font_size: main.font_size,
             width: main.width,
-            max_rows: output.max_rows,
+            max_rows: output.max_results,
             taskbar: taskbar.mode,
             show_icons: taskbar.titlebar.show_icons,
             hint_color,
