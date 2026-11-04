@@ -29,12 +29,12 @@ launcher.mode = "gui_only"   # off | all | gui_only
 launcher.new_window = true
 # One space, a plus, two spaces, then "New window".
 launcher.new_window_text = " +  New window"
-launcher.new_window_text_color = "#8da787" # #RRGGBB
+launcher.new_window_text_color = "#797979" # #RRGGBB
 # Hint in the empty input bar. false hides it.
 hint.enabled = true
-hint.font_color = "#8da787" # #RRGGBB
+hint.font_color = ""         # "" follows the theme, or #RRGGBB
 # Shell command. Its first stdout line is the hint.
-hint.text = 'date +"%A %b %-d %T %Y"'
+hint.text = "~/.local/share/tynex/hints/default.sh"
 # Seconds after the previous exit. 0 runs once per open.
 hint.update = 0
 
@@ -61,9 +61,9 @@ titlebar.show_icons = true
 # Drop " — <app name>" from the end of window titles.
 titlebar.strip_app_name = false
 # Icon side in logical pixels, scaled with the display.
-iconbar.size = 24
+iconbar.size = 36
 # Selection border outside the icon, in logical pixels.
-iconbar.border = 4
+iconbar.border = 5
 # Apps that stay first in the strip, also when not running: desktop
 # file ids such as "firefox" or "org.kde.konsole".
 iconbar.pinned = []

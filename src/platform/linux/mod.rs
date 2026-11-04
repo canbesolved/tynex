@@ -12,6 +12,7 @@ pub mod evdev;
 pub mod event_loop;
 pub mod fonts;
 pub mod hint;
+pub mod hint_file;
 mod hint_proc;
 pub mod icon_theme;
 pub mod key_file;

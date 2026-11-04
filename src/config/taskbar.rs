@@ -67,8 +67,8 @@ pub struct IconBarConfig {
 impl Default for IconBarConfig {
     fn default() -> Self {
         Self {
-            size: 24,
-            border: 4,
+            size: 36,
+            border: 5,
             pinned: Vec::new(),
         }
     }

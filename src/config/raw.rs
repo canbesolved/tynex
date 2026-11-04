@@ -56,7 +56,7 @@ fn default_new_window_text() -> Spanned<String> {
 }
 
 fn default_new_window_color() -> Spanned<String> {
-    unspanned("#8da787".into())
+    unspanned("#797979".into())
 }
 
 fn default_hint_enabled() -> bool {
@@ -64,7 +64,7 @@ fn default_hint_enabled() -> bool {
 }
 
 fn default_hint_color() -> Spanned<String> {
-    unspanned("#8da787".into())
+    unspanned(String::new())
 }
 
 fn default_hint_text() -> Spanned<String> {
@@ -76,11 +76,11 @@ fn default_hint_update() -> Spanned<u32> {
 }
 
 fn default_size() -> Spanned<u16> {
-    unspanned(24)
+    unspanned(36)
 }
 
 fn default_icon_border() -> Spanned<u16> {
-    unspanned(4)
+    unspanned(5)
 }
 
 #[derive(Deserialize, Default)]

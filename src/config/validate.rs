@@ -165,16 +165,17 @@ fn check_hint(
     err: &mut impl FnMut(std::ops::Range<usize>, String),
 ) -> HintConfig {
     let color = raw.font_color.get_ref();
-    let font_color = Rgb::parse(color).unwrap_or_else(|| {
+    let font_color = Rgb::parse(color);
+
+    if font_color.is_none() && !color.is_empty() {
         err(
             raw.font_color.span(),
             format!(
                 "`input.hint.font_color` = {color:?} is not a color, \
-                 expected \"#RRGGBB\""
+                 expected \"\" or \"#RRGGBB\""
             ),
         );
-        HintConfig::default().font_color
-    });
+    }
     let update = *raw.update.get_ref();
 
     if update > 86_400 {

@@ -43,6 +43,13 @@ Defaults:
   white (`#ffffff`) on the dark theme, black (`#000000`) on the light
   one. A `#RRGGBB` value still sets a fixed color.
 
+Hint:
+
+- [ ] RM-0031 Hint templates: reusable bash scripts for
+  `input.hint.text`, for common status lines without writing a
+  command from scratch. They live in `~/.local/share/tynex/hints/`.
+  The daemon creates that folder on start when it is missing.
+
 ### 0.3.6
 
 - [ ] RM-0010 **Breaking:** rename `output.max_rows` to
@@ -200,13 +207,6 @@ Configuration:
   showing the popup (see Back to last in 0.4.0).
 - [ ] RM-0025 `tynex reload`: re-read the config without restarting. An invalid
   file is reported and the running config stays in use.
-
-Input:
-
-- [ ] RM-0031 Hint templates: reusable bash scripts for `input.hint.text`, for
-  common status lines without writing a command from scratch. They
-  live in `~/.local/share/tynex/hints/`. The daemon creates that
-  folder on start when it is missing.
 
 Logging:
 

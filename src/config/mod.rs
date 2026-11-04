@@ -81,14 +81,13 @@ pub enum LauncherMode {
 /// Default title of the extra row under a running app.
 pub(crate) const NEW_WINDOW_TEXT: &str = " +  New window";
 
-/// Default color of that title, `#8da787`.
-pub(crate) const NEW_WINDOW_COLOR: Rgb = Rgb::new(0x8d, 0xa7, 0x87);
+/// Default color of that title, `#797979`: a gray that reads the same
+/// on the dark and light themes.
+pub(crate) const NEW_WINDOW_COLOR: Rgb = Rgb::new(0x79, 0x79, 0x79);
 
-/// Default hint command. Its stdout is the date and time.
-pub(crate) const HINT_TEXT: &str = "date +\"%A %b %-d %T %Y\"";
-
-/// Default hint color, `#8da787`.
-pub(crate) const HINT_COLOR: Rgb = Rgb::new(0x8d, 0xa7, 0x87);
+/// Default hint command: the script the daemon writes on start. Its
+/// stdout is the date, time and battery level.
+pub(crate) const HINT_TEXT: &str = "~/.local/share/tynex/hints/default.sh";
 
 /// Installed apps in the output bar, and the extra new-window row.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -128,7 +127,7 @@ impl Default for NewWindowConfig {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HintConfig {
     pub enabled: bool,
-    pub font_color: Rgb,
+    pub font_color: Option<Rgb>, // None follows the theme
     pub text: String,
     pub update: u32, // Seconds after exit; 0 runs once per open
 }
@@ -137,7 +136,7 @@ impl Default for HintConfig {
     fn default() -> Self {
         Self {
             enabled: true,
-            font_color: HINT_COLOR,
+            font_color: None,
             text: HINT_TEXT.into(),
             update: 0,
         }

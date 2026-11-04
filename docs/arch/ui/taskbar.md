@@ -94,7 +94,7 @@ the dropdown slides in. The gaps scale with the display.
   ([ADR-0067](../../adr/0067_count_badge.md)). The strip is one icon
   tall.
 - `taskbar.iconbar.size` is the icon side in logical pixels, default
-  `24`, from 8 to 128. It is multiplied by the output scale, like
+  `36`, from 8 to 128. It is multiplied by the output scale, like
   `main.font_size`. A value outside that range stops the daemon.
 - The gap is 0.35 of the drawn side. If the row is wider than the
   inner width, every icon and the gap shrink by the same factor

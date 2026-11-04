@@ -29,6 +29,7 @@ platform/linux/
   fonts.rs        The font: configured path or fc-match, mapped once
   hint.rs         Hint command: spawn, animation, repeat wait
   hint_proc.rs    Spawn `sh -c` and read stdout without blocking
+  hint_file.rs    The hints folder and default script on start
   key_file.rs     Reader for desktop entries, theme indexes, kdeglobals
   desktop_files.rs  App names and icons from desktop files
   apps/           App catalog: scan `.desktop`, spawn Exec
@@ -56,6 +57,15 @@ or URL are dropped; `%%`, `%c`, `%k` and `%i` are expanded.
 `PATH`. The child is its own session; the event loop reaps it.
 
 ## Hint command
+
+On start, `hint_file.rs` prepares `~/.local/share/tynex/hints/`
+([ADR-0092](../../adr/0092_hint_script.md)). Only
+`extensions/hint_templates/default.sh` is built into the binary. A
+missing folder is created with it, mode `0755`. In an existing
+folder it is written only when the hint is on,
+`hint.text` is the default and nothing is at that path. It never
+replaces a file or a link. A failure is logged and the daemon starts
+anyway.
 
 When `input.hint.enabled` is set, opening the popup spawns
 `sh -c` with `hint.text` and draws before that process exits

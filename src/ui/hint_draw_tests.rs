@@ -97,3 +97,21 @@ fn red_center(pixels: &[u8], width: u32) -> f32 {
     }
     sum / n
 }
+
+#[test]
+fn hint_color_follows_the_theme_unless_set() {
+    use crate::config::{Config, Theme as Scheme};
+    use crate::core::view::Rgb;
+    use crate::ui::draw::Look;
+
+    let look = |c: &Config| {
+        Look::new(&c.main, &c.output, &c.input.hint, &c.taskbar).hint_color
+    };
+    let mut config = Config::default();
+
+    assert_eq!(look(&config), Rgba(0xff, 0xff, 0xff, 0xff));
+    config.main.theme = Scheme::Light;
+    assert_eq!(look(&config), Rgba(0, 0, 0, 0xff));
+    config.input.hint.font_color = Some(Rgb::new(1, 2, 3));
+    assert_eq!(look(&config), Rgba(1, 2, 3, 0xff));
+}
