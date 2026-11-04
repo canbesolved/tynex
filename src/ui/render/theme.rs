@@ -4,6 +4,7 @@
 //! Colors and sizes. `main.theme` fills this struct. Drawing code
 //! reads it from one place, so other sources can fill it later.
 
+use crate::config::Theme as Scheme;
 use crate::core::row_color::RowColors;
 use crate::ui::render::canvas::Rgba;
 
@@ -15,6 +16,7 @@ pub struct Theme {
     pub selected: Rgba, // Selected row background
     pub text: Rgba,
     pub highlight: Rgba, // Search matches
+    pub hint: Rgba,      // Hint text when `hint.font_color` is ""
     pub rows: RowColors, // Output bar row background per result type
     pub radius: f32,
     pub padding: f32,
@@ -30,6 +32,7 @@ impl Theme {
             selected: Rgba(0x1f, 0x6f, 0xeb, 0x66),
             text: Rgba(0xe6, 0xed, 0xf3, 0xff),
             highlight: Rgba(0x58, 0xa6, 0xff, 0xff),
+            hint: Rgba(0xff, 0xff, 0xff, 0xff),
             rows: RowColors::default(),
             radius: 12.0,
             padding: 8.0,
@@ -44,7 +47,17 @@ impl Theme {
             border: Rgba(0xd0, 0xd7, 0xde, 0xff),
             text: Rgba(0x1f, 0x23, 0x28, 0xff),
             highlight: Rgba(0x09, 0x69, 0xda, 0xff),
+            hint: Rgba(0, 0, 0, 0xff),
             ..Self::dark()
+        }
+    }
+
+    /// The built-in theme of `main.theme`.
+    #[must_use]
+    pub fn of(scheme: Scheme) -> Self {
+        match scheme {
+            Scheme::Dark => Self::dark(),
+            Scheme::Light => Self::light(),
         }
     }
 }
@@ -69,6 +82,9 @@ mod tests {
         assert_eq!(light.border, Rgba(0xd0, 0xd7, 0xde, 0xff));
         assert_eq!(light.text, Rgba(0x1f, 0x23, 0x28, 0xff));
         assert_eq!(light.highlight, Rgba(0x09, 0x69, 0xda, 0xff));
+        assert_eq!(light.hint, Rgba(0, 0, 0, 0xff));
+        assert_eq!(dark.hint, Rgba(0xff, 0xff, 0xff, 0xff));
+        assert_eq!(Theme::of(Scheme::Light), light);
         assert_ne!(light.background, dark.background);
         assert_ne!(light.border, dark.border);
         assert_ne!(light.text, dark.text);

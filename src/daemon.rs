@@ -75,6 +75,8 @@ fn start(config: &Config) -> Result<(), String> {
         .map_err(|e| format!("cannot load the font: {e}"))?;
     let text = Text::new(face);
     let (apps, app_list, pinned) = catalog(config);
+
+    crate::platform::linux::hint_file::prepare(&config.input.hint);
     let mut painter = Painter::new(
         text,
         Icons::new(Box::new(IconTheme::default())),

@@ -25,7 +25,8 @@ Config sections follow the modules
 
 `>` is fixed. A row gap and one space separate it from the query.
 The rest is the query, empty until you type. While it is empty, the
-hint is centered in the popup, in `hint.font_color`, at the same
+hint is centered in the popup, in `hint.font_color` (by default
+white on the dark theme, black on the light one), at the same
 size as the query. Typing hides the hint. A 1 px beam in the text color stands
 at the cursor, 10% shorter than the text, including while the query
 is empty. `Left` and `Right` move it. It does not blink.

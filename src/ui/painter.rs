@@ -16,7 +16,6 @@ use std::time::Instant;
 
 use crate::config::{
     HintConfig, MainConfig, OutputConfig, Position, TaskbarConfig,
-    Theme as Scheme,
 };
 use crate::core::event::Click;
 use crate::core::view::View;
@@ -65,10 +64,7 @@ impl Painter {
             tabs: TabIcons::default(),
             theme: Theme {
                 rows: output.colors,
-                ..match main.theme {
-                    Scheme::Dark => Theme::dark(),
-                    Scheme::Light => Theme::light(),
-                }
+                ..Theme::of(main.theme)
             },
             look: Look::new(main, output, hint, taskbar),
             position: main.position,

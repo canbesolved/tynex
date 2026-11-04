@@ -67,7 +67,9 @@ impl Look {
         hint: &HintConfig,
         taskbar: &TaskbarConfig,
     ) -> Self {
-        let color = hint.font_color;
+        let theme = Theme::of(main.theme).hint;
+        let hint_color =
+            hint.font_color.map_or(theme, |c| Rgba(c.r, c.g, c.b, 0xff));
 
         Self {
             font_size: main.font_size,
@@ -75,7 +77,7 @@ impl Look {
             max_rows: output.max_rows,
             taskbar: taskbar.mode,
             show_icons: taskbar.titlebar.show_icons,
-            hint_color: Rgba(color.r, color.g, color.b, 0xff),
+            hint_color,
             icon_size: f32::from(taskbar.iconbar.size),
             border: f32::from(taskbar.iconbar.border),
         }

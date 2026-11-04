@@ -21,8 +21,8 @@ fn errors(text: &str) -> Vec<String> {
 fn icon_bar_defaults() {
     let config = parse("", &no_font).expect("valid config");
 
-    assert_eq!(config.taskbar.iconbar.size, 24);
-    assert_eq!(config.taskbar.iconbar.border, 4);
+    assert_eq!(config.taskbar.iconbar.size, 36);
+    assert_eq!(config.taskbar.iconbar.border, 5);
 }
 
 #[test]

@@ -189,10 +189,10 @@ pinned = ["Alt+1", "Alt+2", "Alt+3", "Alt+4", "Alt+5", "Alt+6",
 launcher.mode = "gui_only"   # off | all | gui_only
 launcher.new_window = true   # false hides the extra row
 launcher.new_window_text = " +  New window"
-launcher.new_window_text_color = "#8da787" # #RRGGBB
+launcher.new_window_text_color = "#797979" # #RRGGBB
 hint.enabled = true          # false hides the empty-query hint
-hint.font_color = "#8da787"  # #RRGGBB
-hint.text = 'date +"%A %b %-d %T %Y"'
+hint.font_color = ""         # "" follows the theme, or #RRGGBB
+hint.text = "~/.local/share/tynex/hints/default.sh"
 hint.update = 0              # Seconds; 0 runs once per open
 
 [output]
@@ -206,8 +206,8 @@ mode = "iconbar"             # off | iconbar | titlebar | both
 titlebar.sort_by = "recently" # recently | app
 titlebar.show_icons = true  # false: titles only
 titlebar.strip_app_name = false # true drops the app name
-iconbar.size = 24            # Logical pixels, 8 to 128
-iconbar.border = 4           # Selection outline, 1 to 32
+iconbar.size = 36            # Logical pixels, 8 to 128
+iconbar.border = 5           # Selection outline, 1 to 32
 iconbar.pinned = []          # Desktop ids, e.g. "firefox"
 
 [browser_tabs]

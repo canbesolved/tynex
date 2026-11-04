@@ -9,6 +9,31 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Hint templates in `extensions/hint_templates/`: `date_time.sh`,
+  `battery.sh` and `system.sh`. Copy one into
+  `~/.local/share/tynex/hints/` and point `input.hint.text` at it.
+  The daemon creates that folder on start when it is missing, with
+  `default.sh` ([ADR-0092](docs/adr/0092_hint_script.md)) (RM-0031).
+
+- The default `taskbar.iconbar.size` is `36` (was `24`) (RM-0026).
+- The default `taskbar.iconbar.border` is `5` (was `4`) (RM-0027).
+- The default `input.launcher.new_window_text_color` is `#797979`, a
+  neutral gray that reads the same on the dark and light themes
+  (RM-0028).
+- The default hint is a script, `~/.local/share/tynex/hints/default.sh`,
+  that prints the date, time and battery level. The daemon writes it
+  on start when the default `hint.text` is in use and no file is
+  there; edits are kept ([ADR-0092](docs/adr/0092_hint_script.md))
+  (RM-0029).
+- The hint color follows the theme: the default
+  `input.hint.font_color = ""` is white on the dark theme and black
+  on the light one. A `#RRGGBB` value still sets a fixed color
+  (RM-0030).
+- Config files written by older releases keep their values; only new
+  files and missing keys get the new defaults.
+
 ## [0.3.4] - 2026-11-03
 
 Row colors per result type in the output bar.

@@ -25,7 +25,7 @@ fn missing_keys_keep_the_hint_on() {
         .hint;
 
     assert!(hint.enabled);
-    assert_eq!(hint.font_color, HINT_COLOR);
+    assert_eq!(hint.font_color, None); // Follows the theme
     assert_eq!(hint.text, HINT_TEXT);
     assert_eq!(hint.update, 0);
 }
@@ -41,7 +41,7 @@ hint.update = 15\n";
     let hint = parse(text, &no_font).expect("valid config").input.hint;
 
     assert!(!hint.enabled);
-    assert_eq!(hint.font_color, Rgb::new(0x11, 0x22, 0x33));
+    assert_eq!(hint.font_color, Some(Rgb::new(0x11, 0x22, 0x33)));
     assert_eq!(hint.text, "printf hi");
     assert_eq!(hint.update, 15);
 }
@@ -55,4 +55,14 @@ fn bad_hint_color_and_update_fail() {
     assert!(color.contains("#RRGGBB"), "{color}");
     assert!(update.contains("hint.update"), "{update}");
     assert!(update.contains("0 to 86400"), "{update}");
+}
+
+#[test]
+fn empty_hint_color_follows_the_theme() {
+    let hint = parse("[input]\nhint.font_color = \"\"\n", &no_font)
+        .expect("valid config")
+        .input
+        .hint;
+
+    assert_eq!(hint.font_color, None);
 }

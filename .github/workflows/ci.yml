@@ -105,7 +105,9 @@ jobs:
       - run: npm install -g markdownlint-cli2@0.23.3 adr-log@2.2.0
       - run: pipx install reuse==6.2.0
       - run: markdownlint-cli2 "**/*.md"
-      - run: shellcheck scripts/*.sh extensions/browser_tabs/chromium/build.sh
+      - run: >-
+          shellcheck scripts/*.sh extensions/browser_tabs/chromium/build.sh
+          extensions/hint_templates/*.sh
       - run: node --test extensions/browser_tabs/chromium/test/lib.test.js
       - run: reuse lint
       - name: ADR index is up to date

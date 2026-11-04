@@ -70,12 +70,12 @@ launcher.mode = "gui_only"   # off | all | gui_only
 launcher.new_window = true
 # One space, a plus, two spaces, then "New window".
 launcher.new_window_text = " +  New window"
-launcher.new_window_text_color = "#8da787" # #RRGGBB
+launcher.new_window_text_color = "#797979" # #RRGGBB
 # Hint in the empty input bar. false hides it.
 hint.enabled = true
-hint.font_color = "#8da787" # #RRGGBB
+hint.font_color = ""         # "" follows the theme, or #RRGGBB
 # Shell command. Its first stdout line is the hint.
-hint.text = 'date +"%A %b %-d %T %Y"'
+hint.text = "~/.local/share/tynex/hints/default.sh"
 # Seconds after the previous exit. 0 runs once per open.
 hint.update = 0
 
@@ -102,9 +102,9 @@ titlebar.show_icons = true
 # Drop " — <app name>" from the end of window titles.
 titlebar.strip_app_name = false
 # Icon side in logical pixels, scaled with the display.
-iconbar.size = 24
+iconbar.size = 36
 # Selection border outside the icon, in logical pixels.
-iconbar.border = 4
+iconbar.border = 5
 # Apps that stay first in the strip, also when not running: desktop
 # file ids such as "firefox" or "org.kde.konsole".
 iconbar.pinned = []
@@ -187,21 +187,44 @@ directly under that app
 launch row titled with its name. `launcher.new_window_text` is the
 title. The default is one space, `+`, two spaces, then `New window`.
 `launcher.new_window_text_color` is `#RRGGBB`. The default
-`#8da787` is a little dimmer than the theme text. A missing key
+`#797979` is a neutral gray that reads the same on the dark and
+light themes (contrast 4.35:1 on both). A missing key
 uses the default. An empty title or a color that is not `#RRGGBB`
 stops the daemon.
 
 `input.hint` is the text in the empty input bar
 ([ADR-0060](../adr/0060_input_hint.md)). `hint.enabled` defaults to
 `true`. `hint.text` is a shell command. The default is
-`date +"%A %b %-d %T %Y"`. Its first stdout line is the hint. An
-empty command shows nothing. `hint.font_color` is `#RRGGBB`. The
-default `#8da787` matches the new-window row. The hint uses
+`~/.local/share/tynex/hints/default.sh`, a bash script that prints
+the date, time and battery level
+([ADR-0092](../adr/0092_hint_script.md)). The daemon writes it on
+start when the default is in use and no file is there; it never
+replaces an existing file. Its first stdout line is the hint. An
+empty command shows nothing. `hint.font_color` is `""` (default) or
+`#RRGGBB`. `""` follows the theme: white on `dark`, black on
+`light`. The hint uses
 `main.font_size`. `hint.update` is seconds from 0 to 86400. `0`
 runs the command once each time the popup opens. A larger value
 runs it again while the popup stays open, waiting that long after
 the previous command exits. A bad color or a wait outside that
 range stops the daemon.
+
+Hint scripts live in `~/.local/share/tynex/hints/`
+([ADR-0092](../adr/0092_hint_script.md)). The daemon creates that
+folder on start when it is missing, with `default.sh`. More
+templates are in
+[extensions/hint_templates/](../../extensions/hint_templates/); copy
+one into the folder and point `hint.text` at it, for example
+`hint.text = "~/.local/share/tynex/hints/system.sh"`:
+
+| Script         | Hint                                 |
+| -------------- | ------------------------------------ |
+| `default.sh`   | Date, time and battery level         |
+| `date_time.sh` | Full date and time                   |
+| `battery.sh`   | Battery level and state              |
+| `system.sh`    | CPU load, memory in use and uptime   |
+
+Edits are kept. Delete `default.sh` to get the current one again.
 
 `output.max_rows` caps the output bar, the title list and an
 icon dropdown. On a short screen fewer rows are drawn, so the popup
@@ -284,10 +307,10 @@ with the previous window selected (see
 in 0.1.6 and is rejected.
 
 `taskbar.iconbar.size` is the icon side in logical pixels, default
-`24`, from 8 to 128. It is multiplied by the output scale, like
+`36`, from 8 to 128. It is multiplied by the output scale, like
 `main.font_size`. A value outside that range stops the daemon.
 `taskbar.iconbar.border` is the selection outline in the same
-units, default `4`, from 1 to 32. A missing key uses the default.
+units, default `5`, from 1 to 32. A missing key uses the default.
 The strip shows when `taskbar.mode` is `iconbar` or `both`
 ([ADR-0062](../adr/0062_icon_bar.md)).
 
@@ -335,7 +358,7 @@ The config is read once, when `tynex daemon` starts
 | `launcher.new_window_text`        | a non-empty string                     |
 | `launcher.new_window_text_color`  | `#RRGGBB`                              |
 | `input.hint.enabled`              | `true` or `false`                      |
-| `input.hint.font_color`           | `#RRGGBB`                              |
+| `input.hint.font_color`           | `""` or `#RRGGBB`                      |
 | `input.hint.update`               | 0 to 86400                             |
 | `output.max_rows`                 | 1 to 50                                |
 | `output.colors.*`                 | `""`, `#RRGGBB` or `#RRGGBBAA`         |

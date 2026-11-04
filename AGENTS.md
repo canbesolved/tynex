@@ -18,6 +18,8 @@ module you touch before changing code.
 - `extensions/`: add-ons the user installs into another program,
   `<feature>/<host>/`. Not part of the Cargo crate. The KWin script
   stays in `src/adapters/kde/` because the daemon embeds it.
+  `extensions/hint_templates/` holds hint scripts; the daemon embeds
+  only `default.sh` and writes it on start (ADR-0092).
 - `ROADMAP.md`: planned features (Now / Next / Later), each with an
   `RM-NNNN` code.
 - `CHANGELOG.md`: notable changes, Keep a Changelog format.
@@ -160,7 +162,8 @@ cargo clippy --all-targets -- -D warnings
 cargo test
 cargo deny check
 markdownlint-cli2 "**/*.md"
-shellcheck scripts/*.sh extensions/browser_tabs/chromium/build.sh
+shellcheck scripts/*.sh extensions/browser_tabs/chromium/build.sh \
+  extensions/hint_templates/*.sh
 node --test extensions/browser_tabs/chromium/test/lib.test.js
 reuse lint
 scripts/adr_log.sh   # When ADRs changed

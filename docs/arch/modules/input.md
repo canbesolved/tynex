@@ -33,7 +33,7 @@ installed apps join the output list
 - A running app whose name or id matches lists all of its open
   windows. When `launcher.new_window` is set, that app also gets a
   launch row after the windows. The default title is one space,
-  `+`, two spaces, then `New window`, in `#8da787`.
+  `+`, two spaces, then `New window`, in `#797979`.
   `launcher.new_window_text` and
   `launcher.new_window_text_color` change that title and color.
 - A title-only match lists those windows, and the launch row when
