@@ -30,8 +30,15 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ### 0.3.9
 
-- [ ] RM-0009 Config: priority of output bar results among open
-  windows, installed apps, browser tabs and exact matches.
+- [ ] RM-0023 Usage stats: matches of every kind (open windows,
+  browser tabs, installed apps) used most often through tynex come
+  first, inside the exact and the fuzzy band. Scores 0 to 100 in
+  `~/.local/share/tynex/usage_stats.tsv`; gone apps and closed tabs
+  are dropped. Replaces RM-0009.
+- [ ] RM-0068 The hotkey pressed again (`hotkeys.action = "last"`)
+  goes back to the previous window or browser tab, whichever came
+  last, so a tab opened before another app, or the tab before the
+  current one, is one press away.
 
 ### 0.4.0
 
@@ -118,12 +125,6 @@ Modes:
   today) shows the current mode and changes when you switch mode:
   prompt, AI, files and others. It comes with the second mode.
 
-Search:
-
-- [ ] RM-0023 Usage scoring: rank matches of every kind by use: open
-  windows, browser tabs and installed apps. The last used item comes
-  first; among the rest, more often used items rank higher.
-
 Browser tabs:
 
 - [ ] RM-0021 Edge and Vivaldi: register the host for them too,
@@ -136,7 +137,7 @@ Browser tabs:
   - With `"url"`, typing `reddit` lists every tab whose domain
   matches first, then the tabs that match only by title.
   - With `"title"`, title matches come first, then domain matches.
-  - Inside each group, tabs follow usage scoring (see Search).
+  - Inside each group, tabs follow usage stats (RM-0023).
 
 Info bar:
 

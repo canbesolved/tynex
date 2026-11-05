@@ -6,6 +6,7 @@
 use crate::core::browser_tabs::TabList;
 use crate::core::rename::Rename;
 use crate::core::text_edit;
+use crate::core::usage::Usage;
 use crate::core::view::{AppIcon, Edit, Row, RowTarget, Strip, View};
 use crate::core::window::WindowId;
 
@@ -25,6 +26,7 @@ pub struct State {
     pub tab_lists: Vec<TabList>, // Empty unless the popup is open
     pub rename: Option<Rename>, // Title being edited
     pub renamed: Option<(WindowId, String)>, // Kept title, for the switcher
+    pub usage: Usage,     // Lent by the switcher while open
 }
 
 impl State {
@@ -47,6 +49,7 @@ impl State {
             tab_lists: Vec::new(),
             rename: None,
             renamed: None,
+            usage: Usage::default(),
         }
     }
 

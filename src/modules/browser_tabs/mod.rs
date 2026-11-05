@@ -109,7 +109,8 @@ impl Session {
     }
 }
 
-/// Stores the tabs of one source while the popup is open.
+/// Stores the tabs of one source while the popup is open, and drops
+/// the usage scores of that browser's closed tabs.
 fn store(
     state: &mut Option<State>,
     windows: &[WindowInfo],
@@ -134,9 +135,13 @@ fn store(
             .collect(),
     };
 
+    let browser = list.browser.clone();
+
     match state.tab_lists.iter_mut().find(|l| l.source == source) {
         Some(slot) => *slot = list,
         None => state.tab_lists.push(list),
     }
+    // Only a connected browser's list can tell that a tab was closed.
+    state.usage.retain_tabs(&browser, &state.tab_lists);
     Action::Redraw
 }

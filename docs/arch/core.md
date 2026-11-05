@@ -19,13 +19,16 @@ core/
   rename.rs     Rename (title being edited), Renames (kept titles)
   row_color.rs  Tint, RowColors: output bar row band per result type
   switcher.rs   State machine (tests in switcher_tests.rs)
+  switcher_usage.rs  Lends usage scores to the popup, counts uses
   view.rs       View, Row, RowTarget: what the presenter must draw
   order.rs      SortBy: row order (recently, app)
+  places.rs     Places: current and previous window or tab
   icons.rs      Strip: pinned apps, then running apps; dropdown order
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
   title.rs      Row titles: sanitizing and app name stripping
   us_layout.rs  PhysicalKey, us_char: US layout for switch_layout
+  usage.rs      Usage, Item: scores 0 to 100 and the file text
 ```
 
 ## Types
@@ -160,6 +163,8 @@ pub trait Mode {
     fn on_hover(&mut self, click: Click, s: &mut State) -> Action;
     /// Recomputes output rows and highlights; default does nothing.
     fn refresh(&mut self, s: &mut State) {}
+    /// Sees the closing action before the state is dropped.
+    fn on_close(&mut self, action: &Action, s: &State) {}
     /// Applies a browser tab update; default ignores it.
     fn on_tabs(
         &mut self,
@@ -200,7 +205,9 @@ is added with its module.
   `sort_by` order (see [Row order](#row-order)), and select the
   previous window. A `Show` while visible is a second hotkey press: it
   closes the popup, or with `HotkeyAction::Last` returns `Activate`
-  for the previous window.
+  or `ActivateTab` for the previous place, a window or a tab, else
+  `Activate` for the previous window
+  ([ADR-0096](../adr/0096_last_tab.md)).
 - `Visible`: keys go to the mode. A mode returning `Activate`,
   `Launch`, `ActivateTab` or `Close` hides the popup.
 - `Windows` while visible: refresh the rows, keep the query, the

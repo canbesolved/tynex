@@ -52,7 +52,7 @@ switch_layout = false
 
 [hotkeys]
 # Hotkey pressed again while the popup is open: "hide" closes the
-# popup, "last" switches to the previously used window.
+# popup, "last" switches to the previously used window or tab.
 action = "last"              # hide | last
 # Key that renames the selected window until it closes: a key such
 # as "F2" or "Ctrl+R", a list of keys, or "" for none.
@@ -150,7 +150,10 @@ as `caps:escape`) keep the system layout. Default `false`.
 
 `hotkeys.action` sets what pressing the hotkey (or `tynex show`) does
 while the popup is open: `hide` closes it, `last` switches to the
-previously used window, or closes it when there is none.
+previously used window or browser tab, or closes it when there is
+none ([ADR-0096](../adr/0096_last_tab.md)). A tab counts when it was
+opened from the popup, or was the active tab while its browser was
+in front.
 
 `hotkeys.rename` is the key that renames the selected window
 ([ADR-0088](../adr/0088_rename_windows.md)). The default `"."` is

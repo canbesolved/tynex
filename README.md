@@ -140,9 +140,9 @@ stop it like `tynex quit`.
 
 On KDE the default hotkey is `Meta+Tab`. Change it in System Settings,
 Shortcuts, `tynex`. On other desktops bind `tynex show` to any key.
-Pressing the hotkey again switches to the previous window, or closes
-the popup with `hotkeys.action = "hide"`. The popup also closes when
-it loses keyboard focus.
+Pressing the hotkey again switches to the previous window or browser
+tab, or closes the popup with `hotkeys.action = "hide"`. The popup
+also closes when it loses keyboard focus.
 
 In the popup, type to filter, `Enter` or `Space` to switch, `Tab` or
 the arrows to move, and `Esc` to clear the query or close. Tap the

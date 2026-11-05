@@ -63,6 +63,13 @@ impl Apps {
         }
     }
 
+    /// Returns the ids of every scanned desktop file; empty when
+    /// nothing was scanned.
+    #[must_use]
+    pub fn ids(&self) -> std::collections::HashSet<String> {
+        self.entries.keys().cloned().collect()
+    }
+
     /// Returns the apps the launcher may list, by name: none when it is
     /// off, and no terminal apps with `gui_only`.
     #[must_use]

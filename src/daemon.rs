@@ -43,10 +43,7 @@ pub fn run() -> ExitCode {
 fn start(config: &Config) -> Result<(), String> {
     use crate::adapters;
     use crate::core::queue::channel;
-    use crate::core::switcher::Switcher;
     use crate::core::traits::WindowSource;
-    use crate::modes::prompt::PromptMode;
-    use crate::modules::input::Input;
     use crate::platform::linux::dbus::Bus;
     use crate::platform::linux::event_loop::{self, Parts};
     use crate::platform::linux::icon_theme::IconTheme;
@@ -98,19 +95,7 @@ fn start(config: &Config) -> Result<(), String> {
     log::info!("daemon started, desktop {:?}", config.main.desktop);
 
     let mut parts = Parts {
-        app: Switcher::new(
-            config.hotkeys.action,
-            config.taskbar.titlebar.strip_app_name,
-            config.taskbar.titlebar.sort_by,
-            PromptMode::new(
-                Input::new(config.input.launcher.clone(), app_list),
-                config.taskbar.mode,
-                config.output.max_results,
-            )
-            .with_tabs(config.browser_tabs.enabled)
-            .with_hotkeys(&config.hotkeys),
-        )
-        .with_pinned(pinned),
+        app: switcher(config, app_list, pinned, &apps),
         source,
         presenter,
         bus,
@@ -128,6 +113,39 @@ fn start(config: &Config) -> Result<(), String> {
     parts.source.stop();
     log::info!("daemon stopped");
     result
+}
+
+/// Builds the switcher and its prompt mode, with the saved usage
+/// scores.
+#[cfg(target_os = "linux")]
+fn switcher(
+    config: &Config,
+    app_list: Vec<crate::core::app::AppInfo>,
+    pinned: Vec<crate::core::app::AppInfo>,
+    apps: &crate::platform::linux::apps::Apps,
+) -> crate::core::switcher::Switcher<crate::modes::prompt::PromptMode> {
+    use crate::core::switcher::Switcher;
+    use crate::modes::prompt::PromptMode;
+    use crate::modules::input::Input;
+    use crate::platform::linux::usage_file;
+
+    let mode = PromptMode::new(
+        Input::new(config.input.launcher.clone(), app_list),
+        config.taskbar.mode,
+        config.output.max_results,
+    )
+    .with_tabs(config.browser_tabs.enabled)
+    .with_hotkeys(&config.hotkeys);
+    let ids = Some(apps.ids()).filter(|ids| !ids.is_empty());
+
+    Switcher::new(
+        config.hotkeys.action,
+        config.taskbar.titlebar.strip_app_name,
+        config.taskbar.titlebar.sort_by,
+        mode,
+    )
+    .with_pinned(pinned)
+    .with_usage(usage_file::load(), ids)
 }
 
 /// Scans the app catalog once. Returns it with the launcher list and

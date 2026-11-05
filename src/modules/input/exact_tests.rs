@@ -58,7 +58,7 @@ fn an_exact_tab_beats_a_fuzzy_window() {
     ];
 
     assert_eq!(
-        titles(&exact_first("miro", rows)),
+        titles(&exact_first("miro", rows, |_| 0)),
         ["Overall - Miro — miro.com", "Calendar"]
     );
 }
@@ -75,7 +75,7 @@ fn bands_keep_their_order_and_new_window_rows_stay() {
     ];
 
     assert_eq!(
-        titles(&exact_first("firefox", rows)),
+        titles(&exact_first("firefox", rows, |_| 0)),
         [
             "Firefox docs",
             " +  New window",
@@ -94,7 +94,10 @@ fn the_app_name_counts_for_windows_and_apps() {
         window("org.kde.konsole", "Konsole", "~ : bash"),
     ];
 
-    assert_eq!(titles(&exact_first("kons", rows)), ["~ : bash", "monitor"]);
+    assert_eq!(
+        titles(&exact_first("kons", rows, |_| 0)),
+        ["~ : bash", "monitor"]
+    );
 }
 
 #[test]

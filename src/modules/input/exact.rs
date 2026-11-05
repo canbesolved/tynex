@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 //! Exact matches first: rows that contain the query as typed move
-//! above rows that only match fuzzily, whatever their source.
+//! above rows that only match fuzzily, whatever their source. Inside
+//! each band, a higher usage score comes first (ADR-0095).
 
 use std::cmp::Reverse;
 
@@ -10,19 +11,28 @@ use crate::core::title::short_app_id;
 use crate::core::view::{Row, RowTarget};
 use crate::modules::search::{app_haystack, contains_query};
 
-/// Moves exact rows above fuzzy ones. The sort is stable, so each band
-/// keeps its order: windows, tabs, launch rows, leading matches first.
-pub fn exact_first(query: &str, rows: Vec<Row>) -> Vec<Row> {
+/// Moves exact rows above fuzzy ones, then sorts each band by `score`,
+/// highest first. The sort is stable, so equal scores keep their order:
+/// windows, tabs, launch rows, leading matches first.
+pub fn exact_first(
+    query: &str,
+    rows: Vec<Row>,
+    score: impl Fn(&Row) -> u8,
+) -> Vec<Row> {
     let own: Vec<bool> = rows.iter().map(|row| own(query, row)).collect();
     let exact: Vec<bool> = rows
         .iter()
         .zip(&own)
         .map(|(row, &hit)| hit || with_its_windows(&rows, &own, row))
         .collect();
-    let mut keyed: Vec<(bool, Row)> = exact.into_iter().zip(rows).collect();
+    let mut keyed: Vec<(bool, u8, Row)> = exact
+        .into_iter()
+        .zip(rows)
+        .map(|(hit, row)| (hit, score(&row), row))
+        .collect();
 
-    keyed.sort_by_key(|(hit, _)| Reverse(*hit));
-    keyed.into_iter().map(|(_, row)| row).collect()
+    keyed.sort_by_key(|(hit, score, _)| (Reverse(*hit), Reverse(*score)));
+    keyed.into_iter().map(|(.., row)| row).collect()
 }
 
 /// The row's own text contains the query: the title, and for windows

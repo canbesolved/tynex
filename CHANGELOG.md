@@ -9,6 +9,22 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Usage stats: in the output bar, the windows, tabs and apps used
+  most often through tynex come first, inside the exact and the
+  fuzzy matches. Scores, 0 to 100, are kept in
+  `~/.local/share/tynex/usage_stats.tsv`; apps that are gone and
+  closed tabs are dropped. Nothing changes until something is used
+  ([ADR-0095](docs/adr/0095_usage_stats.md)) (RM-0023).
+
+### Changed
+
+- `hotkeys.action = "last"` goes back to the previous window or
+  browser tab, whichever came last: a GitHub tab opened before
+  switching to another app, or the tab before the current one
+  ([ADR-0096](docs/adr/0096_last_tab.md)) (RM-0068).
+
 ## [0.3.8] - 2026-11-05
 
 Keys that confirm a match and keys that type a space.

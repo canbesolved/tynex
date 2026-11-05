@@ -69,6 +69,11 @@ Each band keeps the order above, so `miro` lists the tab
 only through `chromium-browser`, while `c` still lists Cursor and
 its new-window row before Google Chrome.
 
+Inside each band, rows are then sorted by usage score, highest first
+([ADR-0095](../../adr/0095_usage_stats.md)). A window and a launch
+row use their app's score, a tab its own. The sort is stable, so
+equal scores, and every row before any use, keep the order above.
+
 `gui_only` skips `Terminal=true` apps. The platform catalog supplies
 `AppInfo` values; `Exec` stays on the platform
 ([platforms/linux.md](../platforms/linux.md)).
