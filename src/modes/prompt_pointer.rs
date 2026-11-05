@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Pointer on the title list: hover selects, a click activates.
+//! Pointer on the title list: hover selects, a click activates. Rows
+//! are the title list as drawn, the history first (ADR-0097).
 
 use super::PromptMode;
 use crate::core::event::Action;
@@ -14,7 +15,7 @@ pub(super) fn hover_row(
     s: &mut State,
     index: usize,
 ) -> Action {
-    if !list_on(mode, s) || index >= s.rows.len() || index == s.selected {
+    if !list_on(mode, s) || index >= s.titles().len() || index == s.selected {
         return Action::None;
     }
     s.selected = index;
@@ -27,15 +28,17 @@ pub(super) fn click_row(
     s: &mut State,
     index: usize,
 ) -> Action {
-    if !list_on(mode, s) || index >= s.rows.len() {
+    let Some(row) = s.titles().get(index).filter(|_| list_on(mode, s)) else {
         return Action::None;
-    }
-    s.selected = index;
-    match &s.rows[index].target {
+    };
+    let action = match &row.target {
         RowTarget::Window(id) => Action::Activate(id.clone()),
         RowTarget::Launch(id) => Action::Launch(id.clone()),
-        RowTarget::Tab(_) => Action::None,
-    }
+        RowTarget::Tab(tab) => Action::ActivateTab(tab.clone()),
+    };
+
+    s.selected = index;
+    action
 }
 
 /// Returns true while the title list is on screen.
