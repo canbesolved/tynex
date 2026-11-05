@@ -154,9 +154,11 @@ title bar on, `Enter` or `Space` switches to the window selected
 there; hovering a row selects it and a click activates it. With it
 off, they switch when that app has one window, and open its windows
 when it has several. Hovering a dropdown title selects it, and a
-click activates it. The selected icon starts as the previous
-window's app. Typing hides the icons. `Tab` walks the open windows
-when the title bar is on, moves along the icons when it is off, and
+click activates it. The popup opens on the previous window or
+browser tab: its row in the title bar, or its icon right after the
+pinned apps (a tab shows its favicon). Typing hides the icons.
+`Tab` walks the open windows when the title bar is on, moves along
+the icons when it is off, and
 walks matches while you type. `Shift+Tab` does the same backward.
 A long list scrolls with the mouse wheel or the touchpad.
 
@@ -178,6 +180,7 @@ width = 480
 position = "center"          # center | top
 theme = "dark"               # dark | light
 switch_layout = false        # true: type with the US layout
+history = 10                 # Windows and tabs kept, 2 to 50
 
 [hotkeys]
 action = "last"              # hide | last
@@ -216,6 +219,7 @@ iconbar.pinned = []          # Desktop ids, e.g. "firefox"
 [browser_tabs]
 enabled = false              # true registers the host
 browsers = "auto"            # auto, one name, or a list
+wait = 150                   # ms to wait for tab lists, 0 to 1000
 ```
 
 On first start `tynex daemon` writes this file with defaults. Keys

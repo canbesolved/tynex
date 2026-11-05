@@ -24,6 +24,16 @@ pub fn row_title(window: &WindowInfo, strip: bool) -> String {
     strip_app_name(&title, &app, &window.app_id).to_owned()
 }
 
+/// True when window title `title` shows tab title `tab`: the same text,
+/// alone or before a separator, as in `Notes - Brave` (ADR-0093).
+#[must_use]
+pub fn shows_tab(title: &str, tab: &str) -> bool {
+    !tab.is_empty()
+        && title.strip_prefix(tab).is_some_and(|rest| {
+            rest.is_empty() || SEPARATORS.iter().any(|s| rest.starts_with(s))
+        })
+}
+
 /// Last segment of a reverse-DNS app id (`org.kde.konsole` →
 /// `konsole`).
 #[must_use]

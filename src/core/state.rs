@@ -4,6 +4,7 @@
 //! State of an open popup, shared by the switcher and the modes.
 
 use crate::core::browser_tabs::TabList;
+use crate::core::places::Place;
 use crate::core::rename::Rename;
 use crate::core::text_edit;
 use crate::core::usage::Usage;
@@ -16,7 +17,7 @@ pub struct State {
     pub query: String,
     pub hint: String,     // Input-bar hint, hidden while typing
     pub cursor: usize,    // Byte index in `query`
-    pub rows: Vec<Row>,   // Open windows, for the title bar
+    pub rows: Vec<Row>,   // Open windows, for search
     pub output: Vec<Row>, // Result list, for the output bar
     pub selected: usize,  // Index into `output`
     pub icons: Vec<AppIcon>, // Running apps, most recent first
@@ -27,6 +28,8 @@ pub struct State {
     pub rename: Option<Rename>, // Title being edited
     pub renamed: Option<(WindowId, String)>, // Kept title, for the switcher
     pub usage: Usage,     // Lent by the switcher while open
+    pub history: Option<Vec<Place>>, // Title list order; none sorts by app
+    pub fresh: bool,      // Nothing done since show: the selection may move
 }
 
 impl State {
@@ -50,6 +53,8 @@ impl State {
             rename: None,
             renamed: None,
             usage: Usage::default(),
+            history: None,
+            fresh: false,
         }
     }
 
@@ -100,7 +105,7 @@ impl State {
             &self.hint,
             self.cursor,
             self.selected,
-            &self.rows,
+            (&self.rows, self.titles()),
             &self.output,
             &Strip {
                 icon: self.icon,
@@ -113,6 +118,16 @@ impl State {
             text: &r.text,
             cursor: r.cursor,
         }))
+    }
+
+    /// Returns the title list: the output while nothing is typed.
+    #[must_use]
+    pub fn titles(&self) -> &[Row] {
+        if self.query.is_empty() {
+            &self.output
+        } else {
+            &self.rows
+        }
     }
 
     /// Returns the target of the selected output row, if any.

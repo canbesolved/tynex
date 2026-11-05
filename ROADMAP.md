@@ -39,12 +39,16 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
   goes back to the previous window or browser tab, whichever came
   last, so a tab opened before another app, or the tab before the
   current one, is one press away.
+- [ ] RM-0069 Window and tab history: tabs are switched to like
+  windows. `main.history` (default 10) places, newest first, order
+  the title list; a browser window shows as its active tab; the popup
+  opens on the previous place, in the title list and in the strip
+  (pinned apps, the previous window or tab, then the rest).
+  `browser_tabs.wait` (default 150 ms) holds the first draw for the
+  tab lists.
 
 ### 0.4.0
 
-- [ ] RM-0007 Back to last: with `hotkeys.action = "last"` or
-  `tynex qs`, switch to the previously used app window or browser
-  tab.
 - [ ] RM-0005 `tynex qs` (quick switch): back to last without opening
   the popup, the same way as `hotkeys.action = "last"`.
 

@@ -5,7 +5,8 @@ Source: `src/config/`.
 ```text
 config/
   mod.rs         Config types, parse(text, font_exists)
-  browser_tabs.rs  [browser_tabs] browsers and enabled
+  main.rs        [main] types and checks, history
+  browser_tabs.rs  [browser_tabs] browsers, enabled and wait
   raw.rs         serde layout with defaults and value spans
   validate.rs    Value checks, all errors at once
   error.rs       ConfigError with line and column
@@ -49,6 +50,9 @@ theme = "dark"               # dark | light
 # Read keys with the US layout while the popup is open, whatever the
 # system layout is. The system layout does not change.
 switch_layout = false
+# Windows and tabs the title list keeps in the order you used them,
+# 2 to 50.
+history = 10
 
 [hotkeys]
 # Hotkey pressed again while the popup is open: "hide" closes the
@@ -122,6 +126,9 @@ enabled = false
 # "auto" (every installed one), one name, or a list: brave,
 # chrome, chromium.
 browsers = "auto"
+# Milliseconds the popup waits for the tab lists before it shows, so
+# tabs are in place at once. 0 shows it at once.
+wait = 150
 ```
 
 `main.desktop` selects the window source adapter. `auto` picks `kde`
@@ -141,6 +148,17 @@ daemon.
 `light`. `dark` is the near-black popup. `light` is near-white.
 Radius, padding and the selection color are shared. A missing key
 stays dark. Any other value stops the daemon.
+
+`main.history` is how many windows and browser tabs tynex keeps in
+the order you switched to them, newest first, from 2 to 50 (default
+10) ([ADR-0097](../adr/0097_history.md)). With
+`taskbar.titlebar.sort_by = "recently"` the title list follows it,
+tabs included, and the popup opens on the previous window or tab.
+It is kept in memory only.
+
+`browser_tabs.wait` is how long, in milliseconds, the popup waits for
+the connected browsers' tab lists before it shows (default 150, 0 to
+1000). 0 shows it at once; tabs then appear when their list comes.
 
 `main.switch_layout = true` reads character keys with the US layout
 while the popup is open ([ADR-0090](../adr/0090_us_keymap.md)), so a
@@ -370,6 +388,7 @@ The config is read once, when `tynex daemon` starts
 | `main.position`                   | `center` or `top`                      |
 | `main.theme`                      | `dark` or `light`                      |
 | `main.switch_layout`              | `true` or `false`                      |
+| `main.history`                    | 2 to 50                                |
 | `hotkeys.action`                  | `hide` or `last`                       |
 | `hotkeys.rename`                  | a key, a list of keys, or `""`         |
 | `hotkeys.pinned`                  | a list of the above, one per app       |
@@ -390,6 +409,7 @@ The config is read once, when `tynex daemon` starts
 | `taskbar.iconbar.size`            | 8 to 128                               |
 | `taskbar.iconbar.border`          | 1 to 32                                |
 | `taskbar.iconbar.pinned`          | desktop file ids, each once            |
+| `browser_tabs.wait`               | 0 to 1000                              |
 
 Syntax and type errors stop at the first error, as reported by `toml`.
 Value checks run on the parsed file and report every invalid key at

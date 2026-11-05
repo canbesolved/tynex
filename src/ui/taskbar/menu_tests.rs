@@ -54,6 +54,7 @@ fn state(n: usize) -> State {
         app_id: "kwrite".into(),
         icon: None,
         windows: ids,
+        tab: None,
     }];
     state
 }

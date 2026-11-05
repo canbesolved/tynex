@@ -6,6 +6,7 @@
 pub mod browser_tabs;
 mod exact;
 pub mod launcher;
+mod titles;
 
 use crate::config::{LauncherConfig, LauncherMode, NewWindowConfig};
 use crate::core::app::AppInfo;
@@ -43,7 +44,10 @@ impl Input {
         }
 
         if s.query.is_empty() {
-            s.output = s.rows.clone();
+            s.output = match &s.history {
+                Some(history) => titles::titles(&s.rows, history, &s.tab_lists),
+                None => s.rows.clone(),
+            };
             s.selected = 0;
             return;
         }

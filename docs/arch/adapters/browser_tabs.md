@@ -136,7 +136,10 @@ skipped.
 
 One activation is pending at a time. A reply with another `req` or
 from another source is ignored. A `tabs` reply is used only while
-the popup is open and only for the latest `list`.
+the popup is open and only for the latest `list`. `listing` stays
+true until every host asked by the latest `list` answered or left;
+the event loop holds the first draw that long, at most
+`browser_tabs.wait` ms ([ADR-0097](../../adr/0097_history.md)).
 
 A connection closes on EOF, a read or write error, a bad frame
 length, or a full out buffer (a browser that stops reading). Every

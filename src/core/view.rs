@@ -89,12 +89,22 @@ impl Row {
 }
 
 /// One running app in the icon bar.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct AppIcon {
     pub app_id: String,
     pub icon: Option<String>,
     /// Windows of this app, most recently used first.
     pub windows: Vec<WindowId>,
+    /// Set for the previous place when it is a browser tab.
+    pub tab: Option<TabIcon>,
+}
+
+/// A browser tab in the icon strip, drawn with its favicon.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TabIcon {
+    pub tab: TabRef,
+    pub key: String,      // Favicon key of the source
+    pub fallback: String, // Icon name when the favicon is missing
 }
 
 /// A title being renamed, borrowed for one frame.
@@ -123,6 +133,7 @@ pub struct View<'a> {
     pub dropdown: Option<usize>, // Selected title while open
     edit: Option<Edit<'a>>,      // Title being renamed
     windows: &'a [Row],
+    titles: &'a [Row], // Title list: windows and tabs, history first
     output: &'a [Row],
     icons: &'a [AppIcon],
 }
@@ -133,7 +144,7 @@ impl<'a> View<'a> {
         hint: &'a str,
         cursor: usize,
         selected: usize,
-        windows: &'a [Row],
+        (windows, titles): (&'a [Row], &'a [Row]),
         output: &'a [Row],
         strip: &Strip<'a>,
     ) -> Self {
@@ -146,6 +157,7 @@ impl<'a> View<'a> {
             dropdown: strip.dropdown,
             edit: None,
             windows,
+            titles,
             output,
             icons: strip.icons,
         }
@@ -168,16 +180,16 @@ impl<'a> View<'a> {
             .then_some((edit.text, edit.cursor))
     }
 
-    /// Returns the open windows, in list order. The title bar draws
-    /// these. Search does not filter them.
-    pub fn windows(&self) -> impl Iterator<Item = &'a Row> + 'a {
-        self.windows.iter()
+    /// Returns the title list rows: windows and tabs, the history
+    /// first. The title bar draws these. Search does not filter them.
+    pub fn titles(&self) -> impl Iterator<Item = &'a Row> + 'a {
+        self.titles.iter()
     }
 
-    /// Returns the number of open windows.
+    /// Returns the number of title list rows.
     #[must_use]
-    pub fn window_count(&self) -> usize {
-        self.windows.len()
+    pub fn title_count(&self) -> usize {
+        self.titles.len()
     }
 
     /// Returns the output rows, in display order. The output bar draws

@@ -77,13 +77,19 @@ the dropdown slides in. The gaps scale with the display.
   is empty.
 - Pinned apps (`taskbar.iconbar.pinned`) come first, in config
   order, running or not ([ADR-0089](../../adr/0089_pinned_apps.md)).
-  Then one icon per other `app_id`, most recently used app first.
-  That order does not follow `taskbar.titlebar.sort_by`.
+  Then the previous place: the previous window's app, moved there,
+  or the previous browser tab, an icon of its own with its favicon
+  ([ADR-0097](../../adr/0097_history.md)). Then one icon per other
+  `app_id`, most recently used app first; the browser of a tab icon
+  keeps its icon. That order does not follow
+  `taskbar.titlebar.sort_by`.
 - A pinned app that is not running has no windows and the icon of
   its desktop file, drawn at half opacity. `Enter`, `Space` or a
   click launches it. `hotkeys.pinned` opens or focuses each pinned
   app ([prompt.md](../modes/prompt.md#pinned-apps)).
-- The selected icon starts as the app of the previous window.
+- The selected icon starts as the previous place. A previous window
+  of a pinned app selects that pinned icon in place. `Enter` on a
+  tab icon opens the tab.
   `taskbar.iconbar.border` outlines it in the selection color,
   outside the icon. The default is 4 logical pixels, from 1 to 32,
   scaled like `taskbar.iconbar.size`.
@@ -118,6 +124,11 @@ the dropdown slides in. The gaps scale with the display.
 
 The list does not show search matches. Those are the
 [output bar](output_bar.md).
+
+With `sort_by = "recently"` it lists the history of windows and
+tabs from the previous place on, then the other windows, with the
+current place last. A browser window shows as its active tab, with
+its favicon ([modules/input.md](../modules/input.md#title-list)).
 
 - Shown when `taskbar.mode` is `titlebar` or `both`, and the query is
   empty. Typing hides it. `Backspace` that empties the query, or

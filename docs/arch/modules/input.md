@@ -11,10 +11,26 @@ modules/input/
   browser_tabs.rs  Puts tab rows between windows and launch rows,
                    drops a window row its active tab row covers
   exact.rs       Exact matches first
+  titles.rs      The title list while nothing is typed
 ```
 
 Prompt mode holds one `Input` and calls `refresh` after every query
 change ([modes/prompt.md](../modes/prompt.md)).
+
+## Title list
+
+While the query is empty, `refresh` fills the output with the title
+list from `titles.rs` ([ADR-0097](../../adr/0097_history.md)). With
+a history (`sort_by = "recently"`):
+
+1. The places from the previous one on, newest first: a window's
+   row, or a tab's row once its browser's list is here. An active
+   tab stands for its window, so the window is not listed again.
+2. The other windows in row order, the current place last. A window
+   of a listed browser that shows an active tab is listed as that
+   tab.
+
+Without a history (`sort_by = "app"`) the output is the window rows.
 
 ## Search
 

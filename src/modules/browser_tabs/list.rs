@@ -103,26 +103,35 @@ pub fn rows(query: &str, lists: &[TabList]) -> Vec<Row> {
 
     hits.into_iter()
         .map(|hit| {
-            let (list, tab, title) = &flat[hit.index];
+            let (list, tab, _) = &flat[hit.index];
 
             Row {
-                target: RowTarget::Tab(TabRef {
-                    source: list.source,
-                    id: tab.id,
-                }),
-                app_id: String::new(),
-                app_name: list.browser.clone(),
-                icon: Some(RowIcon::Tab {
-                    source: list.source,
-                    key: tab.icon.clone(),
-                    fallback: list.icon.clone(),
-                }),
-                title: title.clone(),
-                title_color: None,
                 highlights: hit.highlights,
+                ..tab_row(list, tab)
             }
         })
         .collect()
+}
+
+/// The row of `tab` from `list`, with its favicon and no highlights.
+#[must_use]
+pub fn tab_row(list: &TabList, tab: &TabInfo) -> Row {
+    Row {
+        target: RowTarget::Tab(TabRef {
+            source: list.source,
+            id: tab.id,
+        }),
+        app_id: String::new(),
+        app_name: list.browser.clone(),
+        icon: Some(RowIcon::Tab {
+            source: list.source,
+            key: tab.icon.clone(),
+            fallback: list.icon.clone(),
+        }),
+        title: row_title(tab),
+        title_color: None,
+        highlights: Vec::new(),
+    }
 }
 
 /// `text` sanitized like a window title, at most `max` chars.

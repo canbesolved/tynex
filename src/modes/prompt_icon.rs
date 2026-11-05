@@ -88,9 +88,8 @@ pub(super) fn click(click: Click, s: &mut State, cap: usize) -> Action {
                 return Action::Redraw;
             }
             let switched = s.icon != index;
-            let app = s.icons[index].app_id.clone();
 
-            s.select_icon(Some(&app));
+            s.icon = index;
             if switched {
                 s.close_dropdown();
             }
@@ -118,9 +117,7 @@ pub(super) fn hover(click: Click, s: &mut State, cap: usize) -> Action {
             if index >= s.icons.len() || index == s.icon {
                 return Action::None;
             }
-            let app = s.icons[index].app_id.clone();
-
-            s.select_icon(Some(&app));
+            s.icon = index;
             s.close_dropdown();
             Action::Redraw
         }
@@ -151,6 +148,9 @@ fn confirm(s: &mut State, cap: usize) -> Action {
         return Action::None;
     };
 
+    if let Some(tab) = &icon.tab {
+        return Action::ActivateTab(tab.tab.clone());
+    }
     match icon.windows.len() {
         0 => Action::Launch(icon.app_id.clone()),
         1 => Action::Activate(icon.windows[0].clone()),

@@ -4,7 +4,9 @@
 //! Running apps for the icon bar, one icon per app id.
 
 use crate::core::app::AppInfo;
-use crate::core::view::{AppIcon, Row, RowTarget};
+use crate::core::browser_tabs::TabList;
+use crate::core::places::Place;
+use crate::core::view::{AppIcon, Row, RowTarget, TabIcon};
 use crate::core::window::{WindowId, WindowInfo};
 
 /// Builds the strip: `pinned` apps first in their order, running or
@@ -29,6 +31,7 @@ pub fn strip(pinned: &[AppInfo], windows: &[WindowInfo]) -> Vec<AppIcon> {
                     app_id: app.id.clone(),
                     icon: app.icon.clone(),
                     windows: Vec::new(),
+                    tab: None,
                 },
             }
         })
@@ -36,6 +39,60 @@ pub fn strip(pinned: &[AppInfo], windows: &[WindowInfo]) -> Vec<AppIcon> {
 
     icons.append(&mut running);
     icons
+}
+
+/// Puts the `previous` place right after the `pinned` icons and returns
+/// its index (ADR-0097). A window's app icon moves there; a pinned one
+/// stays and is returned. A tab gets an icon of its own, with its
+/// favicon; before its list is known, its browser's icon is used.
+pub fn put_previous(
+    icons: &mut Vec<AppIcon>,
+    pinned: usize,
+    previous: Option<&Place>,
+    windows: &[WindowInfo],
+    lists: &[TabList],
+) -> Option<usize> {
+    let app_of = |found: Option<&WindowInfo>| found.map(|w| w.app_id.clone());
+    let app = match previous? {
+        Place::Window(id) => app_of(windows.iter().find(|w| w.id == *id)),
+        Place::Tab { tab, pid, .. } => {
+            let listed = lists.iter().find(|l| l.source == tab.source);
+            let info = listed.and_then(|list| {
+                list.tabs.iter().find(|t| t.id == tab.id).map(|t| (list, t))
+            });
+
+            if let Some((list, info)) = info {
+                let at = pinned.min(icons.len());
+
+                icons.insert(
+                    at,
+                    AppIcon {
+                        app_id: String::new(),
+                        icon: Some(list.icon.clone()),
+                        windows: Vec::new(),
+                        tab: Some(TabIcon {
+                            tab: tab.clone(),
+                            key: info.icon.clone(),
+                            fallback: list.icon.clone(),
+                        }),
+                    },
+                );
+                return Some(at);
+            }
+            app_of(windows.iter().find(|w| w.pid == Some(*pid)))
+        }
+    }?;
+    let at = icons
+        .iter()
+        .position(|icon| icon.tab.is_none() && icon.app_id == app)?;
+
+    if at < pinned {
+        return Some(at);
+    }
+    let icon = icons.remove(at);
+
+    icons.insert(pinned, icon);
+    Some(pinned)
 }
 
 /// Groups `windows` by app id, most recently used app first.
@@ -55,6 +112,7 @@ pub fn running(windows: &[WindowInfo]) -> Vec<AppIcon> {
                 app_id: window.app_id.clone(),
                 icon: window.icon.clone(),
                 windows: vec![window.id.clone()],
+                tab: None,
             });
         }
     }
@@ -145,6 +203,7 @@ mod tests {
                 WindowId("w2".into()),
                 WindowId("w3".into()),
             ],
+            tab: None,
         };
         let rows =
             vec![row("w1", "Release"), row("w2", "café"), row("w3", "Café")];

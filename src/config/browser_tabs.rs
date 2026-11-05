@@ -8,6 +8,11 @@ use std::ops::Range;
 use serde::Deserialize;
 use toml::Spanned;
 
+use crate::config::validate::check_range;
+
+/// Default `browser_tabs.wait`, in milliseconds.
+const WAIT: u16 = 150;
+
 /// One supported Chromium browser.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Browser {
@@ -25,10 +30,21 @@ pub enum Browsers {
 }
 
 /// The `[browser_tabs]` table.
-#[derive(Debug, Clone, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BrowserTabsConfig {
     pub enabled: bool,
     pub browsers: Browsers,
+    pub wait: u16, // Milliseconds the popup waits for tab lists; 0 never
+}
+
+impl Default for BrowserTabsConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            browsers: Browsers::Auto,
+            wait: WAIT,
+        }
+    }
 }
 
 #[derive(Deserialize, Default)]
@@ -36,6 +52,7 @@ pub struct BrowserTabsConfig {
 pub(super) struct RawBrowserTabs {
     pub enabled: bool,
     pub browsers: Option<Spanned<toml::Value>>,
+    pub wait: Option<Spanned<u16>>,
 }
 
 const NAMES: &[(&str, Browser)] = &[
@@ -44,7 +61,7 @@ const NAMES: &[(&str, Browser)] = &[
     ("chromium", Browser::Chromium),
 ];
 
-/// Checks `browsers`. An unknown name is an error.
+/// Checks `browsers` and `wait`. An unknown name is an error.
 pub(super) fn check(
     raw: RawBrowserTabs,
     err: &mut impl FnMut(Range<usize>, String),
@@ -54,9 +71,13 @@ pub(super) fn check(
         Some(value) => browsers_of(&value, err),
     };
 
+    if let Some(wait) = &raw.wait {
+        check_range("browser_tabs.wait", wait, 0..=1000, err);
+    }
     BrowserTabsConfig {
         enabled: raw.enabled,
         browsers,
+        wait: raw.wait.map_or(WAIT, Spanned::into_inner),
     }
 }
 

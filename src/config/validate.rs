@@ -4,7 +4,7 @@
 //! Value checks on a parsed file. Every invalid key is reported.
 
 use std::ops::RangeInclusive;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use toml::Spanned;
 
@@ -15,9 +15,8 @@ use crate::config::raw::{
     RawTaskbarMode,
 };
 use crate::config::{
-    Config, Font, HintConfig, IconBarConfig, InputConfig, LauncherConfig,
-    LauncherMode, MainConfig, NewWindowConfig, TaskbarConfig, TaskbarMode,
-    TitleBarConfig,
+    Config, HintConfig, IconBarConfig, InputConfig, LauncherConfig,
+    LauncherMode, NewWindowConfig, TaskbarConfig, TaskbarMode, TitleBarConfig,
 };
 use crate::core::order::SortBy;
 use crate::core::view::Rgb;
@@ -32,25 +31,7 @@ pub(super) fn validate(
     let mut err = |span, message| {
         errors.push(ConfigError::at(text, span, message));
     };
-    let main = raw.main;
-
-    let font = match main.font.get_ref().as_str() {
-        "auto" => Font::Auto,
-        path if font_exists(Path::new(path)) => Font::Path(PathBuf::from(path)),
-        path => {
-            err(
-                main.font.span(),
-                format!(
-                    "`main.font` = {path:?} is not an existing file, \
-                     expected a font file path or \"auto\""
-                ),
-            );
-            Font::Auto
-        }
-    };
-
-    check_range("main.font_size", &main.font_size, 8..=72, &mut err);
-    check_range("main.width", &main.width, 200..=2000, &mut err);
+    let main = crate::config::main::check(&raw.main, font_exists, &mut err);
     check_icon(&raw.taskbar.iconbar, &mut err);
     let pinned = crate::config::taskbar::check_pinned(
         raw.taskbar.iconbar.pinned.as_ref(),
@@ -68,15 +49,7 @@ pub(super) fn validate(
     }
 
     Ok(Config {
-        main: MainConfig {
-            desktop: main.desktop,
-            font,
-            font_size: main.font_size.into_inner(),
-            width: main.width.into_inner(),
-            position: main.position,
-            theme: main.theme,
-            switch_layout: main.switch_layout,
-        },
+        main,
         hotkeys,
         input: InputConfig {
             launcher: LauncherConfig {

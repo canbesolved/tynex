@@ -17,6 +17,15 @@ project adheres to
   `~/.local/share/tynex/usage_stats.tsv`; apps that are gone and
   closed tabs are dropped. Nothing changes until something is used
   ([ADR-0095](docs/adr/0095_usage_stats.md)) (RM-0023).
+- `main.history` (default 10): the windows and browser tabs you
+  switched to, newest first. The title list follows it, tabs
+  included, and shows a browser window as its active tab. The popup
+  opens on the previous window or tab, also in the icon strip, where
+  a previous tab gets its own favicon icon after the pinned apps
+  ([ADR-0097](docs/adr/0097_history.md)) (RM-0069).
+- `browser_tabs.wait` (default 150 ms, 0 to skip): the popup waits
+  that long at most for the tab lists before it shows, so tabs are
+  in place at once (RM-0069).
 
 ### Changed
 
@@ -24,6 +33,9 @@ project adheres to
   browser tab, whichever came last: a GitHub tab opened before
   switching to another app, or the tab before the current one
   ([ADR-0096](docs/adr/0096_last_tab.md)) (RM-0068).
+- The icon strip lists the pinned apps, then the previous window's
+  app or the previous tab, then the other running apps
+  ([ADR-0097](docs/adr/0097_history.md)) (RM-0069).
 
 ## [0.3.8] - 2026-11-05
 

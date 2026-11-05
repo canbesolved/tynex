@@ -39,6 +39,7 @@ pub struct Socket {
     next_id: u32,
     req: u64,                         // Last request id sent
     list_req: Option<u64>,            // Some while the popup is open
+    asked: Vec<SourceId>,             // Hosts whose list has not come
     pending: Option<(u64, SourceId)>, // Activation awaiting its reply
 }
 
@@ -55,6 +56,7 @@ impl Socket {
             next_id: 1,
             req: 0,
             list_req: None,
+            asked: Vec::new(),
             pending: None,
         })
     }
@@ -78,8 +80,10 @@ impl Socket {
         let mut asked = 0;
 
         self.list_req = Some(req);
+        self.asked.clear();
         for conn in self.conns.iter_mut().filter(|c| c.pid.is_some()) {
             conn.send(&frame);
+            self.asked.push(conn.id);
             asked += 1;
         }
         if asked == 0 {
@@ -89,9 +93,16 @@ impl Socket {
         }
     }
 
+    /// Returns true while a host asked by `list` has not answered.
+    #[must_use]
+    pub fn listing(&self) -> bool {
+        !self.asked.is_empty()
+    }
+
     /// Popup closed. Late `tabs` replies are dropped.
     pub fn hide(&mut self) {
         self.list_req = None;
+        self.asked.clear();
         log::debug!("browser tabs: popup closed, idle");
     }
 
@@ -131,6 +142,13 @@ impl Socket {
             batch.updates.push(TabsUpdate::Icons);
         }
         self.reap(&mut batch);
+        for update in &batch.updates {
+            if let TabsUpdate::List { source, .. } | TabsUpdate::Gone(source) =
+                update
+            {
+                self.asked.retain(|asked| asked != source);
+            }
+        }
         batch
     }
 

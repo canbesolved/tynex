@@ -11,7 +11,7 @@ mod pick;
 #[path = "tests.rs"]
 mod tests;
 
-pub use list::{clean, fallback, row_title, rows};
+pub use list::{clean, fallback, row_title, rows, tab_row};
 pub use pick::browser_window;
 
 use crate::core::browser_tabs::{SourceId, TabInfo, TabRef, TabsUpdate};

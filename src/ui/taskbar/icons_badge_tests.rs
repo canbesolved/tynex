@@ -52,6 +52,7 @@ fn state(ids: &[&str]) -> State {
         app_id: "kate".into(),
         icon: None,
         windows: ids.iter().map(|id| WindowId((*id).into())).collect(),
+        tab: None,
     }];
     state
 }

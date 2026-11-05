@@ -8,7 +8,7 @@ Source: `src/platform/linux/`. Session: Wayland.
 platform/linux/
   mod.rs          Backend wiring
   event_loop.rs   Single poll loop, event dispatch
-  event_loop_fds.rs  The poll set, tabs socket driving
+  event_loop_fds.rs  The poll set, tabs socket driving, draw hold
   paths.rs        XDG config, data and runtime paths, atomic writes
   signals.rs      SIGINT, SIGTERM, SIGHUP as a pollable pipe
   evdev.rs        Evdev key numbers to core PhysicalKey
@@ -93,6 +93,16 @@ command until it exits. Stdout that arrives while hidden is
 discarded. The animation tick and the update wait are cleared when
 the popup is hidden, so an idle daemon still has no timeout once
 the child has exited.
+
+## Waiting for tab lists
+
+When the popup opens with a browser connected and
+`browser_tabs.wait` above 0, the event loop sets `hold` to now plus
+that wait ([ADR-0097](../../adr/0097_history.md)). While it is set,
+`redraw` draws nothing, and `hold` is one more poll deadline. It is
+cleared, and the popup drawn, once the socket reports that every
+asked browser answered or left, or when the deadline passes. Hiding
+the popup clears it.
 
 ## Wayland presenter
 

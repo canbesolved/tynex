@@ -212,3 +212,27 @@ fn an_oversized_frame_closes() {
     assert!(closed(&mut client));
     let _ = std::fs::remove_dir_all(dir);
 }
+
+#[test]
+fn listing_lasts_until_every_asked_host_answers() {
+    let (dir, mut socket, mut client) = ready();
+
+    assert!(!socket.listing());
+    socket.list();
+    socket.drive();
+    assert!(socket.listing());
+    assert!(take(&mut client).contains(r#""req":1"#));
+    send(
+        &mut client,
+        r#"{"v":1,"type":"tabs","req":1,"browser":"Brave","tabs":[]}"#,
+    );
+    socket.drive();
+    assert!(!socket.listing());
+
+    socket.list();
+    assert!(socket.listing());
+    drop(client); // A host that leaves counts as answered
+    socket.drive();
+    assert!(!socket.listing());
+    let _ = std::fs::remove_dir_all(dir);
+}

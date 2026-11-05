@@ -83,6 +83,12 @@ Features that were planned or designed, then dropped before a release.
   merged on 2026-11-05 into usage stats, which orders results by
   use with no config
   ([ADR-0095](docs/adr/0095_usage_stats.md)) (RM-0009).
+- Back to last: with `hotkeys.action = "last"` or `tynex qs`, switch
+  to the previously used app window or browser tab. Planned for
+  0.4.0, merged on 2026-11-05 into the switch back to the last window
+  or tab and the window and tab history, both in 0.3.9
+  ([ADR-0096](docs/adr/0096_last_tab.md),
+  [ADR-0097](docs/adr/0097_history.md)) (RM-0007).
 - Text shaping and right-to-left layout for Arabic, Hebrew and Indic
   scripts (`rustybuzz`). Planned for Later, dropped on 2026-11-03
   (RM-0040).

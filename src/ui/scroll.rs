@@ -94,7 +94,7 @@ fn list(view: &View<'_>, metrics: &Metrics) -> Option<(usize, usize)> {
     let rows = metrics.list_rows.max(1);
 
     if titles::shows(view, metrics) {
-        Some((view.window_count(), rows))
+        Some((view.title_count(), rows))
     } else if output_bar::shows(view) {
         Some((view.len(), rows))
     } else {
