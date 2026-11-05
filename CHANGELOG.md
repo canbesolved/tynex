@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.3.9] - 2026-11-05
+
+Usage stats, and tabs switched to like windows.
+
 ### Added
 
 - Usage stats: in the output bar, the windows, tabs and apps used
@@ -707,7 +711,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.8...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.9...HEAD
+[0.3.9]: https://github.com/canbesolved/tynex/compare/v0.3.8...v0.3.9
 [0.3.8]: https://github.com/canbesolved/tynex/compare/v0.3.7...v0.3.8
 [0.3.7]: https://github.com/canbesolved/tynex/compare/v0.3.6...v0.3.7
 [0.3.6]: https://github.com/canbesolved/tynex/compare/v0.3.5...v0.3.6
