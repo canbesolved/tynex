@@ -28,14 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.3.7
-
-- [ ] RM-0011 Remove duplicate rows from the output bar results. A
-  browser window and its active tab share a title, so a search for
-  `My website` lists both: the window with the browser icon and the
-  tab with the site favicon. Show only one row for them: the tab row,
-  which also brings its window to the front.
-
 ### 0.3.8
 
 - [ ] RM-0012 Input keys in `[hotkeys]`, written in the hotkey

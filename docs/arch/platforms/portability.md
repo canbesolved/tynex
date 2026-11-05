@@ -6,7 +6,7 @@ How `tynex` stays portable to other desktops, macOS and Windows.
 
 Three traits isolate the operating system. Everything else is shared.
 
-| Seam           | Linux (0.3.6)       | macOS (later)     | Windows (later) |
+| Seam           | Linux (0.3.7)       | macOS (later)     | Windows (later) |
 | -------------- | ------------------- | ----------------- | --------------- |
 | `WindowSource` | KWin script adapter | Accessibility API | Win32 API       |
 | `Presenter`    | Wayland layer-shell | AppKit `NSPanel`  | Win32 popup     |

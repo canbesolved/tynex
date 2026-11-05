@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.3.7] - 2026-11-05
+
+A browser window and its active tab are listed once.
+
 ### Changed
 
 - A browser window and its active tab are listed once in the output
@@ -662,7 +666,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.6...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.7...HEAD
+[0.3.7]: https://github.com/canbesolved/tynex/compare/v0.3.6...v0.3.7
 [0.3.6]: https://github.com/canbesolved/tynex/compare/v0.3.5...v0.3.6
 [0.3.5]: https://github.com/canbesolved/tynex/compare/v0.3.4...v0.3.5
 [0.3.4]: https://github.com/canbesolved/tynex/compare/v0.3.3...v0.3.4
