@@ -5,7 +5,7 @@
 //! The timeout is the next key repeat, otherwise none, so an idle daemon
 //! never wakes up.
 
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use crate::adapters::Source;
 use crate::adapters::browser_tabs::Socket;
@@ -36,6 +36,8 @@ pub struct Parts {
     pub rx: EventRx,
     pub tabs: Option<Socket>,
     pub signals: Option<Signals>, // SIGINT, SIGTERM, SIGHUP quit
+    pub wait: Duration,           // For the tab lists before a show
+    pub hold: Option<Instant>,    // The first draw waits until then
 }
 
 /// Runs until a `Quit` request arrives.
@@ -52,6 +54,7 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
             }
         }
 
+        fds::release(p);
         drive_hint(p);
         if p.painter.needs_frame(Instant::now()) {
             redraw(p);
@@ -153,12 +156,16 @@ fn handle(p: &mut Parts, event: Event) -> bool {
         p.app.set_hint(text);
         if let Some(tabs) = &mut p.tabs {
             tabs.list();
+            if !p.wait.is_zero() && tabs.listing() {
+                p.hold = Some(Instant::now() + p.wait);
+            }
         }
     }
 
     let action = p.app.handle(event);
 
     if open && p.app.view().is_none() {
+        p.hold = None;
         p.hint.on_hide();
         p.painter.hidden();
         if let Some(tabs) = &mut p.tabs {
@@ -220,6 +227,9 @@ fn drive_hint(p: &mut Parts) {
 
 /// Sizes the popup for the current view and draws it, if it is open.
 fn redraw(p: &mut Parts) {
+    if p.hold.is_some() {
+        return; // The tab lists come first
+    }
     let Some(view) = p.app.view() else { return };
     let scale = p.presenter.scale();
     let painter = &mut p.painter;

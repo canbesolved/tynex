@@ -32,7 +32,7 @@ pub(crate) fn body(view: &View<'_>, metrics: &Metrics, grid: &Grid) -> f32 {
     if !shows(view, metrics) {
         return 0.0;
     }
-    let rows = view.window_count().clamp(1, metrics.list_rows.max(1)) as f32;
+    let rows = view.title_count().clamp(1, metrics.list_rows.max(1)) as f32;
 
     rows * grid.row_h
 }
@@ -51,14 +51,14 @@ pub(crate) fn draw(
     }
 
     // Drawn only while the query is empty, so the selection is here.
-    let len = view.window_count();
+    let len = view.title_count();
     let max = metrics.list_rows.max(1);
     let first = scroll::first_row(metrics, view.selected, len);
     let width = inner - scroll::reserve(metrics, len);
     let radius = paint.theme.radius * metrics.scale;
     let rows = Area::new(grid.pad, top, inner, body(view, metrics, grid));
 
-    for (index, row) in view.windows().enumerate().skip(first).take(max) {
+    for (index, row) in view.titles().enumerate().skip(first).take(max) {
         let area = Area::new(grid.pad, top, width, grid.row_h);
 
         if index == view.selected {
@@ -90,7 +90,7 @@ pub(crate) fn hit(
     if !shows(view, metrics) {
         return Click::Elsewhere;
     }
-    let len = view.window_count();
+    let len = view.title_count();
 
     if len == 0 {
         return Click::Elsewhere;

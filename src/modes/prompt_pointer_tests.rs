@@ -48,11 +48,13 @@ fn session(taskbar: TaskbarMode) -> (PromptMode, State) {
             app_id: "firefox".into(),
             icon: None,
             windows: vec![WindowId("w1".into()), WindowId("w2".into())],
+            tab: None,
         },
         AppIcon {
             app_id: "kate".into(),
             icon: None,
             windows: vec![WindowId("w3".into())],
+            tab: None,
         },
     ];
     state.select_icon(Some("firefox"));

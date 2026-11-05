@@ -8,6 +8,9 @@ theme = "dark"               # dark | light
 # Read keys with the US layout while the popup is open, whatever the
 # system layout is. The system layout does not change.
 switch_layout = false
+# Windows and tabs the title list keeps in the order you used them,
+# 2 to 50.
+history = 10
 
 [hotkeys]
 # Hotkey pressed again while the popup is open: "hide" closes the
@@ -81,3 +84,6 @@ enabled = false
 # "auto" (every installed one), one name, or a list: brave,
 # chrome, chromium.
 browsers = "auto"
+# Milliseconds the popup waits for the tab lists before it shows, so
+# tabs are in place at once. 0 shows it at once.
+wait = 150

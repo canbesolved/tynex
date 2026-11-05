@@ -136,21 +136,24 @@ pub(crate) fn draw(
         if index == view.icon {
             selection(paint, x, top, &placed);
         }
-        if let Some(name) = &icon.icon {
-            let side = placed.size.round().max(1.0) as u32;
-            let opacity = if icon.windows.is_empty() {
+        let side = placed.size.round().max(1.0) as u32;
+        let at = (x.round() as i32, top.round() as i32);
+        let favicon = icon.tab.as_ref().is_some_and(|tab| {
+            paint
+                .tabs
+                .draw(paint.canvas, tab.tab.source, &tab.key, side, at)
+        });
+
+        if !favicon && let Some(name) = &icon.icon {
+            let opacity = if icon.windows.is_empty() && icon.tab.is_none() {
                 NOT_RUNNING
             } else {
                 1.0
             };
 
-            paint.icons.draw_faded(
-                paint.canvas,
-                name,
-                side,
-                (x.round() as i32, top.round() as i32),
-                opacity,
-            );
+            paint
+                .icons
+                .draw_faded(paint.canvas, name, side, at, opacity);
         }
         if icon.windows.len() > 1 {
             badge::draw(paint, &placed, x, top, icon.windows.len());

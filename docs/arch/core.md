@@ -22,7 +22,8 @@ core/
   switcher_usage.rs  Lends usage scores to the popup, counts uses
   view.rs       View, Row, RowTarget: what the presenter must draw
   order.rs      SortBy: row order (recently, app)
-  places.rs     Places: current and previous window or tab
+  places.rs     Places: history of windows and tabs, newest first
+  switcher_history.rs  Lends the history, applies tab lists
   icons.rs      Strip: pinned apps, then running apps; dropdown order
   queue.rs      EventTx / EventRx: single-threaded event queue
   text.rs       Title sanitizing and safe cut points
@@ -202,8 +203,11 @@ is added with its module.
   Each title in the cache is replaced by its row title (see
   [Row title](#row-title)).
 - `Show`: snapshot the cached list, build `State` with the rows in
-  `sort_by` order (see [Row order](#row-order)), and select the
-  previous window. A `Show` while visible is a second hotkey press: it
+  `sort_by` order (see [Row order](#row-order)), lend the history,
+  and select the previous place, a window or a tab
+  ([ADR-0097](../adr/0097_history.md)). A tab list that arrives
+  later rebuilds the state; the selection moves to the previous
+  place until the user acts. A `Show` while visible is a second hotkey press: it
   closes the popup, or with `HotkeyAction::Last` returns `Activate`
   or `ActivateTab` for the previous place, a window or a tab, else
   `Activate` for the previous window
@@ -314,7 +318,10 @@ most recently used order with the active window last, and sorts
 stably from there:
 
 - `recently` (default): no sorting; the previous window comes first
-  and the active window last.
+  and the active window last. The title list then follows the
+  history of windows and tabs, the current place last, and shows a
+  browser window as its active tab
+  ([modules/input.md](modules/input.md#title-list)).
 - `app`: by app name, ignoring case, then by recent use.
 
 The popup opens with the previous window selected in every order, so

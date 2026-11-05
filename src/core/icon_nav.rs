@@ -5,22 +5,40 @@
 
 use crate::core::app::AppInfo;
 use crate::core::icons;
+use crate::core::places::Place;
 use crate::core::state::State;
-use crate::core::view::Row;
+use crate::core::view::{AppIcon, Row};
 use crate::core::window::WindowInfo;
 
 impl State {
-    /// Fills the icon strip from `pinned` and `windows`, selects the
-    /// icon of `app` and restores `dropdown`.
+    /// Fills the icon strip: `pinned`, the `previous` place, then the
+    /// apps of `windows`. Selects `keep` if it is still there, else the
+    /// previous place, and restores `dropdown`.
     pub fn fill_icons(
         &mut self,
         (pinned, windows): (&[AppInfo], &[WindowInfo]),
-        app: Option<&str>,
+        previous: Option<&Place>,
+        keep: Option<&AppIcon>,
         dropdown: Option<usize>,
     ) {
         self.icons = icons::strip(pinned, windows);
         self.pinned = pinned.len();
-        self.select_icon(app);
+
+        let previous = icons::put_previous(
+            &mut self.icons,
+            self.pinned,
+            previous,
+            windows,
+            &self.tab_lists,
+        );
+        let kept = keep.and_then(|keep| {
+            self.icons
+                .iter()
+                .position(|i| i.app_id == keep.app_id && i.tab == keep.tab)
+        });
+        let last = self.icons.len().saturating_sub(1);
+
+        self.icon = kept.or(previous).unwrap_or(0).min(last);
         self.dropdown = dropdown;
     }
 

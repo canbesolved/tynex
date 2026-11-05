@@ -55,7 +55,7 @@ fn session() -> (PromptMode, State) {
     );
     let mut s = State::new(rows);
 
-    s.fill_icons((&[app("kate"), app("gimp")], &windows), None, None);
+    s.fill_icons((&[app("kate"), app("gimp")], &windows), None, None, None);
     mode.refresh(&mut s);
     (mode, s)
 }

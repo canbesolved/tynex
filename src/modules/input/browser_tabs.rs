@@ -5,7 +5,7 @@
 //! drops a window row that its active tab row already stands for.
 
 use crate::core::browser_tabs::{TabInfo, TabList};
-use crate::core::title::SEPARATORS;
+use crate::core::title::shows_tab;
 use crate::core::view::{Row, RowTarget};
 
 /// Window rows, then tab rows, then launcher rows. A browser window
@@ -56,17 +56,8 @@ fn shown_by_tab(row: &Row, active: &[(&TabList, &TabInfo)]) -> bool {
     };
 
     active.iter().any(|(list, tab)| {
-        list.windows.contains(id) && shows(&row.title, &tab.title)
+        list.windows.contains(id) && shows_tab(&row.title, &tab.title)
     })
-}
-
-/// True when window title `title` is tab title `tab`, alone or before
-/// a separator, as in `Notes - Brave`.
-fn shows(title: &str, tab: &str) -> bool {
-    !tab.is_empty()
-        && title.strip_prefix(tab).is_some_and(|rest| {
-            rest.is_empty() || SEPARATORS.iter().any(|s| rest.starts_with(s))
-        })
 }
 
 #[cfg(test)]

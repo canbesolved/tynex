@@ -184,7 +184,7 @@ fn hide_and_quit_close_only_when_open() {
 }
 
 #[test]
-fn show_selects_the_previous_apps_icon() {
+fn show_puts_the_previous_apps_icon_first_and_selects_it() {
     let mut sw = build(HotkeyAction::Hide);
 
     sw.handle(Event::Windows(vec![
@@ -211,9 +211,9 @@ fn show_selects_the_previous_apps_icon() {
     let view = sw.view().unwrap();
 
     assert_eq!(view.icons().len(), 2);
-    assert_eq!(view.icons()[0].windows.len(), 2);
-    assert_eq!(view.icon, 1);
-    assert_eq!(view.icons()[1].app_id, "b");
+    assert_eq!(view.icon, 0);
+    assert_eq!(view.icons()[0].app_id, "b"); // After the pinned apps
+    assert_eq!(view.icons()[1].windows.len(), 2);
 }
 
 #[test]

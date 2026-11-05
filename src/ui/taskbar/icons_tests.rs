@@ -39,8 +39,8 @@ fn metrics(width: f32) -> Metrics {
 fn icon(app: &str, windows: &[&str]) -> AppIcon {
     AppIcon {
         app_id: app.into(),
-        icon: None,
         windows: windows.iter().map(|id| WindowId((*id).into())).collect(),
+        ..AppIcon::default()
     }
 }
 

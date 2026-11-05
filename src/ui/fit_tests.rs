@@ -48,6 +48,7 @@ fn state(n: usize, same: usize) -> State {
         app_id: "konsole".into(),
         icon: None,
         windows: ids[..same].to_vec(),
+        tab: None,
     }];
     state
 }

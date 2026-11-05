@@ -8,7 +8,7 @@ use std::time::Instant;
 
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 
-use super::{Parts, handle};
+use super::{Parts, handle, redraw};
 use crate::adapters::browser_tabs::Socket;
 use crate::core::browser_tabs::TabsUpdate;
 use crate::core::event::Event;
@@ -17,7 +17,7 @@ use crate::core::event::Event;
 pub(super) fn wait(p: &Parts) -> Result<(), String> {
     let deadline = earliest(
         earliest(p.presenter.next_deadline(), p.hint.deadline()),
-        p.painter.next_frame(Instant::now()),
+        earliest(p.painter.next_frame(Instant::now()), p.hold),
     );
     let timeout = deadline
         .map(|at| {
@@ -77,6 +77,20 @@ pub(super) fn drive_tabs(p: &mut Parts) {
             p.painter.drop_tab_icons(source);
         }
         handle(p, Event::Tabs(update));
+    }
+}
+
+/// Draws the popup held for the tab lists once every asked browser
+/// answered or `wait` ran out.
+pub(super) fn release(p: &mut Parts) {
+    let Some(at) = p.hold else {
+        return;
+    };
+    let listed = p.tabs.as_ref().is_none_or(|tabs| !tabs.listing());
+
+    if listed || Instant::now() >= at {
+        p.hold = None;
+        redraw(p);
     }
 }
 

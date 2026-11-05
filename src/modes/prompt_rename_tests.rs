@@ -54,11 +54,13 @@ fn session(taskbar: TaskbarMode) -> (PromptMode, State) {
             app_id: "firefox".into(),
             icon: None,
             windows: vec![id("w1"), id("w2")],
+            tab: None,
         },
         AppIcon {
             app_id: "kate".into(),
             icon: None,
             windows: vec![id("w3")],
+            tab: None,
         },
     ];
     s.select_icon(Some("firefox"));
@@ -221,7 +223,7 @@ fn a_kept_title_lasts_until_the_window_closes() {
 
     let view = sw.view().unwrap();
 
-    assert!(view.windows().any(|r| r.title == "Editor"));
+    assert!(view.titles().any(|r| r.title == "Editor"));
 
     sw.handle(Event::Windows(vec![
         window("w1", "Inbox"),

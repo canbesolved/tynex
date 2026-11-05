@@ -137,13 +137,11 @@ fn typing_hides_the_title_bar_until_the_query_is_cleared() {
         ..M
     };
     let mut s = state(3);
-
-    s.output.truncate(1); // One match, three open windows
-
     let open = measured(&s.view(), &M, &theme);
     let input_only = measured(&s.view(), &off, &theme);
 
     s.query = "w".into();
+    s.output.truncate(1); // One match, three open windows
 
     let typed = measured(&s.view(), &M, &theme);
 
@@ -151,6 +149,7 @@ fn typing_hides_the_title_bar_until_the_query_is_cleared() {
     assert_eq!(typed, measured(&s.view(), &off, &theme));
 
     s.query.clear();
+    s.output.clone_from(&s.rows); // The title list again
     assert_eq!(measured(&s.view(), &M, &theme), open);
     assert_eq!(measured(&s.view(), &off, &theme), input_only);
 }

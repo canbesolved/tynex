@@ -104,6 +104,7 @@ pub(super) struct RawMain {
     pub position: Position,
     pub theme: Theme,
     pub switch_layout: bool,
+    pub history: Spanned<u16>,
 }
 
 impl Default for RawMain {
@@ -116,6 +117,7 @@ impl Default for RawMain {
             position: Position::Center,
             theme: Theme::Dark,
             switch_layout: false,
+            history: unspanned(crate::config::main::HISTORY),
         }
     }
 }

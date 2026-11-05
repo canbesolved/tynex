@@ -7,20 +7,20 @@ mod browser_tabs;
 mod error;
 mod file;
 mod hotkeys;
+mod main;
 mod output;
 mod raw;
 mod taskbar;
 mod theme;
 mod validate;
 
-use std::path::{Path, PathBuf};
-
-use serde::Deserialize;
+use std::path::Path;
 
 pub use crate::config::browser_tabs::{Browser, BrowserTabsConfig, Browsers};
 pub use crate::config::error::ConfigError;
 pub use crate::config::file::{Loaded, load_or_create};
 pub use crate::config::hotkeys::HotkeysConfig;
+pub use crate::config::main::{Desktop, Font, MainConfig, Position};
 pub use crate::config::output::OutputConfig;
 pub use crate::config::taskbar::{
     IconBarConfig, TaskbarConfig, TaskbarMode, TitleBarConfig,
@@ -31,43 +31,6 @@ use crate::core::view::Rgb;
 
 /// The default config file, written on first start.
 pub const DEFAULT_TOML: &str = include_str!("default.toml");
-
-/// Window source adapter.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Desktop {
-    Auto,
-    Kde,
-    Mock,
-}
-
-/// Vertical position of the popup on the screen.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Position {
-    #[default]
-    Center, // Centered when it opens; grows downward
-    Top, // 24 logical pixels from the top
-}
-
-/// Font for titles.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Font {
-    Auto, // Resolved with fc-match
-    Path(PathBuf),
-}
-
-/// The `[main]` table: process and frame settings.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct MainConfig {
-    pub desktop: Desktop,
-    pub font: Font,
-    pub font_size: u16,
-    pub width: u16,
-    pub position: Position,
-    pub theme: Theme,
-    pub switch_layout: bool, // Read keys with the US layout in the popup
-}
 
 /// How installed apps appear in the output bar.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -164,15 +127,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            main: MainConfig {
-                desktop: Desktop::Auto,
-                font: Font::Auto,
-                font_size: 14,
-                width: 480,
-                position: Position::Center,
-                theme: Theme::Dark,
-                switch_layout: false,
-            },
+            main: MainConfig::default(),
             hotkeys: HotkeysConfig {
                 action: HotkeyAction::Last,
                 rename: hotkeys::default_rename(),
@@ -247,3 +202,7 @@ mod hotkeys_tests;
 #[cfg(test)]
 #[path = "input_keys_tests.rs"]
 mod input_keys_tests;
+
+#[cfg(test)]
+#[path = "history_tests.rs"]
+mod history_tests;

@@ -6,7 +6,6 @@
 use std::collections::HashSet;
 
 use crate::core::app::AppInfo;
-use crate::core::browser_tabs::TabsUpdate;
 use crate::core::event::{Action, Click, Event, Key};
 use crate::core::order::{SortBy, order};
 use crate::core::places::Places;
@@ -36,7 +35,7 @@ pub struct Switcher<M> {
     renames: Renames,              // Titles set from the popup
     pinned: Vec<AppInfo>,          // Apps first in the strip, in order
     usage: Usage,                  // Lent to `state` while open
-    places: Places,                // Current and previous window or tab
+    places: Places,                // Windows and tabs, newest first
     apps: Option<HashSet<String>>, // Installed app ids, if scanned
     state: Option<State>,          // Some while the popup is open
     mode: M,
@@ -91,17 +90,7 @@ impl<M: Mode> Switcher<M> {
             Event::Click(click) => self.click(click),
             Event::Hover(click) => self.hover(click),
             Event::Hide | Event::Quit => self.close(),
-            Event::Tabs(update) => {
-                if let TabsUpdate::List {
-                    source, pid, tabs, ..
-                } = &update
-                {
-                    let front = self.windows.first();
-
-                    self.places.listed(*source, *pid, tabs, front);
-                }
-                self.mode.on_tabs(update, &mut self.state, &self.windows)
-            }
+            Event::Tabs(update) => self.tabs(update),
         }
     }
 
@@ -128,6 +117,7 @@ impl<M: Mode> Switcher<M> {
             })
             .collect();
         self.renames.apply(&mut self.windows);
+        self.places.retain(&self.windows);
         if let Some(front) = self.windows.first() {
             self.places.focused(front);
         }
@@ -144,7 +134,7 @@ impl<M: Mode> Switcher<M> {
     /// the selection, the strip and a title being edited from `old`.
     fn rebuild(&mut self, old: State) -> State {
         let selected = old.selected_target().cloned();
-        let app = old.icons.get(old.icon).map(|icon| icon.app_id.clone());
+        let keep = old.icons.get(old.icon).filter(|_| !old.fresh).cloned();
         let mut state = State::new(self.rows());
 
         state.query = old.query;
@@ -152,13 +142,20 @@ impl<M: Mode> Switcher<M> {
         state.hint = old.hint;
         state.tab_lists = old.tab_lists;
         state.usage = old.usage;
+        state.fresh = old.fresh;
+        self.lend_history(&mut state);
         state.fill_icons(
             (&self.pinned, &self.windows),
-            app.as_deref(),
+            self.opening_place().as_ref(),
+            keep.as_ref(),
             old.dropdown,
         );
         self.mode.refresh(&mut state);
-        state.select_target(selected.as_ref());
+        if state.fresh && state.query.is_empty() {
+            self.preselect(&mut state);
+        } else {
+            state.select_target(selected.as_ref());
+        }
         state.rename = old
             .rename
             .filter(|r| self.windows.iter().any(|w| w.id == r.id));
@@ -173,17 +170,19 @@ impl<M: Mode> Switcher<M> {
         let mut state = State::new(self.rows());
 
         self.lend_usage(&mut state);
-        let app = self
-            .windows
-            .get(1)
-            .or_else(|| self.windows.first())
-            .map(|window| window.app_id.clone());
-
+        self.lend_history(&mut state);
         state.hint.clone_from(&self.hint);
-        state.fill_icons((&self.pinned, &self.windows), app.as_deref(), None);
+        state.fresh = true;
+        let previous = self.opening_place();
+
+        state.fill_icons(
+            (&self.pinned, &self.windows),
+            previous.as_ref(),
+            None,
+            None,
+        );
         self.mode.refresh(&mut state);
-        // The previous window is selected in any order, like Alt+Tab.
-        state.select_id(self.windows.get(1).map(|w| &w.id));
+        self.preselect(&mut state);
         self.state = Some(state);
         Action::Redraw
     }
@@ -192,6 +191,8 @@ impl<M: Mode> Switcher<M> {
         let Some(mut state) = self.state.take() else {
             return Action::None;
         };
+
+        state.fresh = false;
         let action = self.mode.on_key(key, &mut state);
 
         if let Some((id, title)) = state.renamed.take() {
@@ -206,6 +207,8 @@ impl<M: Mode> Switcher<M> {
         let Some(mut state) = self.state.take() else {
             return Action::None;
         };
+
+        state.fresh = false;
         let action = self.mode.on_click(click, &mut state);
 
         self.keep(action, state)
@@ -216,6 +219,8 @@ impl<M: Mode> Switcher<M> {
         let Some(mut state) = self.state.take() else {
             return Action::None;
         };
+
+        state.fresh = false;
         let action = self.mode.on_hover(click, &mut state);
 
         self.keep(action, state)
@@ -229,6 +234,9 @@ impl<M: Mode> Switcher<M> {
             .collect()
     }
 }
+
+#[path = "switcher_history.rs"]
+mod history;
 
 #[path = "switcher_usage.rs"]
 mod usage;

@@ -236,3 +236,7 @@ mod rename_tests;
 #[cfg(test)]
 #[path = "prompt_pinned_tests.rs"]
 mod pinned_tests;
+
+#[cfg(test)]
+#[path = "prompt_history_tests.rs"]
+mod history_tests;

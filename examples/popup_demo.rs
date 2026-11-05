@@ -12,10 +12,8 @@ use std::time::{Duration, Instant};
 
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use tynex::adapters::mock::MockSource;
-use tynex::config::{
-    Font, HintConfig, MainConfig, TaskbarConfig, TaskbarMode, Theme,
-};
-use tynex::config::{LauncherConfig, LauncherMode, OutputConfig, Position};
+use tynex::config::{Font, HintConfig, MainConfig, TaskbarConfig, TaskbarMode};
+use tynex::config::{LauncherConfig, LauncherMode, OutputConfig};
 use tynex::core::event::{Action, Event};
 use tynex::core::order::SortBy;
 use tynex::core::queue::channel;
@@ -47,12 +45,7 @@ fn redraw(presenter: &mut WaylandPresenter, app: &App, painter: &mut Painter) {
 fn painter(text: Text, icons: Icons) -> Painter {
     let main = MainConfig {
         desktop: tynex::config::Desktop::Mock,
-        font: Font::Auto,
-        font_size: 14,
-        width: 480,
-        position: Position::Center,
-        theme: Theme::Dark,
-        switch_layout: false,
+        ..MainConfig::default()
     };
     let output = OutputConfig::default();
     let taskbar = TaskbarConfig {

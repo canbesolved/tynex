@@ -39,10 +39,12 @@ does nothing. `Shift+Tab` does the same one step back, and wraps
 from the first entry to the last
 ([ADR-0068](../../adr/0068_back_tab.md)).
 
-The popup opens with the previous window selected. `Space` or
+The popup opens with the previous place selected, a window or a
+browser tab ([ADR-0097](../../adr/0097_history.md)). `Space` or
 `Enter` switches back like Alt+Tab when the title list is on, the
-icon strip is off, or that app has one window. With the title list
-off, the strip on, and several windows, those keys open its
+icon strip is off, that app has one window, or the place is a tab.
+With the title list off, the strip on, and several windows, those
+keys open its
 dropdown (see [taskbar.md](../ui/taskbar.md)). Typing starts at
 once. After every change of the query, the first row is selected.
 An open window that starts with the query comes before a later

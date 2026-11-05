@@ -31,7 +31,11 @@ fn install(home: &Path, folder: &str) {
 }
 
 fn config(enabled: bool, browsers: Browsers) -> BrowserTabsConfig {
-    BrowserTabsConfig { enabled, browsers }
+    BrowserTabsConfig {
+        enabled,
+        browsers,
+        ..BrowserTabsConfig::default()
+    }
 }
 
 fn file(home: &Path) -> std::path::PathBuf {

@@ -105,6 +105,8 @@ fn start(config: &Config) -> Result<(), String> {
         rx,
         tabs: adapters::browser_tabs::start(&config.browser_tabs),
         signals: Signals::open(),
+        wait: std::time::Duration::from_millis(config.browser_tabs.wait.into()),
+        hold: None,
     };
 
     let result = event_loop::run(&mut parts);
@@ -146,6 +148,7 @@ fn switcher(
     )
     .with_pinned(pinned)
     .with_usage(usage_file::load(), ids)
+    .with_history(config.main.history.into())
 }
 
 /// Scans the app catalog once. Returns it with the launcher list and

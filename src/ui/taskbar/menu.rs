@@ -175,7 +175,7 @@ fn rows(view: &View<'_>, metrics: &Metrics) -> usize {
     let cap = metrics.max_rows.max(1);
 
     if frames::overlays(view, metrics) {
-        cap.min(view.window_count().clamp(1, metrics.list_rows.max(1)))
+        cap.min(view.title_count().clamp(1, metrics.list_rows.max(1)))
     } else {
         cap
     }
