@@ -172,3 +172,72 @@ fn a_selection_moved_before_the_list_stays() {
 
     assert_eq!(selected.title, "notes.txt");
 }
+
+#[test]
+fn a_click_opens_the_title_list_row_under_the_pointer() {
+    use crate::core::event::Click;
+
+    let input = Input::new(LauncherConfig::default(), Vec::new());
+    let mode =
+        PromptMode::new(input, TaskbarMode::Titlebar, 10).with_tabs(true);
+    let mut sw =
+        Switcher::new(HotkeyAction::Last, false, SortBy::Recently, mode)
+            .with_history(10);
+    let list = |active: i32| {
+        let tab = |id: i32, title: &str| TabInfo {
+            id,
+            window: 1,
+            active: id == active,
+            last: u64::from(id == active),
+            title: title.into(),
+            url: format!("https://{}.com", title.to_lowercase()),
+            icon: String::new(),
+        };
+
+        Event::Tabs(TabsUpdate::List {
+            source: SourceId(1),
+            pid: 7,
+            browser: "Brave".into(),
+            tabs: vec![tab(3, "GitHub"), tab(4, "LinkedIn")],
+        })
+    };
+    let brave = |title: &str| window("brave", 7, title);
+
+    // Kate, then GitHub in Brave, then LinkedIn in the same window.
+    sw.handle(Event::Windows(vec![window("kate", 1, "notes.txt")]));
+    sw.handle(Event::Windows(vec![
+        brave("GitHub - Brave"),
+        window("kate", 1, "notes.txt"),
+    ]));
+    sw.handle(Event::Show);
+    sw.handle(list(3));
+    sw.handle(Event::Hide);
+    sw.handle(Event::Windows(vec![
+        brave("LinkedIn - Brave"),
+        window("kate", 1, "notes.txt"),
+    ]));
+    sw.handle(Event::Show);
+    sw.handle(list(4));
+
+    let titles: Vec<String> = sw
+        .view()
+        .unwrap()
+        .titles()
+        .map(|r| r.title.clone())
+        .collect();
+
+    assert_eq!(
+        titles,
+        [
+            "GitHub — github.com",
+            "notes.txt",
+            "LinkedIn — linkedin.com"
+        ]
+    );
+    assert_eq!(sw.handle(Event::Hover(Click::Row(1))), Action::Redraw);
+    assert_eq!(sw.view().unwrap().selected, 1);
+    assert_eq!(
+        sw.handle(Event::Click(Click::Row(0))),
+        Action::ActivateTab(github())
+    );
+}
