@@ -143,7 +143,7 @@ Configuration:
 - [ ] RM-0006 `popup_delay`: milliseconds to wait before the popup
   appears. Default `200`. With `hotkeys.action = "last"`, a second
   hotkey press inside that window uses back to last instead of
-  showing the popup (see Back to last in 0.4.0).
+  showing the popup, like `tynex qs` (RM-0005).
 - [ ] RM-0025 `tynex reload`: re-read the config without restarting. An invalid
   file is reported and the running config stays in use.
 

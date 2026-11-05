@@ -73,29 +73,15 @@ impl<M: Mode> Switcher<M> {
 
     /// Applies `on_hotkey` to a `Show` while open.
     pub(super) fn pressed_again(&mut self) -> Action {
-        let previous = match self.on_hotkey {
-            HotkeyAction::Hide => None,
-            HotkeyAction::Last => self
-                .state
-                .as_ref()
-                .and_then(|s| self.places.back(&self.windows, &s.tab_lists))
-                .or_else(|| {
-                    let window = self.windows.get(1)?;
-
-                    Some(Action::Activate(window.id.clone()))
-                }),
-        };
-        let action = previous.unwrap_or(Action::Close);
-
-        if let Some(state) = self.state.take() {
-            self.take_back(state, &action);
+        match self.on_hotkey {
+            HotkeyAction::Hide => self.close(),
+            HotkeyAction::Last => self.back(),
         }
-        action
     }
 
     /// Takes the scores back from a closing popup and counts the use
     /// in `action`.
-    fn take_back(&mut self, mut state: State, action: &Action) {
+    pub(super) fn take_back(&mut self, mut state: State, action: &Action) {
         self.mode.on_close(action, &state);
         if let Action::ActivateTab(tab) = action
             && let Some(list) =

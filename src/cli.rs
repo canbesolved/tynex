@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Command line: `daemon`, `show`, `hide`, `quit`.
+//! Command line: `daemon`, `show`, `hide`, `qs`, `quit`.
 
 use std::ffi::OsString;
 
@@ -15,6 +15,7 @@ Commands:
   daemon         Start the background service
   show           Open the switcher
   hide           Close the switcher
+  qs             Switch back to the last window or tab
   quit           Stop the background service
 
 Options:
@@ -27,6 +28,7 @@ pub enum Command {
     Daemon,
     Show,
     Hide,
+    QuickSwitch,
     Quit,
     Help,
     Version,
@@ -52,6 +54,7 @@ pub fn parse(
                     Some("daemon") => "daemon",
                     Some("show") => "show",
                     Some("hide") => "hide",
+                    Some("qs") => "qs",
                     Some("quit") => "quit",
                     _ => {
                         return Err(format!(
@@ -69,6 +72,7 @@ pub fn parse(
         Some("daemon") => Ok(Command::Daemon),
         Some("show") => Ok(Command::Show),
         Some("hide") => Ok(Command::Hide),
+        Some("qs") => Ok(Command::QuickSwitch),
         Some("quit") => Ok(Command::Quit),
         _ => Err("missing command".into()),
     }
@@ -87,6 +91,7 @@ mod tests {
         assert_eq!(run(&["daemon"]), Ok(Command::Daemon));
         assert_eq!(run(&["show"]), Ok(Command::Show));
         assert_eq!(run(&["hide"]), Ok(Command::Hide));
+        assert_eq!(run(&["qs"]), Ok(Command::QuickSwitch));
         assert_eq!(run(&["quit"]), Ok(Command::Quit));
     }
 
@@ -103,5 +108,6 @@ mod tests {
         assert!(run(&["start"]).is_err());
         assert!(run(&["show", "--mode", "search"]).is_err()); // Removed
         assert!(run(&["show", "extra"]).is_err());
+        assert!(run(&["qs", "extra"]).is_err());
     }
 }

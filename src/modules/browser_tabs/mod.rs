@@ -11,6 +11,10 @@ mod pick;
 #[path = "tests.rs"]
 mod tests;
 
+#[cfg(test)]
+#[path = "hidden_tests.rs"]
+mod hidden_tests;
+
 pub use list::{clean, fallback, row_title, rows, tab_row};
 pub use pick::browser_window;
 
@@ -26,6 +30,7 @@ struct Pending {
     pid: u32,
     id: i32,
     tabs: Vec<TabInfo>, // The source's list, for the window pick
+    window: Option<WindowId>, // Raised first, for `tynex qs`
 }
 
 /// Tab state that outlives one popup: the pending activation.
@@ -71,7 +76,25 @@ impl Session {
                 pid: list.pid,
                 id: tab.id,
                 tabs: list.tabs.clone(),
+                window: None,
             });
+    }
+
+    /// Remembers a tab opened with no popup, so no list: the reply
+    /// raises `window`, else a window of browser process `pid`.
+    pub fn note_hidden(
+        &mut self,
+        tab: &TabRef,
+        pid: u32,
+        window: Option<&WindowId>,
+    ) {
+        self.pending = Some(Pending {
+            source: tab.source,
+            pid,
+            id: tab.id,
+            tabs: Vec::new(),
+            window: window.cloned(),
+        });
     }
 
     /// Drops one source and its pending activation.
@@ -104,6 +127,12 @@ impl Session {
 
         if !ok {
             return None; // The tab is gone; raise nothing
+        }
+        if let Some(id) = pending
+            .window
+            .filter(|id| windows.iter().any(|w| w.id == *id))
+        {
+            return Some(id);
         }
         browser_window(windows, pending.pid, &pending.tabs, pending.id, window)
     }

@@ -20,6 +20,7 @@ core/
   row_color.rs  Tint, RowColors: output bar row band per result type
   switcher.rs   State machine (tests in switcher_tests.rs)
   switcher_usage.rs  Lends usage scores to the popup, counts uses
+  switcher_back.rs  Back to the previous place: second press, `qs`
   view.rs       View, Row, RowTarget: what the presenter must draw
   order.rs      SortBy: row order (recently, app)
   places.rs     Places: history of windows and tabs, newest first
@@ -56,6 +57,7 @@ pub enum Event {
     Click(Click),
     Hover(Click),
     Hide,
+    QuickSwitch, // Back to the previous place, open or hidden
     Quit,
     Tabs(TabsUpdate), // From the browser tabs adapter
 }
@@ -166,6 +168,8 @@ pub trait Mode {
     fn refresh(&mut self, s: &mut State) {}
     /// Sees the closing action before the state is dropped.
     fn on_close(&mut self, action: &Action, s: &State) {}
+    /// Sees the place `tynex qs` switches to while hidden.
+    fn on_quick_switch(&mut self, place: &Place) {}
     /// Applies a browser tab update; default ignores it.
     fn on_tabs(
         &mut self,
@@ -222,6 +226,13 @@ is added with its module.
   rebuilds the rows.
 - `Tabs`: goes to the mode in either state; the mode ignores lists
   while hidden.
+- `QuickSwitch` (`tynex qs`): while visible, the switch back of a
+  second press with `last`, whatever `hotkeys.action` says. While
+  hidden, no state is built: `Activate` for the previous window, or
+  `ActivateTab` for the previous tab, trusted to be open; else
+  `Activate` for the previous window, else `None`. The mode sees the
+  place first, so a tab's window can be raised
+  ([ADR-0098](../adr/0098_quick_switch.md)).
 - `Hide` and `Quit` close an open popup. The daemon loop stops itself
   on `Quit`.
 

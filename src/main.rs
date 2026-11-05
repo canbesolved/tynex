@@ -32,6 +32,7 @@ fn main() -> ExitCode {
         Ok(Command::Daemon) => tynex::daemon::run(),
         Ok(Command::Show) => request(Request::Show),
         Ok(Command::Hide) => request(Request::Hide),
+        Ok(Command::QuickSwitch) => request(Request::QuickSwitch),
         Ok(Command::Quit) => request(Request::Quit),
         Err(message) => {
             eprintln!("tynex: error: {message}\n\n{USAGE}");

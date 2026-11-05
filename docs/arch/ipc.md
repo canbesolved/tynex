@@ -10,20 +10,28 @@ hotkey.
 
 ## Commands
 
-| CLI          | D-Bus call | Effect           |
-| ------------ | ---------- | ---------------- |
-| `tynex show` | `Show("")` | Open the popup   |
-| `tynex hide` | `Hide()`   | Close the popup  |
-| `tynex quit` | `Quit()`   | Stop the daemon  |
+| CLI          | D-Bus call      | Effect                  |
+| ------------ | --------------- | ----------------------- |
+| `tynex show` | `Show("")`      | Open the popup          |
+| `tynex hide` | `Hide()`        | Close the popup         |
+| `tynex qs`   | `QuickSwitch()` | Switch back, no popup   |
+| `tynex quit` | `Quit()`        | Stop the daemon         |
 
 While the popup is open, `show` acts as a second hotkey press and
 follows `hotkeys.action` ([config.md](config.md)). `Show` keeps its
 string argument from when it named a mode; any value other than the
 empty string is refused ([ADR-0050](../adr/0050_search_only.md)).
 
+`qs` (quick switch) goes back to the previous window or browser tab
+without opening the popup, like a second press with
+`hotkeys.action = "last"`. While the popup is open it switches back
+whatever `hotkeys.action` says
+([ADR-0098](../adr/0098_quick_switch.md)).
+
 ## Interface
 
-`src/ipc/` is portable: `Request` (`Show`, `Hide`, `Quit`) and
+`src/ipc/` is portable: `Request` (`Show`, `Hide`, `QuickSwitch`,
+`Quit`) and
 `IpcError` (`NotRunning` or `Failed`). Each platform module provides
 two functions:
 

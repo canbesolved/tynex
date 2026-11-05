@@ -7,6 +7,7 @@ use std::fmt;
 
 use crate::core::browser_tabs::TabsUpdate;
 use crate::core::event::{Action, Click, Key};
+use crate::core::places::Place;
 use crate::core::queue::EventTx;
 use crate::core::state::State;
 use crate::core::window::{WindowId, WindowInfo};
@@ -64,6 +65,9 @@ pub trait Mode {
 
     /// Sees the action that closes the popup, before `s` is dropped.
     fn on_close(&mut self, _action: &Action, _s: &State) {}
+
+    /// Sees the place `tynex qs` switches to while hidden.
+    fn on_quick_switch(&mut self, _place: &Place) {}
 
     /// Applies a browser tab change. `state` is `None` while hidden.
     /// The default ignores it.
