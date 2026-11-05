@@ -28,11 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.4.0
-
-- [ ] RM-0005 `tynex qs` (quick switch): back to last without opening
-  the popup, the same way as `hotkeys.action = "last"`.
-
 ### 0.5.0
 
 - [ ] RM-0062 Text editing in the input bar: `Ctrl+A` selects the

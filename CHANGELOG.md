@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-05
+
+Quick switch without the popup.
+
 ### Added
 
 - `tynex qs` (quick switch): back to the previous window or browser
@@ -719,7 +723,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.3.9...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/canbesolved/tynex/compare/v0.3.9...v0.4.0
 [0.3.9]: https://github.com/canbesolved/tynex/compare/v0.3.8...v0.3.9
 [0.3.8]: https://github.com/canbesolved/tynex/compare/v0.3.7...v0.3.8
 [0.3.7]: https://github.com/canbesolved/tynex/compare/v0.3.6...v0.3.7
