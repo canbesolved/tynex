@@ -28,25 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.3.9
-
-- [ ] RM-0023 Usage stats: matches of every kind (open windows,
-  browser tabs, installed apps) used most often through tynex come
-  first, inside the exact and the fuzzy band. Scores 0 to 100 in
-  `~/.local/share/tynex/usage_stats.tsv`; gone apps and closed tabs
-  are dropped. Replaces RM-0009.
-- [ ] RM-0068 The hotkey pressed again (`hotkeys.action = "last"`)
-  goes back to the previous window or browser tab, whichever came
-  last, so a tab opened before another app, or the tab before the
-  current one, is one press away.
-- [ ] RM-0069 Window and tab history: tabs are switched to like
-  windows. `main.history` (default 10) places, newest first, order
-  the title list; a browser window shows as its active tab; the popup
-  opens on the previous place, in the title list and in the strip
-  (pinned apps, the previous window or tab, then the rest).
-  `browser_tabs.wait` (default 150 ms) holds the first draw for the
-  tab lists.
-
 ### 0.4.0
 
 - [ ] RM-0005 `tynex qs` (quick switch): back to last without opening
