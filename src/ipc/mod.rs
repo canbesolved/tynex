@@ -6,11 +6,12 @@
 
 use std::fmt;
 
-/// A request sent by `tynex show`, `hide` or `quit`.
+/// A request sent by `tynex show`, `hide`, `qs` or `quit`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Request {
     Show,
     Hide,
+    QuickSwitch,
     Quit,
 }
 

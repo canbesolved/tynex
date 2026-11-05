@@ -12,6 +12,7 @@ use crate::config::TaskbarMode;
 use crate::core::browser_tabs::TabsUpdate;
 use crate::core::event::{Action, Click, Key};
 use crate::core::hotkey::{self, Bindings};
+use crate::core::places::Place;
 use crate::core::state::State;
 use crate::core::text_edit;
 use crate::core::traits::Mode;
@@ -177,6 +178,10 @@ impl Mode for PromptMode {
 
     fn on_close(&mut self, action: &Action, s: &State) {
         tabs::note(self, action, s);
+    }
+
+    fn on_quick_switch(&mut self, place: &Place) {
+        tabs::note_hidden(self, place);
     }
 
     fn on_tabs(

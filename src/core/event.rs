@@ -45,6 +45,7 @@ pub enum Event {
     Click(Click),
     Hover(Click), // Pointer move; same places as a click
     Hide,
+    QuickSwitch, // Back to the previous place, open or hidden
     Quit,
     Tabs(TabsUpdate), // From the browser tabs adapter
 }

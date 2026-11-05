@@ -375,7 +375,7 @@ The config is read once, when `tynex daemon` starts
 - **Wrong type or invalid value:** exit.
 
 `tynex` never changes an existing config file. The CLI commands
-(`show`, `hide`, `quit`) do not read the config.
+(`show`, `hide`, `qs`, `quit`) do not read the config.
 
 ## Validation
 

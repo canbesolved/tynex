@@ -42,6 +42,7 @@ fn request(msg: &Message) -> Result<Event, String> {
             other => Err(format!("unknown mode `{other}`: modes were removed")),
         },
         Some("Hide") => Ok(Event::Hide),
+        Some("QuickSwitch") => Ok(Event::QuickSwitch),
         Some("Quit") => Ok(Event::Quit),
         _ => Err("unknown method".into()),
     }
@@ -59,6 +60,7 @@ pub fn send(req: Request) -> Result<(), IpcError> {
     let member = match req {
         Request::Show => "Show",
         Request::Hide => "Hide",
+        Request::QuickSwitch => "QuickSwitch",
         Request::Quit => "Quit",
     };
     let mut msg = Message::new_method_call(NAME, PATH, NAME, member)
@@ -113,6 +115,7 @@ mod tests {
         let get = |m| request(&call(m, None));
 
         assert_eq!(get("Hide"), Ok(Event::Hide));
+        assert_eq!(get("QuickSwitch"), Ok(Event::QuickSwitch));
         assert_eq!(get("Quit"), Ok(Event::Quit));
         assert!(get("Reload").is_err());
 

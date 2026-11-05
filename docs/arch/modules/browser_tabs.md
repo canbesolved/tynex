@@ -20,6 +20,7 @@ modules/browser_tabs/
   list.rs   Cleaning, row titles, search order, fallback icon
   pick.rs   browser_window: the KWin window to raise
   tests.rs  Unit tests
+  hidden_tests.rs  Tests for a tab opened by `tynex qs`
 ```
 
 ## What the module owns
@@ -104,8 +105,13 @@ source, pid, the source's list and the tab id. A new one replaces
 it. There is no timer. The event loop hides the popup and the
 adapter sends `activate`.
 
-When the browser reports success, `browser_window` picks the KWin
-window and the module returns `Action::Activate` for it. On failure
+`tynex qs` while hidden has no list: `note_hidden` keeps the source,
+pid, tab id and the window that last showed the tab
+([ADR-0098](../../adr/0098_quick_switch.md)).
+
+When the browser reports success, the noted window is raised if it
+is still open; otherwise `browser_window` picks the KWin window. The
+module returns `Action::Activate` for it. On failure
 nothing is raised. A reply from another source is ignored.
 
 ## Window pick

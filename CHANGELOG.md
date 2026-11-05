@@ -9,6 +9,14 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `tynex qs` (quick switch): back to the previous window or browser
+  tab without opening the popup, like a second hotkey press with
+  `hotkeys.action = "last"`. With the popup open it switches back
+  whatever `hotkeys.action` says
+  ([ADR-0098](docs/adr/0098_quick_switch.md)) (RM-0005).
+
 ## [0.3.9] - 2026-11-05
 
 Usage stats, and tabs switched to like windows.

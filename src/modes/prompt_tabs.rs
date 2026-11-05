@@ -6,6 +6,7 @@
 use super::PromptMode;
 use crate::core::browser_tabs::TabsUpdate;
 use crate::core::event::Action;
+use crate::core::places::Place;
 use crate::core::state::State;
 use crate::core::window::WindowInfo;
 
@@ -50,5 +51,14 @@ pub(super) fn note(mode: &mut PromptMode, action: &Action, state: &State) {
     if let (Action::ActivateTab(tab), Some(session)) = (action, &mut mode.tabs)
     {
         session.note(tab, state);
+    }
+}
+
+/// Remembers a tab that `tynex qs` opens while hidden.
+pub(super) fn note_hidden(mode: &mut PromptMode, place: &Place) {
+    if let (Place::Tab { tab, pid, window }, Some(session)) =
+        (place, &mut mode.tabs)
+    {
+        session.note_hidden(tab, *pid, window.as_ref());
     }
 }
