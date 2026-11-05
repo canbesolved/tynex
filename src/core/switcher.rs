@@ -3,14 +3,19 @@
 
 //! Switcher state machine: open, refresh, route keys, close.
 
+use std::collections::HashSet;
+
 use crate::core::app::AppInfo;
+use crate::core::browser_tabs::TabsUpdate;
 use crate::core::event::{Action, Click, Event, Key};
 use crate::core::order::{SortBy, order};
+use crate::core::places::Places;
 use crate::core::rename::Renames;
 use crate::core::state::State;
 use crate::core::text::sanitize_title;
 use crate::core::title::row_title;
 use crate::core::traits::Mode;
+use crate::core::usage::Usage;
 use crate::core::view::{Row, View};
 use crate::core::window::WindowInfo;
 
@@ -23,14 +28,17 @@ pub enum HotkeyAction {
 
 /// The switcher, generic over its mode for static dispatch.
 pub struct Switcher<M> {
-    on_hotkey: HotkeyAction,  // For `Show` while open
-    strip_app_name: bool,     // Drop the app name from titles
-    sort: SortBy,             // Row order
-    hint: String,             // Latest hint, including the loading dots
-    windows: Vec<WindowInfo>, // Cached list, MRU first, row titles
-    renames: Renames,         // Titles set from the popup
-    pinned: Vec<AppInfo>,     // Apps first in the strip, in order
-    state: Option<State>,     // Some while the popup is open
+    on_hotkey: HotkeyAction,       // For `Show` while open
+    strip_app_name: bool,          // Drop the app name from titles
+    sort: SortBy,                  // Row order
+    hint: String,                  // Latest hint, including the loading dots
+    windows: Vec<WindowInfo>,      // Cached list, MRU first, row titles
+    renames: Renames,              // Titles set from the popup
+    pinned: Vec<AppInfo>,          // Apps first in the strip, in order
+    usage: Usage,                  // Lent to `state` while open
+    places: Places,                // Current and previous window or tab
+    apps: Option<HashSet<String>>, // Installed app ids, if scanned
+    state: Option<State>,          // Some while the popup is open
     mode: M,
 }
 
@@ -51,6 +59,9 @@ impl<M: Mode> Switcher<M> {
             windows: Vec::new(),
             renames: Renames::default(),
             pinned: Vec::new(),
+            usage: Usage::default(),
+            places: Places::default(),
+            apps: None,
             state: None,
             mode,
         }
@@ -81,6 +92,14 @@ impl<M: Mode> Switcher<M> {
             Event::Hover(click) => self.hover(click),
             Event::Hide | Event::Quit => self.close(),
             Event::Tabs(update) => {
+                if let TabsUpdate::List {
+                    source, pid, tabs, ..
+                } = &update
+                {
+                    let front = self.windows.first();
+
+                    self.places.listed(*source, *pid, tabs, front);
+                }
                 self.mode.on_tabs(update, &mut self.state, &self.windows)
             }
         }
@@ -109,6 +128,9 @@ impl<M: Mode> Switcher<M> {
             })
             .collect();
         self.renames.apply(&mut self.windows);
+        if let Some(front) = self.windows.first() {
+            self.places.focused(front);
+        }
 
         let Some(old) = self.state.take() else {
             return Action::None;
@@ -129,6 +151,7 @@ impl<M: Mode> Switcher<M> {
         state.cursor = old.cursor;
         state.hint = old.hint;
         state.tab_lists = old.tab_lists;
+        state.usage = old.usage;
         state.fill_icons(
             (&self.pinned, &self.windows),
             app.as_deref(),
@@ -148,6 +171,8 @@ impl<M: Mode> Switcher<M> {
         }
 
         let mut state = State::new(self.rows());
+
+        self.lend_usage(&mut state);
         let app = self
             .windows
             .get(1)
@@ -196,38 +221,6 @@ impl<M: Mode> Switcher<M> {
         self.keep(action, state)
     }
 
-    /// Keeps `state` unless the popup is closing.
-    fn keep(&mut self, action: Action, state: State) -> Action {
-        if !matches!(
-            action,
-            Action::Activate(_)
-                | Action::Launch(_)
-                | Action::Close
-                | Action::ActivateTab(_)
-        ) {
-            self.state = Some(state);
-        }
-        action
-    }
-
-    fn close(&mut self) -> Action {
-        match self.state.take() {
-            Some(_) => Action::Close,
-            None => Action::None,
-        }
-    }
-
-    /// Applies `on_hotkey` to a `Show` while open.
-    fn pressed_again(&mut self) -> Action {
-        let previous = match self.on_hotkey {
-            HotkeyAction::Hide => None,
-            HotkeyAction::Last => self.windows.get(1).map(|w| w.id.clone()),
-        };
-
-        self.state = None;
-        previous.map_or(Action::Close, Action::Activate)
-    }
-
     /// Builds the rows in `sort` order.
     fn rows(&self) -> Vec<Row> {
         order(&self.windows, self.sort)
@@ -236,6 +229,9 @@ impl<M: Mode> Switcher<M> {
             .collect()
     }
 }
+
+#[path = "switcher_usage.rs"]
+mod usage;
 
 #[cfg(test)]
 #[path = "switcher_tests.rs"]

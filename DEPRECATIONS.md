@@ -78,6 +78,11 @@ Features that were planned or designed, then dropped before a release.
   (RM-0042).
 - Phonetic search: Chinese titles by pinyin and Japanese by romaji.
   Planned for Later, dropped on 2026-11-03 (RM-0043).
+- A config for the priority of output bar results among open windows,
+  installed apps, browser tabs and exact matches. Planned for 0.3.9,
+  merged on 2026-11-05 into usage stats, which orders results by
+  use with no config
+  ([ADR-0095](docs/adr/0095_usage_stats.md)) (RM-0009).
 - Text shaping and right-to-left layout for Arabic, Hebrew and Indic
   scripts (`rustybuzz`). Planned for Later, dropped on 2026-11-03
   (RM-0040).

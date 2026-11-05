@@ -62,6 +62,9 @@ pub trait Mode {
         Action::None
     }
 
+    /// Sees the action that closes the popup, before `s` is dropped.
+    fn on_close(&mut self, _action: &Action, _s: &State) {}
+
     /// Applies a browser tab change. `state` is `None` while hidden.
     /// The default ignores it.
     fn on_tabs(

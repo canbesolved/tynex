@@ -38,7 +38,8 @@ Pure logic, no I/O:
 | Update      | Effect                                              |
 | ----------- | --------------------------------------------------- |
 | `List`      | Cleans and stores the list and the browser's window |
-|             | ids; ignored while hidden                           |
+|             | ids, drops scores of that browser's closed tabs;    |
+|             | ignored while hidden                                |
 | `Gone`      | Drops that source's list and pending activation     |
 | `Icons`     | Redraw while the popup is open                      |
 | `Activated` | `Activate` the picked window, or nothing            |

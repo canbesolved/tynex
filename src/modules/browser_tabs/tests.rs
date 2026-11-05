@@ -233,3 +233,6 @@ fn pick_covers_each_branch() {
 
     assert!(browser_window(&none, 4, &tabs, 2, 3).is_none());
 }
+
+#[path = "usage_tests.rs"]
+mod usage;

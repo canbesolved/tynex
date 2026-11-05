@@ -110,7 +110,7 @@ impl Mode for PromptMode {
             return action;
         }
         if select {
-            return confirm(self, s);
+            return confirm(s);
         }
         if let Some(changed) =
             text_edit::apply(&mut s.query, &mut s.cursor, key)
@@ -175,6 +175,10 @@ impl Mode for PromptMode {
         }
     }
 
+    fn on_close(&mut self, action: &Action, s: &State) {
+        tabs::note(self, action, s);
+    }
+
     fn on_tabs(
         &mut self,
         update: TabsUpdate,
@@ -200,16 +204,13 @@ impl Mode for PromptMode {
 }
 
 /// Activates, launches or switches to the selected row.
-fn confirm(mode: &mut PromptMode, s: &State) -> Action {
-    let action = match s.selected_target() {
+fn confirm(s: &State) -> Action {
+    match s.selected_target() {
         Some(RowTarget::Window(id)) => Action::Activate(id.clone()),
         Some(RowTarget::Launch(id)) => Action::Launch(id.clone()),
         Some(RowTarget::Tab(tab)) => Action::ActivateTab(tab.clone()),
         None => Action::None,
-    };
-
-    tabs::note(mode, &action, s);
-    action
+    }
 }
 
 #[cfg(test)]

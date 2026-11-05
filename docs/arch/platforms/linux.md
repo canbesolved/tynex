@@ -30,6 +30,7 @@ platform/linux/
   hint.rs         Hint command: spawn, animation, repeat wait
   hint_proc.rs    Spawn `sh -c` and read stdout without blocking
   hint_file.rs    The hints folder and default script on start
+  usage_file.rs   Usage scores file: read on start, written on change
   key_file.rs     Reader for desktop entries, theme indexes, kdeglobals
   desktop_files.rs  App names and icons from desktop files
   apps/           App catalog: scan `.desktop`, spawn Exec
@@ -55,6 +56,16 @@ and is logged.
 or URL are dropped; `%%`, `%c`, `%k` and `%i` are expanded.
 `Terminal=true` starts through `xdg-terminal-exec` when it is on
 `PATH`. The child is its own session; the event loop reaps it.
+
+## Usage file
+
+`usage_file.rs` reads `~/.local/share/tynex/usage_stats.tsv` on
+start, at most 1 MiB, and writes it with `paths::write_atomic`
+(mode `0600`) after the popup closes with a changed score
+([ADR-0095](../../adr/0095_usage_stats.md)). A missing file means
+no scores. A read or write failure is logged and the daemon runs on.
+The installed app ids from the catalog tell the core which apps
+still exist.
 
 ## Hint command
 

@@ -10,6 +10,7 @@ pub mod launcher;
 use crate::config::{LauncherConfig, LauncherMode, NewWindowConfig};
 use crate::core::app::AppInfo;
 use crate::core::state::State;
+use crate::core::usage;
 use crate::core::view::Row;
 use crate::modules::search::app_haystack;
 use crate::modules::search::fuzzy::rank;
@@ -55,10 +56,13 @@ impl Input {
         };
         let tabs = crate::modules::browser_tabs::rows(&s.query, &s.tab_lists);
 
-        s.output = exact::exact_first(
-            &s.query,
-            browser_tabs::join(windows, tabs, &s.tab_lists),
-        );
+        let joined = browser_tabs::join(windows, tabs, &s.tab_lists);
+        let score = |row: &Row| {
+            usage::item(&row.target, &s.rows, &s.tab_lists)
+                .map_or(0, |item| s.usage.score(&item))
+        };
+
+        s.output = exact::exact_first(&s.query, joined, score);
         s.selected = 0;
     }
 }
@@ -102,3 +106,7 @@ fn search_windows(s: &mut State) -> Vec<Row> {
         })
         .collect()
 }
+
+#[cfg(test)]
+#[path = "usage_order_tests.rs"]
+mod usage_order_tests;

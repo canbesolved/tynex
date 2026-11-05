@@ -18,4 +18,5 @@ pub mod icon_theme;
 pub mod key_file;
 pub mod paths;
 pub mod signals;
+pub mod usage_file;
 pub mod wayland;

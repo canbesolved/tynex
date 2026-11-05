@@ -173,6 +173,9 @@ fn handle(p: &mut Parts, event: Event) -> bool {
         log::debug!("window list updated, {} windows", list.len());
     }
 
+    if let Some(text) = p.app.usage_to_save() {
+        crate::platform::linux::usage_file::save(&text);
+    }
     match action {
         Action::Redraw => redraw(p),
         Action::Activate(id) => {
