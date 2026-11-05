@@ -20,6 +20,12 @@ rename = "."
 # the first key opens the first app in taskbar.iconbar.pinned.
 pinned = ["Alt+1", "Alt+2", "Alt+3", "Alt+4", "Alt+5", "Alt+6",
   "Alt+7", "Alt+8", "Alt+9"]
+# Keys that confirm the selected match.
+select = ["Enter", "Space"]
+# Keys that type a space in the query. "ShiftLeft" is a left Shift
+# pressed and released alone. To type spaces with Space, set
+# select = "Enter" and space = "Space".
+space = "ShiftLeft"
 
 [input]
 # Installed apps in the output bar: "off" hides them, "all" includes

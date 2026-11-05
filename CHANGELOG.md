@@ -9,6 +9,15 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `hotkeys.select` and `hotkeys.space`: keys that confirm the selected
+  match (default `Enter` and `Space`) and keys that type a space in
+  the query (default `ShiftLeft`, a left Shift tapped alone). Each
+  takes a key or a list. To type spaces with `Space`, set
+  `select = "Enter"` and `space = "Space"`
+  ([ADR-0094](docs/adr/0094_input_keys.md)) (RM-0012).
+
 ## [0.3.7] - 2026-11-05
 
 A browser window and its active tab are listed once.

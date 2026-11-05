@@ -108,8 +108,7 @@ fn start(config: &Config) -> Result<(), String> {
                 config.output.max_results,
             )
             .with_tabs(config.browser_tabs.enabled)
-            .with_rename(config.hotkeys.rename.clone())
-            .with_pinned(config.hotkeys.pinned.clone()),
+            .with_hotkeys(&config.hotkeys),
         )
         .with_pinned(pinned),
         source,

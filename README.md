@@ -145,7 +145,8 @@ the popup with `hotkeys.action = "hide"`. The popup also closes when
 it loses keyboard focus.
 
 In the popup, type to filter, `Enter` or `Space` to switch, `Tab` or
-the arrows to move, and `Esc` to clear the query or close. While the
+the arrows to move, and `Esc` to clear the query or close. Tap the
+left `Shift` alone to type a space (`hotkeys.space`). While the
 query is empty, app icons sit under the input bar. `Left` and
 `Right` move along them, and so does the pointer. A left click on
 the icon whose dropdown is already open closes that menu. With the
@@ -184,6 +185,8 @@ rename = "."                 # Key, list of keys, or ""
 # One key per pinned app, by position
 pinned = ["Alt+1", "Alt+2", "Alt+3", "Alt+4", "Alt+5", "Alt+6",
   "Alt+7", "Alt+8", "Alt+9"]
+select = ["Enter", "Space"]  # Keys that confirm the match
+space = "ShiftLeft"          # Types a space: left Shift alone
 
 [input]
 launcher.mode = "gui_only"   # off | all | gui_only
