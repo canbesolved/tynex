@@ -7,7 +7,7 @@ use crate::core::text::sanitize_title;
 use crate::core::window::WindowInfo;
 
 /// Separators before an app name at the end of a title.
-const SEPARATORS: [&str; 3] = [" — ", " – ", " - "];
+pub const SEPARATORS: [&str; 3] = [" — ", " – ", " - "];
 
 /// Returns the sanitized title of `window`; with `strip`, a trailing
 /// ` — <app name>` is dropped (see `strip_app_name`).

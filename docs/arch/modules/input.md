@@ -8,7 +8,8 @@ output list. They do not draw.
 modules/input/
   mod.rs         Runs search, then the launcher, then joins tabs
   launcher.rs    Groups windows and launch rows
-  browser_tabs.rs  Puts tab rows between windows and launch rows
+  browser_tabs.rs  Puts tab rows between windows and launch rows,
+                   drops a window row its active tab row covers
   exact.rs       Exact matches first
 ```
 

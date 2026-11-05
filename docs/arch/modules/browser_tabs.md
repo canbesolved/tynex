@@ -37,7 +37,8 @@ Pure logic, no I/O:
 
 | Update      | Effect                                              |
 | ----------- | --------------------------------------------------- |
-| `List`      | Cleans and stores the list; ignored while hidden    |
+| `List`      | Cleans and stores the list and the browser's window |
+|             | ids; ignored while hidden                           |
 | `Gone`      | Drops that source's list and pending activation     |
 | `Icons`     | Redraw while the popup is open                      |
 | `Activated` | `Activate` the picked window, or nothing            |
@@ -85,7 +86,14 @@ Among tabs: a title that starts with the query comes first
 ([ADR-0079](../../adr/0079_leading_match.md)), then score, then
 `last` descending.
 
-The active tab of a window is listed as well as its window row.
+A window row and its active tab row are not both listed: the tab
+row stays and the window row is dropped
+([ADR-0093](../../adr/0093_tab_dedupe.md)). `List` stores the ids of
+the windows whose pid is the browser's. A window is dropped when its
+id is in that set, an active tab row of that list is in the results,
+and the window title is the tab title, alone or before a separator
+(`Notes - Brave`). The join in
+[modules/input.md](input.md) applies it.
 
 ## Activation
 
@@ -127,6 +135,7 @@ name with dashes.
 
 - Lists are kept only while the popup is visible; a new list from a
   source replaces the old one; `Gone` drops it.
+- A list keeps the window ids of its browser's pid.
 - Cleaning keeps the newest tabs and caps titles.
 - The fallback icon prefers a window of the browser.
 - Row titles, hosts and search order.

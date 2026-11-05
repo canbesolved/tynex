@@ -127,6 +127,11 @@ fn store(
         icon: fallback(windows, pid, &browser),
         browser,
         tabs: clean(tabs),
+        windows: windows
+            .iter()
+            .filter(|w| pid != 0 && w.pid == Some(pid))
+            .map(|w| w.id.clone())
+            .collect(),
     };
 
     match state.tab_lists.iter_mut().find(|l| l.source == source) {

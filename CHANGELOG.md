@@ -9,6 +9,12 @@ project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- A browser window and its active tab are listed once in the output
+  bar: the tab row stays, with its favicon, and raises the window
+  ([ADR-0093](docs/adr/0093_tab_dedupe.md)) (RM-0011).
+
 ## [0.3.6] - 2026-11-04
 
 The output cap is `output.max_results`.
