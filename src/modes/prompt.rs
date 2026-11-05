@@ -3,8 +3,9 @@
 
 //! Prompt mode: typing filters windows with fuzzy matching.
 //!
-//! `Space` confirms the selected row, the same as `Enter`. `Tab`
-//! walks the list on screen, or the icons when the title list is off.
+//! `hotkeys.select` (`Enter`, `Space`) confirms the selected row and
+//! `hotkeys.space` (a left Shift tap) types a space. `Tab` walks the
+//! list on screen, or the icons when the title list is off.
 //! `Shift+Tab` walks it back.
 
 use crate::config::TaskbarMode;
@@ -19,6 +20,8 @@ use crate::core::window::WindowInfo;
 use crate::modules::browser_tabs::Session;
 use crate::modules::input::Input;
 
+#[path = "prompt_keys.rs"]
+mod keys;
 #[path = "prompt_pointer.rs"]
 mod pointer;
 #[path = "prompt_icon.rs"]
@@ -37,6 +40,8 @@ pub struct PromptMode {
     tabs: Option<Session>,
     rename: Bindings, // Keys that rename the selected window
     pinned: Vec<Bindings>, // The n-th opens the n-th pinned app
+    select: Bindings, // Keys that confirm the selected row
+    space: Bindings,  // Keys that type a space
 }
 
 impl PromptMode {
@@ -53,21 +58,9 @@ impl PromptMode {
             tabs: None,
             rename: Bindings::default(),
             pinned: Vec::new(),
+            select: keys::default_select(),
+            space: Bindings::default(),
         }
-    }
-
-    /// Sets the keys of the pinned apps, by position. None by default.
-    #[must_use]
-    pub fn with_pinned(mut self, keys: Vec<Bindings>) -> Self {
-        self.pinned = keys;
-        self
-    }
-
-    /// Sets the keys that rename the selected window. None by default.
-    #[must_use]
-    pub fn with_rename(mut self, keys: Bindings) -> Self {
-        self.rename = keys;
-        self
     }
 
     /// Turns tab search on. Off by default, so the popup is unchanged.
@@ -92,16 +85,31 @@ impl Mode for PromptMode {
         {
             return action;
         }
-        let Some(key) = hotkey::plain(key) else {
+        let select = self.select.takes(key);
+        let key = if self.space.takes(key) {
+            Key::Char {
+                text: ' ',
+                latin: None,
+            }
+        } else if let Some(key) = hotkey::plain(key) {
+            key
+        } else if select {
+            key // A combination such as `Ctrl+J`
+        } else {
             return Action::None;
         };
         if self.strip(s)
-            && let Some(action) =
-                prompt_icon::key(key, s, self.max_rows, self.taskbar.titlebar())
+            && let Some(action) = prompt_icon::key(
+                key,
+                select,
+                s,
+                self.max_rows,
+                self.taskbar.titlebar(),
+            )
         {
             return action;
         }
-        if matches!(key, Key::Char { text: ' ', .. } | Key::Enter) {
+        if select {
             return confirm(self, s);
         }
         if let Some(changed) =

@@ -177,6 +177,8 @@ impl Default for Config {
                 action: HotkeyAction::Last,
                 rename: hotkeys::default_rename(),
                 pinned: hotkeys::default_pinned(),
+                select: hotkeys::default_select(),
+                space: hotkeys::default_space(),
             },
             input: InputConfig::default(),
             output: OutputConfig::default(),
@@ -241,3 +243,7 @@ mod browser_tabs_tests;
 #[cfg(test)]
 #[path = "hotkeys_tests.rs"]
 mod hotkeys_tests;
+
+#[cfg(test)]
+#[path = "input_keys_tests.rs"]
+mod input_keys_tests;

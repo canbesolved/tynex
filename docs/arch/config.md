@@ -61,6 +61,12 @@ rename = "."
 # the first key opens the first app in taskbar.iconbar.pinned.
 pinned = ["Alt+1", "Alt+2", "Alt+3", "Alt+4", "Alt+5", "Alt+6",
   "Alt+7", "Alt+8", "Alt+9"]
+# Keys that confirm the selected match.
+select = ["Enter", "Space"]
+# Keys that type a space in the query. "ShiftLeft" is a left Shift
+# pressed and released alone. To type spaces with Space, set
+# select = "Enter" and space = "Space".
+space = "ShiftLeft"
 
 [input]
 # Installed apps in the output bar: "off" hides them, "all" includes
@@ -173,6 +179,13 @@ open and nothing is typed ([ADR-0089](../adr/0089_pinned_apps.md)).
 Each entry is a key, a list of keys, or `""`. The default is `Alt+1`
 to `Alt+9`. A conflict names the entry, for example
 `hotkeys.pinned[2]`.
+
+`hotkeys.select` confirms the selected match (default `Enter` and
+`Space`). `hotkeys.space` types a space in the query (default
+`ShiftLeft`, a left Shift pressed and released alone; `Shift+A` still
+types `A`). To type spaces with `Space`, set `select = "Enter"` and
+`space = "Space"`. A key in both is a conflict
+([ADR-0094](../adr/0094_input_keys.md)).
 
 `input.launcher.mode` adds installed apps to the output bar
 ([ADR-0056](../adr/0056_launcher_input.md)): `"off"`, `"all"`, or
@@ -357,6 +370,7 @@ The config is read once, when `tynex daemon` starts
 | `hotkeys.action`                  | `hide` or `last`                       |
 | `hotkeys.rename`                  | a key, a list of keys, or `""`         |
 | `hotkeys.pinned`                  | a list of the above, one per app       |
+| `hotkeys.select`, `hotkeys.space` | a key, a list of keys, or `""`         |
 | `input.launcher.mode`             | `off`, `all` or `gui_only`             |
 | `launcher.new_window`             | `true` or `false`                      |
 | `launcher.new_window_text`        | a non-empty string                     |

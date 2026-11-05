@@ -12,10 +12,11 @@ use crate::core::view::RowTarget;
 ///
 /// `None` means the key belongs to the query or the title list. With
 /// the title list off, `Tab` moves to the next icon and `Shift+Tab` to
-/// the previous one. With it on,
-/// `Enter` and `Space` confirm that list unless a dropdown is open.
+/// the previous one. With it on, a `select` key confirms that list
+/// unless a dropdown is open.
 pub(super) fn key(
     key: Key,
+    select: bool,
     s: &mut State,
     cap: usize,
     titles: bool,
@@ -31,9 +32,7 @@ pub(super) fn key(
             s.close_dropdown();
             Some(Action::Redraw)
         }
-        Key::Char { text: ' ', .. } | Key::Enter
-            if !titles || s.dropdown.is_some() =>
-        {
+        _ if select && (!titles || s.dropdown.is_some()) => {
             Some(confirm(s, cap))
         }
         Key::Up | Key::BackTab if s.dropdown.is_some() => {

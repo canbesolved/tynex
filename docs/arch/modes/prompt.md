@@ -19,15 +19,19 @@ Source: `src/modes/prompt.rs`. The
 | `Backspace`                | Delete the character before it |
 | `Delete`                   | Delete the character after it  |
 | `Up` / `Down`              | Move the selection             |
-| `Space` / `Enter`          | Activate or launch, then close |
+| `hotkeys.select`           | Activate or launch, then close |
+| `hotkeys.space`            | Insert a space, refilter       |
 | `Tab` / `Shift+Tab`        | Walk the list or the icons     |
 | `Esc`                      | Clear query; close if empty    |
 | `hotkeys.rename` (`.`)     | Rename the selected window     |
 | `hotkeys.pinned` (`Alt+n`) | Open or focus pinned app `n`   |
 
-`Space` is not inserted
+`hotkeys.select` defaults to `Enter` and `Space`, so `Space` is not
+inserted. `hotkeys.space` defaults to a left Shift tap
 ([ADR-0061](../../adr/0061_prompt_keys.md), amended by
-[ADR-0063](../../adr/0063_tab_icons.md)). `Tab` walks open windows
+[ADR-0063](../../adr/0063_tab_icons.md) and
+[ADR-0094](../../adr/0094_input_keys.md)). Source:
+`src/modes/prompt_keys.rs`. `Tab` walks open windows
 while the title list is showing, and matches while the output bar is
 showing. With the title list off and the icon strip showing, `Tab`
 moves to the next icon. With neither a list nor the strip, `Tab`

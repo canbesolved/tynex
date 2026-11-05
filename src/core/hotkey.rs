@@ -98,6 +98,13 @@ impl Bindings {
     pub fn matches(&self, key: Key) -> bool {
         self.0.iter().any(|b| b.matches(key))
     }
+
+    /// Returns true when `key`, or its plain key, fires one of the
+    /// bindings: `Ctrl+Enter` fires `Enter` when nothing took it.
+    #[must_use]
+    pub fn takes(&self, key: Key) -> bool {
+        self.matches(key) || plain(key).is_some_and(|k| self.matches(k))
+    }
 }
 
 impl Binding {

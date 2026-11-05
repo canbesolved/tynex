@@ -126,6 +126,8 @@ pub(super) struct RawHotkeys {
     pub action: RawHotkeyAction,
     pub rename: Option<Spanned<toml::Value>>,
     pub pinned: Option<Spanned<toml::Value>>,
+    pub select: Option<Spanned<toml::Value>>,
+    pub space: Option<Spanned<toml::Value>>,
 }
 
 #[derive(Deserialize, Default)]
