@@ -28,17 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.3.8
-
-- [ ] RM-0012 Input keys in `[hotkeys]`, written in the hotkey
-  notation (ADR-0087):
-  - `select` confirms the selected match. Default
-    `["Enter", "Space"]`, as today.
-  - `space` types a space in the query. Default `"ShiftLeft"`: a
-    left Shift pressed and released alone.
-  - Each key takes one binding or a list. To type spaces with
-    `Space`, set `select = "Enter"` and `space = "Space"`.
-
 ### 0.3.9
 
 - [ ] RM-0009 Config: priority of output bar results among open
