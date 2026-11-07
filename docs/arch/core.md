@@ -24,6 +24,7 @@ core/
   view.rs       View, Row, RowTarget: what the presenter must draw
   order.rs      SortBy: row order (recently, app)
   places.rs     Places: history of windows and tabs, newest first
+  switch_counter.rs  Counter, Pending: daily `qs` and popup counts
   switcher_history.rs  Lends the history, applies tab lists
   icons.rs      Strip: pinned apps, then running apps; dropdown order
   queue.rs      EventTx / EventRx: single-threaded event queue

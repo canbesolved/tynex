@@ -5,7 +5,7 @@ Source: `src/config/`.
 ```text
 config/
   mod.rs         Config types, parse(text, font_exists)
-  main.rs        [main] types and checks, history
+  main.rs        [main] as parsed, types and checks
   browser_tabs.rs  [browser_tabs] browsers, enabled and wait
   raw.rs         serde layout with defaults and value spans
   validate.rs    Value checks, all errors at once
@@ -53,6 +53,9 @@ switch_layout = false
 # Windows and tabs the title list keeps in the order you used them,
 # 2 to 50.
 history = 10
+# Count quick switches and popup calls per day in
+# ~/.local/share/tynex/counter.txt.
+switch_counter = false
 
 [hotkeys]
 # Hotkey pressed again while the popup is open: "hide" closes the
@@ -155,6 +158,12 @@ the order you switched to them, newest first, from 2 to 50 (default
 `taskbar.titlebar.sort_by = "recently"` the title list follows it,
 tabs included, and the popup opens on the previous window or tab.
 It is kept in memory only.
+
+`main.switch_counter = true` counts quick switches and popup calls
+per local day in `~/.local/share/tynex/counter.txt`
+([linux.md](platforms/linux.md#quick-switch-counter),
+[ADR-0099](../adr/0099_switch_counter.md)). Default `false`: nothing
+is counted and the file is not written.
 
 `browser_tabs.wait` is how long, in milliseconds, the popup waits for
 the connected browsers' tab lists before it shows (default 150, 0 to
@@ -389,6 +398,7 @@ The config is read once, when `tynex daemon` starts
 | `main.theme`                      | `dark` or `light`                      |
 | `main.switch_layout`              | `true` or `false`                      |
 | `main.history`                    | 2 to 50                                |
+| `main.switch_counter`             | `true` or `false`                      |
 | `hotkeys.action`                  | `hide` or `last`                       |
 | `hotkeys.rename`                  | a key, a list of keys, or `""`         |
 | `hotkeys.pinned`                  | a list of the above, one per app       |

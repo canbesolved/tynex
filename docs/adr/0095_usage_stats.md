@@ -43,7 +43,7 @@ and exact matches still lead.
 - Both bands, exact and fuzzy, are sorted by score, highest first.
   The sort is stable, so equal scores, and all rows before any use,
   keep the order of ADR-0085.
-- Scores live in `~/.local/share/tynex/usage_stats.tsv`, one
+- Scores live in `~/.local/share/tynex/stats.tsv`, one
   `score<TAB>app<TAB>id` or `score<TAB>tab<TAB>browser<TAB>url` line
   each, mode `0600`. It is read on start and written, atomically,
   after the popup closes with a change.

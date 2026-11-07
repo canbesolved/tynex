@@ -30,7 +30,9 @@ platform/linux/
   hint.rs         Hint command: spawn, animation, repeat wait
   hint_proc.rs    Spawn `sh -c` and read stdout without blocking
   hint_file.rs    The hints folder and default script on start
+  data_file.rs    Files in ~/.local/share/tynex: capped read, 0600 write
   usage_file.rs   Usage scores file: read on start, written on change
+  counter_file.rs SwitchCounter: `qs` switches, popup calls per day
   key_file.rs     Reader for desktop entries, theme indexes, kdeglobals
   desktop_files.rs  App names and icons from desktop files
   apps/           App catalog: scan `.desktop`, spawn Exec
@@ -57,15 +59,48 @@ or URL are dropped; `%%`, `%c`, `%k` and `%i` are expanded.
 `Terminal=true` starts through `xdg-terminal-exec` when it is on
 `PATH`. The child is its own session; the event loop reaps it.
 
+## Data files
+
+`data_file.rs` reads and writes the daemon's files in
+`~/.local/share/tynex/`. A read takes at most 1 MiB; a missing file,
+or no home folder, reads as empty. A write creates the folder and
+uses `paths::write_atomic` (mode `0600`). The usage file and the
+quick switch counter use it.
+
 ## Usage file
 
-`usage_file.rs` reads `~/.local/share/tynex/usage_stats.tsv` on
-start, at most 1 MiB, and writes it with `paths::write_atomic`
-(mode `0600`) after the popup closes with a changed score
+`usage_file.rs` reads `~/.local/share/tynex/stats.tsv` on start
+and writes it after the popup closes with a changed score
 ([ADR-0095](../../adr/0095_usage_stats.md)). A missing file means
 no scores. A read or write failure is logged and the daemon runs on.
 The installed app ids from the catalog tell the core which apps
 still exist.
+
+## Quick switch counter
+
+With `main.switch_counter = true` (default `false`),
+`counter_file.rs` counts in `~/.local/share/tynex/counter.txt`, one
+line per local day, oldest first:
+
+```text
+2026-11-05 qs 12 show 30
+```
+
+- `qs`: each quick switch, from the KDE shortcut or `tynex qs`, that
+  switches to a window or a tab. One with nothing to switch to is not
+  counted.
+- `show`: each popup call, from the KDE hotkey or `tynex show`, a
+  second press included.
+
+`SwitchCounter` keeps the counts in memory, per date, so a count after
+midnight goes to the new day. A popup call writes them when the last
+write is at least an hour old, by the wall clock, so a suspend counts;
+the hour starts with the daemon. Quitting writes them too; a killed
+daemon loses up to an hour. A write adds the counts to the last line
+when it is the same day, else starts a new line. A line `YYYY-MM-DD N`
+from the first version is read as `qs N`. The date comes from
+`localtime_r`; `core/switch_counter.rs` holds the counts and updates
+the text ([ADR-0099](../../adr/0099_switch_counter.md)).
 
 ## Hint command
 
