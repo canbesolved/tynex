@@ -98,7 +98,11 @@ for example `RM-0012` (ADR-0086). Use it to name an item exactly.
   conventional ones (`README.md`, `AGENTS.md`, `CLAUDE.md`,
   `CONTRIBUTING.md`, `ROADMAP.md`, `CHANGELOG.md`, `DEPRECATIONS.md`,
   `LICENSE`, `LICENSES/*.txt`, `REUSE.toml`).
-- A source file must not exceed 250 lines. Split it into modules first.
+- A source file should stay under 250 lines (`wc -l`, tests
+  included); past that, split it by responsibility. Up to 300 lines
+  is allowed when a split would only make room: name the file and
+  the reason in the pull request `## Summary`. Never exceed 300
+  lines ([ADR-0100](docs/adr/0100_file_size_limit.md)).
 - Every source file (Rust, shell, JavaScript) starts with SPDX / REUSE
   identifiers, after the shebang if any. Other files (docs, config,
   assets) are covered by `REUSE.toml`. The comment rules below do not
