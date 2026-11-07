@@ -5,6 +5,8 @@
 //! desktop files.
 
 pub mod apps;
+pub mod counter_file;
+pub mod data_file;
 pub mod dbus;
 pub mod dbus_ipc;
 pub mod desktop_files;

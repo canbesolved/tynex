@@ -107,6 +107,9 @@ fn start(config: &Config) -> Result<(), String> {
         signals: Signals::open(),
         wait: std::time::Duration::from_millis(config.browser_tabs.wait.into()),
         hold: None,
+        counter: crate::platform::linux::counter_file::SwitchCounter::new(
+            config.main.switch_counter,
+        ),
     };
 
     let result = event_loop::run(&mut parts);

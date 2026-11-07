@@ -11,10 +11,12 @@ use crate::adapters::Source;
 use crate::adapters::browser_tabs::Socket;
 use crate::core::event::{Action, Event};
 use crate::core::queue::EventRx;
+use crate::core::switch_counter::Counter;
 use crate::core::switcher::Switcher;
 use crate::core::traits::WindowSource;
 use crate::modes::prompt::PromptMode;
 use crate::platform::linux::apps::Apps;
+use crate::platform::linux::counter_file::SwitchCounter;
 use crate::platform::linux::dbus::Bus;
 use crate::platform::linux::hint::Hint;
 use crate::platform::linux::signals::Signals;
@@ -38,6 +40,7 @@ pub struct Parts {
     pub signals: Option<Signals>, // SIGINT, SIGTERM, SIGHUP quit
     pub wait: Duration,           // For the tab lists before a show
     pub hold: Option<Instant>,    // The first draw waits until then
+    pub counter: SwitchCounter,   // Counts with `main.switch_counter`
 }
 
 /// Runs until a `Quit` request arrives.
@@ -96,6 +99,7 @@ pub fn run(p: &mut Parts) -> Result<(), String> {
 /// Hides the popup and sends the last requests. The caller then
 /// stops the window source, like after `tynex quit`.
 fn quit(p: &mut Parts) -> Result<(), String> {
+    p.counter.flush();
     p.presenter.hide();
     p.presenter.flush().map_err(|e| e.to_string())
 }
@@ -147,6 +151,7 @@ mod fds;
 /// on `Quit`.
 fn handle(p: &mut Parts, event: Event) -> bool {
     let quit = event == Event::Quit;
+    let counted = Counter::of(&event);
     let windows = matches!(event, Event::Windows(_));
     let open = p.app.view().is_some();
 
@@ -180,6 +185,7 @@ fn handle(p: &mut Parts, event: Event) -> bool {
         log::debug!("window list updated, {} windows", list.len());
     }
 
+    p.counter.note(counted, &action);
     if let Some(text) = p.app.usage_to_save() {
         crate::platform::linux::usage_file::save(&text);
     }

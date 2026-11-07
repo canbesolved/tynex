@@ -7,8 +7,9 @@ use std::ops::Range;
 use std::path::{Path, PathBuf};
 
 use serde::Deserialize;
+use toml::Spanned;
 
-use crate::config::raw::RawMain;
+use crate::config::raw::unspanned;
 use crate::config::theme::Theme;
 use crate::config::validate::check_range;
 
@@ -51,6 +52,7 @@ pub struct MainConfig {
     pub theme: Theme,
     pub switch_layout: bool, // Read keys with the US layout in the popup
     pub history: u16,        // Windows and tabs kept for the title list
+    pub switch_counter: bool, // Count quick switches and popup calls
 }
 
 impl Default for MainConfig {
@@ -64,6 +66,38 @@ impl Default for MainConfig {
             theme: Theme::Dark,
             switch_layout: false,
             history: HISTORY,
+            switch_counter: false,
+        }
+    }
+}
+
+/// `[main]` as parsed, with spans for value checks.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub(crate) struct RawMain {
+    pub desktop: Desktop,
+    pub font: Spanned<String>,
+    pub font_size: Spanned<u16>,
+    pub width: Spanned<u16>,
+    pub position: Position,
+    pub theme: Theme,
+    pub switch_layout: bool,
+    pub history: Spanned<u16>,
+    pub switch_counter: bool,
+}
+
+impl Default for RawMain {
+    fn default() -> Self {
+        Self {
+            desktop: Desktop::Auto,
+            font: unspanned("auto".into()),
+            font_size: unspanned(14),
+            width: unspanned(480),
+            position: Position::Center,
+            theme: Theme::Dark,
+            switch_layout: false,
+            history: unspanned(HISTORY),
+            switch_counter: false,
         }
     }
 }
@@ -102,5 +136,6 @@ pub(super) fn check(
         theme: main.theme,
         switch_layout: main.switch_layout,
         history: *main.history.get_ref(),
+        switch_counter: main.switch_counter,
     }
 }

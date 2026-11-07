@@ -15,9 +15,19 @@ project adheres to
   does what `tynex qs` does through the KWin script, so no process
   starts on each press. Change it in System Settings, Shortcuts,
   KWin.
+- `main.switch_counter` (default `false`): quick switches (KDE
+  shortcut or `tynex qs`) and popup calls (hotkey or `tynex show`)
+  are counted per local day in `~/.local/share/tynex/counter.txt`,
+  one `YYYY-MM-DD qs N show M` line per day. The file is written on
+  a popup call at most once an hour, and on quit
+  ([ADR-0099](docs/adr/0099_switch_counter.md)).
 
 ### Changed
 
+- The usage stats file is `~/.local/share/tynex/stats.tsv`, was
+  `usage_stats.tsv`. To keep your scores, rename the old file before
+  you start the new version
+  ([ADR-0095](docs/adr/0095_usage_stats.md)).
 - KDE: the default key of "tynex: Show switcher" is
   `Meta+Shift+F11`, was `Meta+Tab`. A key you set yourself stays.
 

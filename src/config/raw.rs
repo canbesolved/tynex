@@ -6,10 +6,8 @@
 use serde::Deserialize;
 use toml::Spanned;
 
-use crate::config::{Desktop, Position, Theme};
-
 /// Values not from the file get an empty span.
-fn unspanned<T>(value: T) -> Spanned<T> {
+pub(super) fn unspanned<T>(value: T) -> Spanned<T> {
     Spanned::new(0..0, value)
 }
 
@@ -86,40 +84,12 @@ fn default_icon_border() -> Spanned<u16> {
 #[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields, default)]
 pub(super) struct RawConfig {
-    pub main: RawMain,
+    pub main: crate::config::main::RawMain,
     pub hotkeys: RawHotkeys,
     pub input: RawInput,
     pub output: RawOutput,
     pub taskbar: RawTaskbar,
     pub browser_tabs: crate::config::browser_tabs::RawBrowserTabs,
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields, default)]
-pub(super) struct RawMain {
-    pub desktop: Desktop,
-    pub font: Spanned<String>,
-    pub font_size: Spanned<u16>,
-    pub width: Spanned<u16>,
-    pub position: Position,
-    pub theme: Theme,
-    pub switch_layout: bool,
-    pub history: Spanned<u16>,
-}
-
-impl Default for RawMain {
-    fn default() -> Self {
-        Self {
-            desktop: Desktop::Auto,
-            font: unspanned("auto".into()),
-            font_size: unspanned(14),
-            width: unspanned(480),
-            position: Position::Center,
-            theme: Theme::Dark,
-            switch_layout: false,
-            history: unspanned(crate::config::main::HISTORY),
-        }
-    }
 }
 
 #[derive(Deserialize, Default)]

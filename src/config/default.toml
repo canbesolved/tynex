@@ -11,6 +11,9 @@ switch_layout = false
 # Windows and tabs the title list keeps in the order you used them,
 # 2 to 50.
 history = 10
+# Count quick switches and popup calls per day in
+# ~/.local/share/tynex/counter.txt.
+switch_counter = false
 
 [hotkeys]
 # Hotkey pressed again while the popup is open: "hide" closes the

@@ -15,6 +15,7 @@ pub mod queue;
 pub mod rename;
 pub mod row_color;
 pub mod state;
+pub mod switch_counter;
 pub mod switcher;
 pub mod text;
 pub mod text_edit;

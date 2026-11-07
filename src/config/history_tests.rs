@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! `main.history` and `browser_tabs.wait`.
+//! `main.history`, `main.switch_counter` and `browser_tabs.wait`.
 
 use super::parse;
 
@@ -36,4 +36,13 @@ fn values_in_range_are_kept_and_others_are_errors() {
         errors("[browser_tabs]\nwait = 1001\n")[0]
             .contains("`browser_tabs.wait` = 1001 is out of range")
     );
+}
+
+#[test]
+fn the_switch_counter_is_off_by_default() {
+    let on = parse("[main]\nswitch_counter = true\n", &no_font).unwrap();
+
+    assert!(!parse("", &no_font).unwrap().main.switch_counter);
+    assert!(on.main.switch_counter);
+    assert!(errors("[main]\nswitch_counter = \"yes\"\n")[0].contains("bool"));
 }
