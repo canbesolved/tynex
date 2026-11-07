@@ -9,6 +9,10 @@ project adheres to
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-07
+
+A KWin shortcut for the quick switch, and a daily switch counter.
+
 ### Added
 
 - KDE: the "tynex: Quick switch" shortcut, default `Meta+Shift+F12`,
@@ -745,7 +749,8 @@ First release, for KDE Plasma 6 on Wayland.
 - Pinned letter keys: a window keeps its letter until it closes
   (ADR-0041).
 
-[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/canbesolved/tynex/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/canbesolved/tynex/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/canbesolved/tynex/compare/v0.3.9...v0.4.0
 [0.3.9]: https://github.com/canbesolved/tynex/compare/v0.3.8...v0.3.9
 [0.3.8]: https://github.com/canbesolved/tynex/compare/v0.3.7...v0.3.8
