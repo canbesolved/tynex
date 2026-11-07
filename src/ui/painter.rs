@@ -17,10 +17,12 @@ use std::time::Instant;
 use crate::config::{
     HintConfig, MainConfig, OutputConfig, Position, TaskbarConfig,
 };
+use crate::core::browser_tabs::SourceId;
 use crate::core::event::Click;
 use crate::core::view::View;
 use crate::core::window::WindowInfo;
 use crate::ui::draw::{self, Grid, Look, Paint, Size};
+use crate::ui::fit;
 pub(crate) use crate::ui::frames::{draw_popup, measured};
 use crate::ui::render::browser_tabs_icons::TabIcons;
 use crate::ui::render::canvas::Canvas;
@@ -134,6 +136,21 @@ impl Painter {
         }
     }
 
+    /// Keeps a decoded favicon. False when it was rejected.
+    pub fn store_tab_icon(
+        &mut self,
+        source: SourceId,
+        key: &str,
+        png: &[u8],
+    ) -> bool {
+        self.tabs.insert(source, key, png)
+    }
+
+    /// Drops the favicons of a browser that disconnected.
+    pub fn drop_tab_icons(&mut self, source: SourceId) {
+        self.tabs.drop_source(source);
+    }
+
     /// Returns the popup size at output `scale`.
     #[must_use]
     pub fn size(&self, view: &View<'_>, scale: f32) -> Size {
@@ -223,10 +240,19 @@ impl Painter {
         }
         self.slide.next(now)
     }
-}
 
-#[path = "painter_tabs.rs"]
-mod tabs;
+    /// Fits the look at output `scale` to `view` and the screen.
+    fn fitted(&self, view: &View<'_>, scale: f32) -> draw::Metrics {
+        fit::fit(
+            view,
+            self.look.metrics(scale),
+            &self.theme,
+            self.screen,
+            self.position,
+            self.anchor,
+        )
+    }
+}
 
 #[cfg(test)]
 #[path = "painter_tests.rs"]

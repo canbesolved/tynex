@@ -8,11 +8,11 @@
 use super::Switcher;
 use crate::core::browser_tabs::TabsUpdate;
 use crate::core::event::Action;
-use crate::core::order::{SortBy, order};
+use crate::core::order::SortBy;
 use crate::core::places::{Place, Places};
 use crate::core::state::State;
 use crate::core::traits::Mode;
-use crate::core::view::{Row, RowTarget};
+use crate::core::view::RowTarget;
 
 impl<M: Mode> Switcher<M> {
     /// Keeps up to `limit` windows and tabs for the title list.
@@ -48,14 +48,6 @@ impl<M: Mode> Switcher<M> {
             self.state = Some(self.rebuild(old));
         }
         action
-    }
-
-    /// Builds the rows in `sort` order.
-    pub(super) fn rows(&self) -> Vec<Row> {
-        order(&self.windows, self.sort)
-            .into_iter()
-            .map(Row::window)
-            .collect()
     }
 
     /// Lends the history for the title list, unless rows sort by app.
