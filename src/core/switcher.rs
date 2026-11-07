@@ -7,7 +7,7 @@ use std::collections::HashSet;
 
 use crate::core::app::AppInfo;
 use crate::core::event::{Action, Click, Event, Key};
-use crate::core::order::SortBy;
+use crate::core::order::{SortBy, order};
 use crate::core::places::Places;
 use crate::core::rename::Renames;
 use crate::core::state::State;
@@ -15,7 +15,7 @@ use crate::core::text::sanitize_title;
 use crate::core::title::row_title;
 use crate::core::traits::Mode;
 use crate::core::usage::Usage;
-use crate::core::view::View;
+use crate::core::view::{Row, View};
 use crate::core::window::WindowInfo;
 
 /// What a hotkey press does while the popup is open.
@@ -225,6 +225,14 @@ impl<M: Mode> Switcher<M> {
         let action = self.mode.on_hover(click, &mut state);
 
         self.keep(action, state)
+    }
+
+    /// Builds the rows in `sort` order.
+    fn rows(&self) -> Vec<Row> {
+        order(&self.windows, self.sort)
+            .into_iter()
+            .map(Row::window)
+            .collect()
     }
 }
 
