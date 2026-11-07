@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 // KWin script for tynex: pushes the window list to the daemon in most
-// recently used order and registers the shortcut that shows the
-// switcher. Loaded by the daemon; see docs/arch/adapters/kde.md.
+// recently used order and registers the shortcuts that show the
+// switcher and switch back. Loaded by the daemon; see
+// docs/arch/adapters/kde.md.
 
 const SERVICE = "io.github.canbesolved.Tynex";
 const PATH = "/io/github/canbesolved/Tynex/Kde";
@@ -70,7 +71,11 @@ mru.forEach((w) => w.captionChanged.connect(push));
 workspace.windowAdded.connect(added);
 workspace.windowRemoved.connect(removed);
 workspace.windowActivated.connect(activated);
-registerShortcut("tynex", "tynex: Show switcher", "Meta+Tab", () => {
+registerShortcut("tynex", "tynex: Show switcher", "Meta+Shift+F11", () => {
     callDBus(SERVICE, PATH, INTERFACE, "Show");
+});
+registerShortcut("tynex_quick_switch", "tynex: Quick switch",
+    "Meta+Shift+F12", () => {
+    callDBus(SERVICE, PATH, INTERFACE, "QuickSwitch");
 });
 activated(workspace.activeWindow);

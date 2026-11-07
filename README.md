@@ -139,12 +139,13 @@ tynex quit    # Stop the background service
 `Ctrl+C` in the daemon's terminal, `kill` and closing that terminal
 stop it like `tynex quit`.
 
-On KDE the default hotkey is `Meta+Tab`. Change it in System Settings,
-Shortcuts, `tynex`. On other desktops bind `tynex show` to any key.
-Pressing the hotkey again switches to the previous window or browser
-tab, or closes the popup with `hotkeys.action = "hide"`. Bind
-`tynex qs` to a key to switch back without the popup. The popup
-also closes when it loses keyboard focus.
+On KDE the default hotkey is `Meta+Shift+F11`. Change it in System
+Settings, Shortcuts, `tynex`. On other desktops bind `tynex show` to
+any key. Pressing the hotkey again switches to the previous window or
+browser tab, or closes the popup with `hotkeys.action = "hide"`. To
+switch back without the popup, press `Meta+Shift+F12` on KDE ("tynex:
+Quick switch" in the same place), or bind `tynex qs` elsewhere. The
+popup also closes when it loses keyboard focus.
 
 In the popup, type to filter, `Enter` or `Space` to switch, `Tab` or
 the arrows to move, and `Esc` to clear the query or close. Tap the

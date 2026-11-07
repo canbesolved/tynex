@@ -63,8 +63,15 @@ blocks.
   `captionChanged`. Only normal, switchable windows are sent (skip
   `skipSwitcher`, docks, desktops, special windows).
 - Register the global shortcut with `registerShortcut("tynex", ...,
-  "Meta+Tab", ...)`. It calls `Show` on the daemon. Users rebind it in
-  System Settings, Shortcuts.
+  "Meta+Shift+F11", ...)`. It calls `Show` on the daemon. Users rebind
+  it in System Settings, Shortcuts.
+- Register `tynex_quick_switch`, "tynex: Quick switch", default
+  `Meta+Shift+F12`. It calls `QuickSwitch`, the same as `tynex qs`
+  ([ADR-0098](../../adr/0098_quick_switch.md)), with no process
+  start: a command shortcut runs each press in a new systemd unit,
+  about 11 ms.
+- A default key applies only while the user has not changed that
+  shortcut, and only when no other shortcut holds the key.
 
 ## Activation
 
@@ -110,12 +117,14 @@ order sent:
 Object `/io/github/canbesolved/Tynex/Kde`, interface
 `io.github.canbesolved.Tynex.Kde`:
 
-| Method   | Args     | Reply    | Called by   |
-| -------- | -------- | -------- | ----------- |
-| `Update` | `s` list | none     | KWin script |
-| `Show`   | none     | none     | KWin script |
+| Method        | Args     | Reply | Called by   |
+| ------------- | -------- | ----- | ----------- |
+| `Update`      | `s` list | none  | KWin script |
+| `Show`        | none     | none  | KWin script |
+| `QuickSwitch` | none     | none  | KWin script |
 
-`Show` opens the popup.
+`Show` opens the popup. `QuickSwitch` switches back to the previous
+window or tab, like `tynex qs`.
 
 Only KWin may call the object: a call whose sender is not KWin's
 unique name gets an error reply and is logged at `warn` level, so
