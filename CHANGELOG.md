@@ -9,6 +9,18 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- KDE: the "tynex: Quick switch" shortcut, default `Meta+Shift+F12`,
+  does what `tynex qs` does through the KWin script, so no process
+  starts on each press. Change it in System Settings, Shortcuts,
+  KWin.
+
+### Changed
+
+- KDE: the default key of "tynex: Show switcher" is
+  `Meta+Shift+F11`, was `Meta+Tab`. A key you set yourself stays.
+
 ## [0.4.0] - 2026-11-05
 
 Quick switch without the popup.

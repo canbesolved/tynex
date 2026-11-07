@@ -51,6 +51,7 @@ fn request(msg: &Message, kwin: &str) -> Result<Event, String> {
             .map(|list| Event::Windows(parse(list)))
             .map_err(|e| e.to_string()),
         Some("Show") => Ok(Event::Show),
+        Some("QuickSwitch") => Ok(Event::QuickSwitch),
         _ => Err("unknown method".into()),
     }
 }
@@ -80,12 +81,14 @@ mod tests {
     }
 
     #[test]
-    fn kwin_can_update_and_show() {
+    fn kwin_can_update_show_and_switch_back() {
         let update = call(KWIN, "Update", Some(""));
         let show = call(KWIN, "Show", None);
+        let quick = call(KWIN, "QuickSwitch", None);
 
         assert_eq!(request(&update, KWIN), Ok(Event::Windows(Vec::new())));
         assert_eq!(request(&show, KWIN), Ok(Event::Show));
+        assert_eq!(request(&quick, KWIN), Ok(Event::QuickSwitch));
     }
 
     #[test]
@@ -95,6 +98,7 @@ mod tests {
 
         anonymous.set_sender(None);
         assert!(request(&fake, KWIN).is_err());
+        assert!(request(&call(":1.99", "QuickSwitch", None), KWIN).is_err());
         assert!(request(&anonymous, KWIN).is_err());
     }
 
