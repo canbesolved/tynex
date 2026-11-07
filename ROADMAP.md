@@ -28,6 +28,26 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
+### 0.4.2
+
+- [ ] RM-0070 Hover in the title list:
+  - The pointer moves the selection only after it moves once in the
+    open popup. Today a popup that opens under a resting cursor
+    selects the row under it.
+  - `taskbar.titlebar.select_on_hover` (default `true`): `false`
+    stops the pointer from moving the selection at all; a click
+    still opens the row.
+
+### 0.4.3
+
+- [ ] RM-0065 Pointer in the output list: hovering a row moves the
+  selection highlight to it, and a click activates the row, as in
+  the title list (ADR-0077). Hover waits for the first pointer move
+  in the open popup, as in RM-0070. `output.select_on_hover`
+  (default `true`), separate from the title list's key: `false`
+  keeps the selection still under the pointer; a click still
+  activates.
+
 ### 0.5.0
 
 - [ ] RM-0062 Text editing in the input bar: `Ctrl+A` selects the
@@ -92,12 +112,6 @@ Icon bar:
   screen size, `main.width` and the number of running apps, within
   the usual 8 to 128 logical pixels. A number still sets a fixed
   size.
-
-Output bar:
-
-- [ ] RM-0065 Pointer in the output list: hovering a row moves the
-  selection highlight to it, and a click activates the row, as in
-  the title list (ADR-0077).
 
 Modes:
 
