@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Taskbar mode.
+//! Taskbar mode and title list keys.
 
 use super::*;
 use crate::core::order::SortBy;
@@ -101,4 +101,28 @@ fn pinned_apps_must_be_unique_and_named() {
     assert_eq!(twice.len(), 1);
     assert!(twice[0].contains("lists \"firefox\" twice"), "{}", twice[0]);
     assert!(empty[0].contains("empty app id"), "{}", empty[0]);
+}
+
+#[test]
+fn hover_selects_title_rows_by_default() {
+    let config = parse("", &no_font).expect("valid config");
+    let off = parse("[taskbar]\ntitlebar.select_on_hover = false\n", &no_font)
+        .expect("valid config");
+
+    assert!(config.taskbar.titlebar.select_on_hover);
+    assert!(config.taskbar.iconbar.select_on_hover);
+    assert!(!off.taskbar.titlebar.select_on_hover);
+    assert!(off.taskbar.iconbar.select_on_hover); // Separate keys
+    assert!(
+        errors("[taskbar]\ntitlebar.select_on_hover = 1\n")[0].contains("bool")
+    );
+}
+
+#[test]
+fn icon_hover_has_its_own_key() {
+    let text = "[taskbar]\niconbar.select_on_hover = false\n";
+    let config = parse(text, &no_font).expect("valid config");
+
+    assert!(!config.taskbar.iconbar.select_on_hover);
+    assert!(config.taskbar.titlebar.select_on_hover);
 }

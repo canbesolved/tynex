@@ -114,6 +114,9 @@ titlebar.sort_by = "recently" # recently | app
 titlebar.show_icons = true
 # Drop " — <app name>" from the end of window titles.
 titlebar.strip_app_name = false
+# Hovering a row selects it, after the pointer moves in the popup.
+# false selects only by keys and clicks.
+titlebar.select_on_hover = true
 # Icon side in logical pixels, scaled with the display.
 iconbar.size = 36
 # Selection border outside the icon, in logical pixels.
@@ -121,6 +124,9 @@ iconbar.border = 5
 # Apps that stay first in the strip, also when not running: desktop
 # file ids such as "firefox" or "org.kde.konsole".
 iconbar.pinned = []
+# Hovering an icon or a dropdown title selects it, after the pointer
+# moves in the popup. false selects only by keys and clicks.
+iconbar.select_on_hover = true
 
 [browser_tabs]
 # true registers the host. The socket opens when a selected
@@ -340,6 +346,14 @@ sets `layout` stops the daemon with an unknown key error.
 ([ADR-0055](../adr/0055_config_sections.md)). A config that still has
 them stops the daemon with an unknown key error.
 
+`taskbar.titlebar.select_on_hover` (default `true`): hovering a
+title-list row selects it, once the pointer has moved in the open
+popup, so a popup opening under a resting cursor keeps the previous
+window selected. `false` leaves the selection to keys and clicks; a
+click still opens the row. Icons and dropdown titles have their own
+key, `taskbar.iconbar.select_on_hover`
+([ADR-0101](../adr/0101_hover_gate.md)).
+
 `taskbar.titlebar.strip_app_name` drops the app name from the end
 of a title, after ` — `, ` – ` or ` - `: `Café — Firefox` becomes
 `Café`.
@@ -367,6 +381,13 @@ running ([ADR-0089](../adr/0089_pinned_apps.md)). An empty id, or an
 id listed twice, stops the daemon. An id with no desktop file still
 shows, without an icon, and is logged at start.
 
+`taskbar.iconbar.select_on_hover` (default `true`): hovering an
+icon, or a title of its open dropdown, selects it once the pointer
+has moved in the open popup. `false` leaves that selection to keys
+and clicks; a click still selects the icon or opens the title. It is
+separate from `taskbar.titlebar.select_on_hover`
+([ADR-0101](../adr/0101_hover_gate.md)).
+
 Planned options are listed in [ROADMAP.md](../../ROADMAP.md).
 
 ## Loading rules
@@ -388,38 +409,40 @@ The config is read once, when `tynex daemon` starts
 
 ## Validation
 
-| Key                               | Rule                                   |
-| --------------------------------- | -------------------------------------- |
-| `main.desktop`                    | `auto`, `kde` or `mock`                |
-| `main.font`                       | `auto` or a path to an existing font   |
-| `main.font_size`                  | 8 to 72                                |
-| `main.width`                      | 200 to 2000                            |
-| `main.position`                   | `center` or `top`                      |
-| `main.theme`                      | `dark` or `light`                      |
-| `main.switch_layout`              | `true` or `false`                      |
-| `main.history`                    | 2 to 50                                |
-| `main.switch_counter`             | `true` or `false`                      |
-| `hotkeys.action`                  | `hide` or `last`                       |
-| `hotkeys.rename`                  | a key, a list of keys, or `""`         |
-| `hotkeys.pinned`                  | a list of the above, one per app       |
-| `hotkeys.select`, `hotkeys.space` | a key, a list of keys, or `""`         |
-| `input.launcher.mode`             | `off`, `all` or `gui_only`             |
-| `launcher.new_window`             | `true` or `false`                      |
-| `launcher.new_window_text`        | a non-empty string                     |
-| `launcher.new_window_text_color`  | `#RRGGBB`                              |
-| `input.hint.enabled`              | `true` or `false`                      |
-| `input.hint.font_color`           | `""` or `#RRGGBB`                      |
-| `input.hint.update`               | 0 to 86400                             |
-| `output.max_results`              | 1 to 50                                |
-| `output.colors.*`                 | `""`, `#RRGGBB` or `#RRGGBBAA`         |
-| `taskbar.mode`                    | `off`, `iconbar`, `titlebar` or `both` |
-| `taskbar.titlebar.sort_by`        | `recently` or `app`                    |
-| `taskbar.titlebar.show_icons`     | `true` or `false`                      |
-| `taskbar.titlebar.strip_app_name` | `true` or `false`                      |
-| `taskbar.iconbar.size`            | 8 to 128                               |
-| `taskbar.iconbar.border`          | 1 to 32                                |
-| `taskbar.iconbar.pinned`          | desktop file ids, each once            |
-| `browser_tabs.wait`               | 0 to 1000                              |
+| Key                                | Rule                                   |
+| ---------------------------------- | -------------------------------------- |
+| `main.desktop`                     | `auto`, `kde` or `mock`                |
+| `main.font`                        | `auto` or a path to an existing font   |
+| `main.font_size`                   | 8 to 72                                |
+| `main.width`                       | 200 to 2000                            |
+| `main.position`                    | `center` or `top`                      |
+| `main.theme`                       | `dark` or `light`                      |
+| `main.switch_layout`               | `true` or `false`                      |
+| `main.history`                     | 2 to 50                                |
+| `main.switch_counter`              | `true` or `false`                      |
+| `hotkeys.action`                   | `hide` or `last`                       |
+| `hotkeys.rename`                   | a key, a list of keys, or `""`         |
+| `hotkeys.pinned`                   | a list of the above, one per app       |
+| `hotkeys.select`, `hotkeys.space`  | a key, a list of keys, or `""`         |
+| `input.launcher.mode`              | `off`, `all` or `gui_only`             |
+| `launcher.new_window`              | `true` or `false`                      |
+| `launcher.new_window_text`         | a non-empty string                     |
+| `launcher.new_window_text_color`   | `#RRGGBB`                              |
+| `input.hint.enabled`               | `true` or `false`                      |
+| `input.hint.font_color`            | `""` or `#RRGGBB`                      |
+| `input.hint.update`                | 0 to 86400                             |
+| `output.max_results`               | 1 to 50                                |
+| `output.colors.*`                  | `""`, `#RRGGBB` or `#RRGGBBAA`         |
+| `taskbar.mode`                     | `off`, `iconbar`, `titlebar` or `both` |
+| `taskbar.titlebar.sort_by`         | `recently` or `app`                    |
+| `taskbar.titlebar.show_icons`      | `true` or `false`                      |
+| `taskbar.titlebar.strip_app_name`  | `true` or `false`                      |
+| `taskbar.titlebar.select_on_hover` | `true` or `false`                      |
+| `taskbar.iconbar.select_on_hover`  | `true` or `false`                      |
+| `taskbar.iconbar.size`             | 8 to 128                               |
+| `taskbar.iconbar.border`           | 1 to 32                                |
+| `taskbar.iconbar.pinned`           | desktop file ids, each once            |
+| `browser_tabs.wait`                | 0 to 1000                              |
 
 Syntax and type errors stop at the first error, as reported by `toml`.
 Value checks run on the parsed file and report every invalid key at

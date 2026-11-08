@@ -76,6 +76,7 @@ impl WaylandPresenter {
             pointer_proxy: None,
             cursor: cursor::Cursor::bind(&globals, &qh),
             pointer_at: (0.0, 0.0),
+            pointer_moved: false,
             wheel: (0, 0.0),
             formats: Vec::new(),
             outputs: output::bind_all(&globals, &qh),
@@ -153,6 +154,7 @@ impl WaylandPresenter {
 
         self.size = size;
         if first {
+            self.wl.pointer_moved = false; // Hover waits for a move
             self.wl.popup = Some(surface::create(&self.wl, &qh));
             self.anchor = Some(surface::logical(size, self.wl.scale).1);
         }

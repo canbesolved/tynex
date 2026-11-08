@@ -140,7 +140,11 @@ fn switcher(
         config.output.max_results,
     )
     .with_tabs(config.browser_tabs.enabled)
-    .with_hotkeys(&config.hotkeys);
+    .with_hotkeys(&config.hotkeys)
+    .with_select_on_hover(
+        config.taskbar.titlebar.select_on_hover,
+        config.taskbar.iconbar.select_on_hover,
+    );
     let ids = Some(apps.ids()).filter(|ids| !ids.is_empty());
 
     Switcher::new(

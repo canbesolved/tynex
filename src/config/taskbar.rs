@@ -37,12 +37,13 @@ impl TaskbarMode {
     }
 }
 
-/// The `taskbar.titlebar` keys: row order and title text.
+/// The `taskbar.titlebar` keys: row order, title text and hover.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TitleBarConfig {
-    pub sort_by: SortBy,      // Row order
-    pub show_icons: bool,     // Icon before each title
-    pub strip_app_name: bool, // Drop the app name from titles
+    pub sort_by: SortBy,       // Row order
+    pub show_icons: bool,      // Icon before each title
+    pub strip_app_name: bool,  // Drop the app name from titles
+    pub select_on_hover: bool, // Hover selects a row
 }
 
 impl Default for TitleBarConfig {
@@ -51,17 +52,19 @@ impl Default for TitleBarConfig {
             sort_by: SortBy::Recently,
             show_icons: true,
             strip_app_name: false,
+            select_on_hover: true,
         }
     }
 }
 
-/// The `taskbar.iconbar` keys: icon size, the selection border and
-/// the pinned apps.
+/// The `taskbar.iconbar` keys: icon size, the selection border, the
+/// pinned apps and hover.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IconBarConfig {
     pub size: u16,           // Logical pixels, scaled with the display
     pub border: u16,         // Selection outline, logical pixels
     pub pinned: Vec<String>, // Desktop file ids, in strip order
+    pub select_on_hover: bool, // Hover selects an icon or dropdown title
 }
 
 impl Default for IconBarConfig {
@@ -70,6 +73,7 @@ impl Default for IconBarConfig {
             size: 36,
             border: 5,
             pinned: Vec::new(),
+            select_on_hover: true,
         }
     }
 }

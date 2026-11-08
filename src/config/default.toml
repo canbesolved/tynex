@@ -72,6 +72,9 @@ titlebar.sort_by = "recently" # recently | app
 titlebar.show_icons = true
 # Drop " — <app name>" from the end of window titles.
 titlebar.strip_app_name = false
+# Hovering a row selects it, after the pointer moves in the popup.
+# false selects only by keys and clicks.
+titlebar.select_on_hover = true
 # Icon side in logical pixels, scaled with the display.
 iconbar.size = 36
 # Selection border outside the icon, in logical pixels.
@@ -79,6 +82,9 @@ iconbar.border = 5
 # Apps that stay first in the strip, also when not running: desktop
 # file ids such as "firefox" or "org.kde.konsole".
 iconbar.pinned = []
+# Hovering an icon or a dropdown title selects it, after the pointer
+# moves in the popup. false selects only by keys and clicks.
+iconbar.select_on_hover = true
 
 [browser_tabs]
 # true registers the host. The socket opens when a selected
