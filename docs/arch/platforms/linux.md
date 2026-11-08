@@ -18,7 +18,8 @@ platform/linux/
     surface.rs    Layer-shell surface setup, commit and teardown
     buffer.rs     wl_shm double buffer on a memfd
     input.rs      wl_seat, wl_keyboard and wl_pointer
-    pointer.rs    Motion, the left click and vertical scrolling
+    pointer.rs    Motion, the left click and vertical scrolling; hover
+                  waits for the first move
     cursor.rs     The default arrow over the popup, by shape name
     output.rs     wl_output modes, for the screen height
     keyboard.rs   xkb keymap, compose, repeat, modifier taps
@@ -247,7 +248,14 @@ Tests use real keymaps from the system's XKB data (`us`, `gr`, `de`,
 ## Pointer
 
 `wl_pointer` is bound with the keyboard. Motion and enter, while the
-popup is shown, select the icon under the pointer. A left press
+popup is shown, select the icon under the pointer, but only once the
+pointer has moved in the open popup
+([ADR-0101](../../adr/0101_hover_gate.md)). Opening the popup resets
+`pointer_moved`. An `enter`, or a `motion` of less than half a
+surface pixel, is not a move, so a popup that opens under a resting
+cursor selects nothing. A `leave` counts as one, so the pointer
+hovers again when it comes back. Clicks and scrolling are never held
+back. A left press
 becomes a click in surface coordinates. The event loop multiplies
 those by the output scale and hit-tests the drawn icons and
 dropdown. The right button is ignored. Moving off the icons leaves

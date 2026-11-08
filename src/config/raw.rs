@@ -186,6 +186,7 @@ pub(super) struct RawTitleBar {
     pub sort_by: RawSortBy,
     pub show_icons: bool,
     pub strip_app_name: bool,
+    pub select_on_hover: bool,
 }
 
 impl Default for RawTitleBar {
@@ -194,6 +195,7 @@ impl Default for RawTitleBar {
             sort_by: RawSortBy::Recently,
             show_icons: true,
             strip_app_name: false,
+            select_on_hover: true,
         }
     }
 }
@@ -206,6 +208,7 @@ pub(super) struct RawIconBar {
     #[serde(default = "default_icon_border")]
     pub border: Spanned<u16>,
     pub pinned: Option<Spanned<Vec<String>>>,
+    pub select_on_hover: bool,
 }
 
 impl Default for RawIconBar {
@@ -214,6 +217,7 @@ impl Default for RawIconBar {
             size: default_size(),
             border: default_icon_border(),
             pinned: None,
+            select_on_hover: true,
         }
     }
 }

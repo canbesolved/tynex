@@ -9,6 +9,20 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `taskbar.titlebar.select_on_hover` and
+  `taskbar.iconbar.select_on_hover` (default `true`): `false` stops
+  hover from selecting title-list rows, or icons and their dropdown
+  titles; a click still works
+  ([ADR-0101](docs/adr/0101_hover_gate.md)) (RM-0070).
+
+### Fixed
+
+- A popup that opens under a resting cursor no longer selects the
+  row or icon under it: hover waits for the pointer to move
+  ([ADR-0101](docs/adr/0101_hover_gate.md)) (RM-0070).
+
 ## [0.4.1] - 2026-11-07
 
 A KWin shortcut for the quick switch, and a daily switch counter.

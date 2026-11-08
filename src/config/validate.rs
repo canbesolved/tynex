@@ -72,11 +72,13 @@ pub(super) fn validate(
                 },
                 show_icons: raw.taskbar.titlebar.show_icons,
                 strip_app_name: raw.taskbar.titlebar.strip_app_name,
+                select_on_hover: raw.taskbar.titlebar.select_on_hover,
             },
             iconbar: IconBarConfig {
                 size: raw.taskbar.iconbar.size.into_inner(),
                 border: raw.taskbar.iconbar.border.into_inner(),
                 pinned,
+                select_on_hover: raw.taskbar.iconbar.select_on_hover,
             },
         },
         browser_tabs,

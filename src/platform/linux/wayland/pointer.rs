@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 //! Pointer motion, the left button and vertical scrolling, in surface
-//! coordinates.
+//! coordinates. Hover waits for the first move in the open popup
+//! (ADR-0101).
 
 use wayland_client::protocol::wl_pointer::{
     self, Axis, ButtonState, WlPointer,
@@ -13,6 +14,30 @@ use crate::platform::linux::wayland::state::{PresenterEvent, Wl};
 
 /// Linux `BTN_LEFT`.
 const BTN_LEFT: u32 = 0x110;
+
+/// A motion shorter than this, in surface coordinates, is not a move.
+const STILL: f64 = 0.5;
+
+/// A pointer event that may count as a move.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum Step {
+    Enter,
+    Motion(f64, f64), // Surface coordinates
+    Leave,
+}
+
+/// Returns whether the pointer has moved in the open popup after
+/// `step`, from `moved` before it and the last position `at`. An
+/// `enter` on a new popup is not a move: the cursor may rest there.
+fn moved_after(moved: bool, at: (f64, f64), step: Step) -> bool {
+    match step {
+        Step::Enter => moved,
+        Step::Motion(x, y) => {
+            moved || (x - at.0).abs() >= STILL || (y - at.1).abs() >= STILL
+        }
+        Step::Leave => true, // It went out, so the next enter is a move
+    }
+}
 
 impl Dispatch<WlPointer, ()> for Wl {
     fn event(
@@ -31,19 +56,18 @@ impl Dispatch<WlPointer, ()> for Wl {
                 surface_x,
                 surface_y,
                 ..
-            }
-            | wl_pointer::Event::Motion {
+            } => s.point(Step::Enter, (surface_x, surface_y)),
+            wl_pointer::Event::Motion {
                 surface_x,
                 surface_y,
                 ..
-            } => {
-                s.pointer_at = (surface_x, surface_y);
-                if s.popup.is_some() {
-                    s.events.push(PresenterEvent::Hover {
-                        x: surface_x,
-                        y: surface_y,
-                    });
-                }
+            } => s.point(
+                Step::Motion(surface_x, surface_y),
+                (surface_x, surface_y),
+            ),
+            wl_pointer::Event::Leave { .. } => {
+                s.pointer_moved =
+                    moved_after(s.pointer_moved, s.pointer_at, Step::Leave);
             }
             wl_pointer::Event::Button { button, state, .. }
                 if button == BTN_LEFT
@@ -76,6 +100,17 @@ impl Dispatch<WlPointer, ()> for Wl {
 }
 
 impl Wl {
+    /// Moves the pointer to `at` and reports hover once it has moved in
+    /// the open popup.
+    fn point(&mut self, step: Step, at: (f64, f64)) {
+        self.pointer_moved =
+            moved_after(self.pointer_moved, self.pointer_at, step);
+        self.pointer_at = at;
+        if self.popup.is_some() && self.pointer_moved {
+            self.events.push(PresenterEvent::Hover { x: at.0, y: at.1 });
+        }
+    }
+
     /// Reports the scrolling of one pointer frame. A wheel sends notches
     /// and pixels for the same move; the notches win.
     fn flush_wheel(&mut self) {
@@ -89,3 +124,7 @@ impl Wl {
         self.events.push(PresenterEvent::Scroll { notches, dy });
     }
 }
+
+#[cfg(test)]
+#[path = "pointer_tests.rs"]
+mod tests;

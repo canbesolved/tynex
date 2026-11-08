@@ -70,6 +70,7 @@ pub(super) struct Wl {
     pub pointer_proxy: Option<WlPointer>,
     pub cursor: Cursor,
     pub pointer_at: (f64, f64), // Last surface coordinate
+    pub pointer_moved: bool,    // Moved since the popup opened
     pub wheel: (i32, f64),      // Notches and pixels of this pointer frame
     pub formats: Vec<Format>,
     pub outputs: Vec<(WlOutput, Output)>,

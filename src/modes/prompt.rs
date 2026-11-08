@@ -43,6 +43,7 @@ pub struct PromptMode {
     pinned: Vec<Bindings>, // The n-th opens the n-th pinned app
     select: Bindings, // Keys that confirm the selected row
     space: Bindings,  // Keys that type a space
+    hover: pointer::Hover, // What hover selects
 }
 
 impl PromptMode {
@@ -61,6 +62,7 @@ impl PromptMode {
             pinned: Vec::new(),
             select: keys::default_select(),
             space: Bindings::default(),
+            hover: pointer::Hover::default(),
         }
     }
 
@@ -200,7 +202,7 @@ impl Mode for PromptMode {
         if let Click::Row(index) = click {
             return pointer::hover_row(self, s, index);
         }
-        if self.strip(s) {
+        if self.strip(s) && self.hover.icons {
             prompt_icon::hover(click, s, self.max_rows)
         } else {
             Action::None

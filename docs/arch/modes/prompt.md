@@ -97,8 +97,13 @@ The pointer does the same to the icon under it, and leaves the
 selection when it moves off the icons. A left click on the icon
 whose dropdown is open closes that menu. Hovering a title-list row
 or a dropdown title selects it, and a click on a title-list row or
-a dropdown title activates it. `Enter` and `Space` activate the
-selected title when that list is on. With it off, they activate
+a dropdown title activates it. `with_select_on_hover(titles,
+icons)`, from the `select_on_hover` keys of `taskbar.titlebar` and
+`taskbar.iconbar`, stops hover on title-list rows, or on icons and
+dropdown titles; clicks still work
+([ADR-0101](../../adr/0101_hover_gate.md)).
+`Enter` and `Space` activate the selected title when that list is
+on. With it off, they activate
 one window, open the dropdown, or launch. An open dropdown still
 takes `Enter` and `Space`. `Up` and `Down` move inside an open
 dropdown, scrolling only to keep the title on screen; otherwise

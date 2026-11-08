@@ -189,7 +189,11 @@ Moving off the icons leaves the selection where it is.
 
 Hovering a title-list row selects that window. A click activates
 it. Moving off the rows leaves the selection. The scrollbar is not
-a row. The output bar has no pointer selection.
+a row. The output bar has no pointer selection. Hover starts only
+after the pointer moves in the open popup, and
+`taskbar.titlebar.select_on_hover = false` turns it off for the
+title list, `taskbar.iconbar.select_on_hover = false` for the icons
+and their dropdown ([ADR-0101](../../adr/0101_hover_gate.md)).
 
 ## Contract
 

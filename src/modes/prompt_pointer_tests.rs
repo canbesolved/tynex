@@ -77,6 +77,31 @@ fn hovering_a_title_selects_it_and_a_click_activates() {
 }
 
 #[test]
+fn without_select_on_hover_only_a_click_selects_a_title() {
+    let (mode, mut state) = session(TaskbarMode::Both);
+    let mut mode = mode.with_select_on_hover(false, true);
+
+    assert_eq!(mode.on_hover(Click::Row(2), &mut state), Action::None);
+    assert_eq!(state.selected, 0);
+    assert_eq!(mode.on_hover(Click::Icon(1), &mut state), Action::Redraw);
+    assert_eq!(
+        mode.on_click(Click::Row(1), &mut state),
+        Action::Activate(WindowId("w2".into()))
+    );
+}
+
+#[test]
+fn without_icon_hover_only_a_click_selects_an_icon() {
+    let (mode, mut state) = session(TaskbarMode::Both);
+    let mut mode = mode.with_select_on_hover(true, false);
+
+    assert_eq!(mode.on_hover(Click::Icon(1), &mut state), Action::None);
+    assert_eq!(state.icon, 0);
+    assert_eq!(mode.on_hover(Click::Row(2), &mut state), Action::Redraw);
+    assert_ne!(mode.on_click(Click::Icon(1), &mut state), Action::None);
+}
+
+#[test]
 fn a_title_click_works_with_the_icon_strip() {
     let (mut mode, mut state) = session(TaskbarMode::Both);
 
