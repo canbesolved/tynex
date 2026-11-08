@@ -62,6 +62,12 @@ query shows the open windows again when `taskbar.mode` is
   `Tab`, `Shift+Tab`, up and down move that selection
   ([ADR-0061](../../adr/0061_prompt_keys.md)). Prompt mode owns the
   keys; this module only draws.
+- The pointer works as in the title list: hovering a row selects it,
+  once the pointer has moved in the open popup, and a click
+  activates, launches or switches to it, like `Enter`. The
+  scrollbar is not a row. `output.select_on_hover = false` stops the
+  hover; a click still works
+  ([ADR-0102](../../adr/0102_output_pointer.md)).
 
 ## Contract
 

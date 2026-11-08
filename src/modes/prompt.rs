@@ -25,6 +25,7 @@ use crate::modules::input::Input;
 mod keys;
 #[path = "prompt_pointer.rs"]
 mod pointer;
+pub use pointer::Hover;
 #[path = "prompt_icon.rs"]
 mod prompt_icon;
 #[path = "prompt_rename.rs"]
@@ -43,7 +44,7 @@ pub struct PromptMode {
     pinned: Vec<Bindings>, // The n-th opens the n-th pinned app
     select: Bindings, // Keys that confirm the selected row
     space: Bindings,  // Keys that type a space
-    hover: pointer::Hover, // What hover selects
+    hover: Hover,     // What hover selects
 }
 
 impl PromptMode {
@@ -62,7 +63,7 @@ impl PromptMode {
             pinned: Vec::new(),
             select: keys::default_select(),
             space: Bindings::default(),
-            hover: pointer::Hover::default(),
+            hover: Hover::default(),
         }
     }
 

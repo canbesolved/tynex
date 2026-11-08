@@ -95,13 +95,14 @@ While `taskbar.mode` is `iconbar` or `both` and the query is empty,
 `Left` and `Right` move along the icons and close an open dropdown.
 The pointer does the same to the icon under it, and leaves the
 selection when it moves off the icons. A left click on the icon
-whose dropdown is open closes that menu. Hovering a title-list row
-or a dropdown title selects it, and a click on a title-list row or
-a dropdown title activates it. `with_select_on_hover(titles,
-icons)`, from the `select_on_hover` keys of `taskbar.titlebar` and
-`taskbar.iconbar`, stops hover on title-list rows, or on icons and
-dropdown titles; clicks still work
-([ADR-0101](../../adr/0101_hover_gate.md)).
+whose dropdown is open closes that menu. Hovering a row of the list
+on screen (title list, or output rows while typing) or a dropdown
+title selects it, and a click on it activates it. `with_hover`
+takes a `Hover` from the `select_on_hover` keys of
+`taskbar.titlebar`, `taskbar.iconbar` and `output`; each stops hover
+on its rows, and clicks still work
+([ADR-0101](../../adr/0101_hover_gate.md),
+[ADR-0102](../../adr/0102_output_pointer.md)).
 `Enter` and `Space` activate the selected title when that list is
 on. With it off, they activate
 one window, open the dropdown, or launch. An open dropdown still

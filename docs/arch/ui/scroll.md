@@ -19,6 +19,10 @@ when they hold more rows than they show
   screen: the title list while the query is empty, the output bar
   while typing.
 - Closing the popup forgets the position.
+- `hit` finds the row under the pointer in the list on screen, the
+  same way for both lists: the scrollbar is not a row, and a
+  scrolled list maps to `first + row`. It returns `Click::Row`
+  ([ADR-0102](../../adr/0102_output_pointer.md)).
 
 ## Scrollbar
 

@@ -58,6 +58,9 @@ max_results = 10
 colors.window = ""           # Open windows
 colors.tab = ""              # Browser tabs
 colors.app = ""              # Apps that are not running
+# Hovering a result selects it, after the pointer moves in the popup.
+# false selects only by keys and clicks.
+select_on_hover = true
 
 [taskbar]
 # "off" hides the strip and the title list until you type.

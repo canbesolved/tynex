@@ -9,6 +9,14 @@ project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- The pointer works in the output list, as in the title list:
+  hovering a result selects it once the pointer has moved, and a
+  click activates it. `output.select_on_hover` (default `true`):
+  `false` stops the hover; a click still works
+  ([ADR-0102](docs/adr/0102_output_pointer.md)) (RM-0065).
+
 ## [0.4.2] - 2026-11-08
 
 Hover waits for the pointer to move.

@@ -66,6 +66,6 @@ pub enum Action {
 pub enum Click {
     Icon(usize), // Index into the running apps
     Menu(usize), // Index into the open dropdown
-    Row(usize),  // Index into the open windows
+    Row(usize),  // Index into the list on screen: titles or results
     Elsewhere,   // Inside the popup, not on an icon or row
 }
