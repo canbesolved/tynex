@@ -130,7 +130,7 @@ fn switcher(
     apps: &crate::platform::linux::apps::Apps,
 ) -> crate::core::switcher::Switcher<crate::modes::prompt::PromptMode> {
     use crate::core::switcher::Switcher;
-    use crate::modes::prompt::PromptMode;
+    use crate::modes::prompt::{Hover, PromptMode};
     use crate::modules::input::Input;
     use crate::platform::linux::usage_file;
 
@@ -141,10 +141,11 @@ fn switcher(
     )
     .with_tabs(config.browser_tabs.enabled)
     .with_hotkeys(&config.hotkeys)
-    .with_select_on_hover(
-        config.taskbar.titlebar.select_on_hover,
-        config.taskbar.iconbar.select_on_hover,
-    );
+    .with_hover(Hover {
+        titles: config.taskbar.titlebar.select_on_hover,
+        icons: config.taskbar.iconbar.select_on_hover,
+        output: config.output.select_on_hover,
+    });
     let ids = Some(apps.ids()).filter(|ids| !ids.is_empty());
 
     Switcher::new(

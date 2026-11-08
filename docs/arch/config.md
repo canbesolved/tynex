@@ -100,6 +100,9 @@ max_results = 10
 colors.window = ""           # Open windows
 colors.tab = ""              # Browser tabs
 colors.app = ""              # Apps that are not running
+# Hovering a result selects it, after the pointer moves in the popup.
+# false selects only by keys and clicks.
+select_on_hover = true
 
 [taskbar]
 # "off" hides the strip and the title list until you type.
@@ -295,6 +298,12 @@ colors.tab = "#f2e2a040"     # Pastel yellow
 colors.app = "#a8c8f040"     # Pastel blue
 ```
 
+`output.select_on_hover` (default `true`): hovering an output row
+selects it, once the pointer has moved in the open popup; a click
+activates it, like `Enter`. `false` leaves the selection to keys and
+clicks. It is separate from the title list and icon bar keys
+([ADR-0102](../adr/0102_output_pointer.md)).
+
 `taskbar.mode` chooses the taskbar while the query is empty
 ([ADR-0065](../adr/0065_taskbar.md), amended by
 [ADR-0066](../adr/0066_short_sections.md)): `off`, `iconbar`
@@ -433,6 +442,7 @@ The config is read once, when `tynex daemon` starts
 | `input.hint.update`                | 0 to 86400                             |
 | `output.max_results`               | 1 to 50                                |
 | `output.colors.*`                  | `""`, `#RRGGBB` or `#RRGGBBAA`         |
+| `output.select_on_hover`           | `true` or `false`                      |
 | `taskbar.mode`                     | `off`, `iconbar`, `titlebar` or `both` |
 | `taskbar.titlebar.sort_by`         | `recently` or `app`                    |
 | `taskbar.titlebar.show_icons`      | `true` or `false`                      |

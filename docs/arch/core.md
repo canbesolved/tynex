@@ -75,8 +75,10 @@ pub enum Action {
 ```
 
 `Click` is where a pointer press landed: `Icon(index)` on the strip,
-`Menu(index)` on an open dropdown, `Row(index)` on a title-list
-row, or `Elsewhere` in the popup. `Hover` carries the same place
+`Menu(index)` on an open dropdown, `Row(index)` on a row of the
+list on screen (a title-list row while the query is empty, an output
+row while typing, [ADR-0102](../adr/0102_output_pointer.md)), or
+`Elsewhere` in the popup. `Hover` carries the same place
 while the pointer moves. The icon, title, or dropdown row under
 the pointer becomes selected.
 

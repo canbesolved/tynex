@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Scrolling lists: the first row shown, the wheel and the scrollbar.
+//! Scrolling lists: the first row shown, the wheel, the scrollbar and
+//! the row under the pointer.
 
 #![allow(
     clippy::cast_possible_truncation,
@@ -10,11 +11,13 @@
     clippy::cast_sign_loss
 )]
 
+use crate::core::event::Click;
 use crate::core::view::View;
-use crate::ui::draw::{Metrics, Paint};
+use crate::ui::draw::{Grid, Metrics, Paint};
+use crate::ui::frames;
 use crate::ui::output_bar;
 use crate::ui::render::canvas::{Area, Rgba};
-use crate::ui::taskbar::titles;
+use crate::ui::taskbar::{icons, titles};
 
 /// Rows one wheel notch moves.
 const NOTCH_ROWS: i64 = 3;
@@ -102,6 +105,39 @@ fn list(view: &View<'_>, metrics: &Metrics) -> Option<(usize, usize)> {
     }
 }
 
+/// Returns the row of the list on screen under `(x, y)`: a title, or
+/// an output row while a query is typed (ADR-0102). The scrollbar is
+/// not a row. `metrics.first_row` is the row at the top of the list.
+pub(crate) fn hit(
+    view: &View<'_>,
+    metrics: &Metrics,
+    grid: &Grid,
+    x: f32,
+    y: f32,
+) -> Click {
+    let Some((len, max)) = list(view, metrics).filter(|(len, _)| *len > 0)
+    else {
+        return Click::Elsewhere;
+    };
+    let first = first_row(metrics, view.selected, len);
+    let top = frames::list_top(view, metrics, grid);
+    let inner = icons::popup_width(metrics) - 2.0 * grid.pad;
+    let width = inner - reserve(metrics, len);
+    let shown = len.min(max);
+    let rows = shown as f32 * grid.row_h;
+
+    if x < grid.pad || x >= grid.pad + width || y < top || y >= top + rows {
+        return Click::Elsewhere;
+    }
+    let row = ((y - top) / grid.row_h) as usize;
+
+    if row < shown && first + row < len {
+        Click::Row(first + row)
+    } else {
+        Click::Elsewhere
+    }
+}
+
 /// Moves `first` the least so row `selected` is among `rows` shown.
 pub(crate) fn follow(first: usize, selected: usize, rows: usize) -> usize {
     if selected < first {
@@ -165,3 +201,7 @@ pub(crate) fn bar(
 #[cfg(test)]
 #[path = "scroll_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "scroll_hit_tests.rs"]
+mod hit_tests;

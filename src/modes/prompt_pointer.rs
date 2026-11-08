@@ -1,21 +1,24 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Pointer on the title list: hover selects, a click activates. Rows
-//! are the title list as drawn, the history first (ADR-0097). Hover
-//! can be turned off for the title list and for the icon strip with
-//! its dropdown; a click still works (ADR-0101).
+//! Pointer on the list on screen: the title list while the query is
+//! empty, the output rows while one is typed. Hover selects, a click
+//! activates. `State::output` holds the rows of that list, the history
+//! first in the title list (ADR-0097). Hover can be turned off for
+//! each list and for the icon strip with its dropdown; a click still
+//! works (ADR-0101, ADR-0102).
 
 use super::PromptMode;
 use crate::core::event::Action;
 use crate::core::state::State;
 use crate::core::view::RowTarget;
 
-/// What hover selects, from the two `select_on_hover` keys.
+/// What hover selects, from the three `select_on_hover` keys.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) struct Hover {
+pub struct Hover {
     pub titles: bool, // Title-list rows
     pub icons: bool,  // Icons and their dropdown titles
+    pub output: bool, // Output rows
 }
 
 impl Default for Hover {
@@ -23,29 +26,35 @@ impl Default for Hover {
         Self {
             titles: true,
             icons: true,
+            output: true,
         }
     }
 }
 
 impl PromptMode {
-    /// Sets whether hover selects title-list rows (`titles`) and icons
-    /// with their dropdown titles (`icons`). Both on by default.
+    /// Sets what hover selects. Everything by default.
     #[must_use]
-    pub fn with_select_on_hover(mut self, titles: bool, icons: bool) -> Self {
-        self.hover = Hover { titles, icons };
+    pub fn with_hover(mut self, hover: Hover) -> Self {
+        self.hover = hover;
         self
     }
 }
 
-/// Selects a title-list row. The output bar is left alone.
+/// Selects the row under the pointer in the list on screen.
 pub(super) fn hover_row(
     mode: &PromptMode,
     s: &mut State,
     index: usize,
 ) -> Action {
-    if !mode.hover.titles
+    let on = if s.query.is_empty() {
+        mode.hover.titles
+    } else {
+        mode.hover.output
+    };
+
+    if !on
         || !list_on(mode, s)
-        || index >= s.titles().len()
+        || index >= s.output.len()
         || index == s.selected
     {
         return Action::None;
@@ -54,13 +63,13 @@ pub(super) fn hover_row(
     Action::Redraw
 }
 
-/// Activates the title-list row under the pointer.
+/// Activates the row under the pointer in the list on screen.
 pub(super) fn click_row(
     mode: &PromptMode,
     s: &mut State,
     index: usize,
 ) -> Action {
-    let Some(row) = s.titles().get(index).filter(|_| list_on(mode, s)) else {
+    let Some(row) = s.output.get(index).filter(|_| list_on(mode, s)) else {
         return Action::None;
     };
     let action = match &row.target {
@@ -73,7 +82,8 @@ pub(super) fn click_row(
     action
 }
 
-/// Returns true while the title list is on screen.
+/// Returns true while a list is on screen: the title list, or the
+/// output rows once a query is typed.
 fn list_on(mode: &PromptMode, s: &State) -> bool {
-    mode.taskbar.titlebar() && s.query.is_empty()
+    mode.taskbar.titlebar() || !s.query.is_empty()
 }

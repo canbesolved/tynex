@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! `output.colors`: off by default, `#RRGGBB` or `#RRGGBBAA`.
+//! `output.colors`: off by default, `#RRGGBB` or `#RRGGBBAA`; and
+//! `output.select_on_hover`.
 
 use crate::config::parse;
 use crate::core::row_color::{RowColors, Tint};
@@ -48,4 +49,15 @@ fn bad_colors_and_keys_are_errors() {
         msg[0].to_string().contains("unknown key `bookmark`"),
         "{msg:?}"
     );
+}
+
+#[test]
+fn output_hover_is_on_by_default_and_separate() {
+    let off = parse("[output]\nselect_on_hover = false\n", &|_| false)
+        .expect("valid config");
+
+    assert!(parse("", &|_| false).expect("empty").output.select_on_hover);
+    assert!(!off.output.select_on_hover);
+    assert!(off.taskbar.titlebar.select_on_hover);
+    assert!(parse("[output]\nselect_on_hover = 0\n", &|_| false).is_err());
 }

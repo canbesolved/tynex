@@ -29,9 +29,9 @@ use crate::ui::render::canvas::Canvas;
 use crate::ui::render::icons::Icons;
 use crate::ui::render::text::Text;
 use crate::ui::render::theme::Theme;
-use crate::ui::scroll::Viewport;
+use crate::ui::scroll::{self, Viewport};
 use crate::ui::slide::Slide;
-use crate::ui::taskbar::{icons as strip, menu, titles};
+use crate::ui::taskbar::{icons as strip, menu};
 
 /// Draws views with the configured look. Built once at start, so fonts
 /// and glyph caches stay warm between shows.
@@ -216,7 +216,7 @@ impl Painter {
             dropdown.as_ref(),
         );
         if hit == Click::Elsewhere {
-            titles::hit(view, &metrics, &grid, x, y)
+            scroll::hit(view, &metrics, &grid, x, y)
         } else {
             hit
         }

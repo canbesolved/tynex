@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! Title list pointer hits, including a scrolled window.
+//! Pointer hits on the list on screen: the title list, scrolled, and
+//! the output rows while a query is typed.
 
 #![allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 
@@ -79,4 +80,27 @@ fn the_scrollbar_is_not_a_row() {
     );
 
     assert_eq!(click, Click::Elsewhere);
+}
+
+#[test]
+fn a_typed_query_hits_the_output_rows() {
+    let theme = Theme::default();
+    let grid = Grid::new(&M, &theme);
+    let mut typed = state(3);
+
+    typed.query = "w".into();
+    typed.output = typed.rows.clone();
+    let top = frames::list_top(&typed.view(), &M, &grid);
+    let at = |row: f32| {
+        hit(
+            &typed.view(),
+            &M,
+            &grid,
+            grid.pad + 4.0,
+            top + row * grid.row_h,
+        )
+    };
+
+    assert_eq!(at(1.5), Click::Row(1)); // Three rows fit: no scrolling
+    assert_eq!(at(3.5), Click::Elsewhere); // Below the last row
 }

@@ -161,6 +161,7 @@ impl Default for RawLauncher {
 pub(super) struct RawOutput {
     pub max_results: Spanned<u16>,
     pub colors: crate::config::output::RawColors,
+    pub select_on_hover: bool,
 }
 
 impl Default for RawOutput {
@@ -168,6 +169,7 @@ impl Default for RawOutput {
         Self {
             max_results: unspanned(10),
             colors: crate::config::output::RawColors::default(),
+            select_on_hover: true,
         }
     }
 }

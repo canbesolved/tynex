@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 CanBeSolved (@canbesolved)
 // SPDX-License-Identifier: MIT
 
-//! The `[output]` table: result cap and row colors.
+//! The `[output]` table: result cap, row colors and hover.
 
 use std::ops::Range;
 
@@ -17,6 +17,7 @@ use crate::core::row_color::{RowColors, Tint};
 pub struct OutputConfig {
     pub max_results: u16, // Cap for the output bar and the title list
     pub colors: RowColors, // Row background per result type
+    pub select_on_hover: bool, // Hover selects an output row
 }
 
 impl Default for OutputConfig {
@@ -24,6 +25,7 @@ impl Default for OutputConfig {
         Self {
             max_results: 10,
             colors: RowColors::default(),
+            select_on_hover: true,
         }
     }
 }
@@ -49,6 +51,7 @@ pub(super) fn check_output(
     OutputConfig {
         max_results: *cap.get_ref(),
         colors: check_colors(&raw.colors, err),
+        select_on_hover: raw.select_on_hover,
     }
 }
 

@@ -79,7 +79,10 @@ fn hovering_a_title_selects_it_and_a_click_activates() {
 #[test]
 fn without_select_on_hover_only_a_click_selects_a_title() {
     let (mode, mut state) = session(TaskbarMode::Both);
-    let mut mode = mode.with_select_on_hover(false, true);
+    let mut mode = mode.with_hover(Hover {
+        titles: false,
+        ..Hover::default()
+    });
 
     assert_eq!(mode.on_hover(Click::Row(2), &mut state), Action::None);
     assert_eq!(state.selected, 0);
@@ -93,7 +96,10 @@ fn without_select_on_hover_only_a_click_selects_a_title() {
 #[test]
 fn without_icon_hover_only_a_click_selects_an_icon() {
     let (mode, mut state) = session(TaskbarMode::Both);
-    let mut mode = mode.with_select_on_hover(true, false);
+    let mut mode = mode.with_hover(Hover {
+        icons: false,
+        ..Hover::default()
+    });
 
     assert_eq!(mode.on_hover(Click::Icon(1), &mut state), Action::None);
     assert_eq!(state.icon, 0);
@@ -113,13 +119,36 @@ fn a_title_click_works_with_the_icon_strip() {
 }
 
 #[test]
-fn typing_ignores_a_title_row() {
-    let (mut mode, mut state) = session(TaskbarMode::Titlebar);
+fn typing_points_at_the_output_rows() {
+    let (mut mode, mut state) = session(TaskbarMode::Off);
+
+    assert_eq!(mode.on_hover(Click::Row(1), &mut state), Action::None);
+    state.insert('a');
+    assert_eq!(mode.on_hover(Click::Row(2), &mut state), Action::Redraw);
+    assert_eq!(state.selected, 2);
+    assert_eq!(mode.on_hover(Click::Row(9), &mut state), Action::None);
+    assert_eq!(
+        mode.on_click(Click::Row(1), &mut state),
+        Action::Activate(WindowId("w2".into()))
+    );
+    assert_eq!(state.selected, 1);
+}
+
+#[test]
+fn without_output_hover_only_a_click_selects_a_result() {
+    let (mode, mut state) = session(TaskbarMode::Titlebar);
+    let mut mode = mode.with_hover(Hover {
+        output: false,
+        ..Hover::default()
+    });
 
     state.insert('a');
-    assert_eq!(mode.on_hover(Click::Row(1), &mut state), Action::None);
-    assert_eq!(mode.on_click(Click::Row(1), &mut state), Action::None);
+    assert_eq!(mode.on_hover(Click::Row(2), &mut state), Action::None);
     assert_eq!(state.selected, 0);
+    assert_eq!(
+        mode.on_click(Click::Row(2), &mut state),
+        Action::Activate(WindowId("w3".into()))
+    );
 }
 
 #[test]
