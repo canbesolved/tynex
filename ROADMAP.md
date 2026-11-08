@@ -28,19 +28,6 @@ request, the `CHANGELOG.md` entry and, for a dropped item, the
 
 ## Now
 
-### 0.4.2
-
-- [ ] RM-0070 Hover in the title list and the icon strip:
-  - The pointer moves the selection only after it moves once in the
-    open popup. Today a popup that opens under a resting cursor
-    selects the row under it.
-  - `taskbar.titlebar.select_on_hover` (default `true`): `false`
-    stops the pointer from moving the selection at all; a click
-    still opens the row.
-  - `taskbar.iconbar.select_on_hover` (default `true`): the same
-    for icons and their dropdown titles, separate from the title
-    list.
-
 ### 0.4.3
 
 - [ ] RM-0065 Pointer in the output list: hovering a row moves the
